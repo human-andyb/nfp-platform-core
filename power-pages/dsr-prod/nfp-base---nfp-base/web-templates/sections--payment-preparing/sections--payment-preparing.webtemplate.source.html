@@ -1,0 +1,38 @@
+ <div class="hit-card" style="padding:16px;">
+  <div style="font-weight:600;margin-bottom:6px;">
+    Preparing payment…
+  </div>
+  <div style="color:#667085;">
+    Please wait while we generate your secure payment session.
+  </div>
+</div>
+
+<script>
+(function () {
+
+    const params = new URLSearchParams(window.location.search);
+    const attempts = parseInt(params.get("routeattempt") || "0", 10);
+
+    if (attempts >= 5) {
+        window.location.href =
+            window.location.pathname +
+            "?page=offering-acceptance" +
+            "&acceptanceid={{ acceptanceid }}";
+        return;
+    }
+
+    setTimeout(function () {
+
+        const nextAttempt = attempts + 1;
+
+        window.location.href =
+            window.location.pathname +
+            "?page=offering-acceptance" +
+            "&acceptanceid={{ acceptanceid }}" +
+            "&waitforpayment=1" +
+            "&routeattempt=" + nextAttempt;
+
+    }, 2000);
+
+})();
+</script>

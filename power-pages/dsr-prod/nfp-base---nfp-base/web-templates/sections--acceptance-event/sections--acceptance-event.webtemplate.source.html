@@ -1,0 +1,625 @@
+{% comment %}
+Offering Event Registration
+
+Expected URL:
+  /Events/Event-Registration?offeringid=<GUID>
+
+Optional:
+  &eventid=<GUID>   Override; otherwise resolved from hit_offering.hit_cievent
+
+Important:
+  This template is for creating a NEW hit_offeringacceptance.
+  It should not be used for an existing acceptanceid route.
+{% endcomment %}
+
+{% assign offeringId = request.params['offeringid'] | default: request.params['id'] | default: '' | strip %}
+{% assign explicitEventId = request.params['eventid'] | default: '' | strip %}
+{% assign acceptanceId = request.params['acceptanceid'] | default: '' | strip %}
+
+{% assign offeringCount = 0 %}
+{% assign eventCount = 0 %}
+{% assign resolvedEventId = '' %}
+
+{% assign offeringName = '' %}
+{% assign offeringDesc = '' %}
+{% assign heroImageUrl = '' %}
+{% assign fixedPrice = 0 %}
+{% assign allowQuantityBool = false %}
+{% assign eventRow = nil %}
+
+{% comment %}
+Safety guard:
+If this template has been included from an acceptance router, do not let it create
+a second acceptance. The router should handle acceptanceid states separately.
+{% endcomment %}
+
+{% if offeringId == blank and acceptanceId != blank %}
+  <div class="alert alert-warning">
+    This event registration form was opened with an existing acceptance reference rather than an offering reference.
+    Please return to the event page and start the registration again.
+    <div style="margin-top:6px; font-size:0.9em;">
+      acceptanceid: <code>{{ acceptanceId | escape }}</code>
+    </div>
+  </div>
+{% endif %}
+
+{% if offeringId != blank %}
+  {% fetchxml offering %}
+    <fetch top="1" mapping="logical">
+      <entity name="hit_offering">
+        <attribute name="hit_offeringid" />
+        <attribute name="hit_offeringname" />
+        <attribute name="hit_description" />
+        <attribute name="hit_imageurl" />
+        <attribute name="hit_fixedprice" />
+        <attribute name="hit_allowquantity" />
+        <attribute name="hit_cievent" />
+        <attribute name="hit_offeringtype" />
+        <attribute name="hit_isactive" />
+        <filter type="and">
+          <condition attribute="hit_offeringid" operator="eq" value="{{ offeringId | escape }}" />
+        </filter>
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+  {% if offering and offering.results and offering.results.entities %}
+    {% assign offeringCount = offering.results.entities | size %}
+  {% else %}
+    {% assign offeringCount = 0 %}
+  {% endif %}
+{% endif %}
+
+{% if offeringCount > 0 %}
+  {% assign offeringRow = offering.results.entities[0] %}
+
+  {% assign offeringName = offeringRow.hit_offeringname | default: '' %}
+  {% assign offeringDesc = offeringRow.hit_description | default: '' %}
+  {% assign heroImageUrl = offeringRow.hit_imageurl | default: '' | strip %}
+
+  {% assign fixedPrice = offeringRow.hit_fixedprice | default: 0 %}
+  {% if fixedPrice.value %}
+    {% assign fixedPrice = fixedPrice.value %}
+  {% endif %}
+
+  {% assign allowQtyRaw = offeringRow.hit_allowquantity | default: '' %}
+  {% if allowQtyRaw.value %}
+    {% assign allowQtyRaw = allowQtyRaw.value %}
+  {% endif %}
+
+  {% assign allowQtyLabel = offeringRow.hit_allowquantity.label | default: offeringRow.hit_allowquantity.Label  | default: offeringRow["hit_allowquantity@OData.Community.Display.V1.FormattedValue"]  | default: ''   %}
+
+  {% assign allowQtyText = '' | append: allowQtyRaw | downcase %}
+  {% assign allowQtyLabelText = allowQtyLabel | downcase %}
+
+  {% if allowQtyText == 'true' or allowQtyText == '1' or allowQtyLabelText == 'yes' %}
+    {% assign allowQuantityBool = true %}
+  {% endif %}
+
+  {% assign resolvedEventId = explicitEventId %}
+  {% if resolvedEventId == blank and offeringRow.hit_cievent %}
+    {% assign resolvedEventId = offeringRow.hit_cievent.id | default: '' | strip %}
+  {% endif %}
+
+  {% if resolvedEventId != blank %}
+    {% fetchxml ev %}
+      <fetch top="1" mapping="logical">
+        <entity name="msevtmgt_event">
+          <attribute name="msevtmgt_eventid" />
+          <attribute name="msevtmgt_name" />
+          <attribute name="msevtmgt_eventstartdate" />
+          <attribute name="msevtmgt_eventenddate" />
+          <attribute name="msevtmgt_description" />
+          <filter type="and">
+            <condition attribute="msevtmgt_eventid" operator="eq" value="{{ resolvedEventId | escape }}" />
+          </filter>
+        </entity>
+      </fetch>
+    {% endfetchxml %}
+
+    {% if ev and ev.results and ev.results.entities %}
+      {% assign eventCount = ev.results.entities | size %}
+      {% if eventCount > 0 %}
+        {% assign eventRow = ev.results.entities[0] %}
+      {% endif %}
+    {% else %}
+      {% assign eventCount = 0 %}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+{% if request.params['debug'] == '1' %}
+  <pre style="background:#f6f6f6;padding:10px;border:1px solid #ddd;">
+offeringid={{ offeringId }}
+acceptanceid={{ acceptanceId }}
+offeringCount={{ offeringCount }}
+resolvedEventId={{ resolvedEventId }}
+eventCount={{ eventCount }}
+heroImageUrl={{ heroImageUrl }}
+allowQuantityBool={{ allowQuantityBool }}
+fixedPrice={{ fixedPrice }}
+  </pre>
+{% endif %}
+
+{% if offeringId == blank %}
+  <div class="alert alert-warning">
+    Missing <strong>offeringid</strong> in the URL. Please return to the Offering page and try again.
+  </div>
+{% elsif offeringCount == 0 %}
+  <div class="alert alert-warning">
+    We couldn't load this offering. This is usually because the record doesn't exist or the current portal user doesn't have permission to read <strong>hit_offering</strong>.
+    <div style="margin-top:6px; font-size: 0.9em;">
+      offeringid: <code>{{ offeringId | escape }}</code>
+    </div>
+  </div>
+{% else %}
+
+  {% if heroImageUrl != blank %}
+    <div class="hit-accept-hero">
+      <img class="hit-accept-hero__img"
+           src="{{ heroImageUrl | escape }}"
+           alt="{{ offeringName | escape }}">
+    </div>
+  {% endif %}
+
+  <div class="hit-accept-card">
+    <div class="hit-accept-card__header">
+      <h1 class="hit-accept-card__title">Register</h1>
+      <p class="hit-accept-card__subtitle">Confirm your details and register for this event.</p>
+    </div>
+
+    <div id="hitFormAlert" class="hit-alert" style="display:none;"></div>
+    <div id="hitDebug" class="hit-debug" style="display:none;"></div>
+
+    <div class="hit-accept-grid">
+
+      <!-- LEFT: Summary -->
+      <div class="hit-panel hit-panel--summary">
+        <div class="hit-panel__row">
+          <div class="hit-panel__label">Offering</div>
+          <div class="hit-panel__value">
+            <div class="hit-offering__name">{{ offeringName | escape }}</div>
+          </div>
+        </div>
+
+        {% if eventRow and eventRow.msevtmgt_description %}
+          <div class="hit-panel__row">
+            <div class="hit-panel__label">Description</div>
+            <div class="hit-panel__value">
+              <div class="hit-offering__desc">{{ eventRow.msevtmgt_description | newline_to_br }}</div>
+            </div>
+          </div>
+        {% elsif offeringDesc != blank %}
+          <div class="hit-panel__row">
+            <div class="hit-panel__label">Description</div>
+            <div class="hit-panel__value">
+              <div class="hit-offering__desc">{{ offeringDesc | newline_to_br }}</div>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if eventRow %}
+          <div class="hit-panel__row">
+            <div class="hit-panel__label">Date/Time</div>
+            <div class="hit-panel__value">
+              <span id="hitEventRange"
+                    data-start="{{ eventRow.msevtmgt_eventstartdate | escape }}"
+                    data-end="{{ eventRow.msevtmgt_eventenddate | escape }}"></span>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if fixedPrice > 0 %}
+          <div class="hit-panel__row">
+            <div class="hit-panel__label">Price</div>
+            <div class="hit-panel__value">
+              <span id="hitOfferingPrice" data-price="{{ fixedPrice | escape }}"></span>
+              <div style="color:#666; font-size:.92em; margin-top:2px;">Per registration • AUD</div>
+            </div>
+          </div>
+        {% else %}
+          <div class="hit-panel__row">
+            <div class="hit-panel__label">Price</div>
+            <div class="hit-panel__value">Free</div>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- RIGHT: Details -->
+      <div class="hit-panel hit-panel--details">
+        <div class="hit-panel__title">Your details</div>
+        <div class="hit-panel__hint">We’ll use this information to confirm your registration.</div>
+
+        <form id="hitEventRegForm" class="hit-form">
+          <div class="hit-form__row hit-form__row--2col">
+            <div class="hit-form__field">
+              <label class="form-label" for="hit_firstname">First name</label>
+              <input class="form-control" id="hit_firstname" name="hit_firstname" type="text" required>
+            </div>
+            <div class="hit-form__field">
+              <label class="form-label" for="hit_lastname">Last name</label>
+              <input class="form-control" id="hit_lastname" name="hit_lastname" type="text" required>
+            </div>
+          </div>
+
+          <div class="hit-form__row">
+            <div class="hit-form__field">
+              <label class="form-label" for="hit_email">Email</label>
+              <input class="form-control" id="hit_email" name="hit_email" type="email" required>
+            </div>
+          </div>
+
+          <div class="hit-form__row">
+            <div class="hit-form__field">
+              <label class="form-label" for="hit_mobilephone">Mobile</label>
+              <input class="form-control" id="hit_mobilephone" name="hit_mobilephone" type="tel">
+            </div>
+          </div>
+
+          {% if allowQuantityBool %}
+            <div class="hit-form__row">
+              <div class="hit-form__field">
+                <label class="form-label" for="hit_quantity">Quantity</label>
+                <input class="form-control" id="hit_quantity" name="hit_quantity" type="number" min="1" step="1" value="1" inputmode="numeric">
+                <div class="form-text" style="font-size: 0.9em; color:#666;">Enter the number of registrations (default 1).</div>
+              </div>
+            </div>
+          {% else %}
+            <input type="hidden" id="hit_quantity" value="1">
+          {% endif %}
+
+          <input type="hidden" id="hit_offeringid" value="{{ offeringId | escape }}">
+          <input type="hidden" id="hit_fixedprice" value="{{ fixedPrice | escape }}">
+          <input type="hidden" id="hit_csrf" value="{{ request.verificationToken }}">
+
+        </form>
+      </div>
+
+      <!-- CTA -->
+      <div class="hit-cta-bar">
+        <button id="hitSubmitBtn" class="btn btn-primary hit-cta-bar__primary" type="button">Confirm Registration</button>
+        <a class="btn btn-outline-secondary hit-cta-bar__secondary" href="javascript:history.back()">Back</a>
+      </div>
+
+    </div>
+  </div>
+
+{% endif %}
+
+<style>
+.hit-debug{
+  margin: 0 26px 12px 26px; padding: 12px; border: 1px dashed #bbb; border-radius: 10px;
+  background: #fafafa; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+  font-size: 12px; white-space: pre-wrap; word-break: break-word; color: #222;
+}
+.hit-accept-hero{ max-width:980px; margin:0 auto 14px auto; border-radius:14px; overflow:hidden; }
+.hit-accept-hero__img{ width:100%; height:auto; display:block; }
+
+.hit-accept-card{ max-width:980px; margin:0 auto; background:#fff; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.08); overflow:hidden; }
+.hit-accept-card__header{ padding:22px 26px 8px 26px; }
+.hit-accept-card__title{ margin:0; font-size:28px; font-weight:700; }
+.hit-accept-card__subtitle{ margin:6px 0 0 0; color:#666; }
+
+.hit-accept-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:18px 26px 22px 26px; }
+@media (max-width: 991px){ .hit-accept-grid{ grid-template-columns:1fr; } }
+
+.hit-panel{ border:1px solid #e9e9ee; border-radius:12px; padding:18px; }
+.hit-panel__title{ font-weight:700; margin-bottom:4px; }
+.hit-panel__hint{ color:#666; font-size:.95em; margin-bottom:12px; }
+
+.hit-panel__row{ display:grid; grid-template-columns:110px 1fr; gap:12px; padding:10px 0; }
+.hit-panel__row + .hit-panel__row{ border-top:1px solid #f0f0f4; }
+.hit-panel__label{ color:#666; font-size:.92em; }
+.hit-panel__value{ color:#222; }
+
+.hit-form__row{ margin-bottom:12px; }
+.hit-form__row--2col{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media (max-width:575px){ .hit-form__row--2col{ grid-template-columns:1fr; } }
+
+.hit-cta-bar{ grid-column:1 / -1; display:flex; gap:12px; align-items:center; padding-top:8px; }
+.hit-cta-bar__primary{ flex:1; border-radius:999px; padding:10px 16px; }
+.hit-cta-bar__secondary{ white-space:nowrap; border-radius:999px; padding:10px 16px; }
+
+.hit-alert{ margin:0 26px 12px 26px; padding:10px 12px; border-radius:10px; }
+.hit-alert--success{ background:#e8f7ee; color:#1f6a3b; }
+.hit-alert--error{ background:#fdecec; color:#7a1c1c; }
+</style>
+
+<script>
+(function () {
+  // ---------------------------
+  // Debug (single source of truth)
+  // ---------------------------
+  var DEBUG = (new URLSearchParams(window.location.search).get('debug') === '1');
+  var dbgEl = document.getElementById('hitDebug');
+
+  function dbg(msg, obj){
+    if(!DEBUG) return;
+    var text = String(msg) + (obj ? ("\n" + JSON.stringify(obj, null, 2)) : "");
+    if(dbgEl){
+      dbgEl.style.display = 'block';
+      dbgEl.textContent = (dbgEl.textContent ? dbgEl.textContent + "\n\n" : "") + text;
+    }
+    try { console.log('[EventReg]', msg, obj || ''); } catch(e){}
+  }
+
+  // ---------------------------
+  // UI helpers
+  // ---------------------------
+  var alertEl = document.getElementById('hitFormAlert');
+  function showAlert(message, type) {
+    if (!alertEl) return;
+    alertEl.style.display = "block";
+    alertEl.className = "hit-alert hit-alert--" + (type || "info");
+    alertEl.textContent = message;
+  }
+  function clearAlert() {
+    if (!alertEl) return;
+    alertEl.style.display = "none";
+    alertEl.textContent = "";
+  }
+
+  // ---------------------------
+  // Formatting (date range + price)
+  // ---------------------------
+  function formatAusDateTime(isoString) {
+    if (!isoString) return "";
+    var d = new Date(isoString);
+    if (isNaN(d)) return "";
+    var hasTime = !(d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0);
+    var datePart = new Intl.DateTimeFormat('en-AU',{day:'2-digit',month:'short',year:'numeric'}).format(d);
+    if (!hasTime) return datePart;
+    var timePart = new Intl.DateTimeFormat('en-AU',{hour:'numeric',minute:'2-digit',hour12:true}).format(d);
+    return datePart + " " + timePart;
+  }
+  (function setRangeText(){
+    var el = document.getElementById('hitEventRange');
+    if (!el) return;
+    var startIso = el.getAttribute('data-start');
+    var endIso = el.getAttribute('data-end');
+    var startText = formatAusDateTime(startIso);
+    var endText = formatAusDateTime(endIso);
+    el.textContent = (startText && endText) ? (startText + " — " + endText) : (startText || endText || "");
+  })();
+
+  function toNumber(v){
+    if (v === null || v === undefined) return null;
+    var s = v.toString().trim();
+    if (!s) return null;
+    s = s.replace(/[^0-9.\-]/g, '');
+    if (!s) return null;
+    var n = parseFloat(s);
+    return isNaN(n) ? null : n;
+  }
+  function formatCurrencySmart(n){
+    if (n === null || n === undefined) return '';
+    var rounded2 = Math.round(n * 100) / 100;
+    var cents = Math.round((rounded2 - Math.floor(rounded2)) * 100);
+    if (cents === 0) return '$' + Math.round(rounded2).toString();
+    return '$' + rounded2.toFixed(2);
+  }
+  (function setPriceText(){
+    var el = document.getElementById('hitOfferingPrice');
+    if(!el) return;
+    var raw = el.getAttribute('data-price') || '';
+    var n = toNumber(raw);
+    if(n === null || n <= 0) return;
+    el.textContent = formatCurrencySmart(n);
+  })();
+
+  // ---------------------------
+  // CSRF token (ONE getter, cached; prevents decrypt errors)
+  // Prefer shell.getTokenDeferred if available; otherwise tokenhtml.
+  // ---------------------------
+  var _csrfPromise = null;
+
+  function parseTokenHtml(html){
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    var input = doc.querySelector("input[name='__RequestVerificationToken']");
+    return input ? ((input.getAttribute("value") || input.value || "").trim()) : "";
+  }
+
+  async function getCsrfToken(){
+    if (_csrfPromise) return _csrfPromise;
+
+    _csrfPromise = (async function(){
+      // A) shell token (Microsoft’s common pattern for Power Pages Web API) [2](https://teams.microsoft.com/l/entity/2e3a628d-6f54-4100-9e7a-f00bc3621a85/MyLearning?context=%7b%22subEntityId%22%3a%7b%22learningObjectId%22%3a%224a2fa62c-b3ba-4e76-937f-4132410b7588%22%7d%7d)
+      if (window.shell && typeof window.shell.getTokenDeferred === "function") {
+        dbg("CSRF source: shell.getTokenDeferred()");
+        var t = await new Promise(function(resolve, reject){
+          window.shell.getTokenDeferred().done(resolve).fail(function(){ reject(new Error("shell.getTokenDeferred failed")); });
+        });
+        t = (t || "").toString().trim();
+        if (t) return t;
+      }
+
+      // B) tokenhtml fallback (common SPA/custom template technique) [1](https://humanit365.sharepoint.com/teams/humanIT2.0/_layouts/15/Doc.aspx?sourcedoc=%7B1142881C-B6E9-4B8E-B892-9F4C19FB4C7F%7D&file=humanIT%20-%20CHA%20Discovery%20Recommendations%20-%20V2%20April%202024.docx&action=default&mobileredirect=true&DefaultItemOpen=1)
+      dbg("CSRF source: /_layout/tokenhtml (fallback)");
+      var res = await fetch("/_layout/tokenhtml", { credentials: "same-origin" });
+      var html = await res.text();
+      var tok = parseTokenHtml(html);
+      if(!tok) throw new Error("CSRF token not found in /_layout/tokenhtml.");
+      return tok;
+    })();
+
+    var resolved = await _csrfPromise;
+    dbg("CSRF token resolved", { present: !!resolved, length: (resolved || "").length });
+    return resolved;
+  }
+
+  // ---------------------------
+  // Locked-in constants + field names
+  // ---------------------------
+  var ENTITYSET_ACCEPTANCE = "hit_offeringacceptances";
+  var ENTITYSET_OFFERING   = "hit_offerings";
+
+  // Donate template insight: use navigation/schema name for bind
+  var BIND_OFFERING = "hit_Offering@odata.bind";
+
+  var STATUS_DRAFT = 815390000;
+  var PAYMENT_URL_BASE = "/Payment/?acceptanceid=";
+
+  // Update ONLY these if your schema logical names differ
+  var F = {
+    firstname: "hit_firstname",
+    lastname: "hit_lastname",
+    email: "hit_email",
+    mobile: "hit_mobilephone",
+    quantity: "hit_quantity",
+    unitprice: "hit_unitprice",
+    baseamount: "hit_baseamount",
+    totalamount: "hit_totalamount",
+    acceptancestatus: "hit_acceptancestatus",
+    clienttoken: "hit_clienttoken"
+  };
+
+  function makeGuid(){
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c=='x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+    });
+  }
+
+  function getQty(){
+    var el = document.getElementById('hit_quantity');
+    var n = parseInt((el && el.value ? el.value : "1"), 10);
+    if(isNaN(n) || n < 1) n = 1;
+    if(el) el.value = n;
+    return n;
+  }
+
+  function buildPayload(offeringId, fixedPrice, qty, firstName, lastName, email, mobile){
+    var unit = toNumber(fixedPrice);
+    if (unit === null) unit = 0;
+
+    qty = parseInt(qty, 10);
+    if (isNaN(qty) || qty < 1) qty = 1;
+
+    var base = Number(unit) * Number(qty);
+    var clientToken = makeGuid();
+
+    var p = {};
+
+    // ✅ Offering lookup bind MUST use navigation/schema name (Donate pattern)
+    p["hit_Offering@odata.bind"] = "/hit_offerings(" + offeringId + ")";
+
+    // ✅ Staging identity fields (Flow resolves Contact)
+    p["hit_firstname"] = firstName;
+    p["hit_lastname"]  = lastName;
+    p["hit_email"]     = email;
+    if (mobile) p["hit_mobilephone"] = mobile;
+
+    // ✅ Quantity + pricing (LOCKED IN)
+    p["hit_quantity"]    = qty;
+    p["hit_unitprice"]   = Number(unit);
+    p["hit_baseamount"]  = Number(base);
+    p["hit_totalamount"] = Number(base);
+
+    // ✅ Lifecycle + token (LOCKED IN)
+    p["hit_acceptancestatus"] = STATUS_DRAFT;
+    p["hit_clienttoken"]      = clientToken;
+
+    // Optional but helpful for downstream routing
+    p["hit_paymentrequired"] = (Number(base) > 0);
+
+    return { payload: p, clientToken: clientToken };
+  }
+
+  function extractGuidFromHeader(entityIdHeader){
+    if(!entityIdHeader) return "";
+    var m = entityIdHeader.match(/\(([0-9a-fA-F-]{36})\)/);
+    if(m) return m[1];
+    var m2 = entityIdHeader.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
+    return m2 ? m2[0] : "";
+  }
+
+  async function createAcceptance(payload){
+    var token = await getCsrfToken();
+
+    var res = await fetch("/_api/" + ENTITYSET_ACCEPTANCE, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "OData-Version": "4.0",
+        "OData-MaxVersion": "4.0",
+        "__RequestVerificationToken": token,
+        "Prefer": "return=representation"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    var raw = "";
+    try { raw = await res.text(); } catch(e){ raw = ""; }
+
+    var entityIdHeader =
+      res.headers.get("OData-EntityId") ||
+      res.headers.get("odata-entityid") ||
+      res.headers.get("Location") ||
+      res.headers.get("location") ||
+      "";
+
+    dbg("Create acceptance response", {
+      ok: res.ok,
+      status: res.status,
+      entityIdHeader: entityIdHeader || "(none)",
+      rawPreview: raw ? raw.substring(0, 350) : "(empty body)"
+    });
+
+    if(!res.ok){
+      throw new Error(raw || ("HTTP " + res.status));
+    }
+
+    var obj = null;
+    if(raw && raw.trim()){
+      try { obj = JSON.parse(raw); } catch(e){ obj = null; }
+    }
+
+    var acceptanceId = (obj && (obj.hit_offeringacceptanceid || obj.id)) || extractGuidFromHeader(entityIdHeader);
+    return acceptanceId;
+  }
+
+  // ---------------------------
+  // Submit
+  // ---------------------------
+  var btn = document.getElementById('hitSubmitBtn');
+  if (!btn) return;
+
+  btn.addEventListener('click', async function () {
+    clearAlert();
+    if (DEBUG && dbgEl) { dbgEl.style.display = 'none'; dbgEl.textContent = ''; }
+    btn.disabled = true;
+
+    try{
+      var offeringId = document.getElementById('hit_offeringid')?.value?.trim();
+      var fixedPrice = document.getElementById('hit_fixedprice')?.value;
+      var firstName  = document.getElementById('hit_firstname')?.value?.trim();
+      var lastName   = document.getElementById('hit_lastname')?.value?.trim();
+      var email      = document.getElementById('hit_email')?.value?.trim();
+      var mobile     = document.getElementById('hit_mobilephone')?.value?.trim();
+      var qty        = getQty();
+
+      if(!offeringId) throw new Error("Missing offeringid.");
+      if(!firstName || !lastName || !email) throw new Error("Please complete First name, Last name, and Email.");
+
+      var built = buildPayload(offeringId, fixedPrice, qty, firstName, lastName, email, mobile);
+      dbg("POST payload", built.payload);
+
+      var acceptanceId = await createAcceptance(built.payload);
+      if(!acceptanceId) throw new Error("Acceptance created but acceptanceId could not be resolved.");
+
+      // Redirect with token (Donate pattern)
+      window.location.href = PAYMENT_URL_BASE + encodeURIComponent(acceptanceId) + "&token=" + encodeURIComponent(built.clientToken);
+
+    } catch(e){
+      showAlert("Registration failed: " + (e.message || e), "error");
+      dbg("ERROR", { message: e.message, stack: e.stack });
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+})();
+</script>

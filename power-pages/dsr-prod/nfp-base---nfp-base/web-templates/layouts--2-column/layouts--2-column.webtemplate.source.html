@@ -1,0 +1,117 @@
+{% assign headingText = section.hit_headingtext | default:'' | strip %}
+{% assign introText = section.hit_introtext | default:'' | strip %}
+
+{% assign slot1 = null %}
+{% assign slot2 = null %}
+
+{% if slots and slots.size > 0 %}
+    {% for currentSlot in slots %}
+        {% if currentSlot.hit_slotindex == 1 %}
+            {% assign slot1 = currentSlot %}
+        {% elsif currentSlot.hit_slotindex == 2 %}
+            {% assign slot2 = currentSlot %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<div class="layout layout-2-col">
+
+    {% if headingText != '' or introText != '' %}
+
+        <div class="hit-section__header">
+
+            {% if headingText != '' %}
+                <h2 class="hit-section__title">
+                    {{ headingText }}
+                </h2>
+            {% endif %}
+
+            {% if introText != '' %}
+                <div class="hit-section__intro">
+                    {{ introText }}
+                </div>
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+    <div class="layout-2-col__grid">
+
+        <div class="layout-2-col__slot layout-2-col__slot--1">
+
+            {% if slot1 %}
+
+                {% assign template1 = slot1['stype.hit_templatename'] | default:'' | strip | downcase %}
+
+                {% if debug %}
+                    <div class="hit-debug">
+                        Slot 1 template: {{ template1 }}
+                    </div>
+                {% endif %}
+
+                {% if template1 != '' %}
+
+                    {% include template1
+                        slot: slot1
+                        section: section
+                        debug: debug
+                        galleryParam: galleryParam
+                        galleryOverride: galleryOverride
+                    %}
+
+                {% elsif debug %}
+
+                    <div class="hit-alert">
+                        Slot 1 has no template name.
+                    </div>
+
+                {% endif %}
+
+            {% elsif debug %}
+
+                <div class="hit-alert">
+                    Slot 1 not found.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        <div class="layout-2-col__slot layout-2-col__slot--2">
+
+            {% if slot2 %}
+
+                {% assign template2 = slot2['stype.hit_templatename'] | default:'' | strip | downcase %}
+
+                {% if debug %}
+                    <div class="hit-debug">
+                        Slot 2 template: {{ template2 }}
+                    </div>
+                {% endif %}
+
+                {% if template2 != '' %}
+
+                    {% include template2  slot: slot2  section: section  debug: debug  galleryParam: galleryParam  galleryOverride: galleryOverride  %}
+
+                {% elsif debug %}
+
+                    <div class="hit-alert">
+                        Slot 2 has no template name.
+                    </div>
+
+                {% endif %}
+
+            {% elsif debug %}
+
+                <div class="hit-alert">
+                    Slot 2 not found.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>

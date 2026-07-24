@@ -1,0 +1,1708 @@
+{% comment %}
+sections--acceptance-donation
+
+Supports:
+- Donation acceptance contact capture
+- Individual and organisation donations
+- Accessible client-side validation
+- Offering Acceptance PATCH update
+- Redirect back through the Offering Acceptance router
+
+Temporary:
+- Styles remain embedded for testing.
+- Reusable class names are ready for later extraction into:
+  - css--theme-client
+  - css--site
+{% endcomment %}
+
+{% assign DEBUG = debug | default: request.params.debug == '1' %}
+{% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
+
+{% if acceptanceId == '' %}
+
+  <div class="hit-alert hit-alert-warning" role="alert">
+    Missing acceptance id.
+  </div>
+
+{% else %}
+
+  {% fetchxml acc_q %}
+  <fetch top="1" mapping="logical">
+    <entity name="hit_offeringacceptance">
+
+      <attribute name="hit_offeringacceptanceid" />
+      <attribute name="hit_firstname" />
+      <attribute name="hit_lastname" />
+      <attribute name="hit_email" />
+      <attribute name="hit_mobilephone" />
+      <attribute name="hit_pricinglabel" />
+      <attribute name="hit_baseamount" />
+      <attribute name="hit_totalamounteffective" />
+      <attribute name="hit_acceptancestatus" />
+      <attribute name="hit_stripeclientsecret" />
+      <attribute name="hit_stripepaymentintentid" />
+
+      <filter>
+        <condition
+          attribute="hit_offeringacceptanceid"
+          operator="eq"
+          value="{{ acceptanceId | escape }}" />
+      </filter>
+
+      <link-entity
+        name="hit_offering"
+        from="hit_offeringid"
+        to="hit_offering"
+        alias="off">
+
+        <attribute name="hit_offeringname" />
+
+      </link-entity>
+
+    </entity>
+  </fetch>
+  {% endfetchxml %}
+
+  {% assign acc = acc_q.results.entities | first %}
+
+  {% if acc == nil %}
+
+    <div class="hit-alert hit-alert-warning" role="alert">
+      Acceptance not found.
+    </div>
+
+  {% else %}
+
+    {% assign offeringName = acc['off.hit_offeringname'] | default: 'Donation' %}
+    {% assign pricingLabel = acc.hit_pricinglabel | default: '' %}
+
+    {% assign totalAmount = acc.hit_totalamounteffective | default: acc.hit_baseamount | default: 0 %}
+
+    {% if totalAmount.value %}
+      {% assign totalAmount = totalAmount.value %}
+    {% endif %}
+
+    <div class="hit-acceptance hit-acceptance--donation"
+         data-context="donation"
+         data-acceptance-id="{{ acc.hit_offeringacceptanceid }}">
+
+      <style>
+        /* ==========================================================
+           TEMPORARY DONATION ACCEPTANCE STYLES
+
+           Later split into:
+
+           css--theme-client
+           - colour and brand variables
+
+           css--site
+           - cards
+           - buttons
+           - inputs
+           - form fields
+           - validation
+           - status elements
+
+           section template
+           - acceptance-specific layout
+           ========================================================== */
+
+        .hit-acceptance--donation {
+          --hit-brand-primary: #007f89;
+          --hit-brand-primary-hover: #006a72;
+          --hit-brand-primary-soft: rgba(0, 127, 137, .07);
+          --hit-brand-primary-soft-border: rgba(0, 127, 137, .20);
+          --hit-brand-primary-ring: rgba(0, 127, 137, .16);
+
+          --hit-text: #071936;
+          --hit-text-muted: #334155;
+          --hit-text-soft: #64748B;
+
+          --hit-surface: #ffffff;
+          --hit-surface-soft: #f8fbfb;
+          --hit-surface-muted: #f8fafc;
+
+          --hit-border: rgba(15, 23, 42, .12);
+          --hit-border-soft: #E5E7EB;
+          --hit-border-strong: rgba(15, 23, 42, .20);
+
+          --hit-danger: #b42318;
+          --hit-danger-soft: #fef3f2;
+          --hit-danger-border: #fda29b;
+
+          --hit-warning: #C2410C;
+
+          --hit-radius-sm: 12px;
+          --hit-radius-md: 16px;
+          --hit-radius-lg: 22px;
+          --hit-radius-pill: 999px;
+
+          --hit-shadow-card: 0 12px 34px rgba(15, 23, 42, .07);
+          --hit-shadow-soft: 0 8px 24px rgba(15, 23, 42, .04);
+
+          --hit-space-1: .25rem;
+          --hit-space-2: .5rem;
+          --hit-space-3: .75rem;
+          --hit-space-4: 1rem;
+          --hit-space-5: 1.25rem;
+          --hit-space-6: 1.5rem;
+          --hit-space-7: 2rem;
+          --hit-space-8: 2.5rem;
+
+          width: 100%;
+          color: var(--hit-text);
+          font-family: inherit;
+        }
+
+        .hit-acceptance--donation,
+        .hit-acceptance--donation *,
+        .hit-acceptance--donation *::before,
+        .hit-acceptance--donation *::after {
+          box-sizing: border-box;
+        }
+
+        /* ==========================================================
+           ALERTS
+           ========================================================== */
+
+        .hit-alert {
+          padding: 1rem;
+          border-radius: var(--hit-radius-md, 16px);
+          font-size: .95rem;
+          line-height: 1.45;
+          font-weight: 800;
+        }
+
+        .hit-alert-warning {
+          border: 1px solid rgba(194, 65, 12, .22);
+          background: #FFF7ED;
+          color: #9A3412;
+        }
+
+        /* ==========================================================
+           ACCEPTANCE LAYOUT
+           ========================================================== */
+
+        .hit-acceptance--donation .hit-acceptance__grid {
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: var(--hit-space-7) var(--hit-space-4) 6rem;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          gap: var(--hit-space-6);
+        }
+
+        @media (min-width: 992px) {
+          .hit-acceptance--donation .hit-acceptance__grid {
+            grid-template-columns:
+              minmax(0, 1fr)
+              minmax(420px, .9fr);
+            gap: var(--hit-space-7);
+            align-items: start;
+            padding-top: 3rem;
+            padding-bottom: 7rem;
+          }
+        }
+
+        .hit-acceptance--donation .hit-acceptance__left,
+        .hit-acceptance--donation .hit-acceptance__right {
+          min-width: 0;
+        }
+
+        .hit-acceptance--donation .hit-acceptance__right {
+          width: 100%;
+        }
+
+        /* ==========================================================
+           GENERIC CARD
+           ========================================================== */
+
+        .hit-acceptance--donation .hit-card {
+          width: 100%;
+          background: var(--hit-surface);
+          border: 1px solid var(--hit-border);
+          border-radius: var(--hit-radius-lg);
+          box-shadow: var(--hit-shadow-card);
+        }
+
+        /* ==========================================================
+           DONATION SUMMARY
+           ========================================================== */
+
+        .hit-acceptance--donation .hit-donation-summary {
+          padding: clamp(1.5rem, 4vw, 2.5rem);
+          overflow: hidden;
+          position: relative;
+        }
+
+        .hit-acceptance--donation .hit-donation-summary::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 6px;
+          background: var(--hit-brand-primary);
+        }
+
+        .hit-acceptance--donation .hit-donation-summary__eyebrow {
+          margin: 0 0 var(--hit-space-3);
+          color: var(--hit-brand-primary);
+          font-size: .82rem;
+          line-height: 1.2;
+          font-weight: 900;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+        }
+
+        .hit-acceptance--donation .hit-donation-summary__title {
+          margin: 0;
+          color: var(--hit-text);
+          font-size: clamp(2.15rem, 4vw, 3.25rem);
+          line-height: 1.04;
+          font-weight: 950;
+          letter-spacing: -.035em;
+        }
+
+        .hit-acceptance--donation .hit-donation-summary__option {
+          display: inline-flex;
+          margin-top: var(--hit-space-3);
+          padding: .45rem .75rem;
+          border: 1px solid var(--hit-brand-primary-soft-border);
+          border-radius: var(--hit-radius-pill);
+          background: var(--hit-brand-primary-soft);
+          color: var(--hit-brand-primary);
+          font-size: .9rem;
+          line-height: 1.25;
+          font-weight: 800;
+        }
+
+        .hit-acceptance--donation .hit-donation-summary__amount {
+          margin-top: var(--hit-space-7);
+          color: var(--hit-brand-primary);
+          font-size: clamp(3rem, 8vw, 4.75rem);
+          line-height: .95;
+          font-weight: 950;
+          letter-spacing: -.045em;
+        }
+
+        .hit-acceptance--donation .hit-donation-summary__description {
+          max-width: 38rem;
+          margin-top: var(--hit-space-6);
+          color: var(--hit-text-muted);
+          font-size: 1.05rem;
+          line-height: 1.7;
+        }
+
+        .hit-acceptance--donation .hit-benefit-list {
+          margin: var(--hit-space-7) 0 0;
+          padding: var(--hit-space-6) 0 0;
+          border-top: 1px solid var(--hit-border);
+          display: grid;
+          gap: var(--hit-space-3);
+          list-style: none;
+        }
+
+        .hit-acceptance--donation .hit-benefit-list__item {
+          display: flex;
+          align-items: center;
+          gap: var(--hit-space-3);
+          color: var(--hit-text);
+          font-size: .96rem;
+          line-height: 1.45;
+          font-weight: 800;
+        }
+
+        .hit-acceptance--donation .hit-benefit-list__icon {
+          width: 24px;
+          height: 24px;
+          flex: 0 0 24px;
+          border-radius: var(--hit-radius-pill);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: var(--hit-brand-primary);
+          color: #fff;
+          font-size: .78rem;
+          line-height: 1;
+          font-weight: 950;
+        }
+
+        /* ==========================================================
+           FORM CARD AND HEADINGS
+           ========================================================== */
+
+        .hit-acceptance--donation .hit-form-card {
+          padding: clamp(1.5rem, 3vw, 2.25rem);
+        }
+
+        .hit-acceptance--donation .hit-heading {
+          margin: 0;
+          color: var(--hit-text);
+          font-size: clamp(2rem, 3vw, 2.35rem);
+          line-height: 1.05;
+          font-weight: 950;
+          letter-spacing: -.035em;
+        }
+
+        .hit-acceptance--donation .hit-subtitle {
+          margin: var(--hit-space-3) 0 0;
+          color: var(--hit-text-muted);
+          font-size: 1rem;
+          line-height: 1.65;
+        }
+
+        /* ==========================================================
+           STATUS PILL
+           ========================================================== */
+
+        .hit-acceptance--donation .hit-status-pill {
+          width: 100%;
+          margin-top: var(--hit-space-5);
+          padding: .75rem 1rem;
+          display: flex;
+          align-items: center;
+          gap: .75rem;
+          border: 1px solid var(--hit-brand-primary-soft-border);
+          border-radius: var(--hit-radius-pill);
+          background: var(--hit-brand-primary-soft);
+          color: var(--hit-brand-primary);
+          font-size: .9rem;
+          line-height: 1.35;
+          font-weight: 900;
+        }
+
+        .hit-acceptance--donation .hit-status-pill__indicator {
+          width: 10px;
+          height: 10px;
+          flex: 0 0 10px;
+          border-radius: var(--hit-radius-pill);
+          background: var(--hit-brand-primary);
+        }
+
+        /* ==========================================================
+           FORM
+           ========================================================== */
+
+        .hit-acceptance--donation .hit-form {
+          margin-top: var(--hit-space-6);
+          display: grid;
+          gap: var(--hit-space-4);
+        }
+
+        .hit-acceptance--donation .hit-form-section {
+          padding: var(--hit-space-5);
+          border: 1px solid var(--hit-border);
+          border-radius: var(--hit-radius-md);
+          background: var(--hit-surface-soft);
+        }
+
+        .hit-acceptance--donation .hit-form-section--plain {
+          background: var(--hit-surface);
+        }
+
+        .hit-acceptance--donation .hit-form-section[hidden] {
+          display: none;
+        }
+
+        .hit-acceptance--donation .hit-field {
+          display: grid;
+          gap: .55rem;
+        }
+
+        .hit-acceptance--donation .hit-field + .hit-field {
+          margin-top: var(--hit-space-4);
+        }
+
+        .hit-acceptance--donation .hit-field-row {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          gap: var(--hit-space-4);
+        }
+
+        .hit-acceptance--donation .hit-field-row--two {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        @media (min-width: 768px) {
+          .hit-acceptance--donation .hit-field-row--two {
+            grid-template-columns:
+              minmax(0, 1fr)
+              minmax(0, 1fr);
+          }
+        }
+
+        .hit-acceptance--donation .hit-label {
+          margin: 0;
+          color: var(--hit-text);
+          font-size: .92rem;
+          line-height: 1.35;
+          font-weight: 900;
+        }
+
+        .hit-acceptance--donation .hit-required {
+          margin-left: .2rem;
+          color: var(--hit-warning);
+          font-weight: 950;
+        }
+
+        .hit-acceptance--donation .hit-help {
+          margin: 0;
+          color: var(--hit-text-muted);
+          font-size: .88rem;
+          line-height: 1.5;
+        }
+
+        /* ==========================================================
+           INPUTS
+           ========================================================== */
+
+        .hit-acceptance--donation .hit-input {
+          width: 100%;
+          min-height: 48px;
+          padding: .85rem 1rem;
+          border: 1px solid var(--hit-border-strong);
+          border-radius: var(--hit-radius-pill);
+          background: var(--hit-surface);
+          color: var(--hit-text);
+          font-family: inherit;
+          font-size: 16px;
+          line-height: 1.4;
+          appearance: none;
+          -webkit-appearance: none;
+          transition:
+            border-color .16s ease,
+            box-shadow .16s ease,
+            background-color .16s ease;
+        }
+
+        .hit-acceptance--donation textarea.hit-input {
+          min-height: 120px;
+          border-radius: var(--hit-radius-md);
+          resize: vertical;
+        }
+
+        .hit-acceptance--donation select.hit-input {
+          padding-right: 2.75rem;
+          background-image:
+            linear-gradient(45deg, transparent 50%, var(--hit-text-muted) 50%),
+            linear-gradient(135deg, var(--hit-text-muted) 50%, transparent 50%);
+          background-position:
+            calc(100% - 19px) calc(50% - 2px),
+            calc(100% - 14px) calc(50% - 2px);
+          background-size: 5px 5px, 5px 5px;
+          background-repeat: no-repeat;
+        }
+
+        .hit-acceptance--donation .hit-input:hover {
+          border-color: var(--hit-brand-primary);
+        }
+
+        .hit-acceptance--donation .hit-input:focus {
+          outline: none;
+          border-color: var(--hit-brand-primary);
+          box-shadow: 0 0 0 4px var(--hit-brand-primary-ring);
+        }
+
+        .hit-acceptance--donation .hit-input[aria-invalid="true"] {
+          border-color: var(--hit-danger);
+          background: #fffafa;
+          box-shadow: 0 0 0 3px rgba(180, 35, 24, .10);
+        }
+
+        /* ==========================================================
+           CHECKBOX
+           ========================================================== */
+
+        .hit-acceptance--donation .hit-checkbox {
+          display: flex;
+          align-items: flex-start;
+          gap: var(--hit-space-3);
+          cursor: pointer;
+        }
+
+        .hit-acceptance--donation .hit-checkbox__input {
+          width: 20px;
+          height: 20px;
+          flex: 0 0 20px;
+          margin: .1rem 0 0;
+          accent-color: var(--hit-brand-primary);
+          cursor: pointer;
+        }
+
+        .hit-acceptance--donation .hit-checkbox__content {
+          min-width: 0;
+        }
+
+        .hit-acceptance--donation .hit-checkbox__label {
+          display: block;
+          color: var(--hit-text);
+          font-size: .96rem;
+          line-height: 1.4;
+          font-weight: 900;
+          cursor: pointer;
+        }
+
+        .hit-acceptance--donation .hit-checkbox__help {
+          display: block;
+          margin-top: .3rem;
+          color: var(--hit-text-muted);
+          font-size: .86rem;
+          line-height: 1.5;
+          font-weight: 400;
+        }
+
+        /* ==========================================================
+           ERRORS
+           ========================================================== */
+
+        .hit-acceptance--donation .hit-error-summary {
+          margin-top: var(--hit-space-5);
+          padding: var(--hit-space-4);
+          border: 1px solid var(--hit-danger-border);
+          border-radius: var(--hit-radius-md);
+          background: var(--hit-danger-soft);
+          color: var(--hit-danger);
+        }
+
+        .hit-acceptance--donation .hit-error-summary[hidden] {
+          display: none;
+        }
+
+        .hit-acceptance--donation .hit-error-summary__title {
+          margin: 0 0 var(--hit-space-2);
+          color: var(--hit-danger);
+          font-size: 1rem;
+          line-height: 1.3;
+          font-weight: 950;
+        }
+
+        .hit-acceptance--donation .hit-error-summary__list {
+          margin: 0;
+          padding-left: 1.25rem;
+          font-size: .9rem;
+          line-height: 1.5;
+        }
+
+        .hit-acceptance--donation .hit-error-message {
+          display: none;
+          margin: 0;
+          color: var(--hit-danger);
+          font-size: .86rem;
+          line-height: 1.4;
+          font-weight: 800;
+        }
+
+        /* ==========================================================
+           BUTTONS
+           ========================================================== */
+
+        .hit-acceptance--donation .hit-form-actions {
+          margin-top: var(--hit-space-2);
+        }
+
+        .hit-acceptance--donation .hit-button {
+          width: 100%;
+          min-height: 56px;
+          padding: 1rem 1.5rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: var(--hit-space-2);
+          border: none;
+          border-radius: var(--hit-radius-pill);
+          font-family: inherit;
+          font-size: 1rem;
+          line-height: 1.2;
+          font-weight: 950;
+          cursor: pointer;
+          text-align: center;
+          transition:
+            background-color .16s ease,
+            opacity .16s ease,
+            transform .16s ease,
+            box-shadow .16s ease;
+        }
+
+        .hit-acceptance--donation .hit-button--primary {
+          background: var(--hit-brand-primary);
+          color: #fff;
+        }
+
+        .hit-acceptance--donation .hit-button--primary:hover:not(:disabled) {
+          background: var(--hit-brand-primary-hover);
+          transform: translateY(-1px);
+        }
+
+        .hit-acceptance--donation .hit-button:focus,
+        .hit-acceptance--donation .hit-button:focus-visible {
+          outline: none;
+          box-shadow: 0 0 0 4px var(--hit-brand-primary-ring);
+        }
+
+        .hit-acceptance--donation .hit-button:disabled {
+          background: #E5E7EB;
+          color: #64748B;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .hit-acceptance--donation .hit-button.is-loading {
+          pointer-events: none;
+          opacity: .82;
+        }
+
+        .hit-acceptance--donation .hit-button__loading {
+          display: none;
+          align-items: center;
+          justify-content: center;
+          gap: var(--hit-space-2);
+        }
+
+        .hit-acceptance--donation .hit-spinner {
+          width: 16px;
+          height: 16px;
+          flex: 0 0 16px;
+          border: 2px solid rgba(255, 255, 255, .45);
+          border-top-color: #fff;
+          border-radius: var(--hit-radius-pill);
+          animation: hit-donation-spin .8s linear infinite;
+        }
+
+        @keyframes hit-donation-spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .hit-acceptance--donation .hit-form-footnote {
+          margin: var(--hit-space-3) 0 0;
+          color: var(--hit-text-muted);
+          font-size: .83rem;
+          line-height: 1.5;
+          text-align: center;
+        }
+
+        /* ==========================================================
+           DEBUG
+           ========================================================== */
+
+        .hit-acceptance--donation .hit-debug {
+          padding: 1rem;
+          margin: 1rem 0;
+          border: 1px solid var(--hit-border);
+          border-radius: var(--hit-radius-md);
+          background: var(--hit-surface-soft);
+          color: var(--hit-text-muted);
+          font-size: .85rem;
+          line-height: 1.5;
+        }
+
+        /* ==========================================================
+           MOBILE
+           ========================================================== */
+
+        @media (max-width: 767px) {
+          .hit-acceptance--donation .hit-acceptance__grid {
+            padding-top: var(--hit-space-5);
+            padding-bottom: 5rem;
+          }
+
+          .hit-acceptance--donation .hit-donation-summary,
+          .hit-acceptance--donation .hit-form-card {
+            padding: var(--hit-space-5);
+          }
+
+          .hit-acceptance--donation .hit-form-section {
+            padding: var(--hit-space-4);
+          }
+
+          .hit-acceptance--donation .hit-donation-summary__amount {
+            margin-top: var(--hit-space-5);
+          }
+        }
+
+        /* ==========================================================
+           REDUCED MOTION
+           ========================================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+          .hit-acceptance--donation *,
+          .hit-acceptance--donation *::before,
+          .hit-acceptance--donation *::after {
+            scroll-behavior: auto !important;
+            transition-duration: .01ms !important;
+            animation-duration: .01ms !important;
+            animation-iteration-count: 1 !important;
+          }
+        }
+      </style>
+
+      <div class="hit-acceptance__grid">
+
+        <!-- =======================================================
+             LEFT: DONATION SUMMARY
+             ======================================================= -->
+
+        <aside class="hit-acceptance__left">
+
+          <div class="hit-card hit-donation-summary">
+
+            <div class="hit-donation-summary__eyebrow">
+              Your donation
+            </div>
+
+            <h1 class="hit-donation-summary__title">
+              {{ offeringName | escape }}
+            </h1>
+
+            {% if pricingLabel != blank %}
+              <div class="hit-donation-summary__option">
+                {{ pricingLabel | escape }}
+              </div>
+            {% endif %}
+
+            <div class="hit-donation-summary__amount">
+              ${{ totalAmount }}
+            </div>
+
+            <div class="hit-donation-summary__description">
+              Your donation helps create opportunities for people with disability
+              to participate in sport and recreation.
+            </div>
+
+            <ul class="hit-benefit-list">
+
+              <li class="hit-benefit-list__item">
+                <span class="hit-benefit-list__icon" aria-hidden="true">✓</span>
+                <span>Tax-deductible donation</span>
+              </li>
+
+              <li class="hit-benefit-list__item">
+                <span class="hit-benefit-list__icon" aria-hidden="true">✓</span>
+                <span>Secure online payment</span>
+              </li>
+
+              <li class="hit-benefit-list__item">
+                <span class="hit-benefit-list__icon" aria-hidden="true">✓</span>
+                <span>Your receipt will be sent by email</span>
+              </li>
+
+            </ul>
+
+          </div>
+
+        </aside>
+
+        <!-- =======================================================
+             RIGHT: CONTACT DETAILS
+             ======================================================= -->
+
+        <main class="hit-acceptance__right">
+
+          <div class="hit-card hit-form-card">
+
+            <h2 class="hit-heading">
+              Tell us about yourself
+            </h2>
+
+            <p class="hit-subtitle">
+              We’ll use these details to issue your receipt and keep you updated.
+            </p>
+
+            <div class="hit-status-pill" aria-label="Current step">
+              <span class="hit-status-pill__indicator" aria-hidden="true"></span>
+              <span>Enter your details to continue</span>
+            </div>
+
+            <input type="hidden"
+                   id="acceptanceId"
+                   value="{{ acc.hit_offeringacceptanceid }}">
+
+            <!-- Error summary remains present in the DOM for accessibility -->
+
+            <div id="errSummary"
+                 class="hit-error-summary"
+                 role="alert"
+                 aria-atomic="true"
+                 hidden>
+
+              <h3 class="hit-error-summary__title">
+                There’s a problem
+              </h3>
+
+              <ul id="errSummaryList"
+                  class="hit-error-summary__list"></ul>
+
+            </div>
+
+            <form class="hit-form" novalidate>
+
+              <!-- ORGANISATION TOGGLE -->
+
+              <div class="hit-form-section">
+
+                <div class="hit-checkbox">
+
+                  <input type="checkbox"
+                         id="orgToggle"
+                         class="hit-checkbox__input"
+                         aria-controls="orgSection"
+                         aria-expanded="false">
+
+                  <div class="hit-checkbox__content">
+
+                    <label class="hit-checkbox__label" for="orgToggle">
+                      I am acting on behalf of an organisation
+                    </label>
+
+                    <span class="hit-checkbox__help">
+                      Select this option to include the organisation name and your role.
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- ORGANISATION DETAILS -->
+
+              <div id="orgSection"
+                   class="hit-form-section hit-form-section--plain"
+                   hidden>
+
+                <div class="hit-field">
+
+                  <label class="hit-label" for="organisation">
+                    Organisation name
+                    <span class="hit-required">*</span>
+                  </label>
+
+                  <input id="organisation"
+                         class="hit-input"
+                         type="text"
+                         autocomplete="organization"
+                         aria-describedby="organisationError">
+
+                  <p class="hit-error-message"
+                     id="organisationError"></p>
+
+                </div>
+
+                <div class="hit-field">
+
+                  <label class="hit-label" for="role">
+                    Your role
+                    <span class="hit-required">*</span>
+                  </label>
+
+                  <input id="role"
+                         class="hit-input"
+                         type="text"
+                         autocomplete="organization-title"
+                         aria-describedby="roleError">
+
+                  <p class="hit-error-message"
+                     id="roleError"></p>
+
+                </div>
+
+              </div>
+
+              <!-- CONTACT DETAILS -->
+
+              <div class="hit-form-section hit-form-section--plain">
+
+                <div class="hit-field-row">
+
+                  <div class="hit-field">
+
+                    <label class="hit-label" for="firstName">
+                      First name
+                      <span class="hit-required">*</span>
+                    </label>
+
+                    <input id="firstName"
+                           class="hit-input"
+                           type="text"
+                           autocomplete="given-name"
+                           value="{{ acc.hit_firstname | escape }}"
+                           aria-describedby="firstNameError"
+                           required>
+
+                    <p class="hit-error-message"
+                       id="firstNameError"></p>
+
+                  </div>
+
+                  <div class="hit-field">
+
+                    <label class="hit-label" for="lastName">
+                      Last name
+                      <span class="hit-required">*</span>
+                    </label>
+
+                    <input id="lastName"
+                           class="hit-input"
+                           type="text"
+                           autocomplete="family-name"
+                           value="{{ acc.hit_lastname | escape }}"
+                           aria-describedby="lastNameError"
+                           required>
+
+                    <p class="hit-error-message"
+                       id="lastNameError"></p>
+
+                  </div>
+
+                </div>
+
+                <div class="hit-field">
+
+                  <label class="hit-label" for="email">
+                    Email
+                    <span class="hit-required">*</span>
+                  </label>
+
+                  <input id="email"
+                         class="hit-input"
+                         type="email"
+                         autocomplete="email"
+                         value="{{ acc.hit_email | escape }}"
+                         aria-describedby="emailError"
+                         required>
+
+                  <p class="hit-error-message"
+                     id="emailError"></p>
+
+                </div>
+
+                <div class="hit-field">
+
+                  <label class="hit-label" for="mobile">
+                    Mobile
+                  </label>
+
+                  <input id="mobile"
+                         class="hit-input"
+                         type="tel"
+                         autocomplete="tel"
+                         value="{{ acc.hit_mobilephone | escape }}"
+                         aria-describedby="mobileHelp">
+
+                  <p class="hit-help" id="mobileHelp">
+                    Optional. Include a mobile number if you’d like SMS updates.
+                  </p>
+
+                </div>
+
+              </div>
+
+              <!-- CONTINUE -->
+
+              {% if DEBUG %}
+
+                <div class="hit-debug">
+
+                  Status:
+                  {{ acc.hit_acceptancestatus }}
+
+                  <br><br>
+
+                  Client Secret Exists:
+                  {% if acc.hit_stripeclientsecret %}
+                    YES
+                  {% else %}
+                    NO
+                  {% endif %}
+
+                  <br><br>
+
+                  Payment Intent:
+                  {{ acc.hit_stripepaymentintentid }}
+
+                  <br><br>
+
+                  Route Attempt:
+                  {{ request.params.routeattempt }}
+
+                </div>
+
+              {% endif %}
+
+              <div class="hit-form-actions">
+
+                <button id="continueBtn"
+                        type="button"
+                        class="hit-button hit-button--primary">
+
+                  <span class="hit-button__text">
+                    Continue
+                  </span>
+
+                  <span class="hit-button__loading">
+                    <span class="hit-spinner" aria-hidden="true"></span>
+                    <span>Saving...</span>
+                  </span>
+
+                </button>
+
+                <p class="hit-form-footnote">
+                  Your details will be saved before continuing to secure payment.
+                </p>
+
+              </div>
+
+            </form>
+
+          </div>
+
+        </main>
+
+      </div>
+
+    </div>
+
+    <script>
+      (function(){
+
+        const root = document.querySelector(
+          '.hit-acceptance--donation[data-acceptance-id="{{ acc.hit_offeringacceptanceid }}"]'
+        );
+
+        if (!root) {
+          console.error("Donation acceptance root element was not found.");
+          return;
+        }
+
+        const orgToggle = root.querySelector("#orgToggle");
+        const orgSection = root.querySelector("#orgSection");
+        const continueButton = root.querySelector("#continueBtn");
+
+        const errorSummary = root.querySelector("#errSummary");
+        const errorSummaryList = root.querySelector("#errSummaryList");
+
+        /*
+         * The Offering Acceptance router selects the next section based on
+         * the Acceptance Status.
+         *
+         * After this form PATCHes the acceptance, Power Automate updates the
+         * status asynchronously to Pending Payment.
+         *
+         * The first router request can therefore occur before Pending Payment
+         * has been set. If the router returns this donation-details section
+         * again with waitforpayment=1, this script waits briefly and requests
+         * the router again using a unique URL.
+         *
+         * When the status reaches Pending Payment, the router returns the
+         * payment section. Because this script is not rendered in that section,
+         * the retry process ends automatically.
+         */
+
+        const currentUrl = new URL(window.location.href);
+
+        const waitingForPayment =
+          currentUrl.searchParams.get("waitforpayment") === "1";
+
+        const parsedRouteAttempt =
+          parseInt(currentUrl.searchParams.get("routeattempt") || "0", 10);
+
+        const currentRouteAttempt =
+          Number.isFinite(parsedRouteAttempt)
+            ? parsedRouteAttempt
+            : 0;
+
+        const maximumRouteAttempts = 20;
+        const routeRetryDelayMilliseconds = 1250;
+
+        function getElement(id){
+          return root.querySelector("#" + id);
+        }
+
+        function getValue(id){
+          const element = getElement(id);
+
+          if (!element) {
+            return "";
+          }
+
+          return String(element.value || "").trim();
+        }
+
+        function setErrorText(errorId, message){
+          const errorElement = getElement(errorId);
+
+          if (!errorElement) {
+            return;
+          }
+
+          errorElement.textContent = message || "";
+          errorElement.style.display = message ? "block" : "none";
+        }
+
+        function setInvalid(inputId, errorId, message){
+          const input = getElement(inputId);
+
+          if (input) {
+            input.setAttribute(
+              "aria-invalid",
+              message ? "true" : "false"
+            );
+          }
+
+          setErrorText(errorId, message);
+        }
+
+        function clearErrorSummary(){
+          if (errorSummaryList) {
+            errorSummaryList.innerHTML = "";
+          }
+
+          if (errorSummary) {
+            errorSummary.hidden = true;
+            errorSummary.removeAttribute("tabindex");
+          }
+        }
+
+        function addErrorSummaryItem(message){
+          if (!errorSummaryList) {
+            return;
+          }
+
+          const item = document.createElement("li");
+          item.textContent = message;
+          errorSummaryList.appendChild(item);
+        }
+
+        function showErrorSummary(){
+          if (!errorSummary) {
+            return;
+          }
+
+          errorSummary.hidden = false;
+          errorSummary.setAttribute("tabindex", "-1");
+          errorSummary.focus();
+        }
+
+        function isValidEmail(value){
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        }
+
+        function setOrganisationExpanded(expanded){
+          if (!orgToggle || !orgSection) {
+            return;
+          }
+
+          orgToggle.setAttribute(
+            "aria-expanded",
+            expanded ? "true" : "false"
+          );
+
+          orgSection.hidden = !expanded;
+
+          if (!expanded) {
+            setInvalid(
+              "organisation",
+              "organisationError",
+              ""
+            );
+
+            setInvalid(
+              "role",
+              "roleError",
+              ""
+            );
+          }
+        }
+
+        function setLoading(isLoading, loadingMessage){
+          if (!continueButton) {
+            return;
+          }
+
+          const buttonText =
+            continueButton.querySelector(".hit-button__text");
+
+          const buttonLoading =
+            continueButton.querySelector(".hit-button__loading");
+
+          const loadingText =
+            buttonLoading
+              ? buttonLoading.querySelector("span:last-child")
+              : null;
+
+          continueButton.disabled = isLoading;
+          continueButton.classList.toggle("is-loading", isLoading);
+
+          if (buttonText) {
+            buttonText.style.display =
+              isLoading ? "none" : "inline";
+          }
+
+          if (buttonLoading) {
+            buttonLoading.style.display =
+              isLoading ? "inline-flex" : "none";
+          }
+
+          if (loadingText && loadingMessage) {
+            loadingText.textContent = loadingMessage;
+          }
+        }
+
+        function disableFormWhileRouting(){
+          root.querySelectorAll(
+            "input, select, textarea, button"
+          ).forEach(function(element){
+            element.disabled = true;
+          });
+        }
+
+        function buildRouterUrl(attempt){
+          const targetUrl = new URL(
+            window.location.pathname,
+            window.location.origin
+          );
+
+          targetUrl.searchParams.set(
+            "page",
+            "offering-acceptance"
+          );
+
+          targetUrl.searchParams.set(
+            "acceptanceid",
+            "{{ acc.hit_offeringacceptanceid }}"
+          );
+
+          targetUrl.searchParams.set(
+            "waitforpayment",
+            "1"
+          );
+
+          targetUrl.searchParams.set(
+            "routeattempt",
+            String(attempt)
+          );
+
+          /*
+           * Ensure that every request has a unique URL so the browser performs
+           * a new navigation rather than treating it as the current location.
+           */
+          targetUrl.searchParams.set(
+            "_ts",
+            String(Date.now())
+          );
+
+          return targetUrl.toString();
+        }
+
+        function redirectToRouter(){
+          setLoading(
+            true,
+            "Preparing payment..."
+          );
+
+          disableFormWhileRouting();
+
+          window.location.replace(
+            buildRouterUrl(0)
+          );
+        }
+
+        function stopRouterRetry(){
+          const cleanUrl = new URL(window.location.href);
+
+          cleanUrl.searchParams.delete("waitforpayment");
+          cleanUrl.searchParams.delete("routeattempt");
+          cleanUrl.searchParams.delete("_ts");
+
+          window.history.replaceState(
+            {},
+            document.title,
+            cleanUrl.toString()
+          );
+
+          root.querySelectorAll(
+            "input, select, textarea, button"
+          ).forEach(function(element){
+            element.disabled = false;
+          });
+
+          if (orgSection && !orgToggle.checked) {
+            orgSection.hidden = true;
+          }
+
+          setLoading(false);
+
+          clearErrorSummary();
+
+          addErrorSummaryItem(
+            "Your details were saved, but the payment page is taking longer than expected to become available. Please refresh the page to continue."
+          );
+
+          showErrorSummary();
+        }
+
+        function retryRouter(){
+          if (currentRouteAttempt >= maximumRouteAttempts) {
+            stopRouterRetry();
+            return;
+          }
+
+          setLoading(
+            true,
+            "Preparing payment..."
+          );
+
+          disableFormWhileRouting();
+
+          window.setTimeout(function(){
+            window.location.replace(
+              buildRouterUrl(currentRouteAttempt + 1)
+            );
+          }, routeRetryDelayMilliseconds);
+        }
+
+        /*
+         * If this section has been returned by the router while waiting for
+         * Pending Payment, do not submit the form again. Request the router
+         * again after a short delay.
+         */
+        if (waitingForPayment) {
+          retryRouter();
+          return;
+        }
+
+        if (orgToggle && orgSection) {
+          setOrganisationExpanded(orgToggle.checked);
+
+          orgToggle.addEventListener(
+            "change",
+            function(){
+              setOrganisationExpanded(
+                orgToggle.checked
+              );
+            }
+          );
+        }
+
+        async function getCsrfToken(){
+          const response = await fetch(
+            "/_layout/tokenhtml",
+            {
+              method: "GET",
+              credentials: "same-origin",
+              cache: "no-store"
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              "Unable to retrieve request token."
+            );
+          }
+
+          const tokenHtml = await response.text();
+
+          const tokenDocument =
+            new DOMParser().parseFromString(
+              tokenHtml,
+              "text/html"
+            );
+
+          const tokenInput =
+            tokenDocument.querySelector(
+              "input[name='__RequestVerificationToken']"
+            );
+
+          if (!tokenInput || !tokenInput.value) {
+            throw new Error(
+              "Request token was not found."
+            );
+          }
+
+          return tokenInput.value;
+        }
+
+        function validate(){
+          clearErrorSummary();
+
+          setInvalid(
+            "firstName",
+            "firstNameError",
+            ""
+          );
+
+          setInvalid(
+            "lastName",
+            "lastNameError",
+            ""
+          );
+
+          setInvalid(
+            "email",
+            "emailError",
+            ""
+          );
+
+          setInvalid(
+            "organisation",
+            "organisationError",
+            ""
+          );
+
+          setInvalid(
+            "role",
+            "roleError",
+            ""
+          );
+
+          const firstName = getValue("firstName");
+          const lastName = getValue("lastName");
+          const email = getValue("email");
+
+          let isValid = true;
+          let firstInvalidField = null;
+
+          function registerError(
+            inputId,
+            errorId,
+            fieldMessage,
+            summaryMessage
+          ){
+            isValid = false;
+
+            setInvalid(
+              inputId,
+              errorId,
+              fieldMessage
+            );
+
+            addErrorSummaryItem(
+              summaryMessage
+            );
+
+            if (!firstInvalidField) {
+              firstInvalidField =
+                getElement(inputId);
+            }
+          }
+
+          if (!firstName) {
+            registerError(
+              "firstName",
+              "firstNameError",
+              "Please enter your first name.",
+              "First name is required."
+            );
+          }
+
+          if (!lastName) {
+            registerError(
+              "lastName",
+              "lastNameError",
+              "Please enter your last name.",
+              "Last name is required."
+            );
+          }
+
+          if (!email) {
+            registerError(
+              "email",
+              "emailError",
+              "Please enter your email address.",
+              "Email is required."
+            );
+          } else if (!isValidEmail(email)) {
+            registerError(
+              "email",
+              "emailError",
+              "Please enter a valid email address.",
+              "Email must be a valid email address."
+            );
+          }
+
+          if (orgToggle && orgToggle.checked) {
+            const organisation =
+              getValue("organisation");
+
+            const role =
+              getValue("role");
+
+            if (!organisation) {
+              registerError(
+                "organisation",
+                "organisationError",
+                "Please enter the organisation name.",
+                "Organisation name is required when acting on behalf of an organisation."
+              );
+            }
+
+            if (!role) {
+              registerError(
+                "role",
+                "roleError",
+                "Please enter your role.",
+                "Your role is required when acting on behalf of an organisation."
+              );
+            }
+          }
+
+          if (!isValid) {
+            showErrorSummary();
+
+            if (firstInvalidField) {
+              window.setTimeout(
+                function(){
+                  firstInvalidField.focus();
+                },
+                0
+              );
+            }
+          }
+
+          return isValid;
+        }
+
+        async function updateAcceptance(){
+          const id = getValue("acceptanceId");
+
+          if (!id) {
+            throw new Error(
+              "Acceptance identifier is missing."
+            );
+          }
+
+          const payload = {
+            hit_firstname:
+              getValue("firstName"),
+
+            hit_lastname:
+              getValue("lastName"),
+
+            hit_email:
+              getValue("email"),
+
+            hit_mobilephone:
+              getValue("mobile"),
+
+            hit_totalamounteffective:
+              {{ totalAmount | json }},
+
+            hit_baseamount:
+              {{ totalAmount | json }},
+
+            hit_organisationinput:
+              orgToggle && orgToggle.checked
+                ? getValue("organisation")
+                : null,
+
+            hit_contactroleinput:
+              orgToggle && orgToggle.checked
+                ? getValue("role")
+                : null
+          };
+
+          const token =
+            await getCsrfToken();
+
+          const response = await fetch(
+            "/_api/hit_offeringacceptances(" +
+              id +
+            ")",
+            {
+              method: "PATCH",
+              credentials: "same-origin",
+              cache: "no-store",
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "OData-MaxVersion": "4.0",
+                "OData-Version": "4.0",
+                "__RequestVerificationToken": token,
+                "If-Match": "*"
+              },
+              body: JSON.stringify(payload)
+            }
+          );
+
+          if (!response.ok) {
+            const errorText =
+              await response.text();
+
+            console.error(
+              "Offering Acceptance update failed:",
+              response.status,
+              errorText
+            );
+
+            throw new Error(
+              "Acceptance update failed."
+            );
+          }
+
+          return id;
+        }
+
+        async function handleContinue(){
+          if (!continueButton) {
+            return;
+          }
+
+          if (
+            continueButton.classList.contains(
+              "is-loading"
+            )
+          ) {
+            return;
+          }
+
+          if (!validate()) {
+            return;
+          }
+
+          setLoading(
+            true,
+            "Saving..."
+          );
+
+          try {
+            await updateAcceptance();
+
+            /*
+             * The PATCH is complete, but the orchestration flow may still be
+             * changing the status to Pending Payment. Navigate through the
+             * acceptance router and allow the retry mode above to wait for
+             * the payment section.
+             */
+            redirectToRouter();
+
+          } catch (error) {
+            console.error(error);
+
+            clearErrorSummary();
+
+            addErrorSummaryItem(
+              "Your details could not be saved. Please try again."
+            );
+
+            showErrorSummary();
+
+            setLoading(false);
+          }
+        }
+
+        if (continueButton) {
+          continueButton.addEventListener(
+            "click",
+            handleContinue
+          );
+        }
+
+      })();
+    </script>
+
+  {% endif %}
+
+{% endif %}

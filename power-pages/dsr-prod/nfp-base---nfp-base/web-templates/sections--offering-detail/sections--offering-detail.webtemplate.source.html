@@ -1,0 +1,1357 @@
+{% comment %}
+sections--offering-detail
+
+Purpose:
+- Generic offering detail / capture template.
+- Supports paid offerings with price options.
+- Supports paid offerings with custom amount.
+- Supports free / EOI offerings with no pricing.
+- Always creates an Offering Acceptance, then redirects to the acceptance router.
+
+Temporary note:
+- CSS is embedded for testing.
+- Class names are standardised for later extraction into shared CSS:
+  - css--site / css--components for reusable primitives
+  - css--theme-client for client/theme variables
+  - section template only for section-specific layout if needed
+{% endcomment %}
+
+{% assign offering_id = '' %}
+
+{% comment %}
+Priority:
+1. Offering selected on slot
+2. Querystring offering id
+{% endcomment %}
+
+{% if slot.hit_offering %}
+  {% assign offering_id = slot.hit_offering.id | default: slot.hit_offering | strip %}
+{% endif %}
+
+{% if offering_id == '' %}
+  {% assign offering_id = request.params.id | default: '' | strip %}
+{% endif %}
+
+{% assign DEBUG = debug | default: request.params.debug == '1' %}
+
+{% if DEBUG %}
+
+  <div style="background:#900;color:#fff;padding:10px;font-size:12px;font-family:monospace;margin-bottom:12px;">
+    sections--offering-detail debug<br><br>
+    slot.hit_offering = {{ slot.hit_offering }}<br><br>
+    slot.hit_offering.id = {{ slot.hit_offering.id }}<br><br>
+    resolved offering_id = {{ offering_id }}
+  </div>
+
+{% endif %}
+
+{% if offering_id == '' %}
+
+  <div class="hit-alert hit-alert-warning" role="alert">
+    Missing offering identifier.
+  </div>
+
+{% else %}
+
+  {% fetchxml q %}
+  <fetch mapping="logical" distinct="false">
+    <entity name="hit_offering">
+      <attribute name="hit_offeringid" />
+      <attribute name="hit_offeringname" />
+      <attribute name="hit_description" />
+      <attribute name="hit_imageurl" />
+      <attribute name="hit_isactive" />
+
+      <filter>
+        <condition attribute="hit_isactive" operator="eq" value="1" />
+        <condition attribute="hit_offeringid" operator="eq" value="{{ offering_id | escape }}" />
+      </filter>
+
+      <link-entity name="hit_priceoption"
+                   from="hit_offering"
+                   to="hit_offeringid"
+                   alias="po"
+                   link-type="outer">
+
+        <attribute name="hit_priceoptionid" />
+        <attribute name="hit_impacttitle" />
+        <attribute name="hit_impactdescription" />
+        <attribute name="hit_amount" />
+
+        <order attribute="hit_amount" />
+      </link-entity>
+
+    </entity>
+  </fetch>
+  {% endfetchxml %}
+
+  {% assign rows = q.results.entities %}
+  {% assign offering = rows | first %}
+
+  {% if offering == nil %}
+
+    <div class="hit-alert hit-alert-warning" role="alert">
+      Offering not found or inactive.
+    </div>
+
+  {% else %}
+
+    {% assign hasPricing = false %}
+
+    {% for r in rows %}
+      {% if r['po.hit_priceoptionid'] %}
+        {% assign hasPricing = true %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+
+    <div class="hit-offering-detail"
+         data-offeringid="{{ offering.hit_offeringid }}">
+
+      <style>
+        /* ==========================================================
+           sections--offering-detail
+           TEMPORARY EMBEDDED STYLES
+
+           Later split into:
+           - css--theme-client: client/theme variables
+           - css--site/css--components: reusable UI primitives
+           - section template: section-specific layout only
+           ========================================================== */
+
+        .hit-offering-detail{
+          --hit-brand-primary:#007f89;
+          --hit-brand-primary-hover:#006a72;
+          --hit-brand-primary-soft:#E6F4F5;
+          --hit-brand-primary-soft-border:#B7DDE0;
+          --hit-brand-primary-ring:rgba(0,127,137,.16);
+
+          --hit-radius-sm:14px;
+          --hit-radius-md:18px;
+          --hit-radius-lg:24px;
+          --hit-radius-pill:999px;
+
+          --hit-border:#DDE3EA;
+          --hit-border-soft:#E5E7EB;
+          --hit-border-strong:#CBD5E1;
+
+          --hit-surface:#FFFFFF;
+          --hit-surface-soft:#F8FAFC;
+          --hit-surface-muted:#F1F5F9;
+
+          --hit-text:#071936;
+          --hit-text-muted:#334155;
+          --hit-text-soft:#64748B;
+
+          --hit-danger:#B91C1C;
+          --hit-danger-soft:#FEF2F2;
+          --hit-warning:#C2410C;
+
+          --hit-shadow-card:0 12px 34px rgba(15,23,42,.07);
+          --hit-shadow-soft:0 8px 24px rgba(15,23,42,.04);
+
+          color:var(--hit-text);
+          font-family:inherit;
+        }
+
+        .hit-offering-detail *,
+        .hit-offering-detail *::before,
+        .hit-offering-detail *::after{
+          box-sizing:border-box;
+        }
+
+        /* ==========================================================
+           LAYOUT
+           ========================================================== */
+
+        .hit-offering-detail .hit-offering__shell{
+          width:100%;
+          max-width:1200px;
+          margin:0 auto;
+          padding:2rem 1rem 6rem;
+        }
+
+        .hit-offering-detail .hit-offering__grid{
+          display:grid;
+          grid-template-columns:1fr;
+          gap:2rem;
+          width:100%;
+        }
+
+        @media(min-width:992px){
+          .hit-offering-detail .hit-offering__shell{
+            padding:3rem 1rem 7rem;
+          }
+
+          .hit-offering-detail .hit-offering__grid{
+            grid-template-columns:minmax(0,1fr) minmax(420px,.8fr);
+            align-items:start;
+            gap:2rem;
+          }
+        }
+
+        .hit-offering-detail .hit-offering__content{
+          min-width:0;
+        }
+
+        .hit-offering-detail .hit-offering__capture{
+          min-width:0;
+        }
+
+        /* ==========================================================
+           CONTENT
+           ========================================================== */
+
+        .hit-offering-detail .hit-offering__eyebrow{
+          margin:0 0 .9rem;
+          color:var(--hit-brand-primary);
+          text-transform:uppercase;
+          letter-spacing:.11em;
+          font-size:.78rem;
+          line-height:1.2;
+          font-weight:900;
+        }
+
+        .hit-offering-detail .hit-offering__title{
+          margin:0;
+          color:var(--hit-text);
+          font-size:clamp(2.15rem,4vw,3.25rem);
+          line-height:1.04;
+          font-weight:950;
+          letter-spacing:-.035em;
+        }
+
+        .hit-offering-detail .hit-offering__description{
+          max-width:44rem;
+          margin:1.35rem 0 0;
+          color:var(--hit-text-muted);
+          font-size:1.05rem;
+          line-height:1.65;
+        }
+
+        .hit-offering-detail .hit-offering__description p:first-child{
+          margin-top:0;
+        }
+
+        .hit-offering-detail .hit-offering__description p:last-child{
+          margin-bottom:0;
+        }
+
+        /* ==========================================================
+           CARD SYSTEM
+           ========================================================== */
+
+        .hit-offering-detail .hit-card{
+          position:relative;
+          background:var(--hit-surface);
+          border:1px solid var(--hit-border);
+          border-radius:var(--hit-radius-lg);
+          box-shadow:var(--hit-shadow-card);
+        }
+
+        .hit-offering-detail .hit-card--compact{
+          border-radius:var(--hit-radius-md);
+          box-shadow:none;
+        }
+
+        .hit-offering-detail .hit-card--interactive{
+          cursor:pointer;
+          transition:
+            background .16s ease,
+            border-color .16s ease,
+            box-shadow .16s ease,
+            transform .16s ease;
+        }
+
+        .hit-offering-detail .hit-card--interactive:hover{
+          border-color:var(--hit-brand-primary);
+          background:var(--hit-surface-soft);
+        }
+
+        .hit-offering-detail .hit-card--interactive:focus,
+        .hit-offering-detail .hit-card--interactive:focus-visible{
+          outline:none;
+          border-color:var(--hit-brand-primary);
+          box-shadow:0 0 0 4px var(--hit-brand-primary-ring);
+        }
+
+        .hit-offering-detail .hit-card.is-selected{
+          border-color:var(--hit-brand-primary);
+          background:var(--hit-brand-primary-soft);
+          box-shadow:0 0 0 4px var(--hit-brand-primary-ring);
+        }
+
+        .hit-offering-detail .hit-capture-panel{
+          padding:1.5rem;
+        }
+
+        @media(min-width:768px){
+          .hit-offering-detail .hit-capture-panel{
+            padding:1.75rem;
+          }
+        }
+
+        /* ==========================================================
+           STATUS / LEAD-IN
+           ========================================================== */
+
+        .hit-offering-detail .hit-status-pill{
+          display:flex;
+          align-items:center;
+          gap:.75rem;
+          width:100%;
+          margin:0 0 1.5rem;
+          padding:.75rem 1rem;
+          border:1px solid var(--hit-brand-primary-soft-border);
+          border-radius:var(--hit-radius-pill);
+          background:var(--hit-brand-primary-soft);
+          color:var(--hit-brand-primary);
+          font-size:.9rem;
+          line-height:1.35;
+          font-weight:900;
+        }
+
+        .hit-offering-detail .hit-status-pill::before{
+          content:"";
+          flex:0 0 10px;
+          width:10px;
+          height:10px;
+          border-radius:var(--hit-radius-pill);
+          background:var(--hit-brand-primary);
+        }
+
+        /* ==========================================================
+           OPTION LIST
+           ========================================================== */
+
+        .hit-offering-detail .hit-option-list{
+          display:grid;
+          gap:.75rem;
+          margin:0;
+        }
+
+        .hit-offering-detail .hit-option-card{
+          width:100%;
+          display:flex;
+          align-items:flex-start;
+          gap:1rem;
+          padding:1rem;
+          text-align:left;
+          color:var(--hit-text);
+          border-radius:var(--hit-radius-md);
+        }
+
+        button.hit-option-card{
+          font:inherit;
+          border:1px solid var(--hit-border);
+          background:var(--hit-surface);
+          appearance:none;
+          -webkit-appearance:none;
+        }
+
+        button.hit-option-card:hover{
+          border-color:var(--hit-brand-primary);
+          background:var(--hit-surface-soft);
+        }
+
+        button.hit-option-card.is-selected{
+          border-color:var(--hit-brand-primary);
+          background:var(--hit-brand-primary-soft);
+          box-shadow:0 0 0 4px var(--hit-brand-primary-ring);
+        }
+
+        .hit-offering-detail .hit-option-card__content{
+          flex:1 1 auto;
+          min-width:0;
+        }
+
+        .hit-offering-detail .hit-option-card__header{
+          display:flex;
+          align-items:center;
+          gap:.75rem;
+        }
+
+        .hit-offering-detail .hit-option-card__title{
+          margin:0;
+          color:var(--hit-text);
+          font-size:1rem;
+          line-height:1.3;
+          font-weight:900;
+        }
+
+        .hit-offering-detail .hit-option-card__description{
+          margin:.45rem 0 0;
+          color:var(--hit-text-muted);
+          font-size:.9rem;
+          line-height:1.5;
+        }
+
+        .hit-offering-detail .hit-option-card__amount{
+          flex:0 0 auto;
+          color:var(--hit-brand-primary);
+          font-size:1.1rem;
+          line-height:1.3;
+          font-weight:950;
+          white-space:nowrap;
+        }
+
+        /* ==========================================================
+           SELECTION INDICATOR
+           ========================================================== */
+
+        .hit-offering-detail .hit-selection-indicator{
+          flex:0 0 22px;
+          width:22px;
+          height:22px;
+          position:relative;
+          margin-top:.05rem;
+          border:2px solid var(--hit-border-strong);
+          border-radius:var(--hit-radius-pill);
+          background:#fff;
+        }
+
+        .hit-offering-detail .is-selected .hit-selection-indicator{
+          border-color:var(--hit-brand-primary);
+          background:var(--hit-brand-primary);
+        }
+
+        .hit-offering-detail .is-selected .hit-selection-indicator::after{
+          content:"";
+          position:absolute;
+          left:6px;
+          top:3px;
+          width:6px;
+          height:11px;
+          border:solid #fff;
+          border-width:0 2px 2px 0;
+          transform:rotate(45deg);
+        }
+
+        /* ==========================================================
+           CUSTOM AMOUNT
+           ========================================================== */
+
+        .hit-offering-detail .hit-custom-opt{
+          padding:1rem;
+          border-radius:var(--hit-radius-md);
+        }
+
+        .hit-offering-detail .hit-custom-amount-row{
+          display:flex;
+          align-items:center;
+          gap:.6rem;
+          max-width:260px;
+          margin-top:.85rem;
+        }
+
+        .hit-offering-detail .hit-custom-currency{
+          color:var(--hit-brand-primary);
+          font-size:1rem;
+          line-height:1;
+          font-weight:950;
+        }
+
+        .hit-offering-detail .hit-custom-error{
+          min-height:1.2rem;
+          margin:.35rem 0 0;
+          color:var(--hit-danger);
+          font-size:.84rem;
+          line-height:1.35;
+          font-weight:800;
+        }
+
+        /* ==========================================================
+           INPUTS
+           ========================================================== */
+
+        .hit-offering-detail .hit-input{
+          width:100%;
+          min-height:48px;
+          border:1px solid var(--hit-border-strong);
+          background:#fff;
+          color:var(--hit-text);
+          outline:none;
+          font:inherit;
+          font-size:16px;
+          line-height:1.4;
+          transition:border-color .16s ease, box-shadow .16s ease, background .16s ease;
+        }
+
+        .hit-offering-detail .hit-input:focus{
+          border-color:var(--hit-brand-primary);
+          box-shadow:0 0 0 4px var(--hit-brand-primary-ring);
+        }
+
+        .hit-offering-detail .hit-input--pill{
+          border-radius:var(--hit-radius-pill);
+          padding:.75rem 1rem;
+        }
+
+        .hit-offering-detail .hit-input--currency{
+          font-weight:800;
+        }
+
+        /* ==========================================================
+           BUTTONS
+           ========================================================== */
+
+        .hit-offering-detail .hit-actions{
+          display:grid;
+          gap:1rem;
+          margin-top:1.5rem;
+        }
+
+        .hit-offering-detail .hit-button{
+          width:100%;
+          min-height:56px;
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+          gap:.5rem;
+          margin:0;
+          padding:1rem 1.5rem;
+          border:0;
+          border-radius:var(--hit-radius-pill);
+          font:inherit;
+          font-size:1rem;
+          line-height:1.2;
+          font-weight:950;
+          text-align:center;
+          cursor:pointer;
+          transition:
+            background .16s ease,
+            color .16s ease,
+            opacity .16s ease,
+            transform .16s ease,
+            box-shadow .16s ease;
+        }
+
+        .hit-offering-detail .hit-button--primary{
+          background:var(--hit-brand-primary);
+          color:#fff;
+        }
+
+        .hit-offering-detail .hit-button--primary:hover:not(:disabled){
+          background:var(--hit-brand-primary-hover);
+        }
+
+        .hit-offering-detail .hit-button:focus,
+        .hit-offering-detail .hit-button:focus-visible{
+          outline:none;
+          box-shadow:0 0 0 4px var(--hit-brand-primary-ring);
+        }
+
+        .hit-offering-detail .hit-button:disabled{
+          opacity:.7;
+          cursor:not-allowed;
+          transform:none;
+        }
+
+        .hit-offering-detail .hit-button--primary:disabled{
+          background:#E5E7EB;
+          color:#64748B;
+        }
+
+        .hit-offering-detail .hit-button.is-loading{
+          opacity:.85;
+          pointer-events:none;
+        }
+
+        /* Backwards-compatible selector while other templates are standardised */
+        .hit-offering-detail .hit-btn-primary{
+          width:100%;
+          min-height:56px;
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+          gap:.5rem;
+          margin:0;
+          padding:1rem 1.5rem;
+          border:0;
+          border-radius:var(--hit-radius-pill);
+          background:var(--hit-brand-primary);
+          color:#fff;
+          font:inherit;
+          font-size:1rem;
+          line-height:1.2;
+          font-weight:950;
+          text-align:center;
+          cursor:pointer;
+        }
+
+        /* ==========================================================
+           LOADING
+           ========================================================== */
+
+        .hit-offering-detail .hit-spinner,
+        .hit-offering-detail .spinner{
+          flex:0 0 14px;
+          width:14px;
+          height:14px;
+          display:inline-block;
+          border-radius:50%;
+          border:2px solid rgba(255,255,255,.4);
+          border-top-color:#fff;
+          animation:hit-spin .8s linear infinite;
+        }
+
+        .hit-offering-detail .btn-loading{
+          display:none;
+          align-items:center;
+          justify-content:center;
+          gap:.5rem;
+        }
+
+        .hit-offering-detail .btn-text{
+          display:inline;
+        }
+
+        @keyframes hit-spin{
+          to{
+            transform:rotate(360deg);
+          }
+        }
+
+        /* ==========================================================
+           EOI / FREE OFFERING
+           ========================================================== */
+
+        .hit-offering-detail .hit-offering-eoi{
+          display:grid;
+          gap:1rem;
+        }
+
+        .hit-offering-detail .hit-form-card{
+          margin:0;
+          padding:1.4rem;
+          border:1px solid var(--hit-border);
+          border-radius:var(--hit-radius-md);
+          background:var(--hit-surface);
+        }
+
+        @media(min-width:768px){
+          .hit-offering-detail .hit-form-card{
+            padding:1.5rem;
+          }
+        }
+
+        .hit-offering-detail .hit-form-card__title{
+          margin:0 0 .75rem;
+          color:var(--hit-text);
+          font-size:1rem;
+          line-height:1.3;
+          font-weight:950;
+        }
+
+        .hit-offering-detail .hit-form-subtitle{
+          margin:0;
+          color:var(--hit-text-muted);
+          font-size:1rem;
+          line-height:1.6;
+        }
+
+        /* Backwards-compatible selector */
+        .hit-offering-detail .hit-eoi-msg{
+          margin:0;
+          color:var(--hit-text-muted);
+          font-size:1rem;
+          line-height:1.6;
+        }
+
+        /* ==========================================================
+           MESSAGE SYSTEM
+           ========================================================== */
+
+        .hit-offering-detail .hit-message{
+          display:none;
+          margin:1rem 0 0;
+          padding:.85rem 1rem;
+          border-radius:var(--hit-radius-sm);
+          font-size:.95rem;
+          line-height:1.45;
+          font-weight:800;
+        }
+
+        .hit-offering-detail .hit-message--error{
+          border:1px solid rgba(185,28,28,.22);
+          background:var(--hit-danger-soft);
+          color:var(--hit-danger);
+        }
+
+        /* ==========================================================
+           MOBILE
+           ========================================================== */
+
+        @media(max-width:767px){
+          .hit-offering-detail .hit-capture-panel{
+            padding:1.5rem;
+          }
+
+          .hit-offering-detail .hit-form-card{
+            padding:1.25rem;
+          }
+        }
+
+        @media(max-width:520px){
+          .hit-offering-detail .hit-option-card{
+            gap:.75rem;
+            padding:.9rem;
+          }
+
+          .hit-offering-detail .hit-option-card__amount{
+            font-size:1rem;
+          }
+
+          .hit-offering-detail .hit-option-card__title{
+            font-size:.95rem;
+          }
+
+          .hit-offering-detail .hit-option-card__description{
+            font-size:.85rem;
+          }
+
+          .hit-offering-detail .hit-custom-amount-row{
+            max-width:100%;
+          }
+        }
+      </style>
+
+      <div class="hit-offering__shell">
+        <div class="hit-offering__grid">
+
+          <!-- LEFT: CONTENT -->
+          <div class="hit-offering__content">
+
+            <div class="hit-offering__eyebrow">
+              Offering
+            </div>
+
+            <h1 class="hit-offering__title">
+              {{ offering.hit_offeringname | escape }}
+            </h1>
+
+            {% if offering.hit_description != blank %}
+              <div class="hit-offering__description">
+                {{ offering.hit_description }}
+              </div>
+            {% endif %}
+
+          </div>
+
+          <!-- RIGHT: CAPTURE -->
+          <div class="hit-offering__capture">
+
+            <div class="hit-card hit-capture-panel">
+
+              {% if hasPricing %}
+
+                <!-- PAID OFFERING -->
+                <div class="hit-status-pill">
+                  Select an option to continue
+                </div>
+
+                <div class="hit-option-list hit-offering-options"
+                     aria-label="Payment amount options">
+
+                  {% for r in rows %}
+                    {% if r['po.hit_priceoptionid'] %}
+
+                      {% assign amt = r['po.hit_amount'] %}
+
+                      {% if amt.value %}
+                        {% assign amt = amt.value %}
+                      {% endif %}
+
+                      <button type="button"
+                              class="hit-option-card hit-card hit-card--compact hit-card--interactive hit-fixed-opt"
+                              data-amount="{{ amt }}"
+                              data-priceoptionid="{{ r['po.hit_priceoptionid'] }}">
+
+                        <div class="hit-option-card__content">
+
+                          <div class="hit-option-card__header">
+                            <div class="hit-selection-indicator" aria-hidden="true"></div>
+
+                            <div class="hit-option-card__title">
+                              {{ r['po.hit_impacttitle'] | default: 'Option' | escape }}
+                            </div>
+                          </div>
+
+                          {% if r['po.hit_impactdescription'] != blank %}
+                            <div class="hit-option-card__description">
+                              {{ r['po.hit_impactdescription'] }}
+                            </div>
+                          {% endif %}
+
+                        </div>
+
+                        <div class="hit-option-card__amount">
+                          ${{ amt }}
+                        </div>
+
+                      </button>
+
+                    {% endif %}
+                  {% endfor %}
+
+                  <!-- CUSTOM AMOUNT OPTION -->
+                  <div class="hit-option-card hit-card hit-card--compact hit-card--interactive hit-custom-opt"
+                       role="button"
+                       tabindex="0"
+                       data-is-custom="true"
+                       aria-label="Custom amount">
+
+                    <div class="hit-selection-indicator" aria-hidden="true"></div>
+
+                    <div class="hit-option-card__content">
+
+                      <div class="hit-option-card__title">
+                        Custom Amount
+                      </div>
+
+                      <div class="hit-option-card__description">
+                        Enter an amount that is meaningful to you.
+                      </div>
+
+                      <div class="hit-custom-amount-row">
+                        <span class="hit-custom-currency">$</span>
+
+                        <input type="text"
+                               inputmode="decimal"
+                               autocomplete="off"
+                               class="hit-input hit-input--pill hit-input--currency hit-custom-amount"
+                               aria-label="Custom amount"
+                               placeholder="Enter amount">
+                      </div>
+
+                      <div class="hit-custom-error" aria-live="polite"></div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="hit-actions">
+                  <button type="button"
+                          class="hit-button hit-button--primary continue-btn"
+                          disabled>
+                    <span class="btn-text">Continue</span>
+                    <span class="btn-loading">
+                      <span class="hit-spinner" aria-hidden="true"></span>
+                      Creating...
+                    </span>
+                  </button>
+                </div>
+
+              {% else %}
+
+                <!-- EOI / FREE OFFERING -->
+                <div class="hit-offering-eoi">
+
+                  <div class="hit-status-pill">
+                    Register your interest to continue
+                  </div>
+
+                  <div class="hit-form-card">
+
+                    <h2 class="hit-form-card__title">
+                      Register your interest
+                    </h2>
+
+                    <p class="hit-form-subtitle hit-eoi-msg">
+                      Register your interest and we’ll keep you updated as more details become available.
+                    </p>
+
+                  </div>
+
+                  <div class="hit-actions">
+                    <button type="button"
+                            class="hit-button hit-button--primary eoi-btn">
+                      <span class="btn-text">Register your interest</span>
+                      <span class="btn-loading">
+                        <span class="hit-spinner" aria-hidden="true"></span>
+                        Creating...
+                      </span>
+                    </button>
+                  </div>
+
+                </div>
+
+              {% endif %}
+
+              <div class="hit-message hit-message--error hit-offering-error" role="alert"></div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      (function(){
+
+        const root = document.querySelector('.hit-offering-detail[data-offeringid="{{ offering.hit_offeringid }}"]');
+
+        if (!root) {
+          return;
+        }
+
+        let selectedMode = null;
+        let selectedOpt = null;
+
+        const offeringId = "{{ offering.hit_offeringid }}";
+
+        function getContinueButton(){
+          return root.querySelector(".continue-btn");
+        }
+
+        function getCustomCard(){
+          return root.querySelector(".hit-custom-opt");
+        }
+
+        function getCustomInput(){
+          return root.querySelector(".hit-custom-amount");
+        }
+
+        function getCustomError(){
+          return root.querySelector(".hit-custom-error");
+        }
+
+        function getErrorBox(){
+          return root.querySelector(".hit-offering-error");
+        }
+
+        function showError(message){
+          const box = getErrorBox();
+
+          if (!box) {
+            alert(message);
+            return;
+          }
+
+          box.textContent = message;
+          box.style.display = "block";
+        }
+
+        function clearError(){
+          const box = getErrorBox();
+
+          if (!box) {
+            return;
+          }
+
+          box.textContent = "";
+          box.style.display = "none";
+        }
+
+        function parseAmount(raw){
+          if (raw === null || raw === undefined) {
+            return null;
+          }
+
+          const cleaned = String(raw)
+            .replace(/[$,]/g, "")
+            .trim();
+
+          if (cleaned === "") {
+            return null;
+          }
+
+          const amount = Number(cleaned);
+
+          if (!Number.isFinite(amount)) {
+            return null;
+          }
+
+          return Math.round(amount * 100) / 100;
+        }
+
+        function isValidAmount(amount){
+          return amount !== null && amount > 0;
+        }
+
+        function clearSelection(){
+          root.querySelectorAll(".hit-card--interactive").forEach(function(option){
+            option.classList.remove("is-selected");
+          });
+
+          selectedMode = null;
+          selectedOpt = null;
+        }
+
+        function selectFixedOption(option){
+          clearError();
+          clearSelection();
+
+          option.classList.add("is-selected");
+
+          selectedMode = "fixed";
+          selectedOpt = option;
+
+          const customInput = getCustomInput();
+          const customError = getCustomError();
+
+          if (customInput) {
+            customInput.value = "";
+          }
+
+          if (customError) {
+            customError.textContent = "";
+          }
+
+          updateContinueState();
+        }
+
+        function selectCustomOption(){
+          clearError();
+
+          const customCard = getCustomCard();
+
+          clearSelection();
+
+          if (customCard) {
+            customCard.classList.add("is-selected");
+          }
+
+          selectedMode = "custom";
+          selectedOpt = customCard;
+
+          updateContinueState();
+        }
+
+        function getSelectedAmount(){
+          if (selectedMode === "fixed" && selectedOpt) {
+            return parseAmount(selectedOpt.dataset.amount);
+          }
+
+          if (selectedMode === "custom") {
+            const customInput = getCustomInput();
+            return parseAmount(customInput ? customInput.value : "");
+          }
+
+          return null;
+        }
+
+        function getSelectedPriceOptionId(){
+          if (selectedMode === "fixed" && selectedOpt) {
+            return selectedOpt.dataset.priceoptionid || "";
+          }
+
+          return "";
+        }
+
+        function updateContinueState(){
+          const continueBtn = getContinueButton();
+          const customError = getCustomError();
+
+          if (!continueBtn) {
+            return;
+          }
+
+          const amount = getSelectedAmount();
+          const valid = isValidAmount(amount);
+
+          continueBtn.disabled = !valid;
+
+          if (selectedMode === "custom" && customError) {
+            const customInput = getCustomInput();
+            const hasValue = customInput && customInput.value.trim() !== "";
+
+            customError.textContent = hasValue && !valid
+              ? "Please enter an amount greater than $0."
+              : "";
+          }
+        }
+
+        async function getCsrfToken(){
+          if (window.shell && typeof window.shell.getTokenDeferred === "function") {
+            return new Promise(function(resolve){
+              window.shell.getTokenDeferred()
+                .done(function(token){
+                  resolve(token || "");
+                })
+                .fail(function(){
+                  resolve("");
+                });
+            });
+          }
+
+          const response = await fetch("/_layout/tokenhtml", {
+            credentials: "same-origin"
+          });
+
+          const html = await response.text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          const tokenInput = doc.querySelector("input[name='__RequestVerificationToken']");
+
+          return tokenInput ? tokenInput.value : "";
+        }
+
+        async function createAcceptance(payload){
+          const token = await getCsrfToken();
+
+          if (!token) {
+            throw new Error("Security token could not be loaded.");
+          }
+
+          const response = await fetch("/_api/hit_offeringacceptances", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+              "Content-Type": "application/json",
+              "__RequestVerificationToken": token,
+              "Accept": "application/json",
+              "OData-MaxVersion": "4.0",
+              "OData-Version": "4.0"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            let errorMessage = "Create failed.";
+
+            try {
+              const body = await response.json();
+
+              if (body && body.error && body.error.message) {
+                errorMessage = body.error.message;
+              }
+            } catch(jsonError) {
+              try {
+                const text = await response.text();
+
+                if (text) {
+                  errorMessage = text;
+                }
+              } catch(textError) {
+                // Keep generic message.
+              }
+            }
+
+            console.error("Create failed:", errorMessage);
+            throw new Error(errorMessage);
+          }
+
+          const entityIdHeader =
+            response.headers.get("entityid") ||
+            response.headers.get("OData-EntityId") ||
+            response.headers.get("odata-entityid");
+
+          const match = entityIdHeader
+            ? entityIdHeader.match(/[0-9a-fA-F-]{36}/)
+            : null;
+
+          return match ? match[0] : "";
+        }
+
+        function setButtonLoading(button, isLoading){
+          if (!button) {
+            return;
+          }
+
+          const text = button.querySelector(".btn-text");
+          const loading = button.querySelector(".btn-loading");
+
+          if (isLoading) {
+            button.classList.add("is-loading");
+            button.disabled = true;
+
+            if (text) {
+              text.style.display = "none";
+            }
+
+            if (loading) {
+              loading.style.display = "inline-flex";
+            }
+          } else {
+            button.classList.remove("is-loading");
+
+            if (text) {
+              text.style.display = "inline";
+            }
+
+            if (loading) {
+              loading.style.display = "none";
+            }
+          }
+        }
+
+        function setPaidLoading(button, isLoading){
+          setButtonLoading(button, isLoading);
+
+          if (!isLoading) {
+            updateContinueState();
+          }
+        }
+
+        function buildAcceptanceUrl(acceptanceId){
+          return window.location.origin +
+            window.location.pathname +
+            "?page=offering-acceptance&acceptanceid=" +
+            encodeURIComponent(acceptanceId);
+        }
+
+        root.addEventListener("click", async function(event){
+
+          clearError();
+
+          /* SELECT FIXED PRICE OPTION */
+          const fixedOption = event.target.closest("button.hit-fixed-opt");
+
+          if (fixedOption && root.contains(fixedOption)) {
+            selectFixedOption(fixedOption);
+            return;
+          }
+
+          /* SELECT CUSTOM AMOUNT OPTION */
+          const customCard = event.target.closest(".hit-custom-opt");
+
+          if (customCard && root.contains(customCard)) {
+            selectCustomOption();
+
+            const customInput = getCustomInput();
+
+            if (customInput && event.target !== customInput) {
+              customInput.focus();
+            }
+
+            return;
+          }
+
+          /* CONTINUE - PAID OFFERING */
+          const continueButton = event.target.closest(".continue-btn");
+
+          if (continueButton && root.contains(continueButton)) {
+
+            if (continueButton.classList.contains("is-loading")) {
+              return;
+            }
+
+            const amount = getSelectedAmount();
+
+            if (!isValidAmount(amount)) {
+              updateContinueState();
+              return;
+            }
+
+            setPaidLoading(continueButton, true);
+
+            try {
+
+              const payload = {
+                "hit_Offering@odata.bind": "/hit_offerings(" + offeringId + ")",
+                hit_baseamount: amount
+              };
+
+              const priceOptionId = getSelectedPriceOptionId();
+
+              if (priceOptionId) {
+                payload["hit_PriceOption@odata.bind"] =
+                  "/hit_priceoptions(" + priceOptionId + ")";
+              }
+
+              const id = await createAcceptance(payload);
+
+              if (!id) {
+                throw new Error("No acceptance id returned from create.");
+              }
+
+              window.location.href = buildAcceptanceUrl(id);
+
+            } catch (error) {
+
+              console.error(error);
+              showError(error.message || "Something went wrong. Please try again.");
+
+              setPaidLoading(continueButton, false);
+            }
+
+            return;
+          }
+
+          /* EOI / FREE OFFERING */
+          const eoiButton = event.target.closest(".eoi-btn");
+
+          if (eoiButton && root.contains(eoiButton)) {
+
+            if (eoiButton.classList.contains("is-loading")) {
+              return;
+            }
+
+            setButtonLoading(eoiButton, true);
+
+            try {
+
+              const payload = {
+                "hit_Offering@odata.bind": "/hit_offerings(" + offeringId + ")"
+              };
+
+              const id = await createAcceptance(payload);
+
+              if (!id) {
+                throw new Error("No acceptance id returned from create.");
+              }
+
+              window.location.href = buildAcceptanceUrl(id);
+
+            } catch (error) {
+
+              console.error(error);
+              showError(error.message || "Something went wrong. Please try again.");
+
+              setButtonLoading(eoiButton, false);
+              eoiButton.disabled = false;
+            }
+          }
+
+        });
+
+        root.addEventListener("input", function(event){
+
+          const customInput = event.target.closest(".hit-custom-amount");
+
+          if (!customInput || !root.contains(customInput)) {
+            return;
+          }
+
+          selectCustomOption();
+          updateContinueState();
+
+        });
+
+        root.addEventListener("keydown", function(event){
+
+          const customCard = event.target.closest(".hit-custom-opt");
+
+          if (!customCard || !root.contains(customCard)) {
+            return;
+          }
+
+          if (event.target.classList.contains("hit-custom-amount")) {
+            return;
+          }
+
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+
+            selectCustomOption();
+
+            const customInput = getCustomInput();
+
+            if (customInput) {
+              customInput.focus();
+            }
+          }
+
+        });
+
+      })();
+    </script>
+
+  {% endif %}
+
+{% endif %}

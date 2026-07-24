@@ -1,0 +1,360 @@
+{%- comment -%}
+components--web-nav-header-node
+
+Stable two-level renderer for hit_webnavmenuitem records.
+
+Purpose:
+- Render one top-level nav item.
+- Detect direct child items from allItems.
+- Render child submenu items inline.
+- Avoid recursive include issues in Power Pages Liquid.
+- Render proper clickable anchor tags.
+- Prevent blank query parameters from rendering as /?.
+
+Expected inputs:
+- item
+- allItems
+- maxDepth
+- depth
+- debug
+{%- endcomment -%}
+
+{%- assign DEBUG = debug -%}
+
+{%- assign renderThis = true -%}
+{%- if item == nil -%}
+  {%- assign renderThis = false -%}
+{%- endif -%}
+
+{%- if depth == nil -%}
+  {%- assign depth = 1 -%}
+{%- endif -%}
+
+{%- if maxDepth == nil -%}
+  {%- assign maxDepth = 2 -%}
+{%- endif -%}
+
+{%- if renderThis -%}
+
+  {%- assign itemId = item.hit_webnavmenuitemid | append: '' | strip | downcase | remove: '{' | remove: '}' -%}
+
+  {%- assign label = item.hit_displaylabel | append: '' | strip -%}
+  {%- if label == '' -%}
+    {%- assign label = item.hit_name | append: '' | strip -%}
+  {%- endif -%}
+
+  {%- assign cssClass = item.hit_cssclass | append: '' | strip -%}
+
+  {%- comment -%}
+  Build parent href
+  {%- endcomment -%}
+
+  {%- assign href = '' -%}
+  {%- assign hrefSource = '' -%}
+
+  {%- if item.hit_platformroute and item.hit_platformroute.id -%}
+
+    {%- assign routePath = item['r.hit_physicalpath'] | append: '' | strip -%}
+    {%- assign routeQuery = item['r.hit_queryparameters'] | append: '' | strip -%}
+
+    {%- if routePath != '' -%}
+
+      {%- assign href = routePath -%}
+
+      {%- unless href startswith '/' -%}
+        {%- assign href = '/' | append: href -%}
+      {%- endunless -%}
+
+      {%- if href != '/' and href endswith '/' -%}
+        {%- assign href = href | replace_last: '/', '' -%}
+      {%- endif -%}
+
+      {%- assign hrefSource = 'route' -%}
+
+      {%- assign qs = routeQuery | append: '' | strip -%}
+
+      {%- if qs startswith '?' -%}
+        {%- assign qs = qs | remove_first: '?' | strip -%}
+      {%- endif -%}
+
+      {%- if qs != '' -%}
+        {%- assign href = href | append: '?' | append: qs -%}
+      {%- endif -%}
+
+    {%- endif -%}
+
+  {%- endif -%}
+
+  {%- if href == '' -%}
+    {%- assign rawUrl = item.hit_url | append: '' | strip -%}
+    {%- if rawUrl != '' -%}
+      {%- assign href = rawUrl -%}
+      {%- assign hrefSource = 'url' -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if href == '' -%}
+    {%- assign cmsPartial = item['wp.mspp_partialurl'] | append: '' | strip -%}
+    {%- if cmsPartial != '' -%}
+      {%- if cmsPartial startswith '/' -%}
+        {%- assign href = cmsPartial -%}
+      {%- else -%}
+        {%- assign href = '/' | append: cmsPartial -%}
+      {%- endif -%}
+      {%- assign hrefSource = 'cms' -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- assign hrefCheck = href | append: '' | strip -%}
+
+  {%- if hrefCheck == '' -%}
+    {%- assign hrefCheck = '#' -%}
+  {%- endif -%}
+
+  {%- if hrefCheck == '/?' -%}
+    {%- assign hrefCheck = '/' -%}
+  {%- endif -%}
+
+  {%- if hrefCheck != '?' and hrefCheck endswith '?' -%}
+    {%- assign hrefCheck = hrefCheck | replace_last: '?', '' -%}
+  {%- endif -%}
+
+  {%- comment -%}
+  Active state
+  {%- endcomment -%}
+
+  {%- assign currentPath = request.path | append: '' | downcase | strip -%}
+  {%- if currentPath != '/' and currentPath endswith '/' -%}
+    {%- assign currentPath = currentPath | replace_last: '/', '' -%}
+  {%- endif -%}
+
+  {%- assign navPath = hrefCheck | split: '?' | first | downcase | strip -%}
+  {%- if navPath != '/' and navPath endswith '/' -%}
+    {%- assign navPath = navPath | replace_last: '/', '' -%}
+  {%- endif -%}
+
+  {%- assign isActive = false -%}
+  {%- if currentPath == navPath -%}
+    {%- assign isActive = true -%}
+  {%- endif -%}
+
+  {%- comment -%}
+  Detect direct child items
+  {%- endcomment -%}
+
+  {%- assign hasChildren = false -%}
+  {%- assign childCount = 0 -%}
+
+  {%- for c in allItems -%}
+
+    {%- assign childParentId = '' -%}
+
+    {%- if c.hit_parentmenuitem -%}
+      {%- if c.hit_parentmenuitem.id -%}
+        {%- assign childParentId = c.hit_parentmenuitem.id | append: '' | strip | downcase | remove: '{' | remove: '}' -%}
+      {%- else -%}
+        {%- assign childParentRaw = c.hit_parentmenuitem | append: '' | strip -%}
+        {%- if childParentRaw contains '-' -%}
+          {%- assign childParentId = childParentRaw | downcase | remove: '{' | remove: '}' -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if childParentId == itemId -%}
+      {%- assign hasChildren = true -%}
+      {%- assign childCount = childCount | plus: 1 -%}
+    {%- endif -%}
+
+  {%- endfor -%}
+
+  {%- if DEBUG -%}
+    <pre style="font:11px/1.4 monospace; background:#f7f7f7; border:1px solid #ddd; padding:6px; margin:6px 0; white-space:pre-wrap;">
+NAV NODE
+depth={{ depth }}
+id={{ itemId | escape }}
+label={{ label | escape }}
+href={{ hrefCheck | escape }}
+source={{ hrefSource | escape }}
+hasChildren={% if hasChildren %}YES{% else %}NO{% endif %}
+childCount={{ childCount }}
+active={% if isActive %}YES{% else %}NO{% endif %}
+    </pre>
+  {%- endif -%}
+
+  <li class="hit-nav__item{% if isActive %} is-active{% endif %}{% if hasChildren %} has-children{% endif %}{% if cssClass != '' %} {{ cssClass | escape }}{% endif %}">
+
+    {%- if hrefCheck == '#' -%}
+      <span class="hit-nav__link hit-nav__link--nolink">
+        {{ label | escape }}
+      </span>
+    {%- else -%}
+
+  <a
+    class="hit-nav__link"
+    href="{{ hrefCheck | escape }}"
+    {% if isActive %}aria-current="page"{% endif %}>
+    {{ label | escape }}
+  </a>
+
+    {%- endif -%}
+
+    {%- if hasChildren and depth < maxDepth -%}
+
+      <ul class="hit-nav__submenu" role="list" aria-label="{{ label | escape }} submenu">
+
+        {%- for c in allItems -%}
+
+          {%- assign childParentId = '' -%}
+
+          {%- if c.hit_parentmenuitem -%}
+            {%- if c.hit_parentmenuitem.id -%}
+              {%- assign childParentId = c.hit_parentmenuitem.id | append: '' | strip | downcase | remove: '{' | remove: '}' -%}
+            {%- else -%}
+              {%- assign childParentRaw = c.hit_parentmenuitem | append: '' | strip -%}
+              {%- if childParentRaw contains '-' -%}
+                {%- assign childParentId = childParentRaw | downcase | remove: '{' | remove: '}' -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+
+          {%- if childParentId == itemId -%}
+
+            {%- assign childLabel = c.hit_displaylabel | append: '' | strip -%}
+            {%- if childLabel == '' -%}
+              {%- assign childLabel = c.hit_name | append: '' | strip -%}
+            {%- endif -%}
+
+            {%- assign childCssClass = c.hit_cssclass | append: '' | strip -%}
+
+            {%- comment -%}
+            Build child href
+            {%- endcomment -%}
+
+            {%- assign childHref = '' -%}
+            {%- assign childHrefSource = '' -%}
+
+            {%- if c.hit_platformroute and c.hit_platformroute.id -%}
+
+              {%- assign childRoutePath = c['r.hit_physicalpath'] | append: '' | strip -%}
+              {%- assign childRouteQuery = c['r.hit_queryparameters'] | append: '' | strip -%}
+
+              {%- if childRoutePath != '' -%}
+
+                {%- assign childHref = childRoutePath -%}
+
+                {%- unless childHref startswith '/' -%}
+                  {%- assign childHref = '/' | append: childHref -%}
+                {%- endunless -%}
+
+                {%- if childHref != '/' and childHref endswith '/' -%}
+                  {%- assign childHref = childHref | replace_last: '/', '' -%}
+                {%- endif -%}
+
+                {%- assign childHrefSource = 'route' -%}
+
+                {%- assign childQs = childRouteQuery | append: '' | strip -%}
+
+                {%- if childQs startswith '?' -%}
+                  {%- assign childQs = childQs | remove_first: '?' | strip -%}
+                {%- endif -%}
+
+                {%- if childQs != '' -%}
+                  {%- assign childHref = childHref | append: '?' | append: childQs -%}
+                {%- endif -%}
+
+              {%- endif -%}
+
+            {%- endif -%}
+
+            {%- if childHref == '' -%}
+              {%- assign childRawUrl = c.hit_url | append: '' | strip -%}
+              {%- if childRawUrl != '' -%}
+                {%- assign childHref = childRawUrl -%}
+                {%- assign childHrefSource = 'url' -%}
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- if childHref == '' -%}
+              {%- assign childCmsPartial = c['wp.mspp_partialurl'] | append: '' | strip -%}
+              {%- if childCmsPartial != '' -%}
+                {%- if childCmsPartial startswith '/' -%}
+                  {%- assign childHref = childCmsPartial -%}
+                {%- else -%}
+                  {%- assign childHref = '/' | append: childCmsPartial -%}
+                {%- endif -%}
+                {%- assign childHrefSource = 'cms' -%}
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- assign childHrefCheck = childHref | append: '' | strip -%}
+
+            {%- if childHrefCheck == '' -%}
+              {%- assign childHrefCheck = '#' -%}
+            {%- endif -%}
+
+            {%- if childHrefCheck == '/?' -%}
+              {%- assign childHrefCheck = '/' -%}
+            {%- endif -%}
+
+            {%- if childHrefCheck != '?' and childHrefCheck endswith '?' -%}
+              {%- assign childHrefCheck = childHrefCheck | replace_last: '?', '' -%}
+            {%- endif -%}
+
+            {%- assign childNavPath = childHrefCheck | split: '?' | first | downcase | strip -%}
+            {%- if childNavPath != '/' and childNavPath endswith '/' -%}
+              {%- assign childNavPath = childNavPath | replace_last: '/', '' -%}
+            {%- endif -%}
+
+            {%- assign childIsActive = false -%}
+            {%- if currentPath == childNavPath -%}
+              {%- assign childIsActive = true -%}
+            {%- endif -%}
+
+            {%- if DEBUG -%}
+              <div style="background:#ffffcc;border:1px solid #999;padding:2px;font-size:10px;">
+                CHILD FOUND:
+                parent={{ itemId | escape }}
+                child={{ childLabel | escape }}
+                href={{ childHrefCheck | escape }}
+                source={{ childHrefSource | escape }}
+              </div>
+            {%- endif -%}
+
+            <li class="hit-nav__item hit-nav__item--child{% if childIsActive %} is-active{% endif %}{% if childCssClass != '' %} {{ childCssClass | escape }}{% endif %}">
+
+              {%- if childHrefCheck == '#' -%}
+                <span class="hit-nav__link hit-nav__link--nolink">
+                  {{ childLabel | escape }}
+                </span>
+              {%- else -%}
+  <a
+    class="hit-nav__link"
+    href="{{ childHrefCheck | escape }}"
+    {% if isActive %}aria-current="page"{% endif %}>
+    {{ childLabel | escape }}
+  </a>
+              {%- endif -%}
+
+              
+
+
+
+            </li>
+
+            {%- if DEBUG -%}
+              <div style="background:red;color:white;padding:4px;">
+                RENDERING CHILD {{ childLabel | escape }}
+              </div>
+            {%- endif -%}
+
+          {%- endif -%}
+
+        {%- endfor -%}
+
+      </ul>
+
+    {%- endif -%}
+
+  </li>
+
+{%- endif -%}

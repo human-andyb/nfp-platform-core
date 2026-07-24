@@ -1,0 +1,380 @@
+{%- comment -%}
+components--web-gallery-source-offering
+
+Adapter: Offerings -> hit_offering
+
+Responsibilities:
+1. Fetch visible offering records for the selected gallery config
+2. Build the correct href for each item
+3. Resolve Display Variant
+4. Route each item to the correct card template
+
+Source component rule:
+- This component should NOT render card markup directly.
+- It should route to card templates:
+  - components--web-gallery-card-standard
+  - components--web-gallery-card-compact
+  - components--web-gallery-card-featured
+
+Inputs:
+- gallery
+- maxItems
+- displayStyle
+- displayVariant
+- debug
+
+Display Variant values:
+- Default / Standard = 815390000
+- Featured           = 815390001
+- Compact            = 815390002
+- Minimal            = 815390003
+- Prominent          = 815390004
+
+Display Style values:
+- Grid      = 815390000
+- Carousel  = 815390001
+- Tiles     = 815390002
+- Actions   = 815390003
+- Masonry   = 815390004
+- Media     = 815390005
+
+Href priority:
+1. item hit_weburl override
+2. else build from gallery.hit_targetpage + id parameter
+
+Assumed PK:
+- hit_offeringid
+
+{%- endcomment -%}
+
+
+{%- assign DEBUG = debug | default: false -%}
+{%- assign maxItems = maxItems | default: 12 -%}
+
+
+{%- comment -%}
+Variant constants as strings.
+Using strings avoids Liquid comparison issues when Dataverse choice values
+sometimes arrive as numbers and sometimes render as text.
+{%- endcomment -%}
+
+{%- assign VARIANT_DEFAULT   = '815390000' -%}
+{%- assign VARIANT_FEATURED  = '815390001' -%}
+{%- assign VARIANT_COMPACT   = '815390002' -%}
+{%- assign VARIANT_MINIMAL   = '815390003' -%}
+{%- assign VARIANT_PROMINENT = '815390004' -%}
+{%- assign VARIANT_ACTION    = '815390005' -%}
+{%- assign VARIANT_MEDIA     = '815390006' -%}
+
+{%- assign STYLE_GRID     = '815390000' -%}
+{%- assign STYLE_CAROUSEL = '815390001' -%}
+{%- assign STYLE_MASONRY  = '815390004' -%}
+
+
+
+{%- assign displayVariantValue = displayVariant | default: VARIANT_DEFAULT | append: '' | strip -%}
+{%- assign displayStyleValue = displayStyle | default: STYLE_GRID | append: '' | strip -%}
+
+{%- assign colsValue = maxColumns | default: 3 | append:'' | strip -%}
+{%- assign rowsValue = maxRows | default: 0 | append:'' | strip -%}
+
+{%- assign colsClass = 'hit-gallery--cols-' | append: colsValue -%}
+{%- assign rowsClass = '' -%}
+
+{%- if rowsValue != '' and rowsValue != '0' -%}
+    {%- assign rowsClass = 'hit-gallery--rows-' | append: rowsValue -%}
+{%- endif -%}
+
+
+{%- comment -%}
+Gallery config values
+{%- endcomment -%}
+
+{%- assign targetPage = gallery.hit_targetpage | default: '/donate/?page=offerings-detail' | append: '' | strip -%}
+{%- assign idParamName = gallery.hit_idparametername | default: 'id' | append: '' | strip -%}
+
+{%- unless targetPage startswith '/' -%}
+  {%- assign targetPage = '/' | append: targetPage -%}
+{%- endunless -%}
+
+
+{%- comment -%}
+Open in new tab.
+Choice-safe handling.
+{%- endcomment -%}
+
+{%- assign openNewTab = false -%}
+{%- assign openNewTabValue = gallery.hit_openinnewtab.value | default: gallery.hit_openinnewtab | default: 0 | append: '' | strip -%}
+{%- assign openNewTabLabel = gallery.hit_openinnewtab.label | default: '' | append: '' | strip -%}
+
+{%- if openNewTabValue == '1' -%}
+  {%- assign openNewTab = true -%}
+{%- elsif openNewTabLabel == 'Yes' -%}
+  {%- assign openNewTab = true -%}
+{%- endif -%}
+
+{%- assign targetAttrs = '' -%}
+
+{%- if openNewTab -%}
+  {%- assign targetAttrs = ' target="_blank" rel="noopener noreferrer"' -%}
+{%- endif -%}
+
+
+{%- comment -%}
+Resolve offering type filter.
+Choice-safe handling.
+{%- endcomment -%}
+
+{%- assign offeringTypeValue = gallery.hit_offeringtype.value | default: gallery.hit_offeringtype | default: 0 | append: '' | strip -%}
+
+
+{%- comment -%}
+Optional passthrough: current gallery query param.
+Useful for preserving gallery context on detail pages.
+{%- endcomment -%}
+
+{%- assign currentGalleryParam = request.params.gallery | default: '' | downcase | strip -%}
+
+
+{%- comment -%}
+Fetch visible offerings.
+{%- endcomment -%}
+
+{%- fetchxml q -%}
+<fetch top="{{ maxItems }}" mapping="logical" distinct="true">
+  <entity name="hit_offering">
+    <attribute name="hit_offeringid" />
+    <attribute name="hit_displaytitle" />
+    <attribute name="hit_offeringname" />
+    <attribute name="hit_summary" />
+    <attribute name="hit_imageurl" />
+    <attribute name="hit_typelabel" />
+    <attribute name="hit_weburl" />
+
+    <filter type="and">
+      <condition attribute="hit_isactive" operator="eq" value="1" />
+      <condition attribute="hit_webvisible" operator="eq" value="1" />
+
+      {% if offeringTypeValue != '' and offeringTypeValue != '0' %}
+        <condition attribute="hit_offeringtype" operator="eq" value="{{ offeringTypeValue }}" />
+      {% endif %}
+    </filter>
+
+    <order attribute="createdon" descending="true" />
+  </entity>
+</fetch>
+{%- endfetchxml -%}
+
+
+{%- comment -%}
+Display style class.
+This belongs on the gallery wrapper.
+{%- endcomment -%}
+
+{%- assign galleryStyleClass = 'hit-gallery--grid' -%}
+
+{%- if displayStyleValue == STYLE_CAROUSEL -%}
+  {%- assign galleryStyleClass = 'hit-gallery--carousel' -%}
+
+{%- elsif displayStyleValue == STYLE_TILES -%}
+  {%- assign galleryStyleClass = 'hit-gallery--tiles' -%}
+
+{%- elsif displayStyleValue == STYLE_ACTIONS -%}
+  {%- assign galleryStyleClass = 'hit-gallery--actions' -%}
+
+{%- elsif displayStyleValue == STYLE_MASONRY -%}
+  {%- assign galleryStyleClass = 'hit-gallery--masonry' -%}
+
+{%- elsif displayStyleValue == STYLE_MEDIA -%}
+  {%- assign galleryStyleClass = 'hit-gallery--media' -%}
+{%- endif -%}
+
+
+{%- if DEBUG -%}
+  <pre style="white-space:pre-wrap;font-size:12px;background:#f7f7f7;border:1px solid #ddd;padding:8px;">
+OFFERINGS DEBUG
+
+rows={{ q.results.entities.size }}
+
+targetPage={{ targetPage }}
+idParamName={{ idParamName }}
+openNewTab={{ openNewTab }}
+currentGalleryParam={{ currentGalleryParam }}
+
+offeringTypeValue={{ offeringTypeValue }}
+
+displayStyle={{ displayStyle }}
+displayStyleValue={{ displayStyleValue }}
+galleryStyleClass={{ galleryStyleClass }}
+
+maxColumns={{ maxColumns }}
+colsClass={{ colsClass }}
+
+maxRows={{ maxRows }}
+rowsClass={{ rowsClass }}
+
+displayVariant={{ displayVariant }}
+displayVariantValue={{ displayVariantValue }}
+
+
+
+expectedRouter=
+{% if displayVariantValue == VARIANT_COMPACT %}
+components--web-gallery-card-compact
+{% elsif displayVariantValue == VARIANT_FEATURED %}
+components--web-gallery-card-featured
+{% elsif displayVariantValue == VARIANT_MINIMAL %}
+components--web-gallery-card-standard fallback for minimal
+{% elsif displayVariantValue == VARIANT_PROMINENT %}
+components--web-gallery-card-standard fallback for prominent
+{% else %}
+components--web-gallery-card-standard
+{% endif %}
+  </pre>
+{%- endif -%}
+
+
+{%- assign galleryVariantClass = 'hit-gallery--variant-standard' -%}
+
+{%- if displayVariantValue == VARIANT_COMPACT -%}
+    {%- assign galleryVariantClass = 'hit-gallery--variant-compact' -%}
+{%- elsif displayVariantValue == VARIANT_FEATURED -%}
+    {%- assign galleryVariantClass = 'hit-gallery--variant-featured' -%}
+{%- endif -%}
+
+  <section class="  hit-gallery  {{ galleryStyleClass }}  {{ galleryVariantClass }}  {{ colsClass }}  {{ rowsClass }}">
+
+  <div class="hit-gallery__items">
+
+    {%- if q.results.entities and q.results.entities.size > 0 -%}
+
+      {%- for r in q.results.entities -%}
+
+        {%- assign id = r.hit_offeringid | append: '' -%}
+
+        {%- assign title = r.hit_displaytitle | default: r.hit_offeringname | default: '' | append: '' | strip -%}
+        {%- assign summary = r.hit_summary | default: '' | append: '' | strip -%}
+        {%- assign imageUrl = r.hit_imageurl | default: '' | append: '' | strip -%}
+        {%- assign typeLabel = r.hit_typelabel | default: 'Offering' | append: '' | strip -%}
+
+        {%- assign href = r.hit_weburl | default: '' | append: '' | strip -%}
+
+
+        {%- comment -%}
+        Build href when no item-specific web URL exists.
+        {%- endcomment -%}
+
+        {%- if href == '' -%}
+
+          {%- assign base = targetPage | append: '' | strip -%}
+
+          {%- unless base startswith '/' -%}
+            {%- assign base = '/' | append: base -%}
+          {%- endunless -%}
+
+          {%- assign joiner = '?' -%}
+
+          {%- if base contains '?' -%}
+            {%- assign joiner = '&' -%}
+          {%- endif -%}
+
+          {%- assign encodedId = id | url_encode -%}
+
+          {%- assign href = base  | append: joiner  | append: idParamName  | append: '='  | append: encodedId   -%}
+
+          {%- comment -%}
+          Optional passthrough of current ?gallery=...
+          {%- endcomment -%}
+
+          {%- assign hrefHasGallery = false -%}
+
+          {%- if href contains 'gallery=' -%}
+            {%- assign hrefHasGallery = true -%}
+          {%- endif -%}
+
+          {%- if currentGalleryParam != '' and hrefHasGallery == false -%}
+            {%- assign encodedGallery = currentGalleryParam | url_encode -%}
+            {%- assign href = href | append: '&gallery=' | append: encodedGallery -%}
+          {%- endif -%}
+
+        {%- endif -%}
+
+
+        {%- comment -%}
+        Normalise href if it was percent-encoded somewhere upstream.
+        {%- endcomment -%}
+
+        {%- assign href = href | replace: '%2F', '/' -%}
+        {%- assign href = href | replace: '%2f', '/' -%}
+        {%- assign href = href | replace: '%3F', '?' -%}
+        {%- assign href = href | replace: '%3f', '?' -%}
+        {%- assign href = href | replace: '%3D', '=' -%}
+        {%- assign href = href | replace: '%3d', '=' -%}
+        {%- assign href = href | replace: '%26', '&' -%}
+        {%- assign href = href | replace: '%25', '%' -%}
+
+
+        {%- comment -%}
+        CARD ROUTER
+
+        Important:
+        - The source component does not render card markup.
+        - It delegates to card templates.
+        - Compact now calls components--web-gallery-card-compact.
+        - Featured now calls components--web-gallery-card-featured.
+        - Minimal and Prominent temporarily fall back to Standard until those templates exist.
+        {%- endcomment -%}
+
+        {%- if DEBUG -%}
+          <div style="display:none;">
+            item={{ forloop.index }}
+            title={{ title }}
+            displayVariantValue={{ displayVariantValue }}
+          </div>
+        {%- endif -%}
+
+
+        {%- if displayVariantValue == VARIANT_COMPACT -%}
+
+          {% include 'components--web-gallery-card-compact' offering: r title: title  summary: summary imageUrl: imageUrl href: href  targetAttr: targetAttrs  targetAttrs: targetAttrs  typeLabel: typeLabel debug: DEBUG %}
+
+        {%- elsif displayVariantValue == VARIANT_FEATURED -%}
+
+          {% include 'components--web-gallery-card-featured' offering: r title: title  summary: summary  imageUrl: imageUrl  href: href  targetAttr: targetAttrs  targetAttrs: targetAttrs  typeLabel: typeLabel  debug: DEBUG  %}
+
+        {%- elsif displayVariantValue == VARIANT_MINIMAL -%}
+
+          {%- comment -%}
+          Sprint 2 fallback.
+          Replace with components--web-gallery-card-minimal when created.
+          {%- endcomment -%}
+
+          {% include 'components--web-gallery-card-standard'  offering: r title: title  summary: summary imageUrl: imageUrl href: href  targetAttr: targetAttrs  targetAttrs: targetAttrs  typeLabel: typeLabel debug: DEBUG %}
+
+        {%- elsif displayVariantValue == VARIANT_PROMINENT -%}
+
+          {%- comment -%}
+          Sprint 2 fallback.
+          Replace with components--web-gallery-card-prominent when created.
+          {%- endcomment -%}
+
+          {% include 'components--web-gallery-card-standard' offering: r title: title  summary: summary imageUrl: imageUrl href: href  targetAttr: targetAttrs  targetAttrs: targetAttrs  typeLabel: typeLabel debug: DEBUG %}
+
+        {%- else -%}
+
+          {% include 'components--web-gallery-card-standard' offering: r title: title  summary: summary imageUrl: imageUrl href: href  targetAttr: targetAttrs  targetAttrs: targetAttrs  typeLabel: typeLabel debug: DEBUG %}
+
+        {%- endif -%}
+
+      {%- endfor -%}
+
+    {%- else -%}
+
+      <div class="hit-gallery__empty">
+        <p>No offerings found.</p>
+      </div>
+
+    {%- endif -%}
+
+  </div>
+</section>

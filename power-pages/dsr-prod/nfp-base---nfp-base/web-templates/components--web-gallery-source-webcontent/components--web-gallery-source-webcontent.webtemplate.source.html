@@ -1,0 +1,121 @@
+ {%- comment -%}
+Adapter: Web Content
+Inputs: gallery, maxItems, debug
+
+Locked contract:
+- Filter: hit_isactive=1 AND hit_webvisible=1
+- href:
+   1) item hit_weburl override
+   2) else gallery.hit_targetpage + ?{gallery.hit_idparametername}=<webcontentId>
+- Ensure targetPage is absolute (starts with '/')
+- Encode ONLY the id value (url_encode)
+- Avoid multiline assign pipes (Power Pages-safe)
+ASSUMED PK: hit_webcontentid  (change if needed)
+{%- endcomment -%}
+
+{%- assign DEBUG = debug | default: false -%}
+{%- assign maxItems = maxItems | default: 12 -%}
+
+{%- assign cardTemplateValue = cardTemplateValue | default: CARD_STANDARD -%}
+{%- assign cardModifier = cardModifier | default: 'hit-card--standard' -%}
+
+{%- assign targetPage = gallery.hit_targetpage | default: '/web-content-detail/' | append: '' | strip -%}
+{%- assign idParamName = gallery.hit_idparametername | default: 'id' | append: '' | strip -%}
+
+{%- assign firstChar = targetPage | slice: 0, 1 -%}
+{%- if firstChar != '/' -%}
+  {%- assign targetPage = '/' | append: targetPage -%}
+{%- endif -%}
+
+{%- assign CARD_STANDARD = 815390000 -%}
+{%- assign CARD_COMPACT  = 815390001 -%}
+{%- assign CARD_FEATURED = 815390002 -%}
+{%- assign cardTemplateValue = gallery.hit_cardtemplate.value | default: gallery.hit_cardtemplate | default: CARD_STANDARD -%}
+
+
+{%- comment -%} Open-in-new-tab (choice-safe) {%- endcomment -%}
+{%- assign openNewTab = false -%}
+{%- assign openNewTabValue = gallery.hit_openinnewtab.value | default: gallery.hit_openinnewtab | default: 0 -%}
+{%- assign openNewTabLabel = gallery.hit_openinnewtab.label | default: '' | append: '' | strip -%}
+{%- if openNewTabValue == 1 or openNewTabValue == '1' -%}
+  {%- assign openNewTab = true -%}
+{%- elsif openNewTabLabel == 'Yes' -%}
+  {%- assign openNewTab = true -%}
+{%- endif -%}
+
+{%- assign targetAttrs = '' -%}
+{%- if openNewTab -%}
+  {%- assign targetAttrs = ' target="_blank" rel="noopener noreferrer"' -%}
+{%- endif -%}
+
+{%- fetchxml q -%}
+<fetch top="{{ maxItems }}" mapping="logical" distinct="true">
+  <entity name="hit_webcontent">
+    <attribute name="hit_webcontentid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_displaytitle" />
+    <attribute name="hit_summary" />
+    <attribute name="hit_weburl" />
+    <attribute name="hit_typelabel" />
+    <attribute name="hit_imageurl" />
+    <filter type="and">
+      <condition attribute="hit_isactive" operator="eq" value="1" />
+      <condition attribute="hit_webvisible" operator="eq" value="1" />
+    </filter>
+    <order attribute="hit_displaytitle" descending="false" />
+    <order attribute="hit_name" descending="false" />
+  </entity>
+</fetch>
+{%- endfetchxml -%}
+
+
+{%- if DEBUG -%}
+  <pre style="white-space:pre-wrap;font-size:12px;background:#f7f7f7;border:1px solid #ddd;padding:8px;">
+WEB CONTENT DEBUG
+rows={{ q.results.entities.size }}
+targetPage={{ targetPage }}
+idParamName={{ idParamName }}
+openNewTab={{ openNewTab }}
+  </pre>
+{%- endif -%}
+
+
+{%- if q.results.entities and q.results.entities.size > 0 -%}
+  <div class="hit-gallery hit-gallery--impactstories">
+    <div class="hit-gallery__items">
+
+{%- for s in q.results.entities -%}
+
+  {%- assign title = s.hit_displaytitle | default: s.hit_name | default: '' | append: '' | strip -%}
+  {%- assign summary = s.hit_summary | default: '' | append: '' | strip -%}
+  {%- assign imageUrl = s.hit_imageurl | default: '' | append: '' | strip -%}
+  {%- assign typeLabel = s.hit_typelabel | default: 'Article' | append: '' | strip -%}
+
+  {%- assign storyId = s.hit_webcontentid | default: '' | append: '' | strip -%}
+
+
+  {%- comment -%} Locked href resolution {%- endcomment -%}
+  {%- assign href = p.hit_weburl | default: '' | append: '' | strip -%}
+  {%- if href == '' -%}
+    {%- assign joiner = '?' -%}
+    {%- if targetPage contains '?' -%}{%- assign joiner = '&' -%}{%- endif -%}
+    {%- assign href = targetPage | append: joiner | append: idParamName | append: '=' | append: storyid -%}
+  {%- endif -%}
+
+  {%- if cardTemplateValue == CARD_COMPACT -%}
+    {% include 'components--web-gallery-card-compact' title: title summary: summary imageUrl: imageUrl typeLabel: typeLabel href: href targetAttr: targetAttr ctaLabel: 'View' %}
+  {%- elsif cardTemplateValue == CARD_FEATURED -%}
+    {% include 'components--web-gallery-card-featured' title: title summary: summary imageUrl: imageUrl typeLabel: typeLabel href: href targetAttr: targetAttr ctaLabel: 'View' %}
+  {%- else -%}
+    {% include 'components--web-gallery-card-standard' title: title summary: summary imageUrl: imageUrl typeLabel: typeLabel href: href targetAttr: targetAttr ctaLabel: 'View' %}
+  {%- endif -%}
+
+{%- endfor -%}
+
+    </div>
+  </div>
+{%- else -%}
+  <div class="hit-gallery hit-gallery--impactstories">
+    <div class="hit-gallery__empty"><p>No web content found.</p></div>
+  </div>
+{%- endif -%}

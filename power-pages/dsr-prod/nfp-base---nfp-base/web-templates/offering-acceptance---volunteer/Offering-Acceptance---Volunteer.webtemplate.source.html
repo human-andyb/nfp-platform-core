@@ -1,0 +1,70 @@
+ {%- assign offering_id = request.params['offeringid'] | default: request.params['id'] | default: '' | strip -%}
+
+<div class="wrap">
+  {%- if offering_id == blank -%}
+    <div class="alert">
+      <strong>Missing offering.</strong>
+      <div class="muted">Expected <code>?offeringid=&lt;guid&gt;</code></div>
+    </div>
+  {%- else -%}
+
+    {%- fetchxml q -%}
+    <fetch top="1" mapping="logical">
+      <entity name="hit_offering">
+        <attribute name="hit_offeringid" />
+        <attribute name="hit_offeringname" />
+        <attribute name="hit_description" />
+        <attribute name="hit_imageurldetail" />
+        <attribute name="hit_ctalabel" />
+        <filter>
+          <condition attribute="hit_offeringid" operator="eq" value="{{ offering_id }}" />
+          <condition attribute="hit_isactive" operator="eq" value="1" />
+        </filter>
+      </entity>
+    </fetch>
+    {%- endfetchxml -%}
+
+    {%- assign o = q.results.entities | first -%}
+
+    {%- if o == nil -%}
+      <div class="alert">
+        <strong>Offering not found.</strong>
+        <div class="muted">No offering matched <code>{{ offering_id | escape }}</code></div>
+      </div>
+    {%- else -%}
+      {%- assign name = o.hit_offeringname | default: 'Volunteer' -%}
+      {%- assign desc = o.hit_description | default: '' -%}
+      {%- assign img  = o.hit_imageurldetail | default: '' | strip -%}
+      {%- assign cta  = o.hit_ctalabel | default: 'Express interest' | strip -%}
+
+      <div class="card">
+        <div class="hero">
+          {%- if img != blank -%}
+            <img src="{{ img | escape }}" alt="{{ name | escape }}" loading="lazy" />
+          {%- endif -%}
+        </div>
+
+        <div class="body">
+          <h1 class="title">{{ name | escape }}</h1>
+
+          <div class="desc">
+            {%- if desc != blank -%}{{ desc }}{%- else -%}<span class="muted">Details coming soon.</span>{%- endif -%}
+          </div>
+
+          <div class="donate-box" style="margin-top:18px;">
+            <strong>Volunteer EOI (stub)</strong>
+            <div class="muted" style="margin-top:6px;">
+              This page will become an expression-of-interest form (contact details, availability, preferences) and create an EOI record.
+            </div>
+
+            <div class="cta">
+              <a class="btn" href="#" aria-disabled="true">{{ cta | escape }}</a>
+              <a class="btn secondary" href="/Offerings/">Back to Offerings</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</div>

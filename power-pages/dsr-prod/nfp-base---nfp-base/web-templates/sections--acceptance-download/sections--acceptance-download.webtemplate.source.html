@@ -1,0 +1,915 @@
+ {% assign DEBUG = debug | default: request.params.debug == '1' %}
+{% assign acceptanceId = acceptanceId | default: request.params.acceptanceid | default: '' | strip %}
+{% assign offeringName = offeringName | default: '' | strip %}
+
+{% comment %}
+  Generic copy defaults.
+  These can be overridden by the router, section properties, or future offering-driven fields.
+{% endcomment %}
+
+{% assign acceptanceTypeLabel = acceptanceTypeLabel | default: 'Expression of Interest' %}
+{% assign formTitle = formTitle | default: 'Tell us about yourself' %}
+{% assign formSubtitle = formSubtitle | default: "We'll use these details to respond to your expression of interest and keep you updated." %}
+{% assign progressText = progressText | default: 'Enter your details to continue' %}
+{% assign contactDetailsTitle = contactDetailsTitle | default: 'Contact details' %}
+{% assign submitButtonText = submitButtonText | default: 'Register My Interest' %}
+{% assign submittingButtonText = submittingButtonText | default: 'Saving...' %}
+{% assign successMessage = successMessage | default: 'Thanks. Your expression of interest has been saved.' %}
+{% assign privacyText = privacyText | default: 'Your information will only be used to respond to this expression of interest.' %}
+{% assign successRedirectUrl = successRedirectUrl | default: request.params.returnurl | default: request.params.redirect | default: '' | strip %}
+
+{% assign summaryIntro = summaryIntro | default: 'Register your interest and a member of our team will contact you with more information about this opportunity and the next steps.' %}
+{% assign nextSectionTitle = nextSectionTitle | default: 'What happens next' %}
+{% assign whySectionTitle = whySectionTitle | default: 'Why register?' %}
+
+{% if acceptanceId == '' %}
+
+  <div class="hit-alert hit-alert-error" role="alert">Missing acceptance id.</div>
+
+{% else %}
+
+  {% fetchxml acc_q %}
+  <fetch top="1">
+    <entity name="hit_offeringacceptance">
+      <attribute name="hit_offeringacceptanceid" />
+      <attribute name="hit_firstname" />
+      <attribute name="hit_lastname" />
+      <attribute name="hit_email" />
+      <attribute name="hit_mobilephone" />
+
+      <filter>
+        <condition attribute="hit_offeringacceptanceid"
+                   operator="eq"
+                   value="{{ acceptanceId }}" />
+      </filter>
+    </entity>
+  </fetch>
+  {% endfetchxml %}
+
+  {% assign acc = acc_q.results.entities | first %}
+
+  {% if acc == nil %}
+
+    <div class="hit-alert hit-alert-error" role="alert">Acceptance not found.</div>
+
+  {% else %}
+
+    {% assign firstName = acc.hit_firstname | default: '' %}
+    {% assign lastName  = acc.hit_lastname | default: '' %}
+    {% assign email     = acc.hit_email | default: '' %}
+    {% assign mobile    = acc.hit_mobilephone | default: '' %}
+
+    {% if offeringName == '' %}
+      {% assign offeringName = acceptanceTypeLabel %}
+    {% endif %}
+
+    {% if DEBUG %}
+      <div style="background:#111;color:#0f0;padding:8px;margin-bottom:10px;font-family:monospace;font-size:13px;">
+        ✅ sections--acceptance-resource loaded<br>
+        acceptanceId={{ acceptanceId | escape }}<br>
+        offeringName={{ offeringName | escape }}<br>
+        successRedirectUrl={{ successRedirectUrl | escape }}
+      </div>
+    {% endif %}
+
+    <div class="hit-acceptance hit-acceptance--basic hit-acceptance--resource">
+
+      <style>
+        .hit-acceptance--basic{
+          --hit-brand-primary:#007f89;
+          --hit-brand-primary-hover:#006a72;
+          --hit-brand-primary-soft:#E6F4F5;
+          --hit-brand-primary-soft-border:#B7DDE0;
+
+          --hit-radius-sm:14px;
+          --hit-radius-md:18px;
+          --hit-radius-lg:24px;
+          --hit-radius-pill:999px;
+
+          --hit-border:#DDE3EA;
+          --hit-border-strong:#CBD5E1;
+          --hit-border-soft:#E5E7EB;
+
+          --hit-surface:#FFFFFF;
+          --hit-surface-soft:#F8FAFC;
+          --hit-surface-muted:#F1F5F9;
+
+          --hit-text:#071936;
+          --hit-text-muted:#334155;
+          --hit-text-soft:#64748B;
+
+          --hit-danger:#B91C1C;
+          --hit-danger-soft:#FEF2F2;
+          --hit-warning:#C2410C;
+
+          --hit-shadow-card:0 12px 34px rgba(15,23,42,.07);
+          --hit-shadow-soft:0 8px 24px rgba(15,23,42,.04);
+
+          color:var(--hit-text);
+          font-family:inherit;
+        }
+
+        .hit-acceptance--basic *,
+        .hit-acceptance--basic *::before,
+        .hit-acceptance--basic *::after{
+          box-sizing:border-box;
+        }
+
+        .hit-acceptance--basic .hit-acceptance__shell{
+          width:100%;
+          max-width:1200px;
+          margin:0 auto;
+          padding:2rem 1rem 6rem;
+        }
+
+        .hit-acceptance--basic .hit-acceptance__grid{
+          display:grid;
+          grid-template-columns:1fr;
+          gap:2rem;
+          width:100%;
+        }
+
+        @media(min-width:992px){
+          .hit-acceptance--basic .hit-acceptance__shell{
+            padding:3rem 1rem 7rem;
+          }
+
+          .hit-acceptance--basic .hit-acceptance__grid{
+            grid-template-columns:minmax(0,1fr) minmax(420px,.9fr);
+            align-items:start;
+            gap:2rem;
+          }
+        }
+
+        .hit-acceptance--basic .hit-card{
+          position:relative;
+          background:var(--hit-surface);
+          border:1px solid var(--hit-border);
+          border-radius:var(--hit-radius-lg);
+          box-shadow:var(--hit-shadow-card);
+        }
+
+        .hit-acceptance--basic .hit-acceptance__summary-card{
+          overflow:hidden;
+          padding:2.5rem;
+        }
+
+        .hit-acceptance--basic .hit-acceptance__summary-card::before{
+          content:"";
+          position:absolute;
+          top:0;
+          left:0;
+          right:0;
+          height:6px;
+          background:var(--hit-brand-primary);
+        }
+
+        .hit-acceptance--basic .hit-acceptance__eyebrow{
+          margin:0 0 .9rem;
+          color:var(--hit-brand-primary);
+          text-transform:uppercase;
+          letter-spacing:.11em;
+          font-size:.78rem;
+          line-height:1.2;
+          font-weight:900;
+        }
+
+        .hit-acceptance--basic .hit-acceptance__title{
+          margin:0;
+          color:var(--hit-text);
+          font-size:clamp(2.15rem,4vw,3.25rem);
+          line-height:1.04;
+          font-weight:950;
+          letter-spacing:-.035em;
+        }
+
+        .hit-acceptance--basic .hit-acceptance__lead{
+          max-width:34rem;
+          margin:1.35rem 0 0;
+          color:var(--hit-text-muted);
+          font-size:1.05rem;
+          line-height:1.65;
+        }
+
+        .hit-acceptance--basic .hit-acceptance__divider{
+          width:100%;
+          height:1px;
+          margin:2rem 0 1.6rem;
+          background:var(--hit-border-soft);
+        }
+
+        .hit-acceptance--basic .hit-acceptance__section{
+          margin-top:0;
+        }
+
+        .hit-acceptance--basic .hit-acceptance__section + .hit-acceptance__section{
+          margin-top:1.75rem;
+        }
+
+        .hit-acceptance--basic .hit-acceptance__section-title{
+          margin:0 0 1rem;
+          color:var(--hit-text);
+          font-size:1rem;
+          line-height:1.25;
+          font-weight:900;
+        }
+
+        .hit-acceptance--basic .hit-list{
+          display:grid;
+          gap:.75rem;
+          margin:0;
+          padding:0;
+          list-style:none;
+        }
+
+        .hit-acceptance--basic .hit-list li{
+          display:flex;
+          align-items:flex-start;
+          gap:.75rem;
+          color:var(--hit-text);
+          font-size:.98rem;
+          line-height:1.5;
+          font-weight:700;
+        }
+
+        .hit-acceptance--basic .hit-list li::before{
+          content:"✓";
+          flex:0 0 24px;
+          width:24px;
+          height:24px;
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+          margin-top:.02rem;
+          border-radius:var(--hit-radius-pill);
+          background:var(--hit-brand-primary);
+          color:#fff;
+          font-size:.95rem;
+          line-height:1;
+          font-weight:950;
+        }
+
+        .hit-acceptance--basic .hit-form-panel{
+          padding:2rem;
+        }
+
+        @media(min-width:768px){
+          .hit-acceptance--basic .hit-form-panel{
+            padding:2.25rem;
+          }
+        }
+
+        .hit-acceptance--basic .hit-form-title{
+          margin:0;
+          color:var(--hit-text);
+          font-size:clamp(2rem,3vw,2.35rem);
+          line-height:1.05;
+          font-weight:950;
+          letter-spacing:-.035em;
+        }
+
+        .hit-acceptance--basic .hit-form-subtitle{
+          margin:.9rem 0 1.6rem;
+          color:var(--hit-text-muted);
+          font-size:1rem;
+          line-height:1.65;
+        }
+
+        .hit-acceptance--basic .hit-status-pill{
+          display:flex;
+          align-items:center;
+          gap:.75rem;
+          width:100%;
+          margin:0 0 1.5rem;
+          padding:.75rem 1rem;
+          border:1px solid var(--hit-brand-primary-soft-border);
+          border-radius:var(--hit-radius-pill);
+          background:var(--hit-brand-primary-soft);
+          color:var(--hit-brand-primary);
+          font-size:.9rem;
+          line-height:1.35;
+          font-weight:900;
+        }
+
+        .hit-acceptance--basic .hit-status-pill::before{
+          content:"";
+          flex:0 0 10px;
+          width:10px;
+          height:10px;
+          border-radius:var(--hit-radius-pill);
+          background:var(--hit-brand-primary);
+        }
+
+        .hit-acceptance--basic .hit-form-card{
+          margin:0 0 1.5rem;
+          padding:1.4rem;
+          border:1px solid var(--hit-border);
+          border-radius:var(--hit-radius-md);
+          background:var(--hit-surface);
+        }
+
+        @media(min-width:768px){
+          .hit-acceptance--basic .hit-form-card{
+            padding:1.5rem;
+          }
+        }
+
+        .hit-acceptance--basic .hit-form-card__title{
+          margin:0 0 1.25rem;
+          color:var(--hit-text);
+          font-size:1rem;
+          line-height:1.3;
+          font-weight:950;
+        }
+
+        .hit-acceptance--basic .hit-field{
+          display:grid;
+          gap:.55rem;
+          margin:0 0 1.35rem;
+        }
+
+        .hit-acceptance--basic .hit-field:last-child{
+          margin-bottom:0;
+        }
+
+        .hit-acceptance--basic .hit-field label{
+          color:var(--hit-text);
+          font-size:.92rem;
+          line-height:1.25;
+          font-weight:900;
+        }
+
+        .hit-acceptance--basic .hit-required{
+          color:var(--hit-warning);
+          font-weight:950;
+        }
+
+        .hit-acceptance--basic .hit-field input{
+          width:100%;
+          min-height:48px;
+          padding:.85rem 1rem;
+          border:1px solid var(--hit-border-strong);
+          border-radius:var(--hit-radius-pill);
+          background:#fff;
+          color:var(--hit-text);
+          font:inherit;
+          font-size:16px;
+          line-height:1.4;
+          transition:border-color .16s ease, box-shadow .16s ease, background .16s ease;
+        }
+
+        .hit-acceptance--basic .hit-field input:focus{
+          outline:none;
+          border-color:var(--hit-brand-primary);
+          box-shadow:0 0 0 4px rgba(0,127,137,.16);
+        }
+
+        .hit-acceptance--basic .hit-field input[aria-invalid="true"]{
+          border-color:var(--hit-danger);
+          background:#fffafa;
+        }
+
+        .hit-acceptance--basic .hit-field input[aria-invalid="true"]:focus{
+          box-shadow:0 0 0 4px rgba(185,28,28,.12);
+        }
+
+        .hit-acceptance--basic .hit-field-help{
+          margin:.15rem 0 0;
+          color:var(--hit-text-soft);
+          font-size:.88rem;
+          line-height:1.45;
+        }
+
+        .hit-acceptance--basic .hit-actions{
+          display:grid;
+          gap:1rem;
+        }
+
+        .hit-acceptance--basic .hit-button{
+          width:100%;
+          min-height:56px;
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+          gap:.5rem;
+          margin:0;
+          padding:1rem 1.5rem;
+          border:0;
+          border-radius:var(--hit-radius-pill);
+          background:var(--hit-brand-primary);
+          color:#fff;
+          font:inherit;
+          font-size:1rem;
+          line-height:1.2;
+          font-weight:950;
+          text-align:center;
+          cursor:pointer;
+          transition:background .16s ease, opacity .16s ease, transform .16s ease;
+        }
+
+        .hit-acceptance--basic .hit-button:hover{
+          background:var(--hit-brand-primary-hover);
+        }
+
+        .hit-acceptance--basic .hit-button:focus{
+          outline:none;
+          box-shadow:0 0 0 4px rgba(0,127,137,.18);
+        }
+
+        .hit-acceptance--basic .hit-button:disabled{
+          opacity:.7;
+          cursor:not-allowed;
+          transform:none;
+        }
+
+        .hit-acceptance--basic .hit-privacy{
+          max-width:34rem;
+          margin:1rem auto 0;
+          color:var(--hit-text-muted);
+          font-size:.88rem;
+          line-height:1.55;
+          text-align:center;
+        }
+
+        .hit-acceptance--basic .hit-message{
+          display:none;
+          margin:1rem 0 0;
+          padding:.85rem 1rem;
+          border-radius:var(--hit-radius-sm);
+          font-size:.95rem;
+          line-height:1.45;
+          font-weight:800;
+        }
+
+        .hit-acceptance--basic .hit-message--error{
+          border:1px solid rgba(185,28,28,.22);
+          background:var(--hit-danger-soft);
+          color:var(--hit-danger);
+        }
+
+        .hit-acceptance--basic .hit-message--success{
+          border:1px solid rgba(0,127,137,.25);
+          background:var(--hit-brand-primary-soft);
+          color:var(--hit-brand-primary);
+        }
+
+        @media(max-width:767px){
+          .hit-acceptance--basic .hit-acceptance__summary-card,
+          .hit-acceptance--basic .hit-form-panel{
+            padding:1.5rem;
+          }
+
+          .hit-acceptance--basic .hit-form-card{
+            padding:1.25rem;
+          }
+        }
+      </style>
+
+      <div class="hit-acceptance__shell">
+        <div class="hit-acceptance__grid">
+
+          <aside class="hit-acceptance__left" aria-label="{{ acceptanceTypeLabel | escape }} summary">
+            <div class="hit-card hit-acceptance__summary-card">
+
+              <div class="hit-acceptance__eyebrow">
+                {{ acceptanceTypeLabel | escape }}
+              </div>
+
+              <h1 class="hit-acceptance__title">
+                {{ offeringName | escape }}
+              </h1>
+
+              <p class="hit-acceptance__lead">
+                {{ summaryIntro | escape }}
+              </p>
+
+              <div class="hit-acceptance__divider"></div>
+
+              <div class="hit-acceptance__section">
+                <h3 class="hit-acceptance__section-title">
+                  {{ nextSectionTitle | escape }}
+                </h3>
+
+                <ul class="hit-list">
+                  <li>We'll contact you</li>
+                  <li>We'll answer your questions</li>
+                  <li>No obligation to proceed</li>
+                </ul>
+              </div>
+
+              <div class="hit-acceptance__section">
+                <h3 class="hit-acceptance__section-title">
+                  {{ whySectionTitle | escape }}
+                </h3>
+
+                <ul class="hit-list">
+                  <li>Learn more before committing</li>
+                  <li>Understand whether this opportunity is right for you</li>
+                  <li>Stay informed about next steps</li>
+                </ul>
+              </div>
+
+            </div>
+          </aside>
+
+          <main class="hit-acceptance__right">
+            <div class="hit-card hit-form-panel">
+
+              <h2 class="hit-form-title">
+                {{ formTitle | escape }}
+              </h2>
+
+              <p class="hit-form-subtitle">
+                {{ formSubtitle | escape }}
+              </p>
+
+              <div class="hit-status-pill">
+                {{ progressText | escape }}
+              </div>
+
+              <input type="hidden"
+                     id="hitAcceptanceId"
+                     value="{{ acc.hit_offeringacceptanceid }}" />
+
+              <input type="hidden"
+                     id="hitSuccessRedirectUrl"
+                     value="{{ successRedirectUrl | escape }}" />
+
+              <div class="hit-form-card">
+
+                <h3 class="hit-form-card__title">
+                  {{ contactDetailsTitle | escape }}
+                </h3>
+
+                <div class="hit-field">
+                  <label for="hitFirstName">
+                    First name <span class="hit-required">*</span>
+                  </label>
+                  <input id="hitFirstName"
+                         name="hitFirstName"
+                         type="text"
+                         autocomplete="given-name"
+                         value="{{ firstName | escape }}"
+                         required />
+                </div>
+
+                <div class="hit-field">
+                  <label for="hitLastName">
+                    Last name <span class="hit-required">*</span>
+                  </label>
+                  <input id="hitLastName"
+                         name="hitLastName"
+                         type="text"
+                         autocomplete="family-name"
+                         value="{{ lastName | escape }}"
+                         required />
+                </div>
+
+                <div class="hit-field">
+                  <label for="hitEmail">
+                    Email <span class="hit-required">*</span>
+                  </label>
+                  <input id="hitEmail"
+                         name="hitEmail"
+                         type="email"
+                         autocomplete="email"
+                         value="{{ email | escape }}"
+                         required />
+                </div>
+
+                <div class="hit-field">
+                  <label for="hitMobile">
+                    Mobile
+                  </label>
+                  <input id="hitMobile"
+                         name="hitMobile"
+                         type="tel"
+                         autocomplete="tel"
+                         value="{{ mobile | escape }}" />
+                  <p class="hit-field-help">
+                    Optional. Include a mobile number if you'd like us to contact you by phone.
+                  </p>
+                </div>
+
+              </div>
+
+              <div class="hit-actions">
+                <button id="hitSubmitAcceptance"
+                        class="hit-button"
+                        type="button"
+                        data-default-text="{{ submitButtonText | escape }}"
+                        data-busy-text="{{ submittingButtonText | escape }}">
+                  {{ submitButtonText | escape }}
+                </button>
+              </div>
+
+              <div class="hit-privacy">
+                {{ privacyText | escape }}
+              </div>
+
+              <div id="hitErrorMessage"
+                   class="hit-message hit-message--error"
+                   role="alert"></div>
+
+              <div id="hitSuccessMessage"
+                   class="hit-message hit-message--success"
+                   role="status"
+                   aria-live="polite"></div>
+
+            </div>
+          </main>
+
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      (function(){
+        const acceptanceIdEl = document.getElementById("hitAcceptanceId");
+        const redirectUrlEl = document.getElementById("hitSuccessRedirectUrl");
+        const submitBtn = document.getElementById("hitSubmitAcceptance");
+        const errBox = document.getElementById("hitErrorMessage");
+        const successBox = document.getElementById("hitSuccessMessage");
+
+        const fieldIds = [
+          "hitFirstName",
+          "hitLastName",
+          "hitEmail",
+          "hitMobile"
+        ];
+
+        if(!submitBtn){
+          return;
+        }
+
+        const defaultButtonText = submitBtn.getAttribute("data-default-text") || "Submit";
+        const busyButtonText = submitBtn.getAttribute("data-busy-text") || "Saving...";
+
+        function getEl(id){
+          return document.getElementById(id);
+        }
+
+        function getValue(id){
+          const el = getEl(id);
+          return el ? el.value.trim() : "";
+        }
+
+        function setButtonBusy(isBusy){
+          submitBtn.disabled = isBusy;
+          submitBtn.textContent = isBusy ? busyButtonText : defaultButtonText;
+        }
+
+        function clearFieldErrors(){
+          fieldIds.forEach(function(id){
+            const el = getEl(id);
+            if(el){
+              el.removeAttribute("aria-invalid");
+            }
+          });
+        }
+
+        function markInvalid(id){
+          const el = getEl(id);
+          if(el){
+            el.setAttribute("aria-invalid", "true");
+            el.focus();
+          }
+        }
+
+        function hideMessage(el){
+          if(el){
+            el.style.display = "none";
+            el.textContent = "";
+          }
+        }
+
+        function showMessage(el, message){
+          if(el){
+            el.textContent = message;
+            el.style.display = "block";
+          }
+        }
+
+        function showError(message, fieldId){
+          hideMessage(successBox);
+          showMessage(errBox, message);
+
+          if(fieldId){
+            markInvalid(fieldId);
+          }
+        }
+
+        function showSuccess(message){
+          hideMessage(errBox);
+          showMessage(successBox, message);
+        }
+
+        function clearMessages(){
+          hideMessage(errBox);
+          hideMessage(successBox);
+          clearFieldErrors();
+        }
+
+        function isValidEmail(value){
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        }
+
+        function normaliseGuid(value){
+          return (value || "").replace(/[{}]/g, "").trim();
+        }
+
+        function getRedirectUrl(){
+          const value = redirectUrlEl ? redirectUrlEl.value.trim() : "";
+
+          if(!value){
+            return "";
+          }
+
+          /*
+            Avoid open redirects.
+            Only allow relative portal URLs.
+          */
+          if(value.indexOf("/") === 0 && value.indexOf("//") !== 0){
+            return value;
+          }
+
+          return "";
+        }
+
+        function validatePayload(payload){
+          if(!payload.hit_firstname){
+            return {
+              message: "Please enter your first name.",
+              fieldId: "hitFirstName"
+            };
+          }
+
+          if(!payload.hit_lastname){
+            return {
+              message: "Please enter your last name.",
+              fieldId: "hitLastName"
+            };
+          }
+
+          if(!payload.hit_email){
+            return {
+              message: "Please enter your email address.",
+              fieldId: "hitEmail"
+            };
+          }
+
+          if(!isValidEmail(payload.hit_email)){
+            return {
+              message: "Please enter a valid email address.",
+              fieldId: "hitEmail"
+            };
+          }
+
+          return null;
+        }
+
+        async function getCsrfToken(){
+          if(window.shell && typeof window.shell.getTokenDeferred === "function"){
+            return new Promise(function(resolve){
+              window.shell.getTokenDeferred()
+                .done(function(token){
+                  resolve(token || "");
+                })
+                .fail(function(){
+                  resolve("");
+                });
+            });
+          }
+
+          const response = await fetch("/_layout/tokenhtml", {
+            credentials: "same-origin"
+          });
+
+          const html = await response.text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          const tokenInput = doc.querySelector("input[name='__RequestVerificationToken']");
+
+          return tokenInput ? tokenInput.value : "";
+        }
+
+        async function parseErrorMessage(response){
+          let message = "Save failed. Please try again.";
+
+          try{
+            const body = await response.json();
+
+            if(body && body.error && body.error.message){
+              message = body.error.message;
+            }
+          } catch(parseError){
+            try{
+              const text = await response.text();
+
+              if(text){
+                message = text;
+              }
+            } catch(textError){
+              // Keep the generic message.
+            }
+          }
+
+          return message;
+        }
+
+        function dispatchSavedEvent(payload){
+          try{
+            const event = new CustomEvent("hit:acceptance:saved", {
+              detail: payload
+            });
+
+            window.dispatchEvent(event);
+          } catch(eventError){
+            // CustomEvent should be available in modern browsers.
+          }
+        }
+
+        submitBtn.addEventListener("click", async function(){
+          clearMessages();
+          setButtonBusy(true);
+
+          try{
+            const acceptanceId = normaliseGuid(acceptanceIdEl ? acceptanceIdEl.value : "");
+
+            if(!acceptanceId){
+              showError("Missing acceptance id. Please refresh the page and try again.");
+              setButtonBusy(false);
+              return;
+            }
+
+            const payload = {
+              hit_firstname: getValue("hitFirstName"),
+              hit_lastname: getValue("hitLastName"),
+              hit_email: getValue("hitEmail"),
+              hit_mobilephone: getValue("hitMobile")
+            };
+
+            const validation = validatePayload(payload);
+
+            if(validation){
+              showError(validation.message, validation.fieldId);
+              setButtonBusy(false);
+              return;
+            }
+
+            const token = await getCsrfToken();
+
+            if(!token){
+              showError("Security token could not be loaded. Please refresh the page and try again.");
+              setButtonBusy(false);
+              return;
+            }
+
+            const response = await fetch("/_api/hit_offeringacceptances(" + acceptanceId + ")", {
+              method: "PATCH",
+              credentials: "same-origin",
+              headers: {
+                "Content-Type": "application/json",
+                "__RequestVerificationToken": token,
+                "If-Match": "*"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if(!response.ok){
+              const errorMessage = await parseErrorMessage(response);
+              showError(errorMessage);
+              setButtonBusy(false);
+              return;
+            }
+
+            showSuccess("{{ successMessage | escape }}");
+
+            dispatchSavedEvent({
+              acceptanceId: acceptanceId,
+              payload: payload,
+              template: "sections--acceptance-resource"
+            });
+
+            const redirectUrl = getRedirectUrl();
+
+            if(redirectUrl){
+              window.location.href = redirectUrl;
+              return;
+            }
+
+            submitBtn.textContent = "Saved";
+            submitBtn.disabled = true;
+
+          } catch(error){
+            console.error(error);
+            showError("Unexpected error. Please try again.");
+            setButtonBusy(false);
+          }
+        });
+      })();
+    </script>
+
+  {% endif %}
+
+{% endif %}

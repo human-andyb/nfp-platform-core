@@ -1,0 +1,1462 @@
+
+/* ==========================================================================
+   HIT — css--site.css (DEV CONSOLIDATED)
+   PURPOSE:
+   - Consolidated CSS for active development (avoids @import caching pain)
+   - Preserves architectural sections for later re-splitting
+   - MUST remain deterministic: one contract per concern
+   --------------------------------------------------------------------------
+   Notes:
+   - This file intentionally contains "layers" (tokens/base/layout/components/pages)
+   - Header contract is LOCKED-IN and must appear ONCE. [1](https://m365.cloud.microsoft/chat/pages/eyJ1IjoiaHR0cHM6Ly9odW1hbml0MzY1LnNoYXJlcG9pbnQuY29tL2NvbnRlbnRzdG9yYWdlL3g4Rk5PLXh0c2t1Q1JYMl9mTVRITGRyQ0dvbmxPckJHaWZhaExOZHlnRWc%5FbmF2PWN6MGxNa1pqYjI1MFpXNTBjM1J2Y21GblpTVXlSbmc0Ums1UEpUSkVlSFJ6YTNWRFVsZ3lKVFZHWmsxVVNFeGtja05IYjI1c1QzSkNSMmxtWVdoTVRtUjVaMFZuSm1ROVlpVXlNVzVWVWtWUFUzRlZRMFZMZEhOWFJFUkxSRkJFTkc1eFYySkZjWEZXY1VKQ1oyMXhhbk5rY1dkcFJWVlVRMFZFYnpJbE5VWnFjVk0xUkNVeVJHRkJlRGM1ZFhwYUptWTlNREZFVTBSRE5EUlhVelZIUlUxTlJWUXlRVTVEVEROWVVVeEtVVEpCVkRKSlN5WmpQU1V5UmcifQ?auth=2)
+   ========================================================================== */
+
+
+/* ==========================================================================
+   0) CONFLICTS & WATCHLIST (Non-header) — DO NOT "FIX" HERE
+   --------------------------------------------------------------------------
+   These are known risk areas observed in the prior, fragmented file.
+   They remain here so we can address them later with intent.
+
+   A) Global .card styles
+      - You define `.card { ... }` in "Detail Pages".
+      - This conflicts with Bootstrap `.card` semantics and can cause drift.
+      - Recommendation later: scope to a page wrapper (.hit-detail, .hit-offering, etc.)
+
+   B) Layout rules using `html:has(...)`
+      - `:has()` is modern; ensure target browsers support it.
+      - If you need broader support later, replace with a body/data attribute fallback.
+
+   C) Theme variables `--colour-*`
+      - Several section themes use `--colour-*` variables.
+      - If these are not defined by client theme, rendering may vary.
+      - Recommendation later: ensure `css--theme-client.css` defines these explicitly.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   0.1) (OPTIONAL) ORCHESTRATOR TEMPLATE — kept for future split-out
+   --------------------------------------------------------------------------
+   In PROD you may choose to split back into files and re-enable @imports.
+   DO NOT place styling rules in an orchestrator file. Kept here for reference.
+   ========================================================================== */
+
+/*
+  {% assign cssVersion = now | date: '%Y%m%d%H%M%S' %}
+
+  @import url("/css--tokens.css?v={{ cssVersion }}");
+  @import url("/css--base.css?v={{ cssVersion }}");
+  @import url("/css--layout.css?v={{ cssVersion }}");
+
+  @import url("/css--components.css?v={{ cssVersion }}");
+  @import url("/css--components-cards.css?v={{ cssVersion }}");
+  @import url("/css--components-gallery.css?v={{ cssVersion }}");
+  @import url("/css--components-navigation.css?v={{ cssVersion }}");
+
+  @import url("/css--pages.css?v={{ cssVersion }}");
+  @import url("/css--theme-client.css?v={{ cssVersion }}");
+*/
+
+
+/* ==========================================================================
+   1) DESIGN TOKENS (Power Pages → HIT bridge)
+   --------------------------------------------------------------------------
+   Token strategy:
+   - HIT tokens map to Power Pages theme variables where available
+   - Header branding variables are LOCKED to --header-* (client-controlled)
+     per the header contract guidance. [1](https://m365.cloud.microsoft/chat/pages/eyJ1IjoiaHR0cHM6Ly9odW1hbml0MzY1LnNoYXJlcG9pbnQuY29tL2NvbnRlbnRzdG9yYWdlL3g4Rk5PLXh0c2t1Q1JYMl9mTVRITGRyQ0dvbmxPckJHaWZhaExOZHlnRWc%5FbmF2PWN6MGxNa1pqYjI1MFpXNTBjM1J2Y21GblpTVXlSbmc0Ums1UEpUSkVlSFJ6YTNWRFVsZ3lKVFZHWmsxVVNFeGtja05IYjI1c1QzSkNSMmxtWVdoTVRtUjVaMFZuSm1ROVlpVXlNVzVWVWtWUFUzRlZRMFZMZEhOWFJFUkxSRkJFTkc1eFYySkZjWEZXY1VKQ1oyMXhhbk5rY1dkcFJWVlVRMFZFYnpJbE5VWnFjVk0xUkNVeVJHRkJlRGM1ZFhwYUptWTlNREZFVTBSRE5EUlhVelZIUlUxTlJWUXlRVTVEVEROWVVVeEtVVEpCVkRKSlN5WmpQU1V5UmcifQ?auth=2)
+   ========================================================================== */
+
+:root {
+  /* ==========================================================
+     Header (structural chrome)
+     Client controls variables only
+     ========================================================== */
+ 
+  --header-padding: 0.75rem 1.25rem; /* platform default */
+
+  /* ==========================================================
+     Layout sizing (platform-owned)
+
+      --hit-header-offset: var(--hit-header-height);
+     ========================================================== */
+  --page-max-width: 1200px;
+  --content-max-width: 72rem;
+  --hit-box-width: 1200px;
+
+  --hit-header-height: 80px; /* single source of truth */
+  --hit-header-offset: 80px;
+
+
+/* ======================================================
+   PLATFORM TOKENS (resolved via Brand Settings injection)
+   ====================================================== */
+
+
+/* Cards */
+--card-bg: var(--hit-bg-surface);
+--card-text: var(--hit-text-default);
+--card-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+
+  /* ==========================================================
+     Typography
+     ========================================================== */
+  --hit-font-base: var(
+    --font-family-base,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    "Noto Sans"
+  );
+  --hit-font-heading: var(--font-family-heading, var(--hit-font-base));
+
+  /* ==========================================================
+     Spacing scale
+     ========================================================== */
+  --hit-space-1: 0.25rem;
+  --hit-space-2: 0.5rem;
+  --hit-space-3: 1rem;
+  --hit-space-4: 1.5rem;
+  --hit-space-5: 2rem;
+  --hit-space-6: 3rem;
+  /* ==========================================================
+     Radius
+     ========================================================== */
+  --hit-radius-sm: 6px;
+  --hit-radius-md: 10px;
+  --hit-radius-lg: 16px;
+
+  /* ==========================================================
+     Elevation (no colour assumptions)
+     ========================================================== */
+  --hit-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --hit-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* ==========================================================
+     Interaction
+     ========================================================== */
+  --hit-focus-ring: 0 0 0 3px rgba(0, 0, 0, 0.35);
+}
+
+
+/* ==========================================================================
+   2) BASE (safe defaults for HIT scope only)
+   --------------------------------------------------------------------------
+   Only applies if you wrap content in `.hit` (recommended).
+   ========================================================================== */
+
+.hit {
+  font-family: var(--hit-font-base);
+  color: var(--hit-text);
+  background-color: var(--hit-bg);
+}
+
+.hit a {
+  color: var(--hit-accent-primary);
+  text-decoration: none;
+}
+
+.hit a:focus-visible {
+  outline: var(--hit-focus-ring);
+  outline-offset: 2px;
+}
+
+.hit img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Page content width constraint */
+.hit-container {
+  max-width: var(--page-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+
+
+/* ==========================================================================
+   3) LAYOUT (STRUCTURAL ONLY)
+   --------------------------------------------------------------------------
+   Locked-in architecture notes:
+   - Platform pages bypass Layout Templates at runtime [1](https://m365.cloud.microsoft/chat/pages/eyJ1IjoiaHR0cHM6Ly9odW1hbml0MzY1LnNoYXJlcG9pbnQuY29tL2NvbnRlbnRzdG9yYWdlL3g4Rk5PLXh0c2t1Q1JYMl9mTVRITGRyQ0dvbmxPckJHaWZhaExOZHlnRWc%5FbmF2PWN6MGxNa1pqYjI1MFpXNTBjM1J2Y21GblpTVXlSbmc0Ums1UEpUSkVlSFJ6YTNWRFVsZ3lKVFZHWmsxVVNFeGtja05IYjI1c1QzSkNSMmxtWVdoTVRtUjVaMFZuSm1ROVlpVXlNVzVWVWtWUFUzRlZRMFZMZEhOWFJFUkxSRkJFTkc1eFYySkZjWEZXY1VKQ1oyMXhhbk5rY1dkcFJWVlVRMFZFYnpJbE5VWnFjVk0xUkNVeVJHRkJlRGM1ZFhwYUptWTlNREZFVTBSRE5EUlhVelZIUlUxTlJWUXlRVTVEVEROWVVVeEtVVEpCVkRKSlN5WmpQU1V5UmcifQ?auth=2)
+   - LayoutMode affects background bleed, not content width [1](https://m365.cloud.microsoft/chat/pages/eyJ1IjoiaHR0cHM6Ly9odW1hbml0MzY1LnNoYXJlcG9pbnQuY29tL2NvbnRlbnRzdG9yYWdlL3g4Rk5PLXh0c2t1Q1JYMl9mTVRITGRyQ0dvbmxPckJHaWZhaExOZHlnRWc%5FbmF2PWN6MGxNa1pqYjI1MFpXNTBjM1J2Y21GblpTVXlSbmc0Ums1UEpUSkVlSFJ6YTNWRFVsZ3lKVFZHWmsxVVNFeGtja05IYjI1c1QzSkNSMmxtWVdoTVRtUjVaMFZuSm1ROVlpVXlNVzVWVWtWUFUzRlZRMFZMZEhOWFJFUkxSRkJFTkc1eFYySkZjWEZXY1VKQ1oyMXhhbk5rY1dkcFJWVlVRMFZFYnpJbE5VWnFjVk0xUkNVeVJHRkJlRGM1ZFhwYUptWTlNREZFVTBSRE5EUlhVelZIUlUxTlJWUXlRVTVEVEROWVVVeEtVVEpCVkRKSlN5WmpQU1V5UmcifQ?auth=2)
+   ========================================================================== */
+
+/* SITE LAYOUT MODE — BOXED */
+html:has([data-site-layout="boxed"]) .content-container.hit-container {
+  max-width: var(--page-max-width);
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+/* SITE LAYOUT MODE — FULL (remove Power Pages hard constraint) */
+html:has([data-site-layout="full"]) .content-container.hit-container {
+  max-width: none !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Readable content rhythm (scoped to .section patterns) */
+.section > .container > * {
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+}
+
+.hit-layout--2-column {
+  width: 100%;
+}
+
+.hit-layout--2-column .hit-layout__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+  width: 100%;
+}
+
+.hit-layout--2-column .hit-layout__slot {
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .hit-layout--2-column .hit-layout__inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   4) HEADER — PLATFORM STRUCTURE (Runtime‑Safe, LOCKED‑IN)
+   --------------------------------------------------------------------------
+   This is the single authoritative header contract.
+   - MUST appear once
+   - No other header positioning rules allowed elsewhere [1](https://m365.cloud.microsoft/chat/pages/eyJ1IjoiaHR0cHM6Ly9odW1hbml0MzY1LnNoYXJlcG9pbnQuY29tL2NvbnRlbnRzdG9yYWdlL3g4Rk5PLXh0c2t1Q1JYMl9mTVRITGRyQ0dvbmxPckJHaWZhaExOZHlnRWc%5FbmF2PWN6MGxNa1pqYjI1MFpXNTBjM1J2Y21GblpTVXlSbmc0Ums1UEpUSkVlSFJ6YTNWRFVsZ3lKVFZHWmsxVVNFeGtja05IYjI1c1QzSkNSMmxtWVdoTVRtUjVaMFZuSm1ROVlpVXlNVzVWVWtWUFUzRlZRMFZMZEhOWFJFUkxSRkJFTkc1eFYySkZjWEZXY1VKQ1oyMXhhbk5rY1dkcFJWVlVRMFZFYnpJbE5VWnFjVk0xUkNVeVJHRkJlRGM1ZFhwYUptWTlNREZFVTBSRE5EUlhVelZIUlUxTlJWUXlRVTVEVEROWVVVeEtVVEpCVkRKSlN5WmpQU1V5UmcifQ?auth=2)
+   - Fixed header + content offset is the only robust runtime option [1](https://m365.cloud.microsoft/chat/pages/eyJ1IjoiaHR0cHM6Ly9odW1hbml0MzY1LnNoYXJlcG9pbnQuY29tL2NvbnRlbnRzdG9yYWdlL3g4Rk5PLXh0c2t1Q1JYMl9mTVRITGRyQ0dvbmxPckJHaWZhaExOZHlnRWc%5FbmF2PWN6MGxNa1pqYjI1MFpXNTBjM1J2Y21GblpTVXlSbmc0Ums1UEpUSkVlSFJ6YTNWRFVsZ3lKVFZHWmsxVVNFeGtja05IYjI1c1QzSkNSMmxtWVdoTVRtUjVaMFZuSm1ROVlpVXlNVzVWVWtWUFUzRlZRMFZMZEhOWFJFUkxSRkJFTkc1eFYySkZjWEZXY1VKQ1oyMXhhbk5rY1dkcFJWVlVRMFZFYnpJbE5VWnFjVk0xUkNVeVJHRkJlRGM1ZFhwYUptWTlNREZFVTBSRE5EUlhVelZIUlUxTlJWUXlRVTVEVEROWVVVeEtVVEpCVkRKSlN5WmpQU1V5UmcifQ?auth=2)
+   ========================================================================== */
+
+/* Runtime scroll containers (Power Pages) */
+.hit-main {
+    padding-top: var(--hit-header-height);
+}
+
+/* Header wrapper */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  width: 100%;
+  z-index: 1000;
+
+  /* Full-width visual band */
+  background-color: var(--header-bg);
+  height: var(--hit-header-height);
+  border-bottom: 1px solid var(--header-border, transparent);
+}
+
+/* Visual header surface */
+.site-header .header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  max-width: var(--hit-box-width);
+  margin: 0 auto;
+  padding: var(--header-padding);
+
+  background-color: transparent; /* important — band owns background */
+  border-bottom: none;
+
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+
+/* Brand / logo */
+.site-brand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.brand-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.site-header .brand-logo {
+  display: block;
+  height: var(--header-logo-height);
+  width: auto;
+  max-height: none;               /* override platform constraints */
+}
+
+
+
+/* ----------------------------------------------------------
+   Header Nav Typography Contract — ensure parity across pages
+   Targets current Web Nav output classes (hit-nav_*)
+   ---------------------------------------------------------- */
+
+.primary-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1 1 auto;
+  min-width: 0;
+
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+/* ==========================================================================
+   HIT – Navigation (structure)
+   ========================================================================== */
+
+.hit-nav__menu,
+.hit-nav__submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hit-nav__menu {
+  display: flex;
+  align-items: centre;
+  gap: 2rem;
+}
+
+.hit-nav__item {
+  position: relative;
+}
+
+.hit-nav__link {
+  display: inline-block;
+  text-decoration: none;
+  padding: 0.75rem 0;
+}
+
+.hit-nav__submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 220px;
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  z-index: 1000;
+  padding: 0.5rem 0;
+}
+
+.hit-nav__submenu .hit-nav__item {
+  display: block;
+}
+
+.hit-nav__submenu .hit-nav__link {
+  display: block;
+  padding: 0.65rem 1rem;
+  white-space: nowrap;
+}
+
+.hit-nav__item:hover > .hit-nav__submenu,
+.hit-nav__item:focus-within > .hit-nav__submenu {
+  display: block;
+}
+
+/* IMPORTANT: do NOT nuke max-width on everything.
+   Only neutralise known container wrappers if they appear inside header. */
+.site-header .container,
+.site-header .hit-container {
+  max-width: none;
+  width: auto;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+}
+
+/* Mobile: allow wrap until hamburger is implemented */
+@media (max-width: 768px) {
+  .site-header .header-inner {
+    flex-wrap: wrap;
+  }
+  .primary-nav {
+    justify-content: flex-start;
+    flex-basis: 100%;
+  }
+  .primary-nav .hit-nav_menu {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.75rem 1rem;
+  }
+}
+
+
+/* ==========================================================================
+   5) SECTIONS (PLATFORM CONTRACT)
+   ========================================================================== */
+
+/* ===================================================================
+   5.1 SECTION WRAPPER
+   =================================================================== */
+
+.hit-section {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ==========================================================
+   BACKGROUND IMAGE SUPPORT
+   ========================================================== */
+
+.hit-section.has-background-image {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+/* ==========================================================
+   BACKGROUND BLEED
+   ========================================================== */
+
+/*
+    Background spans full browser width.
+    Default platform behaviour.
+*/
+
+.bgbleed-full {
+    width: 100%;
+}
+
+/*
+    Background constrained with content.
+*/
+
+.bgbleed-boxed {
+    max-width: var(--hit-site-width, 1200px);
+    margin-inline: auto;
+}
+
+/* ==========================================================
+   CONTENT WIDTH
+   ========================================================== */
+
+.hit-section__inner {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding-left: var(--hit-space-3);
+    padding-right: var(--hit-space-3);
+    padding-top: 40px;
+    padding-bottom: 40px;
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Site default width */
+
+.hit-section__inner.content-width-inherit {
+    max-width: var(--hit-site-width, 1200px);
+}
+
+/* Reading width */
+
+.hit-section__inner.content-width-constrained {
+    max-width: 900px;
+}
+
+/* Full width */
+
+.hit-section__inner.content-width-full {
+    max-width: none;
+}
+
+/*
+    Hero sections.
+    Card layouts.
+    Galleries.
+*/
+
+.content-width-full {
+    max-width: none;
+}
+
+/* ==========================================================
+   SECTION COLOURS
+   ========================================================== */
+
+.section-colour-none {
+    background: transparent;
+    color: inherit;
+}
+
+.section-colour-surface {
+    background: var(--hit-bg-surface);
+    color: var(--hit-text-default);
+}
+
+.section-colour-surface-muted {
+    background: var(--hit-bg-muted);
+    color: var(--hit-text-default);
+}
+
+.section-colour-primary,
+.section-colour-secondary,
+.section-colour-context-1,
+.section-colour-context-2,
+.section-colour-context-3,
+.section-colour-context-4,
+.section-colour-context-5 {
+    color: var(--hit-text-on-accent);
+}
+
+.section-colour-primary {
+    background: var(--hit-accent-primary);
+}
+
+.section-colour-secondary {
+    background: var(--hit-accent-secondary);
+}
+
+.section-colour-context-1 {
+    background: var(--hit-context-1);
+}
+
+.section-colour-context-2 {
+    background: var(--hit-context-2);
+}
+
+.section-colour-context-3 {
+    background: var(--hit-context-3);
+}
+
+.section-colour-context-4 {
+    background: var(--hit-context-4);
+}
+
+.section-colour-context-5 {
+    background: var(--hit-context-5);
+}
+
+/* ==========================================================
+   SECTION HEADER
+   ========================================================== */
+
+.hit-section__header {
+    display: block;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.hit-section__header > h1,
+.hit-section__header > h2,
+.hit-section__header > h3,
+.hit-section__header > p,
+.hit-section__header > div {
+    display: block;
+    width: 100%;
+    float: none;
+    clear: both;
+}
+
+.hit-section__title {
+    margin: 0;
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    line-height: 1.2;
+}
+
+.hit-section__intro {
+    margin-top: 0.75rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--hit-text-muted);
+}
+
+/* ==========================================================
+   LAYOUT GRIDS
+   ========================================================== */
+
+.layout-2-col__grid,
+.layout-3-col__grid,
+.layout-4-col__grid,
+.layout-5-col__grid {
+    display: grid;
+    gap: var(--hit-space-4, 2rem);
+}
+
+.layout-2-col__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.layout-3-col__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.layout-4-col__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.layout-5-col__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.layout-2-col__slot,
+.layout-3-col__slot,
+.layout-4-col__slot,
+.layout-5-col__slot {
+    min-width: 0;
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 1024px) {
+
+    .layout-4-col__grid,
+    .layout-5-col__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+
+    .layout-2-col__grid,
+    .layout-3-col__grid,
+    .layout-4-col__grid,
+    .layout-5-col__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hit-section__inner {
+        padding-left: var(--hit-space-2);
+        padding-right: var(--hit-space-2);
+    }
+}
+
+/* =========================
+   5.5 Article canonical styles
+   ========================= */
+
+.hit-article__header {
+  margin-bottom: 32px;
+  margin-top: 0.5rem;
+}
+
+.hit-article__title {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.hit-article__subtitle {
+  font-size: 1.1rem;
+  color: var(--hit-text-muted);
+}
+
+.hit-article__image img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  margin-bottom: 32px;
+}
+
+.hit-article__body {
+  line-height: 1.65;
+}
+
+.hit-article__body h2 {
+  margin-top: 2.5rem;
+}
+
+/* ==========================================================================
+   Section/Slot content type (section types) generic styles
+   ========================================================================== */
+.width-narrow {
+    max-width:500px;
+}
+
+.width-medium {
+    max-width:700px;
+}
+
+.width-wide {
+    max-width:1000px;
+}
+
+.width-full {
+    max-width:none;
+}
+
+.style-brand-panel,
+.style-dark-overlay,
+.style-light-overlay,
+.style-glass {
+    padding: 2rem;
+    border-radius: 16px;
+}
+
+.style-brand-panel {
+    background: var(--hit-brand-panel-bg);
+    color: var(--hit-brand-panel-text);
+    box-shadow: 0 18px 48px rgba(0,0,0,.18);
+}
+
+
+.text-light,
+.text-light h1,
+.text-light h2,
+.text-light h3,
+.text-light h4,
+.text-light h5,
+.text-light h6,
+.text-light p,
+.text-light a,
+.text-light div {
+    color: var(--hit-text-on-dark);
+}
+
+.text-dark,
+.text-dark h1,
+.text-dark h2,
+.text-dark h3,
+.text-dark h4,
+.text-dark h5,
+.text-dark h6,
+.text-dark p,
+.text-dark a,
+.text-dark div {
+    color: var(--hit-text-default);
+}
+
+.text-auto {
+    color: inherit;
+}
+
+/* ==========================================================================
+   Embed (Component – Platform Aligned)
+   ========================================================================== */
+
+.hit-embed {
+  width: 100%;
+}
+
+.hit-embed iframe {
+  width: 100%;
+  display: block;
+  border: 0;
+  border-radius: var(--hit-radius-md, 8px);
+}
+
+.hit-embed__title {
+  margin-bottom: 0.5rem;
+}
+
+.hit-embed__description {
+  margin-bottom: 1rem;
+}
+
+.hit-embed__empty {
+  padding: 2rem;
+  background: #f5f5f5;
+  border: 1px dashed #ccc;
+  text-align: center;
+  color: #666;
+}   
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+
+.hit-hero {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.hero-small {
+    min-height: 40vh;
+}
+
+.hero-medium {
+    min-height: 55vh;
+}
+
+.hero-large {
+    min-height: 70vh;
+}
+
+.hero-full {
+    min-height: calc(100vh - var(--hit-header-height));
+}
+
+.hit-hero__media {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+}
+
+.hit-hero__image {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hit-hero__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* =====================================
+   MEDIA FIT
+===================================== */
+
+.hit-hero__image,
+.hit-hero__video{
+    width:100%;
+    height:100%;
+}
+
+/* Fill */
+
+.mediafit-fill.hit-hero__image{
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+}
+
+.mediafit-fill.hit-hero__video{
+    object-fit:cover;
+}
+
+/* Contain */
+
+.mediafit-contain.hit-hero__image{
+    background-size:contain;
+    background-position:center;
+    background-repeat:no-repeat;
+}
+
+.mediafit-contain.hit-hero__video{
+    object-fit:contain;
+}
+
+/* Stretch */
+
+.mediafit-stretch.hit-hero__image{
+    background-size:100% 100%;
+    background-repeat:no-repeat;
+}
+
+.mediafit-stretch.hit-hero__video{
+    object-fit:fill;
+}
+
+/* Actual Size */
+
+.mediafit-actual-size.hit-hero__image{
+    background-size:auto;
+    background-position:center;
+    background-repeat:no-repeat;
+}
+
+.mediafit-actual-size.hit-hero__video{
+    object-fit:none;
+}
+
+.hit-hero__overlay {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+
+    width: 100%;
+    min-height: inherit;
+
+    padding: 0;
+}
+
+.hit-hero__content {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    
+}
+
+.hit-hero__pretitle {
+    font-size: .85rem;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.hit-hero__title {
+    margin: 0;
+
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+
+    line-height: 1.05;
+    font-family: var(--hit-font-heading);
+
+    color: inherit;
+}
+
+.hit-hero__text {
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+.hit-hero__cta {
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    text-decoration:none;
+
+    cursor:pointer;
+}
+
+.hero-halign-centre .hit-hero__cta {
+    align-self: center;
+}
+
+.hero-halign-right .hit-hero__cta {
+    align-self: flex-end;
+}
+
+.hero-halign-left .hit-hero__content {
+    text-align:left;
+    align-items:flex-start;
+}
+
+.hero-halign-centre .hit-hero__content {
+    text-align:center;
+    align-items:center;
+}
+
+.hero-halign-right .hit-hero__content {
+    text-align:right;
+    align-items:flex-end;
+}
+
+.hero-valign-top .hit-hero__overlay {
+    align-items:flex-start;
+}
+
+.hero-valign-middle .hit-hero__overlay {
+    align-items:center;
+}
+
+.hero-valign-bottom .hit-hero__overlay {
+    align-items:flex-end;
+}
+
+/* ==========================================================================
+   7) CORE COMPONENTS
+   ========================================================================== */
+
+.hit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem 1rem;
+  border-radius: var(--hit-radius-sm);
+  border: 1px solid var(--hit-border);
+  background: transparent;
+  color: var(--hit-text);
+  cursor: pointer;
+}
+
+.hit-button:hover {
+  background-color: var(--hit-surface-muted);
+}
+
+
+/* ==========================================================================
+   8) GALLERY (css-components-gallery)
+   ========================================================================== */
+
+.hit-gallery { width: 100%; }
+
+/* Gallery header */
+.hit-gallery__header { margin: 0 0 1rem 0; }
+
+.hit-gallery__title {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.hit-gallery__subtitle {
+  margin: 0.25rem 0 0 0;
+  color: var(--hit-text-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Grid items */
+.hit-gallery__items {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.hit-gallery__items > article { height: 100%; }
+
+/* Break Bootstrap influence cleanly */
+.hit-gallery__items > * {
+  width: auto;
+  max-width: none;
+  flex: none;
+}
+
+@media (max-width: 992px) {
+  .hit-gallery__items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 576px) {
+  .hit-gallery__items { grid-template-columns: 1fr; }
+}
+
+/* Carousel shell (default hidden unless enabled by layout modifier) */
+.hit-carousel__nav--prev,
+.hit-carousel__nav--next {
+  display: none;
+}
+
+.hit-carousel {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hit-carousel__viewport { overflow: hidden; }
+
+.hit-carousel__track {
+  display: flex;
+  align-items: stretch;
+  gap: var(--hit-space-3, 1rem);
+  transition: transform 0.35s ease;
+  will-change: transform;
+}
+
+/* Nav buttons */
+.hit-carousel__nav {
+  appearance: none;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: #fff;
+  border-radius: 999px;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.hit-carousel__nav:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* If adapter outputs a wrapper grid, make it behave horizontally in carousel mode */
+.hit-gallery--layout-carousel .hit-carousel__track .hit-gallery-grid,
+.hit-gallery--layout-carousel .hit-carousel__track .hit-gallery__grid {
+  display: flex !important;
+  gap: var(--hit-space-3, 1rem);
+}
+
+/* Set a sane slide/card width in carousel mode */
+.hit-gallery--layout-carousel .hit-card,
+.hit-gallery--layout-carousel .hit-gallery-card {
+  flex: 0 0 auto;
+  width: min(320px, 85vw);
+}
+
+
+
+
+/* ==========================================================================
+   10) PAGES (Escape hatch)
+   --------------------------------------------------------------------------
+   Keep page-specific rules here. Avoid global selectors where possible.
+   NOTE: The `.card` selector below is a known conflict with Bootstrap.
+   It is preserved to avoid breaking current behaviour; see watchlist.
+   ========================================================================== */
+
+/* Offering / detail layout */
+.offering-detail {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.offering-detail-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Stack on mobile */
+@media (max-width: 900px) {
+  .offering-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.offering-detail-content,
+.offering-detail-capture {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3rem;
+}
+
+.offering-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.opt {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--hit-border-default);
+  border-radius: 10px;
+  background: var(--hit-bg-surface);
+  text-align: left;
+  width: 100%
+}
+
+.opt:hover {
+  border-color: var(--hit-accent-primary);
+}
+
+.opt.is-selected {
+  border: 2px solid var(--hit-accent-primary);
+  background: var(--hit-accent-secondary);
+}
+
+/* WARNING: conflicts with Bootstrap `.card` (see watchlist). */
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.card-body {
+  flex: 1;
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  background: #e9eef1;
+  overflow: hidden;
+}
+
+.hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.body { padding: 2.25rem 2.5rem 2.75rem; }
+
+.title {
+  margin: 0 0 1.25rem;
+  font-size: 2rem;
+  line-height: 1.25;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 2.25rem;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+.desc {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #334155;
+}
+
+.desc.muted {
+  color: #64748b;
+  font-style: italic;
+}
+
+/* Donation / price box */
+.donate-box {
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 1.5rem 1.5rem 1.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+.donate-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.donate-head h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.selected-pill {
+  font-size: 0.75rem;
+  background: #e2e8f0;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  color: #334155;
+}
+
+/* Ask ladder options */
+.options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.opt {
+  appearance: none;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.opt:hover { border-color: #94a3b8; }
+
+.opt.is-selected {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(14,165,233,0.15);
+}
+
+.opt-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.opt-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.opt-desc {
+  font-size: 0.75rem;
+  color: #475569;
+  margin-top: 0.15rem;
+}
+
+.opt-amount {
+  white-space: nowrap;
+  font-weight: 600;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Other amount */
+.other-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.other-row label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.other-input {
+  flex: 1;
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5f5;
+  font-size: 0.85rem;
+}
+
+/* Price */
+.price-big {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0.25rem 0;
+}
+
+.price-sub {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* CTA */
+.cta {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.btn {
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: #0ea5e9;
+  color: #ffffff;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.btn:hover { background: #0284c7; }
+
+.btn:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.btn.secondary {
+  background: transparent;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+}
+
+.btn.secondary:hover { background: #f1f5f9; }
+
+.small-note {
+  margin-top: 0.75rem;
+  font-size: 0.7rem;
+  color: #64748b;
+}
+
+/* Alerts */
+.alert {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  color: #7c2d12;
+}
+
+.alert strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.muted {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+
+/* ==========================================================================
+   11) DETAIL PAGES (impact / article body helpers)
+   ========================================================================== */
+
+.hit-impact-hero__image {
+  width: 100%;
+  object-fit: cover;
+  max-height: var(--impact-hero-max-height, 200px);
+}
+
+.hit-impact-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.hit-impact-title {
+  margin-bottom: 1.25rem;
+}
+
+/* Editorial section headers via bold-only paragraphs */
+.hit-impact-body p > strong:only-child {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+
+/* ==========================================================================
+   12) DEV DIAGNOSTICS (remove/disable before PROD)
+   ========================================================================== */
+
+html::after {
+  content: "CSS SITE (DEV)";
+  position: fixed;
+  bottom: 4px;
+  right: 6px;
+  font-size: 10px;
+  opacity: .4;
+  pointer-events: none;
+}

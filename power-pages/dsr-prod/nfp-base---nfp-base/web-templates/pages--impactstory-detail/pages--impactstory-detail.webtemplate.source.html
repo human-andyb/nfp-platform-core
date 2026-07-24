@@ -1,0 +1,72 @@
+{%- comment -%}
+Impact Story Detail Page (PRE‑DATAVERSE REVERT)
+- Loads single hit_impactstory via querystring id
+- Image source: hit_imageurl ONLY
+- No Dataverse media assets
+- Stable legacy rendering
+{%- endcomment -%}
+
+{%- assign storyId = request.params.id | default: '' | append: '' | replace: '{','' | replace: '}','' | strip -%}
+
+{%- fetchxml storyQuery -%}
+<fetch top="1" mapping="logical">
+  <entity name="hit_impactstory">
+    <attribute name="hit_impactstoryid" />
+    <attribute name="hit_displaytitle" />
+    <attribute name="hit_name" />
+    <attribute name="hit_story" />
+    <attribute name="hit_isactive" />
+    <attribute name="hit_webvisible" />
+    <attribute name="hit_imageurl" /> 
+    <filter type="and">
+      <condition attribute="hit_impactstoryid" operator="eq" value="{{ storyId }}" />
+      <condition attribute="hit_isactive" operator="eq" value="1" />
+      <condition attribute="hit_webvisible" operator="eq" value="1" />
+    </filter>
+  </entity>
+
+</fetch>
+{%- endfetchxml -%}
+
+{%- assign hasStory = false -%}
+{%- if storyId != '' and storyQuery.results.entities and storyQuery.results.entities.size > 0 -%}
+  {%- assign hasStory = true -%}
+{%- endif -%}
+
+{%- if hasStory == false -%}
+
+  <section class="hit-empty">
+    <h2>Impact Story not found</h2>
+    <p>The requested Impact Story could not be located.</p>
+  </section>
+
+{%- else -%}
+
+  {%- assign story = storyQuery.results.entities[0] -%}
+
+  {%- assign title = story.hit_displaytitle | default: story.hit_name | append: '' | strip -%}
+  {%- assign body  = story.hit_story | default: '' | append: '' -%}
+
+  {%- assign imageUrl = story.hit_imageurl | default: ''  -%}
+  {%- assign altText  = story.hit_displaytitle | default: title -%}
+
+  <article class="hit-impact">
+
+    {%- if imageUrl != '' -%}
+      <div class="hit-impact-hero">
+        <img
+          class="hit-impact-hero__image"
+          src="{{ imageUrl | escape }}"
+          alt="{{ altText | escape }}"
+          loading="lazy" />
+      </div>
+    {%- endif -%}
+
+    <div class="hit-impact-content">
+      <h1 class="hit-impact-title">{{ title | escape }}</h1>
+      <div class="hit-impact-body">{{ body }}</div>
+    </div>
+
+  </article>
+
+{%- endif -%}

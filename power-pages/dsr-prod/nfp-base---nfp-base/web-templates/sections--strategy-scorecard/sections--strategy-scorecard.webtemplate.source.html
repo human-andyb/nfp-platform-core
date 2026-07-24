@@ -1,0 +1,101 @@
+{% comment %}
+========================================
+ Slot – Strategy Scorecard (Standalone)
+ Driven by Platform Page Slot (strategy)
+========================================
+{% endcomment %}
+
+{% assign strategyId = slot.hit_strategycycle.id %}
+
+{% fetchxml segments %}
+<fetch>
+  <entity name="hit_scorecardsegment">
+    <attribute name="hit_scorecardsegmentid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_sortorder" />
+    <filter>
+      <condition attribute="hit_strategycycle" operator="eq" value="{{ strategyId }}" />
+    </filter>
+    <order attribute="hit_sortorder" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml measures %}
+<fetch>
+  <entity name="hit_scorecardmeasure">
+    <attribute name="hit_scorecardmeasureid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_scorecardsegmentid" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% fetchxml metrics %}
+<fetch>
+  <entity name="hit_scorecardmetric">
+    <attribute name="hit_scorecardmetricid" />
+    <attribute name="hit_statement" />
+    <attribute name="hit_scorecardmeasureid" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+<section class="strategy-scorecard">
+  <h3>Our scorecard of success</h3>
+
+  {% if segments.results.entities.size > 0 %}
+
+    {% for s in segments.results.entities %}
+      <div class="scorecard-segment">
+        <h4>{{ s.hit_name }}</h4>
+
+        <div class="scorecard-grid">
+
+          <!-- Measures -->
+          <div class="measures">
+            <ul>
+              {% for m in measures.results.entities %}
+                {% if m.hit_scorecardsegmentid.id == s.hit_scorecardsegmentid.id %}
+                  <li>{{ m.hit_name }}</li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+
+          <!-- Metrics -->
+          <div class="metrics">
+            <ul>
+              {% for m in measures.results.entities %}
+                {% if m.hit_scorecardsegmentid.id == s.hit_scorecardsegmentid.id %}
+
+                  {% for k in metrics.results.entities %}
+                    {% if k.hit_scorecardmeasureid.id == m.hit_scorecardmeasureid.id %}
+                      <li>{{ k.hit_statement }}</li>
+                    {% endif %}
+                  {% endfor %}
+
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    {% endfor %}
+
+  {% else %}
+    <div class="empty-state">
+      <p>No scorecard data found for this strategy.</p>
+    </div>
+  {% endif %}
+
+</section>
+
+<!-- Debug (remove once confirmed) -->
+<pre>
+strategyId: {{ strategyId }}
+Segments: {{ segments.results.entities.size }}
+Measures: {{ measures.results.entities.size }}
+Metrics: {{ metrics.results.entities.size }}
+</pre>

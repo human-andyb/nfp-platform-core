@@ -1,0 +1,68 @@
+{% comment %}
+COMPONENT: components--offering-gallery
+- Fetches offerings and renders a grid of cards
+- Uses stable detail link pattern: /Offering/?id=<hit_offeringid>
+{% endcomment %}
+
+{% fetchxml offerings %}
+<fetch version="1.0" mapping="logical" distinct="true">
+  <entity name="hit_offering">
+    <attribute name="hit_offeringid" />
+    <attribute name="hit_offeringname" />
+    <attribute name="hit_summary" />
+    <attribute name="hit_imageurlcardgallery" />
+    <attribute name="hit_offeringtype" />
+    <order attribute="hit_offeringname" descending="false" />
+    <filter>
+      <condition attribute="hit_isactive" operator="eq" value="1" />
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% assign detail_base = '/Offering/' %}
+
+<div class="hit-offerings">
+  {% if offerings.results.entities.size > 0 %}
+    <div class="hit-offerings__grid">
+      {% for o in offerings.results.entities %}
+
+        {% assign offeringid = o.hit_offeringid %}
+        {% assign img = o.hit_imageurlcardgallery | strip %}
+
+        {%- comment -%}
+        Build href WITHOUT url_encode on the full URL.
+        Only encode individual user-provided segments if needed (not GUIDs).
+        {%- endcomment -%}
+        {% assign href = detail_base | append: '?id=' | append: offeringid %}
+
+        {% comment %}
+        Choice label retrieval (Choice field hit_offeringtype)
+        {% endcomment %}
+        {% assign typeLabel = '' %}
+        {% if o.hit_offeringtype and o.hit_offeringtype.label %}
+          {% assign typeLabel = o.hit_offeringtype.label %}
+        {% elsif o['hit_offeringtype@OData.Community.Display.V1.FormattedValue'] %}
+          {% assign typeLabel = o['hit_offeringtype@OData.Community.Display.V1.FormattedValue'] %}
+        {% elsif o.hit_offeringtype %}
+          {% assign typeLabel = o.hit_offeringtype %}
+        {% endif %}
+
+        <div class="hit-offering-card">
+          {% assign card_href = href %}
+          {% assign card_title = o.hit_offeringname %}
+          {% assign card_summary = o.hit_summary %}
+          {% assign card_image_url = img %}
+          {% assign card_type_label = typeLabel %}
+
+          {% include 'components--offering-card' %}
+        </div>
+
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="hit-offerings__empty">
+      <p>No offerings are currently available.</p>
+    </div>
+  {% endif %}
+</div>

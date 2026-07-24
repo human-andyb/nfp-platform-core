@@ -1,0 +1,70 @@
+ <script>
+(function () {
+  function initCarousel(root) {
+    var track = root.querySelector('.hit-carousel__track');
+    var viewport = root.querySelector('.hit-carousel__viewport');
+    var btnPrev = root.querySelector('.hit-carousel__nav--prev');
+    var btnNext = root.querySelector('.hit-carousel__nav--next');
+    if (!track || !viewport || !btnPrev || !btnNext) return;
+
+    // If the adapter outputs a wrapper grid inside the track, treat its children as slides
+    var slideContainer = track;
+    var firstChild = track.firstElementChild;
+    if (firstChild && (firstChild.classList.contains('hit-gallery-grid') || firstChild.classList.contains('hit-gallery__grid'))) {
+      slideContainer = firstChild;
+    }
+
+    function slides() {
+      return Array.prototype.slice.call(slideContainer.children).filter(function (el) {
+        return el && el.nodeType === 1;
+      });
+    }
+
+    var index = 0;
+
+    function stepSize() {
+      var s = slides();
+      if (!s.length) return 0;
+
+      var rect = s[0].getBoundingClientRect();
+      var style = window.getComputedStyle(slideContainer);
+      var gap = parseFloat(style.columnGap || style.gap || 0) || 0;
+
+      return rect.width + gap;
+    }
+
+    function maxIndex() {
+      var s = slides();
+      if (!s.length) return 0;
+
+      var step = stepSize();
+      if (!step) return 0;
+
+      var total = s.length * step;
+      var maxScroll = Math.max(0, total - viewport.clientWidth);
+      return Math.floor(maxScroll / step);
+    }
+
+    function render() {
+      var step = stepSize();
+      var maxI = maxIndex();
+      if (!step) return;
+
+      if (index < 0) index = 0;
+      if (index > maxI) index = maxI;
+
+      track.style.transform = 'translateX(' + (-index * step) + 'px)';
+      btnPrev.disabled = index <= 0;
+      btnNext.disabled = index >= maxI;
+    }
+
+    btnPrev.addEventListener('click', function () { index--; render(); });
+    btnNext.addEventListener('click', function () { index++; render(); });
+    window.addEventListener('resize', render);
+
+    setTimeout(render, 0);
+  }
+
+  document.querySelectorAll('[data-hit-carousel]').forEach(initCarousel);
+})();
+</script>

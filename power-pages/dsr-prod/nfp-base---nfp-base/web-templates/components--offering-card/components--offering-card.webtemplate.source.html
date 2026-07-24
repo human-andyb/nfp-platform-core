@@ -1,0 +1,40 @@
+{% comment %}
+COMPONENT: components--offering-card
+Reads variables set by parent:
+- card_href
+- card_title
+- card_summary
+- card_image_url
+- card_type_label
+{% endcomment %}
+
+{% assign _href = card_href | default: '#' %}
+{% assign _title = card_title | default: 'Offering' %}
+{% assign _summary = card_summary | strip %}
+{% assign _img = card_image_url | strip %}
+{% assign _type = card_type_label | strip %}
+
+{% if _img == blank %}
+  {% assign _img = '/assets/images/placeholder-offering.jpg' %}
+{% endif %}
+
+{% assign _bg = "url(" | append: (_img | jsonify) | append: ")" %}
+
+<a class="hit-offering-link" href="{{ _href | escape }}">
+  <div class="hit-offering-media" style="--card-bg: {{ _bg }};" aria-hidden="true"></div>
+  <div class="hit-offering-overlay" aria-hidden="true"></div>
+
+  <div class="hit-offering-text">
+    <div class="hit-offering-textPanel">
+      {% if _type != blank %}
+        <div class="hit-offering-badge" aria-label="Offering type">{{ _type | escape }}</div>
+      {% endif %}
+
+      <h3 class="hit-offering-title">{{ _title | escape }}</h3>
+
+      {% if _summary != blank %}
+        <p class="hit-offering-summary">{{ _summary | escape }}</p>
+      {% endif %}
+    </div>
+  </div>
+</a>

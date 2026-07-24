@@ -1,0 +1,803 @@
+{% comment %}
+sections--gallery (FINAL LOCKED)
+
+Rules:
+1. Querystring override (if enabled) ALWAYS wins
+2. Slot config is fallback ONLY
+3. Only ONE gallery include is ever executed
+4. Uses slug-only contract (no record passing)
+
+{% endcomment %}
+
+{% assign DEBUG = request.params.debug == '1' %}
+
+{% comment %} SECTION CONTEXT {% endcomment %}
+{% assign bg = section.hit_sectioncolour | default: 'none' | strip %}
+{% assign layout = section.hit_layout | default: 'inherit' | strip %}
+{% assign headerText = section.hit_headingtext | default: '' | strip %}
+{% assign introText  = section.hit_introtext  | default: '' | strip %}
+
+{% comment %} SLOT CONTEXT {% endcomment %}
+{% assign CTX_GALLERY = 815390003 %}
+
+{% assign slotAllowOverride = false %}
+{% if slot and slot.hit_allowqueryoverride %}
+  {% assign slotAllowOverride = slot.hit_allowqueryoverride %}
+{% endif %}
+
+{% assign qpGallery = request.params.gallery | default:'' | downcase | strip %}
+
+{% comment %}
+STEP 1 — Determine if override applies
+{% endcomment %}
+{% assign useQueryOverride = false %}
+
+{% if slotAllowOverride and qpGallery != '' %}
+  {% assign useQueryOverride = true %}
+{% endif %}
+
+{% comment %}
+STEP 2 — Resolve slug (SINGLE SOURCE OF TRUTH)
+{% endcomment %}
+{% assign resolvedGallerySlug = '' %}
+{% assign resolutionMode = '' %}
+
+{% if useQueryOverride %}
+  {% assign resolvedGallerySlug = qpGallery %}
+  {% assign resolutionMode = 'QUERY_OVERRIDE' %}
+
+{% elsif slot and slot.hit_webgalleryconfig %}
+
+  {% assign resolutionMode = 'SLOT_FALLBACK' %}
+
+  {% assign galleryId = '' %}
+
+  {% if slot.hit_webgalleryconfig.id %}
+    {% assign galleryId = slot.hit_webgalleryconfig.id %}
+  {% elsif slot.hit_webgalleryconfig.value %}
+    {% assign galleryId = slot.hit_webgalleryconfig.value %}
+  {% else %}
+    {% assign galleryId = slot.hit_webgalleryconfig %}
+  {% endif %}
+
+  {% if galleryId != '' %}
+
+    {% fetchxml galleryLookup %}
+      <fetch top="1">
+        <entity name="hit_webgalleryconfig">
+          <attribute name="hit_slug" />
+          <filter>
+            <condition attribute="hit_webgalleryconfigid" operator="eq" value="{{ galleryId }}" />
+          </filter>
+        </entity>
+      </fetch>
+    {% endfetchxml %}
+
+    {% assign galleryRec = galleryLookup.results.entities | first %}
+
+    {% if galleryRec %}
+      {% assign resolvedGallerySlug = galleryRec.hit_slug | default:'' | strip %}
+    {% endif %}
+
+  {% endif %}
+
+{% endif %}
+
+{% comment %}
+STEP 3 — DEBUG (KEEP THIS)
+{% endcomment %}
+{% if DEBUG %}
+<pre style="font-size:12px;background:#f7f7f7;padding:8px;">
+
+SECTION DEBUG (FINAL CLEAN)
+
+qpGallery={{ qpGallery }}
+
+slotAllowOverride={{ slotAllowOverride }}
+useQueryOverride={{ useQueryOverride }}
+
+resolutionMode={{ resolutionMode }}
+
+resolvedGallerySlug={{ resolvedGallerySlug }}
+
+</pre>
+{% endif %}
+
+<section class="hit-section hit-section--gallery hit-section--bg-{{ bg }} hit-section--layout-{{ layout }} is-platform">
+  <div class="hit-section__inner">
+    <div class="hit-section__container">
+
+      {% if resolvedGallerySlug == '' %}
+
+        {% if DEBUG %}
+          <div style="color:red;font-size:12px;">
+            ❌ Gallery not resolved  
+            resolutionMode={{ resolutionMode }}
+          </div>
+        {% endif %}
+
+      {% else %}
+
+        {% comment %}
+        ✅ SINGLE RENDER (CRITICAL)
+        {% endcomment %}
+
+        {% if DEBUG %}
+        <pre>
+   
+    width={{ widthClass }}
+    align={{ alignClass }}
+
+        slot.hit_displaystyle={{ slot.hit_displaystyle }}
+
+        slot.hit_displaystyle.value={{ slot.hit_displaystyle.value }}
+
+        slot.hit_displaystyle.label={{ slot.hit_displaystyle.label }}
+
+        slot.hit_displayvariant={{ slot.hit_displayvariant }}
+
+        slot.hit_displayvariant.value={{ slot.hit_displayvariant.value }}
+
+        slot.hit_displayvariant.label={{ slot.hit_displayvariant.label }}
+
+        </pre>
+        {% endif %}
+
+        {% include 'components--web-gallery'  gallerySlug: resolvedGallerySlug  allowQueryOverride: true  displayStyle: slot.hit_displaystyle.value  displayVariant: slot.hit_displayvariant.value maxColumns: slot.hit_maxcolumns  maxRows: slot.hit_maxrows  debug: DEBUG %}
+
+
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+
+<style>
+  /* =======================================================
+   GALLERY V1
+   EXPERIMENTAL
+   DO NOT EXTRACT YET
+======================================================= */
+
+.hit-gallery__items {
+    display: grid;
+    gap: 2rem;
+}
+
+.hit-gallery--cols-1 .hit-gallery__items {
+    grid-template-columns: 1fr;
+}
+
+.hit-gallery--cols-2 .hit-gallery__items {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+}
+
+.hit-gallery--cols-3 .hit-gallery__items {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+}
+
+.hit-gallery--cols-4 .hit-gallery__items {
+    grid-template-columns: repeat(4,minmax(0,1fr));
+}
+
+@media (max-width: 991px) {
+
+    .hit-gallery__items {
+        grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+    }
+}
+
+@media (max-width: 767px) {
+
+    .hit-gallery__items {
+        grid-template-columns: 1fr !important;
+    }
+}
+/* ==========================================================
+   STANDARD CARD
+========================================================== */
+
+.hit-card--standard {
+
+    position: relative;
+
+    height: 100%;
+
+    border-radius: 24px;
+
+    overflow: hidden;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 8px 24px rgba(15,23,42,.06);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.hit-card--standard:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 16px 36px rgba(15,23,42,.10);
+}
+
+/* ==========================================================
+   ENTIRE CARD LINK
+========================================================== */
+
+.hit-card--standard .hit-card__stretchedLink {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 1;
+}
+
+/* ==========================================================
+   CARD STRUCTURE
+========================================================== */
+
+.hit-card--standard .hit-card__inner {
+
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+}
+
+/* ==========================================================
+   IMAGE
+========================================================== */
+
+.hit-card__media--standard {
+
+    position: relative;
+
+    aspect-ratio: 4 / 3;
+
+    overflow: hidden;
+}
+
+.hit-card__image--standard {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+/* ==========================================================
+   BADGE
+========================================================== */
+
+.hit-card__badges {
+
+    position: absolute;
+
+    top: 12px;
+    left: 12px;
+
+    z-index: 2;
+}
+
+.hit-card__badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: .35rem .75rem;
+
+    border-radius: 999px;
+
+    background: rgba(255,255,255,.92);
+
+    color: var(--hit-text-muted);
+
+    font-size: .75rem;
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+    letter-spacing: .05em;
+}
+
+/* ==========================================================
+   BODY
+========================================================== */
+
+.hit-card__body {
+
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+
+    padding: 1.5rem;
+}
+
+/* ==========================================================
+   TITLE
+========================================================== */
+
+.hit-card__title {
+
+    margin: 0;
+
+    color: var(--hit-text-default);
+
+    font-size: 1.5rem;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+.hit-card__titleLink,
+.hit-card__titleLink:hover,
+.hit-card__titleLink:visited {
+
+    color: inherit;
+
+    text-decoration: none;
+}
+
+/* ==========================================================
+   SUMMARY
+========================================================== */
+
+.hit-card__summary {
+
+    margin-top: .75rem;
+
+    color: var(--hit-text-muted);
+
+    font-size: 1rem;
+
+    line-height: 1.6;
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+/* ==========================================================
+   CTA
+========================================================== */
+
+.hit-card__cta {
+
+    margin-top: auto;
+
+    padding-top: 1.5rem;
+}
+
+.hit-card__cta .hit-button {
+
+    background: transparent;
+
+    border: none;
+
+    padding: 0;
+
+    color: var(--hit-accent-primary);
+
+    font-weight: 700;
+
+    text-decoration: none;
+
+    box-shadow: none;
+}
+
+.hit-card__cta .hit-button:hover {
+
+    text-decoration: underline;
+}
+
+/* ==========================================
+   COMPACT LAYOUT
+========================================== */
+.hit-card--compact {
+
+    position: relative;
+
+    height: 96px;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    background: var(--hit-bg-surface);
+
+    border: 1px solid var(--hit-border-default);
+
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.hit-card--compact:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 8px 20px rgba(0,0,0,.12);
+}
+
+.hit-card--compact {
+
+    position: relative;
+
+    height: 96px;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    background: var(--hit-bg-surface);
+
+    border: 1px solid var(--hit-border-default);
+
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.hit-card--compact:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 8px 20px rgba(0,0,0,.12);
+}
+
+.hit-card--compact .hit-card__link {
+
+    display: flex !important;
+
+    align-items: stretch;
+
+    width: 100%;
+    height: 100%;
+
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+/* layout becomes transparent */
+
+.hit-card--compact .hit-card__layout {
+
+    display: contents;
+}
+
+
+/* ==========================================
+   IMAGE
+========================================== */
+
+.hit-card--compact .hit-card__image-panel {
+
+    flex:0 0 96px;
+
+    width:96px;
+    height:96px;
+
+    overflow:hidden;
+}
+
+.hit-card--compact .hit-card__image {
+
+    width:100%;
+    height:100%;
+
+    display:block;
+
+    object-fit:cover;
+}
+
+/* ==========================================
+   CONTENT
+========================================== */
+
+.hit-card--compact .hit-card__content-panel {
+
+    flex:1 1 auto !important;
+
+    width:auto !important;
+
+    min-width:0 !important;
+
+    padding:0 1rem;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+}
+
+.hit-card--compact .hit-card__link,
+.hit-card--compact .hit-card__link:hover,
+.hit-card--compact .hit-card__link:visited,
+.hit-card--compact .hit-card__link:active {
+
+    text-decoration:none !important;
+    color:inherit !important;
+}
+
+.hit-card--compact .hit-card__title {
+
+    margin: 0;
+
+    font-size: .95rem;
+
+    line-height: 1.2;
+
+    font-weight: 700;
+}
+
+.hit-card--compact .hit-card__summary {
+
+    margin-top: .25rem;
+
+    font-size: .8rem;
+
+    line-height: 1.35;
+
+    -webkit-line-clamp: 2;
+
+    display: -webkit-box;
+
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+.hit-card--compact .hit-card__body {
+
+    flex: 1;
+
+    min-width: 0;
+
+    padding: .75rem 1rem;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+}
+.hit-card--compact .hit-card__media {
+
+    flex: 0 0 96px;
+
+    width: 96px;
+
+    height: 96px;
+
+    overflow: hidden;
+}
+
+.hit-card--compact .hit-card__media {
+
+    flex: 0 0 96px;
+
+    width: 96px;
+
+    height: 96px;
+
+    overflow: hidden;
+}
+
+.hit-card--compact .hit-card__media {
+
+    border-radius: 16px 0 0 16px;
+}
+/* ==========================================================
+   FEATURED CARD
+========================================================== */
+
+.hit-card--featured {
+
+    position: relative;
+
+    border-radius: 24px;
+
+    overflow: hidden;
+
+    background: #000;
+
+    box-shadow: 0 8px 24px rgba(15,23,42,.08);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.hit-card--featured:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 16px 36px rgba(15,23,42,.12);
+}
+
+/* ==========================================================
+   FEATURED IMAGE AREA
+========================================================== */
+
+.hit-card__inner--featured {
+
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 16 / 9;
+
+    min-height: 320px;
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    overflow: hidden;
+
+    border-radius: inherit;
+}
+
+/* ==========================================================
+   STRETCHED LINK
+========================================================== */
+
+.hit-card__stretchedLink {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 1;
+}
+
+/* ==========================================================
+   OVERLAY
+========================================================== */
+
+.hit-card__overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(0,0,0,.75) 0%,
+            rgba(0,0,0,.45) 35%,
+            rgba(0,0,0,.10) 100%
+        );
+
+    z-index: 2;
+}
+
+/* ==========================================================
+   CONTENT
+========================================================== */
+.hit-card__body--featured {
+
+    position: absolute;
+
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 1.25rem;
+
+    z-index: 3;
+
+    background: rgba(255,255,255,.80);
+
+    backdrop-filter: blur(8px);
+
+    border-radius: 16px;
+
+    padding: 1.25rem;
+}
+
+
+/* ==========================================================
+   BADGE
+========================================================== */
+
+.hit-card--featured .hit-card__badge {
+    display: inline-block;
+
+    margin-bottom: 1.5rem;
+
+    font-size: 0.65rem;
+    font-weight: 600;
+
+    padding: 0.25rem 0.6rem;
+
+    border-radius: 999px;
+}
+
+
+/* ==========================================================
+   TITLE
+========================================================== */
+
+.hit-card__title--featured {
+
+   margin: .75rem 0 0 0;
+
+    color: var(--hit-text-default);
+
+    font-size: clamp(1.5rem,2.5vw,2.25rem);
+
+    font-weight: 700;
+
+    line-height: 1.1;
+
+    text-decoration: none;
+}
+
+/* ==========================================================
+   SUMMARY
+========================================================== */
+
+.hit-card__summary--featured {
+    margin: .75rem 0 0 0;
+
+    max-width: 42rem;
+
+    color: var(--hit-text-default);
+
+    font-size: 1rem;
+
+    line-height: 1.6;
+}
+
+/* ==========================================================
+   CTA
+========================================================== */
+
+.hit-card__cta {
+
+    margin-top: 1.25rem;
+}
+
+.hit-card__body--featured .hit-button {
+
+    position: relative;
+
+    z-index: 4;
+}
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width:768px){
+
+    .hit-card__inner--featured {
+
+       aspect-ratio: 16 / 9;
+    }
+
+    .hit-card__body--featured {
+
+       padding: 1.25rem;
+    }
+
+}
+</style>
