@@ -224,7 +224,7 @@ components--web-gallery-card-compact
 {% elsif displayVariantValue == VARIANT_FEATURED %}
 components--web-gallery-card-featured
 {% elsif displayVariantValue == VARIANT_MINIMAL %}
-components--web-gallery-card-standard fallback for minimal
+components--web-gallery-card-minimal fallback for minimal
 {% elsif displayVariantValue == VARIANT_PROMINENT %}
 components--web-gallery-card-standard fallback for prominent
 {% else %}
@@ -344,21 +344,13 @@ components--web-gallery-card-standard
 
         {%- elsif displayVariantValue == VARIANT_MINIMAL -%}
 
-          {%- comment -%}
-          Sprint 2 fallback.
-          Replace with components--web-gallery-card-minimal when created.
-          {%- endcomment -%}
 
-          {% include 'components--web-gallery-card-standard'  offering: r title: title  summary: summary imageUrl: imageUrl href: href  targetAttr: targetAttrs  targetAttrs: targetAttrs  typeLabel: typeLabel debug: DEBUG %}
+          {% include 'components--web-gallery-card-minimal'  offering: r title: title  summary: summary imageUrl: imageUrl href: href  targetAttr: targetAttrs  targetAttrs: targetAttrs  typeLabel: typeLabel debug: DEBUG %}
 
         {%- elsif displayVariantValue == VARIANT_PROMINENT -%}
 
-          {%- comment -%}
-          Sprint 2 fallback.
-          Replace with components--web-gallery-card-prominent when created.
-          {%- endcomment -%}
 
-          {% include 'components--web-gallery-card-standard' offering: r title: title  summary: summary imageUrl: imageUrl href: href  targetAttr: targetAttrs  targetAttrs: targetAttrs  typeLabel: typeLabel debug: DEBUG %}
+          {% include 'components--web-gallery-card-prominent' offering: r title: title  summary: summary imageUrl: imageUrl href: href  targetAttr: targetAttrs  targetAttrs: targetAttrs  typeLabel: typeLabel debug: DEBUG %}
 
         {%- else -%}
 

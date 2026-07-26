@@ -1469,7 +1469,7 @@ adx_webtemplate:
   IsDeleted: false
 - RecordId: 30c94222-b43b-f111-bec7-000d3a7a0cab
   DisplayName: sections--gallery
-  CheckSum: 6787c190500cdaef48afb1511e42511e436353bc87433fe8376b5a6ac4936795
+  CheckSum: 30743e86702b8729c9d97668494fca451e615960b756e48ba5732a5eb6c5c8f0
   IsDeleted: false
 - RecordId: 30ca9999-ff1b-f111-88b2-000d3a7a0cab
   DisplayName: components--web-gallery-card-featured
@@ -1597,7 +1597,7 @@ adx_webtemplate:
   IsDeleted: false
 - RecordId: 8d9787ca-1a19-f111-8342-000d3a7a0cab
   DisplayName: components--web-gallery-source-offering
-  CheckSum: e9f0fed4613ecafaec316b3eeb5471a788a9455ca8d1e63280e3b727c88f44f6
+  CheckSum: 118ab8822d24e51ae62c0cce42bcfc2e60bc4d9491f12216a70516cdefb3a7f4
   IsDeleted: false
 - RecordId: 8f91320d-fb0a-f111-8342-000d3a7a0cab
   DisplayName: Offering Acceptance - Payment
@@ -1630,6 +1630,10 @@ adx_webtemplate:
 - RecordId: a7d60e8c-ca12-4264-97ed-15e66d5ceb35
   DisplayName: Default studio template
   CheckSum: 5d667c35224b2ba912b05644987bdcd0def0a62a9cc6c8c4ac6c280d23d35f6f
+  IsDeleted: false
+- RecordId: a922b5f1-2e87-f111-8076-6045bde72793
+  DisplayName: components--web-gallery-card-minimal
+  CheckSum: 9d04609752e1711173a42112f2c8e97743564f946f3670af3503aacd711ba7a8
   IsDeleted: false
 - RecordId: a95f6df6-3649-f111-bec7-000d3a7a0323
   DisplayName: layouts--3-column

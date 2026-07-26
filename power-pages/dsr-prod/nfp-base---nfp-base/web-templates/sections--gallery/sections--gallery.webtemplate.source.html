@@ -800,4 +800,162 @@ resolvedGallerySlug={{ resolvedGallerySlug }}
     }
 
 }
+
+/* ==========================================================
+   MINIMAL CARD
+========================================================== */
+
+.hit-card--minimal {
+
+    position: relative;
+
+    background: #fff;
+
+    border-radius: 20px;
+
+   overflow: hidden;
+
+    box-shadow:        0 6px 18px rgba(15,23,42,.6);
+
+    transition:
+        trans*orm .2s ease,
+        box-shadow .2s ease;
+}
+
+.hit-card--minimal:hove* {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 24px rgba(15,23,42,.10);
+}
+
+/* ==========================================================
+   STRETCHED LINK
+========================================================== */
+
+.hit-card--minimal .hit-card__stretchedLink {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 1;
+}
+
+/* ==========================================================
+   INNER
+========================================================== */
+
+.hit-card--minimal .hit-card__inner {
+
+    position: relative;
+
+    z-index: 2;
+
+    padding: 2rem;
+
+    text-align: center;
+}
+
+/* ==========================================================
+   IMAGE
+========================================================== */
+
+.hit-card__media--minimal {
+
+    width: 96px;
+
+    height: 96px;
+
+    margin: 0 auto 1rem auto;
+}
+
+.hit-card__image--minimal {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+}
+
+/* ==========================================================
+   TITLE
+========================================================== */
+
+.hit-card__title--minimal {
+
+    margin: 0;
+
+    font-size: 1.25rem;
+
+    font-weight: 700;
+
+    line-height: 1.2;
+
+    color: var(--hit-text-default);
+}
+
+/* ==========================================================
+   SUMMARY
+========================================================== */
+
+.hit-card__summary--minimal {
+
+    margin-top: .75rem;
+
+    color: var(--hit-text-muted);
+
+    font-size: .9rem;
+
+    line-height: 1.5;
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 3;
+
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+/* ==========================================================
+   Carousel V1
+========================================================== */
+.hit-gallery--carousel .hit-gallery__items {
+
+    display: flex;
+
+    overflow-x: auto;
+
+    gap: 1.5rem;
+
+    scroll-snap-type: x mandatory;
+
+    scrollbar-width: thin;
+}
+
+.hit-gallery--carousel .hit-card {
+
+    scroll-snap-align: start;
+}
+
+.hit-gallery--carousel.hit-gallery--cols-1 .hit-card {
+
+    flex: 0 0 100%;
+}
+.hit-gallery--carousel.hit-gallery--cols-2 .hit-card {
+
+    flex: 0 0 calc(50% - 0.75rem);
+}
+.hit-gallery--carousel.hit-gallery--cols-3 .hit-card {
+
+    flex: 0 0 calc(33.333% - 1rem);
+}
+.hit-gallery--carousel.hit-gallery--cols-4 .hit-card {
+
+    flex: 0 0 calc(25% - 1.125rem);
+}
+
 </style>
