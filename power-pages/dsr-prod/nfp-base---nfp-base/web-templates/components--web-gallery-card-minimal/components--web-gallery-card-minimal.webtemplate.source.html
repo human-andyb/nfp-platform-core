@@ -17,19 +17,36 @@ Featured card that matches existing CSS selectors:
 {%- endif -%}
 
 <article class="hit-card hit-card--minimal">
-  <div class="hit-card__inner hit-card__inner--minimal" style="{{ bgStyle | escape }}">
+  <div class="hit-card__inner hit-card__inner--minimal">
 
     {%- if href and href != '' -%}
-      <a class="hit-card__stretchedLink" href="{{ href | escape_once }}"{{ targetAttr }} aria-label="{{ title | escape }}"></a>
+      <a class="hit-card__stretchedLink"
+         href="{{ href | escape_once }}"{{ targetAttributes }}
+         aria-label="{{ title | escape }}">
+      </a>
     {%- endif -%}
 
-    <div class="hit-card__overlay"></div>
+    {%- if imageUrl and imageUrl != '' -%}
+      <div class="hit-card__media hit-card__media--minimal">
+        <img class="hit-card__image hit-card__image--minimal"
+             src="{{ imageUrl | escape }}"
+             alt="{{ title | escape }}">
+      </div>
+    {%- endif -%}
 
     <div class="hit-card__body hit-card__body--minimal">
-
-      <h3 class="hit-card__title hit-card__title--minimal">{{ title | escape }}</h3>
-
-
+      {%- if href and href != '' -%}
+        <h3 class="hit-card__title hit-card__title--minimal">
+          <a class="hit-card__titleLink"
+             href="{{ href | escape_once }}"{{ targetAttributes }}>
+            {{ title | escape }}
+          </a>
+        </h3>
+      {%- else -%}
+        <h3 class="hit-card__title hit-card__title--minimal">
+          {{ title | escape }}
+        </h3>
+      {%- endif -%}
     </div>
   </div>
 </article>
