@@ -37,7 +37,7 @@ a second acceptance. The router should handle acceptanceid states separately.
   <div class="alert alert-warning">
     This event registration form was opened with an existing acceptance reference rather than an offering reference.
     Please return to the event page and start the registration again.
-    <div style="margin-top:6px; font-size:0.9em;">
+    <div class="hit-accept-meta-note">
       acceptanceid: <code>{{ acceptanceId | escape }}</code>
     </div>
   </div>
@@ -129,7 +129,7 @@ a second acceptance. The router should handle acceptanceid states separately.
 {% endif %}
 
 {% if request.params['debug'] == '1' %}
-  <pre style="background:#f6f6f6;padding:10px;border:1px solid #ddd;">
+  <pre class="hit-accept-debug-pre">
 offeringid={{ offeringId }}
 acceptanceid={{ acceptanceId }}
 offeringCount={{ offeringCount }}
@@ -148,7 +148,7 @@ fixedPrice={{ fixedPrice }}
 {% elsif offeringCount == 0 %}
   <div class="alert alert-warning">
     We couldn't load this offering. This is usually because the record doesn't exist or the current portal user doesn't have permission to read <strong>hit_offering</strong>.
-    <div style="margin-top:6px; font-size: 0.9em;">
+    <div class="hit-accept-meta-note">
       offeringid: <code>{{ offeringId | escape }}</code>
     </div>
   </div>
@@ -168,8 +168,8 @@ fixedPrice={{ fixedPrice }}
       <p class="hit-accept-card__subtitle">Confirm your details and register for this event.</p>
     </div>
 
-    <div id="hitFormAlert" class="hit-alert" style="display:none;"></div>
-    <div id="hitDebug" class="hit-debug" style="display:none;"></div>
+    <div id="hitFormAlert" class="hit-alert hit-u-hidden"></div>
+    <div id="hitDebug" class="hit-debug hit-u-hidden"></div>
 
     <div class="hit-accept-grid">
 
@@ -214,7 +214,7 @@ fixedPrice={{ fixedPrice }}
             <div class="hit-panel__label">Price</div>
             <div class="hit-panel__value">
               <span id="hitOfferingPrice" data-price="{{ fixedPrice | escape }}"></span>
-              <div style="color:#666; font-size:.92em; margin-top:2px;">Per registration • AUD</div>
+              <div class="hit-accept-price-note">Per registration • AUD</div>
             </div>
           </div>
         {% else %}
@@ -261,7 +261,7 @@ fixedPrice={{ fixedPrice }}
               <div class="hit-form__field">
                 <label class="form-label" for="hit_quantity">Quantity</label>
                 <input class="form-control" id="hit_quantity" name="hit_quantity" type="number" min="1" step="1" value="1" inputmode="numeric">
-                <div class="form-text" style="font-size: 0.9em; color:#666;">Enter the number of registrations (default 1).</div>
+                <div class="form-text hit-accept-qty-help">Enter the number of registrations (default 1).</div>
               </div>
             </div>
           {% else %}
@@ -285,45 +285,6 @@ fixedPrice={{ fixedPrice }}
   </div>
 
 {% endif %}
-
-<style>
-.hit-debug{
-  margin: 0 26px 12px 26px; padding: 12px; border: 1px dashed #bbb; border-radius: 10px;
-  background: #fafafa; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-  font-size: 12px; white-space: pre-wrap; word-break: break-word; color: #222;
-}
-.hit-accept-hero{ max-width:980px; margin:0 auto 14px auto; border-radius:14px; overflow:hidden; }
-.hit-accept-hero__img{ width:100%; height:auto; display:block; }
-
-.hit-accept-card{ max-width:980px; margin:0 auto; background:#fff; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.08); overflow:hidden; }
-.hit-accept-card__header{ padding:22px 26px 8px 26px; }
-.hit-accept-card__title{ margin:0; font-size:28px; font-weight:700; }
-.hit-accept-card__subtitle{ margin:6px 0 0 0; color:#666; }
-
-.hit-accept-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:18px 26px 22px 26px; }
-@media (max-width: 991px){ .hit-accept-grid{ grid-template-columns:1fr; } }
-
-.hit-panel{ border:1px solid #e9e9ee; border-radius:12px; padding:18px; }
-.hit-panel__title{ font-weight:700; margin-bottom:4px; }
-.hit-panel__hint{ color:#666; font-size:.95em; margin-bottom:12px; }
-
-.hit-panel__row{ display:grid; grid-template-columns:110px 1fr; gap:12px; padding:10px 0; }
-.hit-panel__row + .hit-panel__row{ border-top:1px solid #f0f0f4; }
-.hit-panel__label{ color:#666; font-size:.92em; }
-.hit-panel__value{ color:#222; }
-
-.hit-form__row{ margin-bottom:12px; }
-.hit-form__row--2col{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-@media (max-width:575px){ .hit-form__row--2col{ grid-template-columns:1fr; } }
-
-.hit-cta-bar{ grid-column:1 / -1; display:flex; gap:12px; align-items:center; padding-top:8px; }
-.hit-cta-bar__primary{ flex:1; border-radius:999px; padding:10px 16px; }
-.hit-cta-bar__secondary{ white-space:nowrap; border-radius:999px; padding:10px 16px; }
-
-.hit-alert{ margin:0 26px 12px 26px; padding:10px 12px; border-radius:10px; }
-.hit-alert--success{ background:#e8f7ee; color:#1f6a3b; }
-.hit-alert--error{ background:#fdecec; color:#7a1c1c; }
-</style>
 
 <script>
 (function () {
