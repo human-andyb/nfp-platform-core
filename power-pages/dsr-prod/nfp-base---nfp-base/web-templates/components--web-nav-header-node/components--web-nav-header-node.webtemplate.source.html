@@ -168,7 +168,7 @@ Expected inputs:
   {%- endfor -%}
 
   {%- if DEBUG -%}
-    <pre style="font:11px/1.4 monospace; background:#f7f7f7; border:1px solid #ddd; padding:6px; margin:6px 0; white-space:pre-wrap;">
+    <pre class="hit-nav-debug-pre--node">
 NAV NODE
 depth={{ depth }}
 id={{ itemId | escape }}
@@ -311,7 +311,7 @@ active={% if isActive %}YES{% else %}NO{% endif %}
             {%- endif -%}
 
             {%- if DEBUG -%}
-              <div style="background:#ffffcc;border:1px solid #999;padding:2px;font-size:10px;">
+              <div class="hit-nav-debug-child">
                 CHILD FOUND:
                 parent={{ itemId | escape }}
                 child={{ childLabel | escape }}
@@ -342,7 +342,7 @@ active={% if isActive %}YES{% else %}NO{% endif %}
             </li>
 
             {%- if DEBUG -%}
-              <div style="background:red;color:white;padding:4px;">
+              <div class="hit-nav-debug-render">
                 RENDERING CHILD {{ childLabel | escape }}
               </div>
             {%- endif -%}

@@ -189,7 +189,7 @@ This belongs on the gallery wrapper.
 
 
 {%- if DEBUG -%}
-  <pre style="white-space:pre-wrap;font-size:12px;background:#f7f7f7;border:1px solid #ddd;padding:8px;">
+  <pre class="hit-gallery-debug-pre hit-gallery-debug-pre--bordered">
 OFFERINGS DEBUG
 
 rows={{ q.results.entities.size }}
@@ -324,7 +324,7 @@ components--web-gallery-card-standard
         {%- endcomment -%}
 
         {%- if DEBUG -%}
-          <div style="display:none;">
+          <div class="hit-u-hidden">
             item={{ forloop.index }}
             title={{ title }}
             displayVariantValue={{ displayVariantValue }}

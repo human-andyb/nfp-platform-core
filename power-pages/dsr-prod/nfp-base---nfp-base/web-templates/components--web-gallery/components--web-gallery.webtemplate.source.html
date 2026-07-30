@@ -121,7 +121,7 @@ This prevents:
     <p>Gallery slug "{{ effectiveSlug }}" not found.</p>
 
     {%- if DEBUG -%}
-      <pre style="font-size:12px;background:#f7f7f7;padding:8px;">
+      <pre class="hit-gallery-debug-pre">
 WEB-GALLERY HARD FAIL
 effectiveSlug={{ effectiveSlug }}
 matchCount={{ galleryMatchCount }}
@@ -169,7 +169,7 @@ resolutionMode={{ resolutionMode }}
   {%- assign gallerySubtitle = galleryRecord.hit_gallerysubtitle | default:'' -%}
 
   {%- if DEBUG -%}
-    <pre style="font-size:12px;background:#f7f7f7;padding:8px;">
+    <pre class="hit-gallery-debug-pre">
 WEB-GALLERY DEBUG (FINAL LOCKED)
 
 effectiveSlug={{ effectiveSlug }}
@@ -196,7 +196,7 @@ displayVariant={{ displayVariant }}
     </pre>
 
     {%- if galleryMatchCount > 1 -%}
-      <div style="color:red;">⚠️ Duplicate slugs detected</div>
+      <div class="hit-gallery-debug-duplicate">⚠️ Duplicate slugs detected</div>
     {%- endif -%}
 
   {%- endif -%}

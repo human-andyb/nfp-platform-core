@@ -30,7 +30,7 @@ Fetch active header menu
 {%- assign menuRecord = navMenu.results.entities | first -%}
 
 {%- if DEBUG -%}
-<pre style="font:12px/1.4 monospace; background:#f7f7f7; border:1px solid #ddd; padding:8px;">
+<pre class="hit-nav-debug-pre">
 NAV DEBUG (HEADER)
 path={{ request.path | escape }}
 menuFound={% if menuRecord %}YES{% else %}NO{% endif %}
@@ -39,7 +39,7 @@ menuFound={% if menuRecord %}YES{% else %}NO{% endif %}
 
 {%- if menuRecord == nil -%}
   {%- if DEBUG -%}
-    <div style="font:12px/1.4 monospace; color:#900;">
+    <div class="hit-nav-debug-note">
       NAV DEBUG: No active header menu found.
     </div>
   {%- endif -%}
@@ -96,7 +96,7 @@ menuFound={% if menuRecord %}YES{% else %}NO{% endif %}
   {%- assign items = navItems.results.entities -%}
 
   {%- if DEBUG -%}
-  <pre style="font:12px/1.4 monospace; background:#f7f7f7; border:1px solid #ddd; padding:8px;">
+  <pre class="hit-nav-debug-pre">
 NAV DEBUG (ITEMS)
 menuId={{ menuId }}
 itemsCount={{ items | size }}
@@ -138,7 +138,7 @@ itemsCount={{ items | size }}
     {%- endfor -%}
 
     {%- if DEBUG -%}
-      <li style="display:none">
+      <li class="hit-u-hidden">
         NAV DEBUG: rootCount={{ rootCount }}, itemsCount={{ items | size }}
       </li>
     {%- endif -%}
