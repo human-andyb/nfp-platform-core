@@ -22,7 +22,7 @@ sections--acceptance-router (DEBUG HARDENED)
 <div class="hit-app-shell">
 
 {% if DEBUG %}
-  <div style="background:#111;color:#0f0;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+  <div class="hit-debug-panel hit-debug-panel--router-start">
     <div>ROUTER DEBUG START</div>
     <div>acceptanceId={{ acceptanceId }}</div>
   </div>
@@ -37,7 +37,7 @@ sections--acceptance-router (DEBUG HARDENED)
 {% else %}
 
   {% if DEBUG %}
-    <div style="background:#1f2937;color:#93c5fd;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+    <div class="hit-debug-panel hit-debug-panel--step">
       Step 1: running acceptance fetch
     </div>
   {% endif %}
@@ -73,7 +73,7 @@ sections--acceptance-router (DEBUG HARDENED)
   {% assign acceptance = acc.results.entities | first %}
 
   {% if DEBUG %}
-    <div style="background:#1f2937;color:#93c5fd;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+    <div class="hit-debug-panel hit-debug-panel--step">
       <div>Step 2: fetch complete</div>
       <div>acceptance found = {% if acceptance %}true{% else %}false{% endif %}</div>
       <div>result count = {{ acc.results.entities.size }}</div>
@@ -83,7 +83,7 @@ sections--acceptance-router (DEBUG HARDENED)
   {% if acceptance %}
 
     {% if DEBUG %}
-      <div style="background:#1f2937;color:#fde68a;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+      <div class="hit-debug-panel hit-debug-panel--field">
         Step 3: resolving fields
       </div>
     {% endif %}
@@ -138,7 +138,7 @@ sections--acceptance-router (DEBUG HARDENED)
     {% endif %}
 
     {% if DEBUG %}
-      <div style="background:#111827;color:#e5e7eb;padding:10px;font:12px/1.45 monospace;margin-bottom:12px;border:1px solid #374151;">
+      <div class="hit-debug-panel hit-debug-panel--resolution">
         <div><strong>Field resolution</strong></div>
         <div>statusRaw exists = {% if statusRaw %}true{% else %}false{% endif %}</div>
         <div>status = {{ status }}</div>
@@ -154,7 +154,7 @@ sections--acceptance-router (DEBUG HARDENED)
     {% endif %}
 
     {% if DEBUG %}
-      <div style="background:#1f2937;color:#86efac;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+      <div class="hit-debug-panel hit-debug-panel--routing">
         Step 4: entering state routing
       </div>
     {% endif %}
@@ -165,7 +165,7 @@ sections--acceptance-router (DEBUG HARDENED)
     {% endif %}
 
     {% if DEBUG %}
-      <div style="background:#111827;color:#c4b5fd;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+      <div class="hit-debug-panel hit-debug-panel--decision">
         <div>Routing decision</div>
         <div>status == COMPLETED ? {% if status == STATUS_COMPLETED %}true{% else %}false{% endif %}</div>
         <div>status == PENDING_PAYMENT ? {% if status == STATUS_PENDING_PAYMENT %}true{% else %}false{% endif %}</div>
@@ -184,7 +184,7 @@ sections--acceptance-router (DEBUG HARDENED)
     {% if status == STATUS_COMPLETED %}
 
       {% if DEBUG %}
-        <div style="background:#065f46;color:#d1fae5;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+        <div class="hit-debug-panel hit-debug-panel--include-success">
           Include: sections--confirmation
         </div>
       {% endif %}
@@ -195,7 +195,7 @@ sections--acceptance-router (DEBUG HARDENED)
       {% if requiresPayment and paymentIntentId == '' %}
 
         {% if DEBUG %}
-          <div style="background:#92400e;color:#fef3c7;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+          <div class="hit-debug-panel hit-debug-panel--include-payment">
             Include: sections--payment-preparing
           </div>
         {% endif %}
@@ -204,7 +204,7 @@ sections--acceptance-router (DEBUG HARDENED)
       {% else %}
 
         {% if DEBUG %}
-          <div style="background:#92400e;color:#fef3c7;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+          <div class="hit-debug-panel hit-debug-panel--include-payment">
             Include: sections--payment
           </div>
         {% endif %}
@@ -227,7 +227,7 @@ sections--acceptance-router (DEBUG HARDENED)
     {% else %}
 
       {% if DEBUG %}
-        <div style="background:#4c1d95;color:#ede9fe;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+        <div class="hit-debug-panel hit-debug-panel--branch">
           Step 5: acceptance form branch
           <div>offeringType for case = {{ offeringType }}</div>
         </div>
@@ -236,7 +236,7 @@ sections--acceptance-router (DEBUG HARDENED)
       {% case offeringType %}
         {% when 815390000 %}
           {% if DEBUG %}
-            <div style="background:#312e81;color:#c7d2fe;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+            <div class="hit-debug-panel hit-debug-panel--include-form">
               Include: sections--acceptance-donation
             </div>
           {% endif %}
@@ -244,7 +244,7 @@ sections--acceptance-router (DEBUG HARDENED)
 
         {% when 815390001 %}
           {% if DEBUG %}
-            <div style="background:#312e81;color:#c7d2fe;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+            <div class="hit-debug-panel hit-debug-panel--include-form">
               Include: sections--acceptance-event
             </div>
           {% endif %}
@@ -252,7 +252,7 @@ sections--acceptance-router (DEBUG HARDENED)
 
         {% when 815390002 %}
           {% if DEBUG %}
-            <div style="background:#312e81;color:#c7d2fe;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+            <div class="hit-debug-panel hit-debug-panel--include-form">
               Include: sections--acceptance-course
             </div>
           {% endif %}
@@ -260,7 +260,7 @@ sections--acceptance-router (DEBUG HARDENED)
 
         {% when 815390003 %}
           {% if DEBUG %}
-            <div style="background:#312e81;color:#c7d2fe;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+            <div class="hit-debug-panel hit-debug-panel--include-form">
               Include: sections--acceptance-membership
             </div>
           {% endif %}
@@ -268,7 +268,7 @@ sections--acceptance-router (DEBUG HARDENED)
 
         {% when 815390004 %}
           {% if DEBUG %}
-            <div style="background:#312e81;color:#c7d2fe;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+            <div class="hit-debug-panel hit-debug-panel--include-form">
               Include: sections--acceptance-volunteer
             </div>
           {% endif %}
@@ -276,7 +276,7 @@ sections--acceptance-router (DEBUG HARDENED)
 
         {% when 815390005 %}
           {% if DEBUG %}
-            <div style="background:#312e81;color:#c7d2fe;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+            <div class="hit-debug-panel hit-debug-panel--include-form">
               Include: sections--acceptance-download
             </div>
           {% endif %}
@@ -284,7 +284,7 @@ sections--acceptance-router (DEBUG HARDENED)
 
         {% when 815390006 %}
           {% if DEBUG %}
-            <div style="background:#312e81;color:#c7d2fe;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+            <div class="hit-debug-panel hit-debug-panel--include-form">
               Include: sections--acceptance-sponsorship
             </div>
           {% endif %}
@@ -292,7 +292,7 @@ sections--acceptance-router (DEBUG HARDENED)
 
 {% when 815390007 %}
   {% if DEBUG %}
-    <div style="background:#312e81;color:#c7d2fe;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+    <div class="hit-debug-panel hit-debug-panel--include-form">
       Include: sections--acceptance-eoi
     </div>
   {% endif %}
@@ -300,7 +300,7 @@ sections--acceptance-router (DEBUG HARDENED)
 
         {% when 815390008 %}
           {% if DEBUG %}
-            <div style="background:#312e81;color:#c7d2fe;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+            <div class="hit-debug-panel hit-debug-panel--include-form">
               Include: sections--acceptance-venue
             </div>
           {% endif %}
@@ -308,7 +308,7 @@ sections--acceptance-router (DEBUG HARDENED)
 
         {% else %}
           {% if DEBUG %}
-            <div style="background:#7f1d1d;color:#fee2e2;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+            <div class="hit-debug-panel hit-debug-panel--error">
               No acceptance UI configured for offeringType={{ offeringType }}
             </div>
           {% endif %}
@@ -322,7 +322,7 @@ sections--acceptance-router (DEBUG HARDENED)
   {% else %}
 
     {% if DEBUG %}
-      <div style="background:#7f1d1d;color:#fee2e2;padding:8px;font:12px/1.4 monospace;margin-bottom:12px;">
+      <div class="hit-debug-panel hit-debug-panel--error">
         Acceptance fetch returned no record.
       </div>
     {% endif %}
@@ -337,28 +337,4 @@ sections--acceptance-router (DEBUG HARDENED)
 
 </div>
 
-<style>
-.hit-app-shell {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2.5rem 2rem;
-  box-sizing: border-box;
-}
 
-.hit-app-shell * {
-  box-sizing: border-box;
-}
-
-.hit-app-shell .hit-acceptance__left,
-.hit-app-shell .hit-acceptance__right {
-  min-width: 0;
-}
-
-.hit-debug {
-  background: #f6f6f6;
-  padding: 10px;
-  border: 1px solid #ddd;
-  font-size: 12px;
-}
-</style>

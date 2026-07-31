@@ -276,7 +276,7 @@ components--web-gallery-card-standard
             {%- assign joiner = '&' -%}
           {%- endif -%}
 
-          {%- assign encodedId = id | r.hit_articleid -%}
+          {%- assign encodedId = id | url_encode -%}
 
           {%- assign href = base  | append: joiner  | append: idParamName  | append: '='  | append: encodedId   -%}
 

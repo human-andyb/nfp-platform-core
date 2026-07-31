@@ -3637,7 +3637,7 @@ button.hit-option-card.is-selected{
         }
 
         .hit-acceptance--basic .hit-list li::before{
-          content:"G£ô";
+          content:"Gï¿½ï¿½";
           flex:0 0 24px;
           width:24px;
           height:24px;
@@ -4587,6 +4587,51 @@ button.hit-option-card.is-selected{
 .hit-debug-panel--error {
   background: #7f1d1d;
   color: #fee2e2;
+}
+
+/* ==========================================================================
+   ARTICLE DETAIL
+   ========================================================================== */
+
+.hit-article-detail {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hit-article-detail__hero {
+  margin-bottom: 32px;
+}
+
+.hit-article-detail__image {
+  width: 100%;
+  display: block;
+  border-radius: 20px;
+}
+
+.hit-article-detail__title {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.hit-article-detail__summary {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  font-weight: 500;
+  margin-bottom: 24px;
+  opacity: 0.85;
+}
+
+.hit-article-detail__body {
+  line-height: 1.8;
+  font-size: 1.05rem;
+}
+
+.hit-empty--article-detail {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
 /* ==========================================================================
