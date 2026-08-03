@@ -2238,15 +2238,20 @@ button.hit-option-card.is-selected{
 }
 
 .hit-offering-detail .hit-custom-opt{
-  padding:1rem;
-  border-radius:var(--hit-radius-md);
+  padding: 1rem;
+  border-radius: var(--hit-radius-md);
+
+  /* Override global .hit-card--compact clamp for custom amount card */
+  height: auto;
+  min-height: 140px;
+  overflow: visible;
 }
 
 .hit-offering-detail .hit-custom-amount-row{
   display:flex;
   align-items:center;
   gap:.6rem;
-  max-width:260px;
+  max-width:320px;
   margin-top:.85rem;
 }
 
