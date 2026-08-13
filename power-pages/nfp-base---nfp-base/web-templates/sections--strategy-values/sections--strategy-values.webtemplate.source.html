@@ -1,0 +1,27 @@
+ {% assign strategyId = slot.hit_strategycycle.id %}
+
+{% fetchxml values %}
+<fetch>
+  <entity name="hit_strategyvalue">
+    <attribute name="hit_name" />
+    <attribute name="hit_sortorder" />
+    <filter>
+      <condition attribute="hit_strategycycle"
+                 operator="eq"
+                 value="{{ strategyId }}" />
+    </filter>
+    <order attribute="hit_sortorder" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% assign items = values.results.entities %}
+
+<section class="strategy-values">
+  <h3>Values</h3>
+  <ul>
+    {% for v in items %}
+      <li>{{ v.hit_name }}</li>
+    {% endfor %}
+  </ul>
+</section>

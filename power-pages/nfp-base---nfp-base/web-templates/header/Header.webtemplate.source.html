@@ -1,0 +1,160 @@
+<script>
+/*
+  Power Pages runtime guards
+  Must execute before platform inline scripts.
+  These prevent injected legacy code from crashing
+  when jQuery / telemetry are blocked by CSP.
+*/
+(function () {
+  // jQuery guard (crash-prevention only)
+  if (!window.$) {
+    window.$ = window.jQuery = function () {
+      return {
+        each: function () {},
+        on: function () {},
+        ready: function (fn) { if (typeof fn === 'function') fn(); }
+      };
+    };
+  }
+
+  // Telemetry / logging guards
+  window.ClientLogWrapper = window.ClientLogWrapper || {
+    info: function () {},
+    warn: function () {},
+    error: function () {}
+  };
+  window.ClientLogger = window.ClientLogger || window.ClientLogWrapper;
+})();
+</script>
+
+{% fetchxml branding %}
+<fetch top="1">
+  <entity name="hit_brandsettings">
+    <attribute name="hit_primarycolour" />
+    <attribute name="hit_secondarycolour" />
+    <attribute name="hit_linkcolour" />
+    <attribute name="hit_textcolour" />
+    <attribute name="hit_mutedtextcolour" />
+    <attribute name="hit_contextcolour1" />
+    <attribute name="hit_contextcolour2" />
+    <attribute name="hit_contextcolour3" />
+    <attribute name="hit_contextcolour4" />
+    <attribute name="hit_contextcolour5" />
+    <attribute name="hit_textonaccentcolour" />
+    <attribute name="hit_textondarkcolour" />
+    <attribute name="hit_textonlightcolour" />
+
+    <attribute name="hit_backgroundcolour" />
+    <attribute name="hit_basefontfamilycss" />
+    <attribute name="hit_headingfontfamilycss" />
+    <attribute name="hit_customfonturl" />
+    <attribute name="hit_headerlogo" />
+  
+    <attribute name="hit_surfacecolour" />
+    <attribute name="hit_surfacemutedcolour" />
+    <attribute name="hit_bordercolour" />
+    <attribute name="hit_headerbackgroundcolour" />
+    <attribute name="hit_headerbordercolour" />
+    <attribute name="hit_headerlogoheight" />
+    <filter>
+      <condition attribute="hit_isactive" operator="eq" value="1" />
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% if branding.results.entities.size > 0 %}
+
+{% if brand.hit_customfonturl %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{{ brand.hit_customfonturl | escape }}">
+{% endif %}
+
+  {% assign brand = branding.results.entities[0] %}
+  <style id="hit-brand-theme">
+    :root {
+      /* ======================================================
+         Brand identity
+         ====================================================== */
+      --hit-accent-primary: {{ brand.hit_primarycolour }};
+      --hit-accent-secondary: {{ brand.hit_secondarycolour }};
+      --hit-bg-page: {{ brand.hit_backgroundcolour }};
+
+      --hit-brand-panel-bg: {{ brand.hit_primarycolour }};
+      --hit-brand-panel-text: {{ brand.hit_textonaccentcolour }};
+
+      --hit-button-primary-bg: {{ brand.hit_primarycolour }};
+      --hit-button-primary-text: {{ brand.hit_textonaccentcolour }};
+
+      /* ======================================================
+         Surfaces & structure
+         ====================================================== */
+      --hit-bg-surface: {{ brand.hit_surfacecolour }};
+      --hit-bg-muted: {{ brand.hit_surfacemutedcolour }};
+      --hit-border-default: {{ brand.hit_bordercolour }};
+
+      /* ======================================================
+         Typography
+         ====================================================== */
+      --hit-text-default: {{ brand.hit_textcolour }};
+      --hit-text-muted: {{ brand.hit_mutedtextcolour }};
+      --hit-text-on-light: {{ brand.hit_textonlightcolour }};
+      --hit-text-on-dark: {{ brand.hit_textondarkcolour }};
+      --hit-text-on-accent: {{ brand.hit_textonaccentcolour }};
+
+      --hit-link-colour: {{ brand.hit_linkcolour }};
+      --hit-link-colour-hover: {{ brand.hit_secondarycolour }};
+      --hit-font-base: {{ brand.hit_basefontfamilycss | default: 'system-ui, sans-serif' }};
+      --hit-font-heading: {{ brand.hit_headingfontfamilycss | default: 'system-ui, sans-serif' }};
+
+      /* ======================================================
+         Context colour slots (USED BY SECTIONS)
+         ====================================================== */
+      --hit-context-1: {{ brand.hit_contextcolour1 }};
+      --hit-context-2: {{ brand.hit_contextcolour2 }};
+      --hit-context-3: {{ brand.hit_contextcolour3 }};
+      --hit-context-4: {{ brand.hit_contextcolour4 }};
+      --hit-context-5: {{ brand.hit_contextcolour5 }};
+
+      /* ======================================================
+         Header (structural chrome)
+         ====================================================== */
+      --header-bg: {{ brand.hit_headerbackgroundcolour }};
+      --header-border: {{ brand.hit_headerbordercolour }};
+      --header-logo-height: {{ brand.hit_headerlogoheight | default: 64 }}px;
+    }
+  </style>
+{% endif %}
+
+
+
+<header class="site-header" role="banner">
+  <div class="header-inner">
+
+    <!-- Brand -->
+    <div class="site-brand">
+      <a href="/" class="brand-link">
+        <img src="/site-logo.png"
+             alt="{{ website.name | default: 'Home' }}"
+             class="brand-logo" />
+      </a>
+    </div>
+
+{% comment %}
+    <!-- Navigation -->
+    <nav class="primary-nav" aria-label="Primary navigation">
+      {% include 'components--web-nav-header' %}
+    </nav>
+{% endcomment %}
+
+    <nav class="primary-nav">
+        <a href="https://www.dsr.org.au/"
+          target="_blank"
+          rel="noopener noreferrer">
+            DSR Home
+        </a>
+    </nav>
+
+  </div>
+</header>

@@ -1,0 +1,237 @@
+{%- comment -%}
+components--web-gallery — LOCKED VERSION
+
+Key rules (NON-NEGOTIABLE):
+1. Querystring override ALWAYS wins (if allowed)
+2. Slot config is fallback ONLY
+3. Never trust preloaded gallery when overriding
+4. Never silently fallback if slug lookup fails
+
+This prevents:
+- Slot overriding querystring
+- Wrong gallery rendering
+- Debug ambiguity
+
+{%- endcomment -%}
+
+{%- assign DEBUG = debug | default: false -%}
+{%- assign showGalleryHeader = showGalleryHeader | default: false -%}
+{%- assign allowQueryOverride = allowQueryOverride | default: true -%}
+
+{% assign cols = maxColumns | default: 3 %}
+{% assign rows = maxRows | default: 1 %}
+
+{% assign colsClass = 'hit-gallery--cols-' | append: cols %}
+
+
+{%- assign SRC_OFFERINGS        = 815390000 -%}
+{%- assign SRC_PERSONAS         = 815390001 -%}
+{%- assign SRC_PROGRAMS         = 815390002 -%}
+{%- assign SRC_FEATURED_CONTENT = 815390003 -%}
+{%- assign SRC_ARTICLES         = 815390004 -%}
+{%- assign SRC_OTHER            = 815390005 -%}
+
+{%- assign CARD_STANDARD = 815390000 -%}
+{%- assign CARD_COMPACT  = 815390001 -%}
+{%- assign CARD_FEATURED = 815390002 -%}
+
+{%- assign STYLE_GRID      = 815390000 -%}
+{%- assign STYLE_CAROUSEL  = 815390001 -%}
+{%- assign STYLE_TILES     = 815390002 -%}
+{%- assign STYLE_ACTIONS   = 815390003 -%}
+{%- assign STYLE_MASONRY   = 815390004 -%}
+{%- assign STYLE_MEDIA     = 815390005 -%}
+
+{%- assign displayStyle = displayStyle | default: STYLE_GRID -%}
+{%- assign displayVariant = displayVariant | default: CARD_STANDARD -%}
+
+{%- comment -%}
+1) Determine effective slug
+{%- endcomment -%}
+{%- assign effectiveSlug = '' -%}
+
+{%- if galleryOverride and galleryOverride != '' -%}
+  {%- assign effectiveSlug = galleryOverride | downcase | strip -%}
+{%- elsif gallerySlug and gallerySlug != '' -%}
+  {%- assign effectiveSlug = gallerySlug | downcase | strip -%}
+{%- else -%}
+  {%- assign qp = request.params.gallery | default:'' | downcase | strip -%}
+  {%- if qp != '' -%}{%- assign effectiveSlug = qp -%}{%- endif -%}
+{%- endif -%}
+
+{%- comment -%}
+2) Resolve gallery (CRITICAL LOGIC)
+{%- endcomment -%}
+
+{%- assign galleryRecord = nil -%}
+{%- assign galleryMatchCount = 0 -%}
+{%- assign resolutionMode = '' -%}
+
+{%- comment -%}
+✅ HARD OVERRIDE PATH
+{%- endcomment -%}
+{%- if allowQueryOverride and effectiveSlug != '' -%}
+
+  {%- assign resolutionMode = 'QUERY_OVERRIDE' -%}
+
+  {%- fetchxml galleryFetch -%}
+    <fetch top="2" mapping="logical">
+      <entity name="hit_webgalleryconfig">
+        <attribute name="hit_webgalleryconfigid" />
+        <attribute name="hit_name" />
+        <attribute name="hit_slug" />
+        <attribute name="hit_isactive" />
+        <attribute name="hit_maxitems" />
+        <attribute name="hit_gallerysourcetype" />
+        <attribute name="hit_offeringtype" />
+        <attribute name="hit_cardtemplate" />
+        <attribute name="hit_gallerytitle" />
+        <attribute name="hit_gallerysubtitle" />
+        <attribute name="hit_targetpage" />
+        <attribute name="hit_idparametername" />
+        <attribute name="hit_openinnewtab" />
+        <filter type="and">
+          <condition attribute="hit_slug" operator="eq" value="{{ effectiveSlug }}" />
+          <condition attribute="hit_isactive" operator="eq" value="1" />
+        </filter>
+      </entity>
+    </fetch>
+  {%- endfetchxml -%}
+
+  {%- assign galleryMatchCount = galleryFetch.results.entities.size | default: 0 -%}
+  {%- assign galleryRecord = galleryFetch.results.entities | first -%}
+
+{%- else -%}
+
+  {%- comment -%}
+✅ FALLBACK PATH (slot config)
+{%- endcomment -%}
+
+  {%- assign resolutionMode = 'SLOT_FALLBACK' -%}
+  {%- assign galleryRecord = gallery -%}
+
+{%- endif -%}
+
+{%- comment -%}
+3) HARD FAIL if override requested but not resolved
+{%- endcomment -%}
+{%- if allowQueryOverride and effectiveSlug != '' and galleryRecord == nil -%}
+
+  <div class="hit-gallery hit-gallery--error">
+    <p>Gallery slug "{{ effectiveSlug }}" not found.</p>
+
+    {%- if DEBUG -%}
+      <pre class="hit-gallery-debug-pre">
+WEB-GALLERY HARD FAIL
+effectiveSlug={{ effectiveSlug }}
+matchCount={{ galleryMatchCount }}
+resolutionMode={{ resolutionMode }}
+      </pre>
+    {%- endif -%}
+
+  </div>
+
+{%- else -%}
+
+  {%- assign maxItems = galleryRecord.hit_maxitems | default: 12 -%}
+  {%- assign sourceType = galleryRecord.hit_gallerysourcetype.value | default: 0 -%}
+  {%- assign cardTemplateValue = galleryRecord.hit_cardtemplate.value | default: CARD_STANDARD -%}
+
+  {%- assign sourceClass = '' -%}
+  {%- if sourceType == SRC_PROGRAMS -%}{%- assign sourceClass = 'hit-gallery--programs' -%}
+  {%- elsif sourceType == SRC_PERSONAS -%}{%- assign sourceClass = 'hit-gallery--personas' -%}
+  {%- elsif sourceType == SRC_FEATURED_CONTENT -%}{%- assign sourceClass = 'hit-gallery--featured-content' -%}
+  {%- elsif sourceType == SRC_ARTICLES -%}{%- assign sourceClass = 'hit-gallery--articles' -%}
+  {%- elsif sourceType == SRC_OFFERINGS -%}{%- assign sourceClass = 'hit-gallery--offerings' -%}
+  {%- else -%}{%- assign sourceClass = 'hit-gallery--other' -%}
+  {%- endif -%}
+
+  {%- assign layoutClass = 'hit-gallery--grid' -%}
+
+  {%- if displayStyle == STYLE_CAROUSEL -%}
+    {%- assign layoutClass = 'hit-gallery--carousel' -%}
+
+  {%- elsif displayStyle == STYLE_TILES -%}
+    {%- assign layoutClass = 'hit-gallery--tiles' -%}
+
+  {%- elsif displayStyle == STYLE_ACTIONS -%}
+    {%- assign layoutClass = 'hit-gallery--actions' -%}
+
+  {%- elsif displayStyle == STYLE_MASONRY -%}
+    {%- assign layoutClass = 'hit-gallery--masonry' -%}
+
+  {%- elsif displayStyle == STYLE_MEDIA -%}
+    {%- assign layoutClass = 'hit-gallery--media' -%}
+
+  {%- endif -%}
+
+  {%- assign galleryTitle    = galleryRecord.hit_gallerytitle | default:'' -%}
+  {%- assign gallerySubtitle = galleryRecord.hit_gallerysubtitle | default:'' -%}
+
+  {%- if DEBUG -%}
+    <pre class="hit-gallery-debug-pre">
+WEB-GALLERY DEBUG (FINAL LOCKED)
+
+effectiveSlug={{ effectiveSlug }}
+allowQueryOverride={{ allowQueryOverride }}
+
+resolutionMode={{ resolutionMode }}
+
+resolvedSlug={{ galleryRecord.hit_slug }}
+galleryId={{ galleryRecord.hit_webgalleryconfigid }}
+
+matchCount={{ galleryMatchCount }}
+
+sourceType={{ sourceType }}
+sourceClass={{ sourceClass }}
+
+maxItems={{ maxItems }}
+cardTemplateValue={{ cardTemplateValue }}
+
+passedGallerySlug={{ gallery.hit_slug }}
+
+displayStyle={{ displayStyle }}
+displayVariant={{ displayVariant }}
+
+    </pre>
+
+    {%- if galleryMatchCount > 1 -%}
+      <div class="hit-gallery-debug-duplicate">⚠️ Duplicate slugs detected</div>
+    {%- endif -%}
+
+  {%- endif -%}
+
+  <div class="hit-gallery {{ layoutClass }} {{ sourceClass }}">
+
+    {%- if showGalleryHeader and (galleryTitle != '' or gallerySubtitle != '') -%}
+      <div class="hit-gallery__header">
+        {%- if galleryTitle != '' -%}<h3>{{ galleryTitle }}</h3>{%- endif -%}
+        {%- if gallerySubtitle != '' -%}<div>{{ gallerySubtitle }}</div>{%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="hit-gallery__grid">
+
+      {%- if sourceType == SRC_PROGRAMS -%}
+        {% include 'components--web-gallery-source-programs' gallery: galleryRecord maxItems: maxItems displayStyle: displayStyle displayVariant: displayVariant  maxColumns: maxColumns  maxRows: maxRows   debug: DEBUG %}
+
+      {%- elsif sourceType == SRC_PERSONAS -%}
+        {% include 'components--web-gallery-source-personas' gallery: galleryRecord maxItems: maxItems displayStyle: displayStyle displayVariant: displayVariant  maxColumns: maxColumns  maxRows: maxRows    debug: DEBUG %}
+
+      {%- elsif sourceType == SRC_FEATURED_CONTENT -%}
+        {% include 'components--web-gallery-source-featuredcontent' gallery: galleryRecord maxItems: maxItems displayStyle: displayStyle displayVariant: displayVariant  maxColumns: maxColumns  maxRows: maxRows    debug: DEBUG %}
+
+      {%- elsif sourceType == SRC_ARTICLES -%}
+        {% include 'components--web-gallery-source-article' gallery: galleryRecord maxItems: maxItems displayStyle: displayStyle displayVariant: displayVariant  maxColumns: maxColumns  maxRows: maxRows    debug: DEBUG %}
+
+      {%- elsif sourceType == SRC_OFFERINGS -%}
+        {% include 'components--web-gallery-source-offering' gallery: galleryRecord maxItems: maxItems displayStyle: displayStyle displayVariant: displayVariant  maxColumns: maxColumns  maxRows: maxRows    debug: DEBUG %}
+
+      {%- else -%}
+        <p>Unsupported source type</p>
+      {%- endif -%}
+
+    </div>
+  </div>
+
+{%- endif -%}

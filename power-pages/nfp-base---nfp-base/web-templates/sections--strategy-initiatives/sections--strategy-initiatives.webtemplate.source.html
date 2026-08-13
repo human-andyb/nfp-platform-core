@@ -1,0 +1,60 @@
+ {% comment %}
+sections--strategy-initiatives
+
+- Block renderer
+- Fetches initiatives linked to strategy priorities
+- Uses slot.hit_strategycycle as input
+{% endcomment %}
+
+{% assign strategyId = '' %}
+
+{% if slot and slot.hit_strategycycle %}
+  {% if slot.hit_strategycycle.id %}
+    {% assign strategyId = slot.hit_strategycycle.id %}
+  {% else %}
+    {% assign strategyId = slot.hit_strategycycle %}
+  {% endif %}
+{% endif %}
+
+{% fetchxml initiatives %}
+<fetch>
+  <entity name="hit_strategyinitiative">
+    <attribute name="hit_name" />
+    <attribute name="hit_sortorder" />
+    <attribute name="hit_strategypriority" />
+
+    <filter>
+      <condition attribute="hit_strategypriority"
+                 operator="not-null" />
+    </filter>
+
+    <order attribute="hit_sortorder" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% assign items = initiatives.results.entities %}
+
+<section class="strategy-initiatives">
+
+  <h3>Initiatives</h3>
+
+  {% if items and items.size > 0 %}
+
+    <ul class="strategy-initiative-list">
+
+      {% for i in items %}
+        <li>{{ i.hit_name }}</li>
+      {% endfor %}
+
+    </ul>
+
+  {% else %}
+
+    {% if debug %}
+      <div>No initiatives found</div>
+    {% endif %}
+
+  {% endif %}
+
+</section>

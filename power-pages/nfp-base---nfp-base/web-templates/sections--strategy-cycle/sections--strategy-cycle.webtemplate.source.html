@@ -1,0 +1,27 @@
+{% assign strategyId = '' %}
+{% if slot.hit_strategycycle %}
+  {% assign strategyId = slot.hit_strategycycle.id %}
+{% endif %}
+
+{% fetchxml cycle %}
+<fetch top="1">
+  <entity name="hit_strategycycle">
+    <attribute name="hit_name" />
+    <attribute name="hit_tagline" />
+    <filter>
+      <condition attribute="hit_strategycycleid"
+                 operator="eq"
+                 value="{{ strategyId }}" />
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% assign c = cycle.results.entities | first %}
+
+<section class="strategy-cycle">
+  {% if c %}
+    <h1>{{ c.hit_name }}</h1>
+    <p>{{ c.hit_tagline }}</p>
+  {% endif %}
+</section>

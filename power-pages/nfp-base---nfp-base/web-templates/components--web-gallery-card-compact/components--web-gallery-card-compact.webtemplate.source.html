@@ -1,0 +1,61 @@
+{%- comment -%}
+components--web-gallery-card-compact
+
+Inputs:
+- title
+- summary
+- imageUrl
+- href
+- targetAttr / targetAttrs
+
+Compact card contract:
+- Entire card clickable when href is present
+- No badge
+- No CTA button
+- Image panel on the left
+- Image fills a square panel
+- Title and summary on the right
+{%- endcomment -%}
+
+{%- assign targetAttributes = targetAttrs | default: targetAttr | default: '' -%}
+
+<article class="hit-card hit-card--compact">
+
+  {%- if href and href != '' -%}
+    <a class="hit-card__link" href="{{ href | escape }}"{{ targetAttributes }}>
+  {%- endif -%}
+
+      <div class="hit-card__layout">
+
+        {%- if imageUrl and imageUrl != '' -%}
+          <div class="hit-card__image-panel">
+            <img
+              class="hit-card__image"
+              src="{{ imageUrl | escape }}"
+              alt="{{ title | escape }}"
+              loading="lazy"
+              decoding="async" />
+          </div>
+        {%- endif -%}
+
+        <div class="hit-card__content-panel">
+
+          <h3 class="hit-card__title">
+            {{ title | escape }}
+          </h3>
+
+          {%- if summary and summary != '' -%}
+            <p class="hit-card__summary">
+              {{ summary | escape }}
+            </p>
+          {%- endif -%}
+
+        </div>
+
+      </div>
+
+  {%- if href and href != '' -%}
+    </a>
+  {%- endif -%}
+
+</article>

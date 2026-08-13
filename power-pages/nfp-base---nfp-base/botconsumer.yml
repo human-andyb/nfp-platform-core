@@ -1,0 +1,8 @@
+- adx_botconsumerid: 157b5572-5709-f111-8407-000d3a7a0cab
+  adx_botschemaname: cr2f3_5a1ff998-7a17-41e8-b95c-e5eb31c83b4a
+  adx_configjson: '{"skillConfigViewName":"NFP Base bot Answers"}'
+  adx_name: Bot Consumer
+- adx_botconsumerid: ce6303ed-d263-f111-ab0d-6045bde72793
+  adx_botschemaname: cr05f_327effcd-ed89-4ec9-9e81-0a4668350e54
+  adx_configjson: '{"skillConfigViewName":"DSR Site bot Answers"}'
+  adx_name: Bot Consumer

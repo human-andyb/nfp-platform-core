@@ -1,0 +1,1030 @@
+{% comment %}
+sections--payment
+
+Supports:
+- Existing one-off Stripe PaymentIntent payment flow.
+- Optional recurring donation setup when Offering.hit_allowrecurring is true.
+- Recurring setup uses Stripe SetupIntent via Power Automate:
+  Site Setting: Stripe/CreateCustomerSetupIntentUrl
+- Webhook Handler remains responsible for updating Dataverse after setup_intent.succeeded.
+{% endcomment %}
+
+{% assign DEBUG = request.params.debug == '1' %}
+{% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
+{% assign stripe_pk = settings['Stripe/PublishableKey'] | default: '' | strip %}
+{% assign setupintent_url = settings['Stripe/CreateCustomerSetupIntentUrl'] | default: '' | strip %}
+
+{% if acceptanceId == '' %}
+  <div class="alert alert-warning">Missing acceptance id.</div>
+{% elsif stripe_pk == '' %}
+  <div class="alert alert-warning">
+    Missing Stripe publishable key (Site Setting <code>Stripe/PublishableKey</code>).
+  </div>
+{% else %}
+
+{% fetchxml acc_q %}
+<fetch top="1" mapping="logical">
+  <entity name="hit_offeringacceptance">
+    <attribute name="hit_offeringacceptanceid" />
+    <attribute name="hit_acceptancestatus" />
+    <attribute name="hit_totalamounteffective" />
+    <attribute name="hit_email" />
+    <attribute name="hit_firstname" />
+    <attribute name="hit_lastname" />
+    <attribute name="hit_stripeclientsecret" />
+    <attribute name="hit_stripepaymentintentid" />
+    <attribute name="hit_stripechargeid" />
+
+    <filter>
+      <condition attribute="hit_offeringacceptanceid"
+                 operator="eq"
+                 value="{{ acceptanceId | escape }}" />
+    </filter>
+
+    <link-entity name="hit_offering"
+                 from="hit_offeringid"
+                 to="hit_offering"
+                 alias="o"
+                 link-type="outer">
+      <attribute name="hit_offeringname" />
+      <attribute name="hit_imageurl" />
+      <attribute name="hit_allowrecurring" />
+      <attribute name="hit_allowdonationaddon" />
+      <attribute name="hit_slug" />
+    </link-entity>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% assign acc = acc_q.results.entities | first %}
+
+{% if acc == nil %}
+  <div class="alert alert-warning">
+    Payment session not found. The Offering Acceptance could not be loaded.
+  </div>
+{% else %}
+
+{% assign status_val = acc.hit_acceptancestatus.value | default: acc.hit_acceptancestatus %}
+{% assign status_label = acc.hit_acceptancestatus.label | default: acc['hit_acceptancestatus@OData.Community.Display.V1.FormattedValue'] | default: '' %}
+{% assign clientSecret = acc.hit_stripeclientsecret | default: '' | strip %}
+{% assign total = acc.hit_totalamounteffective | default: '' %}
+{% if total.value %}{% assign total = total.value %}{% endif %}
+{% assign offering_name = acc['o.hit_offeringname'] | default: 'Donation' %}
+
+{% assign allow_recurring_raw = acc['o.hit_allowrecurring'] | default: false %}
+{% assign allow_recurring = false %}
+{% if allow_recurring_raw == true or allow_recurring_raw == 'true' or allow_recurring_raw == 'True' or allow_recurring_raw == '1' %}
+  {% assign allow_recurring = true %}
+{% endif %}
+
+<div class="hit-payment"
+     data-context="payment"
+     data-acceptance-id="{{ acceptanceId | escape }}"
+     data-allow-recurring="{{ allow_recurring }}">
+
+{% if clientSecret == '' %}
+  <div class="hit-alert">
+    <strong>Payment is still being prepared.</strong>
+    <div>Please wait a moment and refresh the page.</div>
+
+    {% if DEBUG %}
+      <div class="hit-debug">
+        status={{ status_label }} ({{ status_val }})<br>
+        clientSecret missing<br>
+        allowRecurring={{ allow_recurring }}<br>
+        setupIntentUrlPresent={{ setupintent_url != '' }}
+      </div>
+    {% endif %}
+  </div>
+{% else %}
+
+<div class="hit-payment__grid">
+
+  <aside class="hit-payment__summary">
+    <div class="hit-card hit-payment-summary">
+      <div class="hit-payment-summary__eyebrow">Your donation</div>
+
+      <h1 class="hit-payment-summary__title">
+        {{ offering_name | escape }}
+      </h1>
+
+      <div class="hit-payment-summary__amount"
+           id="amountDisplay"
+           aria-label="Donation amount">—</div>
+
+      <div class="hit-payment-summary__frequency"
+           id="frequencyDisplay">
+        Monthly recurring donation
+      </div>
+
+      {% if acc.hit_email %}
+        <div class="hit-payment-summary__receipt">
+          <div class="hit-payment-summary__label">Receipt email</div>
+          <div class="hit-payment-summary__value">
+            {{ acc.hit_email | escape }}
+          </div>
+        </div>
+      {% endif %}
+
+      <ul class="hit-payment-benefits">
+        <li class="hit-payment-benefits__item">
+          <span class="hit-payment-benefits__icon" aria-hidden="true">✓</span>
+          <span>Secure payment through Stripe</span>
+        </li>
+        <li class="hit-payment-benefits__item">
+          <span class="hit-payment-benefits__icon" aria-hidden="true">✓</span>
+          <span>Payment details are not stored on this site</span>
+        </li>
+        <li class="hit-payment-benefits__item">
+          <span class="hit-payment-benefits__icon" aria-hidden="true">✓</span>
+          <span>Your receipt will be sent by email</span>
+        </li>
+      </ul>
+
+      {% if DEBUG %}
+        <div class="hit-debug">
+          acceptanceId={{ acceptanceId | escape }}<br>
+          status={{ status_label | escape }} ({{ status_val }})<br>
+          clientSecretPresent={{ clientSecret != '' }}<br>
+          allowRecurring={{ allow_recurring }}<br>
+          setupIntentUrlPresent={{ setupintent_url != '' }}
+        </div>
+      {% endif %}
+    </div>
+  </aside>
+
+  <main class="hit-payment__capture">
+    <div class="hit-card hit-payment-form">
+      <h2 class="hit-heading">Secure payment</h2>
+
+      <p class="hit-subtitle" id="paymentIntro">
+        Enter your payment details to complete your donation.
+        If additional verification is required, Stripe may ask you to approve the payment.
+      </p>
+
+      {% if allow_recurring %}
+        <div class="hit-recurring-panel">
+          <label class="hit-recurring-toggle" for="makeRecurring">
+            <input type="checkbox"
+                   id="makeRecurring"
+                   value="1">
+            <span class="hit-recurring-toggle__content">
+              <span class="hit-recurring-toggle__title">
+                Make this a recurring donation
+              </span>
+              <span class="hit-recurring-toggle__text">
+                Save your payment method securely with Stripe so this donation can be collected automatically.
+              </span>
+            </span>
+          </label>
+
+          <div class="hit-recurring-options" id="recurringOptions">
+            <div class="hit-field">
+              <label for="recurringFrequency">Frequency</label>
+              <select id="recurringFrequency">
+                <option value="Monthly" selected>Monthly</option>
+                <option value="Quarterly">Quarterly</option>
+                <option value="Annually">Annually</option>
+              </select>
+            </div>
+
+            <div class="hit-field">
+              <label for="recurringStartDate">Start date</label>
+              <input type="date" id="recurringStartDate">
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="hit-status-pill" role="status" aria-live="polite">
+        <span id="statusDot"
+              class="hit-status-pill__indicator is-busy"
+              aria-hidden="true"></span>
+        <span id="statusText">Loading secure payment…</span>
+      </div>
+
+      <div id="errBox"
+           class="hit-error-summary"
+           role="alert"
+           aria-live="assertive"
+           aria-atomic="true"></div>
+
+      <div class="hit-payment-element-wrap">
+        <div id="payment-element"></div>
+      </div>
+
+      <div class="hit-payment-actions">
+        <button type="button"
+                class="hit-button hit-button--primary"
+                id="payBtn"
+                disabled>
+          <span class="hit-button__text">Pay now</span>
+          <span class="hit-button__loading">
+            <span class="hit-spinner" aria-hidden="true"></span>
+            <span class="hit-button__loading-text">Processing…</span>
+          </span>
+        </button>
+      </div>
+
+      <p class="hit-payment-note" id="paymentNote">
+        Your payment is securely processed by Stripe. DSR does not receive or store
+        your complete card or bank account details.
+      </p>
+
+      <input type="hidden" id="acceptanceId" value="{{ acceptanceId | escape }}">
+      <input type="hidden" id="clientSecret" value="{{ clientSecret | escape }}">
+      <input type="hidden" id="stripePk" value="{{ stripe_pk | escape }}">
+      <input type="hidden" id="totalAmount" value="{{ total | escape }}">
+      <input type="hidden" id="allowRecurring" value="{{ allow_recurring }}">
+      <input type="hidden" id="setupIntentUrl" value="{{ setupintent_url | escape }}">
+      <input type="hidden" id="email" value="{{ acc.hit_email | default: '' | escape }}">
+      <input type="hidden" id="firstname" value="{{ acc.hit_firstname | default: '' | escape }}">
+      <input type="hidden" id="lastname" value="{{ acc.hit_lastname | default: '' | escape }}">
+    </div>
+  </main>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+(function(){
+  const root = document.querySelector(
+    '.hit-payment[data-acceptance-id="{{ acceptanceId | escape }}"]'
+  );
+
+  if (!root) {
+    console.error("Payment section root element was not found.");
+    return;
+  }
+
+  const acceptanceId = root.querySelector("#acceptanceId")?.value || "";
+  const oneOffClientSecret = root.querySelector("#clientSecret")?.value || "";
+  const stripePk = root.querySelector("#stripePk")?.value || "";
+  const totalAmount = root.querySelector("#totalAmount")?.value || "";
+  const allowRecurring = (root.querySelector("#allowRecurring")?.value || "").toLowerCase() === "true";
+  const setupIntentUrl = root.querySelector("#setupIntentUrl")?.value || "";
+  const email = root.querySelector("#email")?.value || "";
+  const firstname = root.querySelector("#firstname")?.value || "";
+  const lastname = root.querySelector("#lastname")?.value || "";
+
+  const payButton = root.querySelector("#payBtn");
+  const errorBox = root.querySelector("#errBox");
+  const statusText = root.querySelector("#statusText");
+  const statusDot = root.querySelector("#statusDot");
+  const amountDisplay = root.querySelector("#amountDisplay");
+  const frequencyDisplay = root.querySelector("#frequencyDisplay");
+  const paymentIntro = root.querySelector("#paymentIntro");
+  const paymentNote = root.querySelector("#paymentNote");
+  const buttonText = payButton?.querySelector(".hit-button__text");
+  const buttonLoading = payButton?.querySelector(".hit-button__loading");
+  const buttonLoadingText = payButton?.querySelector(".hit-button__loading-text");
+
+  const makeRecurring = root.querySelector("#makeRecurring");
+  const recurringOptions = root.querySelector("#recurringOptions");
+  const recurringFrequency = root.querySelector("#recurringFrequency");
+  const recurringStartDate = root.querySelector("#recurringStartDate");
+
+  let stripe = null;
+  let elements = null;
+  let paymentElement = null;
+  let activeMode = "oneoff";
+  let activeClientSecret = oneOffClientSecret;
+  let setupClientSecret = "";
+  let setupIntentRequestInProgress = false;
+  let paymentElementComplete = false;
+  let paymentInProgress = false;
+  let formattedAmount = "—";
+
+  const appearance = {
+    theme: "stripe",
+    inputs: "spaced",
+    labels: "above",
+    variables: {
+      colorPrimary: "#007f89",
+      colorBackground: "#ffffff",
+      colorText: "#0f172a",
+      colorDanger: "#b42318",
+      colorTextSecondary: "#475569",
+      fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      fontSizeBase: "16px",
+      borderRadius: "14px",
+      spacingUnit: "4px",
+      focusBoxShadow: "0 0 0 4px rgba(0,127,137,.16)",
+      focusOutline: "none"
+    },
+    rules: {
+      ".Input": {
+        border: "1px solid rgba(15,23,42,.20)",
+        boxShadow: "none",
+        padding: "13px 14px"
+      },
+      ".Input:hover": {
+        borderColor: "#007f89"
+      },
+      ".Input:focus": {
+        borderColor: "#007f89",
+        boxShadow: "0 0 0 4px rgba(0,127,137,.16)"
+      },
+      ".Label": {
+        color: "#0f172a",
+        fontWeight: "700",
+        fontSize: "14px"
+      },
+      ".Tab": {
+        border: "1px solid rgba(15,23,42,.12)",
+        boxShadow: "none"
+      },
+      ".Tab:hover": {
+        borderColor: "#007f89"
+      },
+      ".Tab--selected": {
+        borderColor: "#007f89",
+        backgroundColor: "rgba(0,127,137,.07)",
+        color: "#007f89",
+        boxShadow: "0 0 0 2px rgba(0,127,137,.10)"
+      },
+      ".TabIcon--selected": {
+        fill: "#007f89"
+      },
+      ".Error": {
+        color: "#b42318"
+      }
+    }
+  };
+
+  function setStatus(text, state){
+    if (statusText) statusText.textContent = text || "";
+    if (!statusDot) return;
+
+    statusDot.classList.remove("is-ready", "is-busy", "is-error");
+    if (state === "ready") statusDot.classList.add("is-ready");
+    if (state === "busy") statusDot.classList.add("is-busy");
+    if (state === "error") statusDot.classList.add("is-error");
+  }
+
+  function showError(message){
+    if (errorBox) {
+      errorBox.style.display = "block";
+      errorBox.textContent = message || "Payment could not be completed.";
+    }
+    setStatus("Payment needs attention", "error");
+  }
+
+  function clearError(){
+    if (!errorBox) return;
+    errorBox.style.display = "none";
+    errorBox.textContent = "";
+  }
+
+  function setButtonLoading(isLoading, message){
+    if (!payButton) return;
+
+    paymentInProgress = isLoading;
+    payButton.disabled = isLoading || !paymentElementComplete;
+    payButton.classList.toggle("is-loading", isLoading);
+
+    if (buttonText) buttonText.style.display = isLoading ? "none" : "inline";
+    if (buttonLoading) buttonLoading.style.display = isLoading ? "inline-flex" : "none";
+    if (buttonLoadingText && message) buttonLoadingText.textContent = message;
+  }
+
+  function setButtonEnabledFromElementState(){
+    if (!payButton || paymentInProgress) return;
+    payButton.disabled = !paymentElementComplete;
+  }
+
+  function cleanNumber(value){
+    return String(value || "").replace(/[^\d.-]/g, "");
+  }
+
+  function formatCurrency(value){
+    if (value === null || value === undefined || Number.isNaN(value)) return "—";
+
+    const rounded = Math.round(value * 100) / 100;
+    return rounded.toLocaleString("en-AU", {
+      style: "currency",
+      currency: "AUD",
+      minimumFractionDigits: Number.isInteger(rounded) ? 0 : 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function initialiseAmount(){
+    const numericAmount = parseFloat(cleanNumber(totalAmount));
+    formattedAmount = Number.isNaN(numericAmount)
+      ? "—"
+      : formatCurrency(numericAmount);
+
+    if (amountDisplay) amountDisplay.textContent = formattedAmount;
+    updateModeText();
+  }
+
+  function getTodayIsoDate(){
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    return yyyy + "-" + mm + "-" + dd;
+  }
+
+  function normaliseFrequencyLabel(value){
+    if (value === "Quarterly") return "Quarterly recurring donation";
+    if (value === "Annually") return "Annual recurring donation";
+    return "Monthly recurring donation";
+  }
+
+  function updateModeText(){
+    const isRecurring = activeMode === "recurring";
+    const frequency = recurringFrequency?.value || "Monthly";
+    const frequencyLabel = normaliseFrequencyLabel(frequency);
+
+    if (frequencyDisplay) {
+      frequencyDisplay.style.display = isRecurring ? "block" : "none";
+      frequencyDisplay.textContent = frequencyLabel;
+    }
+
+    if (paymentIntro) {
+      paymentIntro.textContent = isRecurring
+        ? "Enter your payment details to securely set up your recurring donation. Stripe may ask you to approve the saved payment method."
+        : "Enter your payment details to complete your donation. If additional verification is required, Stripe may ask you to approve the payment.";
+    }
+
+    if (paymentNote) {
+      paymentNote.textContent = isRecurring
+        ? "Your payment method is securely stored by Stripe for future recurring donations. DSR does not receive or store your complete card or bank account details."
+        : "Your payment is securely processed by Stripe. DSR does not receive or store your complete card or bank account details.";
+    }
+
+    if (buttonText) {
+      if (isRecurring) {
+        buttonText.textContent = "Set up " + frequencyLabel.toLowerCase();
+      } else if (formattedAmount !== "—") {
+        buttonText.textContent = "Pay " + formattedAmount;
+      } else {
+        buttonText.textContent = "Pay now";
+      }
+    }
+  }
+
+  async function getCsrfToken(){
+    const response = await fetch("/_layout/tokenhtml", {
+      method: "GET",
+      credentials: "same-origin",
+      cache: "no-store"
+    });
+
+    if (!response.ok) throw new Error("Unable to retrieve the request token.");
+
+    const html = await response.text();
+    const documentFragment = new DOMParser().parseFromString(html, "text/html");
+    const tokenInput = documentFragment.querySelector(
+      'input[name="__RequestVerificationToken"]'
+    );
+
+    if (!tokenInput || !tokenInput.value) {
+      throw new Error("The request token was not found.");
+    }
+
+    return tokenInput.value;
+  }
+
+  async function patchAcceptance(payload){
+    const token = await getCsrfToken();
+
+    const response = await fetch(
+      "/_api/hit_offeringacceptances(" + acceptanceId + ")",
+      {
+        method: "PATCH",
+        credentials: "same-origin",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "OData-Version": "4.0",
+          "OData-MaxVersion": "4.0",
+          "__RequestVerificationToken": token,
+          "If-Match": "*"
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    if (!response.ok) {
+      let rawResponse = "";
+      try { rawResponse = await response.text(); } catch (readError) {}
+
+      console.error(
+        "Offering Acceptance payment update failed:",
+        response.status,
+        rawResponse
+      );
+
+      throw new Error(
+        rawResponse ||
+        "The payment was successful, but the acceptance could not be updated."
+      );
+    }
+  }
+
+  function buildReturnUrl(mode){
+    const returnUrl = new URL(window.location.pathname, window.location.origin);
+    returnUrl.searchParams.set("page", "offering-acceptance");
+    returnUrl.searchParams.set("acceptanceid", acceptanceId);
+    if (mode) returnUrl.searchParams.set("paymentmode", mode);
+    return returnUrl.toString();
+  }
+
+  function reloadAcceptanceRouter(){
+    const targetUrl = new URL(window.location.pathname, window.location.origin);
+    targetUrl.searchParams.set("page", "offering-acceptance");
+    targetUrl.searchParams.set("acceptanceid", acceptanceId);
+    targetUrl.searchParams.set("_ts", String(Date.now()));
+    window.location.replace(targetUrl.toString());
+  }
+
+  function generateClientToken(){
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+      return window.crypto.randomUUID();
+    }
+
+    return "setup-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+  }
+
+  async function createSetupIntentClientSecret(){
+    if (setupClientSecret) return setupClientSecret;
+
+    if (!setupIntentUrl) {
+      throw new Error(
+        "Recurring donations are enabled for this offering, but the Stripe Create Customer SetupIntent flow URL is missing. Add Site Setting Stripe/CreateCustomerSetupIntentUrl."
+      );
+    }
+
+    if (setupIntentRequestInProgress) {
+      throw new Error("Recurring setup is already being prepared. Please try again.");
+    }
+
+    setupIntentRequestInProgress = true;
+
+    try {
+      const payload = {
+        acceptanceId: acceptanceId,
+        clientToken: generateClientToken(),
+        email: email,
+        firstname: firstname,
+        lastname: lastname,
+        recurring: {
+          enabled: true,
+          frequency: recurringFrequency?.value || "Monthly",
+          startDate: recurringStartDate?.value || getTodayIsoDate()
+        }
+      };
+
+      const response = await fetch(setupIntentUrl, {
+        method: "POST",
+        mode: "cors",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      let data = null;
+      let rawText = "";
+
+      try {
+        rawText = await response.text();
+        data = rawText ? JSON.parse(rawText) : null;
+      } catch (parseError) {
+        data = null;
+      }
+
+      if (!response.ok) {
+        console.error("Create SetupIntent flow failed:", response.status, rawText);
+        throw new Error(
+          (data && (data.error || data.message)) ||
+          rawText ||
+          "Unable to prepare the recurring donation setup."
+        );
+      }
+
+      setupClientSecret =
+        (data && (
+          data.clientSecret ||
+          data.client_secret ||
+          data.setupIntentClientSecret ||
+          data.setup_intent_client_secret
+        )) || "";
+
+      if (!setupClientSecret) {
+        console.error("Create SetupIntent response did not include a client secret:", data || rawText);
+        throw new Error("The recurring donation setup did not return a Stripe client secret.");
+      }
+
+      return setupClientSecret;
+    } finally {
+      setupIntentRequestInProgress = false;
+    }
+  }
+
+  function destroyPaymentElement(){
+    if (paymentElement) {
+      try { paymentElement.unmount(); } catch (unmountError) {}
+      try { paymentElement.destroy(); } catch (destroyError) {}
+    }
+
+    paymentElement = null;
+    elements = null;
+    paymentElementComplete = false;
+    setButtonEnabledFromElementState();
+
+    const mountNode = root.querySelector("#payment-element");
+    if (mountNode) mountNode.innerHTML = "";
+  }
+
+  function attachPaymentElementEvents(){
+    if (!paymentElement) return;
+
+    paymentElement.on("loaderstart", function(){
+      setStatus("Loading secure payment…", "busy");
+    });
+
+    paymentElement.on("ready", function(){
+      setStatus(
+        activeMode === "recurring"
+          ? "Enter your payment details to set up your recurring donation"
+          : "Enter your payment details to continue",
+        "ready"
+      );
+    });
+
+    paymentElement.on("change", function(event){
+      paymentElementComplete = Boolean(event.complete);
+      setButtonEnabledFromElementState();
+
+      if (event.error) {
+        showError(event.error.message);
+      } else {
+        clearError();
+        setStatus(
+          paymentElementComplete
+            ? (activeMode === "recurring"
+                ? "Payment details complete for recurring setup"
+                : "Payment details complete")
+            : (activeMode === "recurring"
+                ? "Enter your payment details to set up your recurring donation"
+                : "Enter your payment details to continue"),
+          "ready"
+        );
+      }
+    });
+  }
+
+  async function mountStripeElement(mode){
+    clearError();
+    setButtonLoading(true, "Loading…");
+    setStatus("Loading secure payment…", "busy");
+
+    try {
+      destroyPaymentElement();
+
+      activeMode = mode;
+      updateModeText();
+
+      if (mode === "recurring") {
+        activeClientSecret = await createSetupIntentClientSecret();
+      } else {
+        activeClientSecret = oneOffClientSecret;
+      }
+
+      if (!activeClientSecret) {
+        throw new Error("The secure payment session is incomplete. Please refresh the page and try again.");
+      }
+
+      elements = stripe.elements({
+        clientSecret: activeClientSecret,
+        appearance: appearance
+      });
+
+      paymentElement = elements.create("payment", {
+        layout: {
+          type: "tabs",
+          defaultCollapsed: false
+        }
+      });
+
+      attachPaymentElementEvents();
+      paymentElement.mount("#payment-element");
+
+      setButtonLoading(false);
+      setButtonEnabledFromElementState();
+    } catch (error) {
+      console.error(error);
+      setButtonLoading(false);
+      showError(error.message || "Unable to load the secure payment form.");
+      if (payButton) payButton.disabled = true;
+    }
+  }
+
+  async function completeSuccessfulPayment(paymentIntent){
+    setButtonLoading(true, "Finalising…");
+    setStatus("Finalising your payment…", "busy");
+
+    const payload = { hit_acceptancestatus: 815390003 };
+    if (paymentIntent.latest_charge) {
+      payload.hit_stripechargeid = paymentIntent.latest_charge;
+    }
+
+    await patchAcceptance(payload);
+    setStatus("Payment complete", "ready");
+    reloadAcceptanceRouter();
+  }
+
+  async function completeSuccessfulSetup(setupIntent){
+    setButtonLoading(true, "Finalising…");
+    setStatus("Recurring donation setup complete. Finalising…", "busy");
+
+    /*
+      Do not mark the Acceptance as Paid here.
+      Your Stripe Webhook Handler - SetupIntent Update Dataverse flow should:
+      - receive setup_intent.succeeded
+      - retrieve the payment method
+      - update/create hit_stripecustomer
+      - create/update hit_paymentschedule
+      - update the Offering Acceptance as appropriate
+    */
+
+    reloadAcceptanceRouter();
+  }
+
+  async function handleReturnedPaymentOrSetup(){
+    const query = new URLSearchParams(window.location.search);
+    const redirectStatus = query.get("redirect_status");
+    const paymentMode = (query.get("paymentmode") || "").toLowerCase();
+
+    if (!redirectStatus) return false;
+
+    clearError();
+    setButtonLoading(true, "Finalising…");
+    setStatus("Finalising your payment…", "busy");
+
+    if (paymentMode === "recurring") {
+      const setupSecretFromQuery = query.get("setup_intent_client_secret") || "";
+      const secretToUse = setupSecretFromQuery || setupClientSecret || activeClientSecret;
+
+      if (!secretToUse) {
+        setButtonLoading(false);
+        showError("Unable to verify the recurring donation setup because the setup client secret was not returned.");
+        return true;
+      }
+
+      const result = await stripe.retrieveSetupIntent(secretToUse);
+
+      if (result.error) {
+        setButtonLoading(false);
+        showError(result.error.message || "Unable to verify the recurring donation setup.");
+        return true;
+      }
+
+      const setupIntent = result.setupIntent;
+
+      if (!setupIntent) {
+        setButtonLoading(false);
+        showError("Stripe did not return a recurring setup result.");
+        return true;
+      }
+
+      if (setupIntent.status === "succeeded") {
+        await completeSuccessfulSetup(setupIntent);
+        return true;
+      }
+
+      setButtonLoading(false);
+      showError(
+        "Recurring donation setup was not completed. Stripe returned status: " +
+        setupIntent.status + "."
+      );
+      return true;
+    }
+
+    const result = await stripe.retrievePaymentIntent(oneOffClientSecret);
+
+    if (result.error) {
+      setButtonLoading(false);
+      showError(result.error.message || "Unable to verify the payment status.");
+      return true;
+    }
+
+    const paymentIntent = result.paymentIntent;
+
+    if (!paymentIntent) {
+      setButtonLoading(false);
+      showError("Stripe did not return a payment result.");
+      return true;
+    }
+
+    if (paymentIntent.status === "succeeded") {
+      await completeSuccessfulPayment(paymentIntent);
+      return true;
+    }
+
+    if (paymentIntent.status === "processing") {
+      setButtonLoading(true, "Payment submitted");
+      setStatus("Payment submitted and awaiting confirmation", "busy");
+      return true;
+    }
+
+    setButtonLoading(false);
+    showError(
+      "Payment was not completed. Stripe returned status: " +
+      paymentIntent.status + "."
+    );
+    return true;
+  }
+
+  async function submitOneOffPayment(){
+    const result = await stripe.confirmPayment({
+      elements: elements,
+      confirmParams: {
+        return_url: buildReturnUrl("oneoff")
+      }
+    });
+
+    if (result && result.error) {
+      setButtonLoading(false);
+      showError(
+        result.error.message || "Payment could not be confirmed."
+      );
+      return;
+    }
+
+    if (
+      result &&
+      result.paymentIntent &&
+      result.paymentIntent.status === "succeeded"
+    ) {
+      await completeSuccessfulPayment(result.paymentIntent);
+      return;
+    }
+
+    if (
+      result &&
+      result.paymentIntent &&
+      result.paymentIntent.status === "processing"
+    ) {
+      setButtonLoading(true, "Payment submitted");
+      setStatus("Payment submitted and awaiting confirmation", "busy");
+      return;
+    }
+
+    setButtonLoading(false);
+  }
+
+  async function submitRecurringSetup(){
+    const result = await stripe.confirmSetup({
+      elements: elements,
+      confirmParams: {
+        return_url: buildReturnUrl("recurring")
+      }
+    });
+
+    if (result && result.error) {
+      setButtonLoading(false);
+      showError(
+        result.error.message || "Recurring donation setup could not be confirmed."
+      );
+      return;
+    }
+
+    if (
+      result &&
+      result.setupIntent &&
+      result.setupIntent.status === "succeeded"
+    ) {
+      await completeSuccessfulSetup(result.setupIntent);
+      return;
+    }
+
+    if (
+      result &&
+      result.setupIntent &&
+      result.setupIntent.status
+    ) {
+      setButtonLoading(false);
+      showError(
+        "Recurring donation setup was not completed. Stripe returned status: " +
+        result.setupIntent.status + "."
+      );
+      return;
+    }
+
+    setButtonLoading(false);
+  }
+
+  function initialiseRecurringControls(){
+    if (!allowRecurring || !makeRecurring) return;
+
+    if (recurringStartDate) {
+      recurringStartDate.min = getTodayIsoDate();
+      if (!recurringStartDate.value) {
+        recurringStartDate.value = getTodayIsoDate();
+      }
+    }
+
+    makeRecurring.addEventListener("change", async function(){
+      const isRecurring = makeRecurring.checked;
+
+      if (recurringOptions) {
+        recurringOptions.classList.toggle("is-visible", isRecurring);
+      }
+
+      setupClientSecret = "";
+
+      await mountStripeElement(isRecurring ? "recurring" : "oneoff");
+    });
+
+    if (recurringFrequency) {
+      recurringFrequency.addEventListener("change", async function(){
+        updateModeText();
+
+        if (activeMode === "recurring") {
+          setupClientSecret = "";
+          await mountStripeElement("recurring");
+        }
+      });
+    }
+
+    if (recurringStartDate) {
+      recurringStartDate.addEventListener("change", async function(){
+        if (activeMode === "recurring") {
+          setupClientSecret = "";
+          await mountStripeElement("recurring");
+        }
+      });
+    }
+  }
+
+  initialiseAmount();
+
+  if (!acceptanceId || !oneOffClientSecret || !stripePk) {
+    showError(
+      "The secure payment session is incomplete. Please refresh the page and try again."
+    );
+    return;
+  }
+
+  try {
+    stripe = Stripe(stripePk);
+
+    initialiseRecurringControls();
+
+    handleReturnedPaymentOrSetup().then(function(wasReturned){
+      if (!wasReturned) {
+        mountStripeElement("oneoff");
+      }
+    }).catch(function(error){
+      console.error(error);
+      setButtonLoading(false);
+      showError(error.message || "Unable to finalise the payment.");
+    });
+
+    if (payButton) {
+      payButton.addEventListener("click", async function(){
+        if (paymentInProgress) return;
+
+        clearError();
+        setButtonLoading(true, activeMode === "recurring" ? "Setting up…" : "Processing…");
+        setStatus(
+          activeMode === "recurring"
+            ? "Setting up your recurring donation…"
+            : "Processing your payment…",
+          "busy"
+        );
+
+        try {
+          if (activeMode === "recurring") {
+            await submitRecurringSetup();
+          } else {
+            await submitOneOffPayment();
+          }
+        } catch (error) {
+          console.error(error);
+          setButtonLoading(false);
+          showError(error.message || "Payment could not be completed.");
+        }
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    showError(error.message || "Unable to load the secure payment form.");
+    setStatus("Unable to load payment", "error");
+    if (payButton) payButton.disabled = true;
+  }
+})();
+</script>
+
+{% endif %}
+</div>
+
+{% endif %}
+{% endif %}

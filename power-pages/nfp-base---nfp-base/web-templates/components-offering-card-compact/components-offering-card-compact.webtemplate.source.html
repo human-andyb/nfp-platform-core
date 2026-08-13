@@ -1,0 +1,119 @@
+{%- comment -%}
+Component: components-offering-card-compact
+Inputs: offering, gallery
+
+DetailsPage URL contract:
+  /Offering/?slug=<slug>&id=<guid>  (slug first, then id)
+
+Fully clickable overlay included.
+{%- endcomment -%}
+
+{%- assign name = offering.hit_offeringname | default: '' -%}
+{%- assign slug = offering.hit_slug | default: '' | strip -%}
+{%- assign offeringId = offering.hit_offeringid | default: '' | strip -%}
+
+{%- assign typeValue = offering.hit_offeringtype.value | default: offering.hit_offeringtype | default: '' -%}
+{%- assign typeLabel = offering.hit_offeringtype.label | default: '' -%}
+
+{%- assign imgDetail = offering.hit_imageurldetail | default: '' | strip -%}
+{%- assign imgCard = offering.hit_imageurlcardgallery | default: '' | strip -%}
+{%- assign imgHero = offering.hit_imageurl | default: '' | strip -%}
+{%- assign img = imgDetail | default: imgCard | default: imgHero | default: '' -%}
+
+{%- assign ctaLabel = 'View' -%}
+{%- case typeValue -%}
+  {%- when 815390000 -%}{%- assign ctaLabel = 'Donate' -%}
+  {%- when 815390001 -%}{%- assign ctaLabel = 'Register' -%}
+  {%- when 815390002 -%}{%- assign ctaLabel = 'Enrol' -%}
+  {%- when 815390003 -%}{%- assign ctaLabel = 'Join' -%}
+  {%- when 815390004 -%}{%- assign ctaLabel = 'Get involved' -%}
+  {%- when 815390005 -%}{%- assign ctaLabel = 'Download' -%}
+  {%- when 815390006 -%}{%- assign ctaLabel = 'Sponsor' -%}
+  {%- when 815390007 -%}{%- assign ctaLabel = 'Enquire' -%}
+{%- endcase -%}
+
+{%- assign ctaBehaviour = gallery.hit_ctabehaviour.label | default: gallery.hit_ctabehaviour | default: 'DetailsPage' -%}
+{%- assign targetPage = gallery.hit_targetpage | default: '/Offering/' | strip -%}
+{%- assign externalUrl = gallery.hit_externalurl | default: '' | strip -%}
+{%- assign openNewTab = gallery.hit_opennewtab | default: false -%}
+
+{%- assign href = '' -%}
+
+{%- if ctaBehaviour == 'ExternalUrl' and externalUrl != '' -%}
+  {%- assign href = externalUrl | replace: '{slug}', slug | replace: '{id}', offeringId -%}
+
+{%- elsif ctaBehaviour == 'None' -%}
+  {%- assign href = '' -%}
+
+{%- else -%}
+  {%- assign href = targetPage -%}
+  {%- assign lastChar = href | slice: -1, 1 -%}
+  {%- if lastChar != '/' -%}{%- assign href = href | append: '/' -%}{%- endif -%}
+
+  {%- if slug != '' or offeringId != '' -%}
+    {%- assign slugEnc = slug | url_encode -%}
+    {%- assign href = href | append: '?slug=' | append: slugEnc -%}
+    {%- if offeringId != '' -%}
+      {%- assign idEnc = offeringId | url_encode -%}
+      {%- assign href = href | append: '&id=' | append: idEnc -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- assign targetAttr = '' -%}
+{%- if openNewTab == true or openNewTab == 'true' or openNewTab == 1 -%}
+  {%- assign targetAttr = ' target="_blank" rel="noopener"' -%}
+{%- endif -%}
+
+{%- assign typeClass = typeLabel | downcase | replace: ' ', '-' | replace: '&amp;', 'and' -%}
+{%- if typeClass == '' -%}{%- assign typeClass = 'unknown' -%}{%- endif -%}
+
+<article class="hit-card hit-card--offering hit-card--compact hit-offeringtype--{{ typeClass }}">
+  <div class="hit-card__inner hit-card__inner--row">
+
+    {%- if href != '' -%}
+      <a class="hit-card__stretchedLink" href="{{ href | escape_once }}"{{ targetAttr }} aria-label="{{ ctaLabel | escape }}: {{ name | escape }}"></a>
+    {%- endif -%}
+
+    <div class="hit-card__media hit-card__media--thumb">
+      {%- if img != '' -%}
+        {%- if href != '' -%}
+          <a class="hit-card__mediaLink" href="{{ href | escape_once }}"{{ targetAttr }}>
+            <img class="hit-card__image hit-card__image--thumb" src="{{ img | escape }}" alt="{{ name | escape }}">
+          </a>
+        {%- else -%}
+          <img class="hit-card__image hit-card__image--thumb" src="{{ img | escape }}" alt="{{ name | escape }}">
+        {%- endif -%}
+      {%- else -%}
+        <div class="hit-card__imagePlaceholder hit-card__imagePlaceholder--thumb" aria-hidden="true"></div>
+      {%- endif -%}
+    </div>
+
+    <div class="hit-card__body hit-card__body--compact">
+      <div class="hit-card__badges">
+        {%- if typeLabel != '' -%}
+          <span class="hit-card__badge">{{ typeLabel | escape }}</span>
+        {%- endif -%}
+      </div>
+
+      <h3 class="hit-card__title hit-card__title--compact">
+        {%- if href != '' -%}
+          <a class="hit-card__titleLink" href="{{ href | escape_once }}"{{ targetAttr }}>{{ name | escape }}</a>
+        {%- else -%}
+          {{ name | escape }}
+        {%- endif -%}
+      </h3>
+
+      <div class="hit-card__meta"></div>
+
+      <div class="hit-card__cta hit-card__cta--compact">
+        {%- if href != '' -%}
+          <a class="hit-button hit-button--secondary" href="{{ href | escape_once }}"{{ targetAttr }} aria-label="{{ ctaLabel | escape }}: {{ name | escape }}">
+            {{ ctaLabel | escape }}
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+  </div>
+</article>

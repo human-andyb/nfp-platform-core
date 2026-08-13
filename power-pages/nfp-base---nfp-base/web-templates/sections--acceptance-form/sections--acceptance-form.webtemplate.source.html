@@ -1,0 +1,180 @@
+{% comment %}
+sections--acceptance-form (state-driven)
+
+Responsibilities:
+- Load acceptance
+- Allow editing ONLY in Draft
+- PATCH updates
+- UI reacts to state (NOT controlling workflow)
+
+States:
+Draft → editable
+Pending Payment → payment step
+Completed → confirmation
+{% endcomment %}
+
+{% assign DEBUG = request.params.debug == '1' %}
+{% assign acceptanceid = request.params.acceptanceid | default: '' | strip %}
+
+{% assign STATUS_DRAFT = 0 %}
+{% assign STATUS_PENDING = 815390001 %}
+{% assign STATUS_COMPLETED = 815390002 %}
+
+{% assign acc = nil %}
+
+{% if acceptanceid != '' %}
+  {% fetchxml acc_q %}
+  <fetch top="1">
+    <entity name="hit_offeringacceptance">
+
+      <attribute name="hit_offeringacceptanceid" />
+      <attribute name="hit_acceptancestatus" />
+      <attribute name="hit_clienttoken" />
+      <attribute name="hit_baseamount" />
+      <attribute name="hit_pricinglabel" />
+
+      <attribute name="hit_firstname" />
+      <attribute name="hit_lastname" />
+      <attribute name="hit_email" />
+      <attribute name="hit_mobilephone" />
+
+      <attribute name="hit_offering" />
+
+      <filter>
+        <condition attribute="hit_offeringacceptanceid" operator="eq" value="{{ acceptanceid }}" />
+      </filter>
+
+      <link-entity name="hit_offering" from="hit_offeringid" to="hit_offering" alias="o">
+        <attribute name="hit_offeringname" />
+        <attribute name="hit_imageurl" />
+      </link-entity>
+
+    </entity>
+  </fetch>
+  {% endfetchxml %}
+
+  {% assign acc = acc_q.results.entities | first %}
+{% endif %}
+
+<div class="wrap">
+
+{% if acc == nil %}
+  <div class="alert">Acceptance not found.</div>
+
+{% else %}
+
+  {% assign status_val = acc.hit_acceptancestatus.value %}
+  {% assign status_label = acc.hit_acceptancestatus.label %}
+
+  {% assign acc_id = acc.hit_offeringacceptanceid %}
+  {% assign offering_name = acc['o.hit_offeringname'] %}
+
+  <!-- ✅ STATE-DRIVEN UI -->
+
+  {% if status_val == STATUS_COMPLETED %}
+
+    <div class="card">
+      <div class="body">
+        <h1>✅ Completed</h1>
+        <p>Your donation has been completed successfully.</p>
+      </div>
+    </div>
+
+  {% elsif status_val == STATUS_PENDING %}
+
+    <div class="card">
+      <div class="body">
+        <h1>Continue to payment</h1>
+        <p>Please proceed to secure payment.</p>
+
+        <a class="btn" href="/payment/?acceptanceid={{ acc_id }}">
+          Proceed to payment
+        </a>
+      </div>
+    </div>
+
+  {% elsif status_val == STATUS_DRAFT %}
+
+    <!-- ✅ Draft Form -->
+    <div class="card" data-section="acceptance_form" data-acceptanceid="{{ acc_id }}">
+
+      <div class="header">
+        <h1>Confirm your details</h1>
+      </div>
+
+      <div class="body">
+
+        <input type="hidden" id="acceptanceId" value="{{ acc_id }}">
+        <input type="hidden" id="clientToken" value="{{ acc.hit_clienttoken }}">
+
+        <input id="firstName" value="{{ acc.hit_firstname }}">
+        <input id="lastName" value="{{ acc.hit_lastname }}">
+        <input id="email" value="{{ acc.hit_email }}">
+        <input id="mobile" value="{{ acc.hit_mobilephone }}">
+
+        <input id="amountInput" value="{{ acc.hit_baseamount }}">
+
+        <button class="btn" id="continueBtn">Continue</button>
+
+        <div id="errBox"></div>
+
+      </div>
+    </div>
+
+    <script>
+    (function(){
+
+      async function getToken(){
+        const r = await fetch("/_layout/tokenhtml",{credentials:"same-origin"});
+        const t = await r.text();
+        return new DOMParser().parseFromString(t,"text/html")
+          .querySelector("input[name='__RequestVerificationToken']").value;
+      }
+
+      document.getElementById("continueBtn").addEventListener("click", async function(){
+
+        const id = document.getElementById("acceptanceId").value;
+
+        const payload = {
+          hit_firstname: document.getElementById("firstName").value,
+          hit_lastname: document.getElementById("lastName").value,
+          hit_email: document.getElementById("email").value,
+          hit_mobilephone: document.getElementById("mobile").value,
+          hit_baseamount: parseFloat(document.getElementById("amountInput").value)
+        };
+
+        const token = await getToken();
+
+        const res = await fetch("/_api/hit_offeringacceptances(" + id + ")",{
+          method:"PATCH",
+          headers:{
+            "Content-Type":"application/json",
+            "__RequestVerificationToken": token,
+            "If-Match":"*"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if(res.ok){
+          window.location.reload(); // ✅ state-driven refresh
+        } else {
+          document.getElementById("errBox").innerText = "Error saving";
+        }
+
+      });
+
+    })();
+    </script>
+
+  {% else %}
+
+    <div class="card">
+      <div class="body">
+        <p>Processing your request…</p>
+      </div>
+    </div>
+
+  {% endif %}
+
+{% endif %}
+</div>

@@ -1,0 +1,213 @@
+{%- comment -%}
+sections--hero (v6)
+
+✅ Slot-driven architecture
+✅ Image & Video support
+✅ Hero sizing
+✅ Canonical Content fields
+✅ CTA support
+✅ Content alignment
+✅ Content width
+✅ Content style
+✅ Text colour style
+✅ Reusable platform model
+
+hit_ContentTitle
+hit_ContentDesc
+
+hit_ContentHAlign
+hit_ContentVAlign
+hit_ContentWidth
+
+hit_ContentStyle
+hit_TextColourStyle
+
+hit_CTAEnabled
+hit_CTAText
+hit_CTAButtonLabel
+hit_CTAURL
+
+hit_MediaType
+hit_MediaURL
+hit_contentheight
+hit_FallbackImageURL
+hit_MediaFit
+{%- endcomment -%}
+
+{%- assign context = slot -%}
+{%- if context == null -%}
+  {%- assign context = section -%}
+{%- endif -%}
+
+{%- comment -%}
+MEDIA
+{%- endcomment -%}
+
+{%- assign heroType = context.hit_mediatype.value | default: 0 -%}
+
+{%- assign heroImageUrl = context.hit_mediaurl | default:'' | strip -%}
+{%- assign heroVideoUrl = context.hit_mediaurl | default:'' | strip -%}
+{%- assign heroPosterUrl = context.hit_fallbackimageurl | default:'' | strip -%}
+
+
+{%- comment -%}
+CONTENT
+{%- endcomment -%}
+
+{%- assign heroTitle = context.hit_contenttitle | default:'' | strip -%}
+{%- assign heroText = context.hit_contentdesc | default:'' | strip -%}
+
+{%- comment -%}
+CTA
+{%- endcomment -%}
+
+{%- assign ctaEnabled = context.hit_ctaenabled | default:false -%}
+
+{%- assign heroCtaText = context.hit_ctatext | default:'' | strip -%}
+{%- assign heroCtaButton = context.hit_ctabuttonlabel | default:'' | strip -%}
+{%- assign heroCtaUrl = context.hit_ctaurl | default:'' | strip -%}
+
+{%- comment -%}
+LAYOUT
+{%- endcomment -%}
+
+{%- assign contentHAlign = context.hit_contenthalign.label | default:'Left' | downcase | strip -%}
+{%- assign contentVAlign = context.hit_contentvalign.label | default:'Middle' | downcase | strip -%}
+{%- assign contentWidth = context.hit_contentwidth.label | default:'Medium' | downcase | strip -%}
+{%- assign contentHeight = context.hit_contentheight.value | default:0 -%}
+{%- assign mediaFit = context.hit_mediafit.label | default:'Fill' | downcase | strip -%}
+
+{%- comment -%}
+STYLING
+{%- endcomment -%}
+
+{%- assign contentStyle = context.hit_contentstyle.label | default:'Brand Panel' | downcase | strip -%}
+{%- assign textColourStyle = context.hit_textcolourstyle.label | default:'Light' | downcase | strip -%}
+
+<div class="
+    hit-hero
+    hero-halign-{{ contentHAlign }}
+    hero-valign-{{ contentVAlign }}
+    mediafit-{{ mediaFit | replace:' ','-' }}
+"
+{% if contentHeight == 9999 %}
+    style="min-height:100vh;"
+{% elsif contentHeight > 0 %}
+    style="min-height:{{ contentHeight }}px;"
+{% endif %}
+>
+
+    <!-- MEDIA -->
+
+    <div class="hit-hero__media">
+
+        {% if heroType == 815390001 and heroVideoUrl != '' %}
+
+            <video
+                class="hit-hero__video mediafit-{{ mediaFit | replace:' ','-' }}"
+                autoplay
+                muted
+                loop
+                playsinline
+                {% if heroPosterUrl != '' %}
+                    poster="{{ heroPosterUrl | escape }}"
+                {% endif %}
+            >
+                <source src="{{ heroVideoUrl | escape }}">
+            </video>
+
+        {% elsif heroImageUrl != '' %}
+
+        <div
+            class="hit-hero__image mediafit-{{ mediaFit | replace:' ','-' }}"
+            style="background-image:url('{{ heroImageUrl | escape }}');">
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- OVERLAY -->
+
+    <div class="hit-hero__overlay">
+
+        <div class="
+            hit-hero__content
+            width-{{ contentWidth }}
+            style-{{ contentStyle | replace:' ','-' }}
+            text-{{ textColourStyle }}
+        ">
+
+            {% if heroCtaText != '' %}
+
+                <div class="hit-hero__pretitle">
+                    {{ heroCtaText }}
+                </div>
+
+            {% endif %}
+
+            {% if heroTitle != '' %}
+
+                <h1 class="hit-hero__title">
+                    {{ heroTitle }}
+                </h1>
+
+            {% endif %}
+
+            {% if heroText != '' %}
+
+                <div class="hit-hero__text">
+                    {{ heroText }}
+                </div>
+
+            {% endif %}
+
+            {% if ctaEnabled and heroCtaButton != '' %}
+
+                {% assign ctaHref = heroCtaUrl | default:'#' %}
+
+                
+                <a href="{{ ctaHref }}"
+                  class="hit-hero__cta btn">
+
+                    {{ heroCtaButton }}
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% if debug %}
+<pre style="font:11px monospace;">
+================================================
+HERO DEBUG
+================================================
+
+Title={{ heroTitle }}
+Text={{ heroText }}
+
+CTA Enabled={{ ctaEnabled }}
+CTA Text={{ heroCtaText }}
+CTA Button={{ heroCtaButton }}
+CTA URL={{ heroCtaUrl }}
+
+Content Height={{ contentHeight }}
+Media Fit={{ mediaFit }}
+
+H Align={{ contentHAlign }}
+V Align={{ contentVAlign }}
+Width={{ contentWidth }}
+
+Content Style={{ contentStyle }}
+Text Colour={{ textColourStyle }}
+
+Image={{ heroImageUrl }}
+Video={{ heroVideoUrl }}
+
+================================================
+</pre>
+{% endif %}

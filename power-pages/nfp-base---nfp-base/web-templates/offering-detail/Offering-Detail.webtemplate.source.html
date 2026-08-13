@@ -1,0 +1,706 @@
+{% comment %}
+Offering Detail (Type-aware)
+Primary: /Offering/?id=<GUID>
+Fallback: /Offering/?slug=<slug>
+
+Tables:
+- hit_offering (PK hit_offeringid)
+- hit_priceoption (ask ladder), lookup: hit_offering -> hit_offeringid
+
+Fields used:
+hit_offering:
+  hit_offeringid
+  hit_offeringname
+  hit_description
+  hit_imageurl
+  hit_slug
+  hit_offeringtype (choice)
+  hit_pricingmodel (choice)
+  hit_fixedprice (currency)
+  hit_isactive (yes/no)
+  hit_cievent (lookup to CI event)
+  hit_ctalabel (text)
+
+hit_priceoption:
+  hit_priceoptionid
+  hit_impacttitle
+  hit_impactdescription
+  hit_amount
+{% endcomment %}
+
+{% assign offering_id = request.params.id | default: '' | strip %}
+{% assign slug_param  = request.params.slug | default: '' | strip %}
+
+{% if offering_id == blank and slug_param == blank %}
+  <div class="wrap">
+    <div class="alert">
+      <strong>Missing offering identifier.</strong>
+      <div class="muted">Expected <code>/Offering/?id=&lt;guid&gt;</code> or <code>/Offering/?slug=your-offering</code>.</div>
+    </div>
+  </div>
+{% else %}
+
+{% fetchxml q %}
+<fetch version="1.0" mapping="logical" distinct="false">
+  <entity name="hit_offering">
+    <attribute name="hit_offeringid" />
+    <attribute name="hit_offeringname" />
+    <attribute name="hit_description" />
+    <attribute name="hit_imageurl" />
+    <attribute name="hit_slug" />
+    <attribute name="hit_offeringtype" />
+    <attribute name="hit_pricingmodel" />
+    <attribute name="hit_subscriptionfrequency" />
+    <attribute name="hit_fixedprice" />
+    <attribute name="hit_isactive" />
+    <attribute name="hit_cievent" />
+    <attribute name="hit_ctalabel" />
+
+    <filter type="and">
+      <condition attribute="hit_isactive" operator="eq" value="1" />
+      {% if offering_id != blank %}
+        <condition attribute="hit_offeringid" operator="eq" value="{{ offering_id | escape }}" />
+      {% else %}
+        <condition attribute="hit_slug" operator="eq" value="{{ slug_param | escape }}" />
+      {% endif %}
+    </filter>
+
+    <link-entity name="hit_priceoption"
+                 from="hit_offering"
+                 to="hit_offeringid"
+                 link-type="outer"
+                 alias="po">
+      <attribute name="hit_priceoptionid" />
+      <attribute name="hit_impacttitle" />
+      <attribute name="hit_impactdescription" />
+      <attribute name="hit_amount" />
+      <order attribute="hit_amount" descending="false" />
+    </link-entity>
+
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+  {% assign rows = q.results.entities %}
+  {% assign offering = rows | first %}
+
+  {% if offering == nil %}
+    <div class="wrap">
+      <div class="alert">
+        <strong>Offering not found.</strong>
+        <div class="muted">
+          {% if offering_id != blank %}
+            No offering matched id: <code>{{ offering_id | escape }}</code>
+          {% else %}
+            No offering matched slug: <code>{{ slug_param | escape }}</code>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+
+    {% assign offeringid = offering.hit_offeringid %}
+    {% assign name = offering.hit_offeringname | default: 'Offering' %}
+    {% assign desc = offering.hit_description | default: '' %}
+    {% assign img  = offering.hit_imageurl | default: '' | strip %}
+    {% assign slug = slug_param | default: offering.hit_slug | default: '' | strip %}
+
+    {% assign offeringTypeValue = offering.hit_offeringtype.value | default: offering.hit_offeringtype.Value | default: offering.hit_offeringtype %}
+    {% assign offeringTypeLabel = offering.hit_offeringtype.label | default: offering.hit_offeringtype.Label | default: offering['hit_offeringtype@OData.Community.Display.V1.FormattedValue'] | default: '' %}
+
+    {% assign pricingModelValue = offering.hit_pricingmodel.value | default: offering.hit_pricingmodel.Value | default: offering.hit_pricingmodel %}
+    {% assign pricingModelLabel = offering.hit_pricingmodel.label | default: offering.hit_pricingmodel.Label | default: offering['hit_pricingmodel@OData.Community.Display.V1.FormattedValue'] | default: '' %}
+
+    {% assign subscriptionFreqValue = offering.hit_subscriptionfrequency.value | default: offering.hit_subscriptionfrequency %}
+    {% assign subscriptionFreqLabel = offering.hit_subscriptionfrequency.label  | default: offering['hit_subscriptionfrequency@OData.Community.Display.V1.FormattedValue'] | default: '' %}
+
+    {% assign fixedPrice = offering.hit_fixedprice | default: 0 %}
+    {% if fixedPrice.value %}{% assign fixedPrice = fixedPrice.value %}{% endif %}
+
+    {% assign ci_event_id = '' %}
+    {% if offering.hit_cievent %}
+      {% assign ci_event_id = offering.hit_cievent.id | default: offering.hit_cievent.Id | default: offering.hit_cievent.guid | default: offering.hit_cievent %}
+    {% endif %}
+    {% if offering['hit_cievent'] and offering['hit_cievent'].id %}
+      {% assign ci_event_id = offering['hit_cievent'].id %}
+    {% endif %}
+    {% assign ci_event_id = ci_event_id | strip %}
+
+    {% assign ctaLabel = offering.hit_ctalabel | default: '' | strip %}
+
+    {% assign PRICING_FREE                  = 815390002 %}
+    {% assign PRICING_FIXED_ONEOFF          = 815390000 %}
+    {% assign PRICING_OPTIONS_ONEOFF        = 815390001 %}
+    {% assign PRICING_FIXED_SUBSCRIPTION    = 815390003 %}
+    {% assign PRICING_OPTIONS_SUBSCRIPTION  = 815390004 %}
+
+    {% assign FREQ_MONTHLY  = 815390000 %}
+    {% assign FREQ_ANNUAL   = 815390001 %}
+
+    {% assign TYPE_DONATION    = 815390000 %}
+    {% assign TYPE_EVENT       = 815390001 %}
+    {% assign TYPE_COURSE      = 815390002 %}
+    {% assign TYPE_MEMBERSHIP  = 815390003 %}
+    {% assign TYPE_VOLUNTEER   = 815390004 %}
+    {% assign TYPE_RESOURCE    = 815390005 %}
+    {% assign TYPE_SPONSORSHIP = 815390006 %}
+    {% assign TYPE_EOI         = 815390007 %}
+    {% assign TYPE_VENUE       = 815390008 %}    
+
+    {% assign defaultCta = 'Continue' %}
+    {% if offeringTypeValue == TYPE_DONATION or offeringTypeLabel == 'Donation' %}
+      {% assign defaultCta = 'Donate' %}
+    {% elsif offeringTypeValue == TYPE_EVENT or offeringTypeLabel == 'Event' %}
+      {% assign defaultCta = 'View dates & register' %}
+    {% elsif offeringTypeValue == TYPE_COURSE or offeringTypeLabel == 'Course Access' %}
+      {% assign defaultCta = 'Register' %}
+    {% elsif offeringTypeValue == TYPE_MEMBERSHIP or offeringTypeLabel == 'Membership' %}
+      {% assign defaultCta = 'Join' %}
+    {% elsif offeringTypeValue == TYPE_VOLUNTEER or offeringTypeLabel == 'Volunteer Engagement' %}
+      {% assign defaultCta = 'Express interest' %}
+    {% elsif offeringTypeValue == TYPE_RESOURCE or offeringTypeLabel == 'Resource Download' %}
+      {% assign defaultCta = 'Download' %}
+    {% elsif offeringTypeValue == TYPE_SPONSORSHIP or offeringTypeLabel == 'Sponsorship' %}
+      {% assign defaultCta = 'Enquire' %}
+    {% elsif offeringTypeValue == TYPE_EOI or offeringTypeLabel == 'Expression of Interest' %}
+      {% assign defaultCta = 'Register interest' %}
+    {% endif %}
+    {% if ctaLabel == blank %}{% assign ctaLabel = defaultCta %}{% endif %}
+
+    {% assign is_donation = false %}
+    {% if offeringTypeValue == TYPE_DONATION or offeringTypeLabel == 'Donation' %}
+      {% assign is_donation = true %}
+    {% endif %}
+
+    {% assign is_free = false %}
+    {% assign is_oneoff = false %}
+    {% assign is_subscription = false %}
+    {% assign has_price_options = false %}
+
+    {% if pricingModelValue == PRICING_FREE %}
+      {% assign is_free = true %}
+    {% endif %}
+
+    {% if pricingModelValue == PRICING_FIXED_ONEOFF %}
+      {% assign is_oneoff = true %}
+    {% endif %}
+
+    {% if pricingModelValue == PRICING_OPTIONS_ONEOFF %}
+      {% assign is_oneoff = true %}
+      {% assign has_price_options = true %}
+    {% endif %}
+
+    {% if pricingModelValue == PRICING_FIXED_SUBSCRIPTION %}
+      {% assign is_subscription = true %}
+    {% endif %}
+
+    {% if pricingModelValue == PRICING_OPTIONS_SUBSCRIPTION %}
+      {% assign is_subscription = true %}
+      {% assign has_price_options = true %}
+    {% endif %}
+
+
+    {% capture options_markup %}
+      {% assign seen = '' %}
+      {% for r in rows %}
+        {% assign poid = r['po.hit_priceoptionid'] | default: '' %}
+        {% if poid.value %}{% assign poid = poid.value %}{% endif %}
+        {% assign poid = poid | strip %}
+        {% if poid == blank %}{% continue %}{% endif %}
+        {% if seen contains poid %}{% continue %}{% endif %}
+        {% assign seen = seen | append: poid | append: ',' %}
+
+        {% assign title = r['po.hit_impacttitle'] | default: '' %}
+        {% assign pdesc = r['po.hit_impactdescription'] | default: '' %}
+        {% assign amount = r['po.hit_amount'] | default: '' %}
+        {% if amount.value %}{% assign amount = amount.value %}{% endif %}
+        {% assign amount = amount | strip %}
+
+
+        <button type="button" class="opt"
+                data-priceoptionid="{{ poid | escape }}"
+                data-amount="{{ amount }}"
+                aria-label="Select amount {{ amount }}">
+          <div class="opt-top">
+            <div>
+              {% if title != blank %}<div class="opt-title">{{ title | escape }}</div>{% endif %}
+              {% if pdesc != blank %}<div class="opt-desc">{{ pdesc }}</div>{% endif %}
+            </div>
+            <div class="opt-amount"><span class="amt">{{ amount }}</span></div>
+          </div>
+        </button>
+      {% endfor %}
+    {% endcapture %}
+
+    <div class="wrap">
+      <div class="card">
+
+
+    <div class="hero">
+      {% if img != blank %}
+        {% assign img_trim = img | strip %}
+
+        {%- comment -%}
+        If hit_imageurl already contains an <img ...> tag, render it raw.
+        Otherwise assume it's a URL and build the <img> element.
+        {%- endcomment -%}
+
+        {% if img_trim contains '<img' %}
+          {{ img_trim }}
+        {% else %}
+          <img src="{{ img_trim | escape }}" alt="{{ name | escape }}" loading="lazy" decoding="async" />
+        {% endif %}
+      {% else %}
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color: rgba(255,255,255,.88); font-weight:800;">
+          No image available
+        </div>
+      {% endif %}
+    </div>
+
+
+        <div class="body">
+          <h1 class="title">{{ name | escape }}</h1>
+
+          <div class="grid">
+            <div>
+              {% if desc != blank %}
+                <div class="desc">{{ desc }}</div>
+              {% else %}
+                <div class="desc muted">Description coming soon.</div>
+              {% endif %}
+            </div>
+
+
+            <div class="donate-box" id="priceBox">
+
+              {% if is_free %}
+
+                <!-- FREE -->
+                <div class="price-big">Free</div>
+                <div class="price-sub">No payment required</div>
+
+              {% elsif is_subscription %}
+
+                <!-- SUBSCRIPTION -->
+                <div class="donate-head">
+                  <h2>Choose your {{ offeringTypeLabel | escape | downcase }}</h2>
+                </div>
+
+                {% if has_price_options %}
+                  <div class="options membership" role="list">
+                    {{ options_markup }}
+                  </div>
+                {% else %}
+                  <div class="price-big"><span id="fixedPriceLabel">{{ fixedPrice }}</span></div>
+                {% endif %}
+
+                <div class="price-sub">
+                  Billed <strong>{{ subscriptionFreqLabel | escape }}</strong>
+                </div>
+
+              {% elsif is_oneoff %}
+
+                <!-- ONE-OFF -->
+                {% if has_price_options %}
+
+                  <!-- Example minimal shell if you want a generic price-option selector (non-donation) -->
+                  <div class="donate-head">
+                    <h2>Choose an option</h2>
+                    <div class="selected-pill">
+                      Selected: <span id="selectedAmountLabel" style="margin-left:6px; font-weight:900;">—</span>
+                    </div>
+                  </div>
+
+                  <div class="options" role="list">
+                    {{ options_markup }}
+                  </div>
+
+                  {% if is_donation %}
+                    <div class="other-row">
+                      <label for="otherAmount">Other</label>
+                      <input id="otherAmount"
+                            class="other-input"
+                            inputmode="decimal"
+                            placeholder="Enter amount"
+                            aria-label="Enter another amount" />
+                    </div>
+                  {% endif %}
+
+                  <input type="hidden" id="selectedPriceOptionId" value="" />
+
+                {% else %}
+                  <div class="price-big"><span id="fixedPriceLabel">{{ fixedPrice }}</span></div>
+                  <div class="price-sub">One‑time payment • AUD</div>
+                {% endif %}
+
+              {% endif %}
+
+              <!-- CTA ALWAYS RENDERS -->
+              <div class="cta">
+                <button type="button" class="btn" id="continueBtn">{{ ctaLabel | escape }}</button>
+                <a class="btn secondary" href="/Offerings/">Back</a>
+              </div>
+
+              <!-- Hidden context -->
+              <input type="hidden" id="offeringId" value="{{ offeringid | escape }}" />
+              <input type="hidden" id="offeringSlug" value="{{ slug | escape }}" />
+              <input type="hidden" id="ciEventId" value="{{ ci_event_id | escape }}" />
+              <input type="hidden" id="offeringTypeValue" value="{{ offeringTypeValue | escape }}" />
+              <input type="hidden" id="offeringTypeLabel" value="{{ offeringTypeLabel | escape }}" />
+              <input type="hidden" id="pricingModelValue" value="{{ pricingModelValue | escape }}" />
+              <input type="hidden" id="pricingModelLabel" value="{{ pricingModelLabel | escape }}" />
+
+              <!-- Optional: helpful to pass through -->
+              <input type="hidden" id="subscriptionFreqValue" value="{{ subscriptionFreqValue | escape }}" />
+              <input type="hidden" id="subscriptionFreqLabel" value="{{ subscriptionFreqLabel | escape }}" />
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+<script>
+(function(){
+  var ROUTES = {
+    donate:      '/Donate/',
+    course:      '/Courses/Course-Registration/',
+    event:       '/Events/Event-Registration/',
+    eventsHome:  '/Events/',
+    offerings:   '/Offerings/',
+    membership:  '/Membership/Member-Join/',
+    volunteer:   '/Volunteer/Volunteer-EOI/',
+    resource:    '/Resources/Download/',
+    sponsorship: '/Sponsorship/Enquire/',
+    eoi:         '/Enquire/'
+  };
+
+  var TYPE_DONATION    = 815390000;
+  var TYPE_EVENT       = 815390001;
+  var TYPE_COURSE      = 815390002;
+  var TYPE_MEMBERSHIP  = 815390003;
+  var TYPE_VOLUNTEER   = 815390004;
+  var TYPE_RESOURCE    = 815390005;
+  var TYPE_SPONSORSHIP = 815390006;
+  var TYPE_EOI         = 815390007;
+
+  var PRICING_FREE                 = 815390002;
+  var PRICING_FIXED_ONEOFF         = 815390000;
+  var PRICING_OPTIONS_ONEOFF       = 815390001;
+  var PRICING_FIXED_SUBSCRIPTION   = 815390003;
+  var PRICING_OPTIONS_SUBSCRIPTION = 815390004;
+
+  function val(id){ return (document.getElementById(id)?.value || '').toString().trim(); }
+  function isLabel(lbl, actual){ return (actual || '').toLowerCase() === (lbl || '').toLowerCase(); }
+
+  function toNumber(v){
+    if (v === null || v === undefined) return null;
+    var s = v.toString().trim();
+    if (!s) return null;
+    s = s.replace(/[^0-9.\-]/g, '');
+    if (!s) return null;
+    var n = parseFloat(s);
+    return isNaN(n) ? null : n;
+  }
+
+  function formatCurrencySmart(n){
+    if (n === null || n === undefined) return '—';
+    var rounded2 = Math.round(n * 100) / 100;
+    var cents = Math.round((rounded2 - Math.floor(rounded2)) * 100);
+    if (cents === 0) return '$' + Math.round(rounded2).toString();
+    return '$' + rounded2.toFixed(2);
+  }
+
+  function formatFixedPrice(){
+    var el = document.getElementById('fixedPriceLabel');
+    if(!el) return;
+    var n = toNumber(el.textContent || '');
+    if(n === null) return;
+    el.textContent = formatCurrencySmart(n);
+  }
+
+  function formatAllOptionAmounts(){
+    document.querySelectorAll('.amt').forEach(function(span){
+      var n = toNumber(span.textContent || '');
+      if(n === null) return;
+      span.textContent = formatCurrencySmart(n);
+    });
+  }
+
+  function cleanNumber(v){
+    var s = (v || '').toString().replace(/[^\d.]/g,'');
+    var parts = s.split('.');
+    if(parts.length > 2) s = parts[0] + '.' + parts.slice(1).join('');
+    return s;
+  }
+
+  function validAmount(v){
+    var n = toNumber(v);
+    if (n === null || n <= 0) return null;
+    return n;
+  }
+
+  // ----------------------------
+  // Read values
+  // ----------------------------
+  var offeringId = val('offeringId');
+  var slug = val('offeringSlug');
+  var ciEventId = val('ciEventId');
+
+  var offeringTypeValue = parseInt(val('offeringTypeValue'), 10);
+  var offeringTypeLabel = val('offeringTypeLabel');
+
+  var pricingModelValue = parseInt(val('pricingModelValue'), 10);
+  var pricingModelLabel = val('pricingModelLabel');
+
+  var continueBtn = document.getElementById('continueBtn');
+  var other = document.getElementById('otherAmount');
+  var selectedLabel = document.getElementById('selectedAmountLabel');
+  var priceOptionHidden = document.getElementById('selectedPriceOptionId');
+
+  var isDonation =
+    (offeringTypeValue === TYPE_DONATION) || isLabel('Donation', offeringTypeLabel);
+
+  var isCourse =
+    (offeringTypeValue === TYPE_COURSE) || isLabel('Course Access', offeringTypeLabel);
+
+  var isEvent =
+    (offeringTypeValue === TYPE_EVENT) || isLabel('Event', offeringTypeLabel);
+
+  var isMembership =
+    (offeringTypeValue === TYPE_MEMBERSHIP) || isLabel('Membership', offeringTypeLabel);
+
+  var isVolunteer =
+    (offeringTypeValue === TYPE_VOLUNTEER) || isLabel('Volunteer Engagement', offeringTypeLabel);
+
+  var isResource =
+    (offeringTypeValue === TYPE_RESOURCE) || isLabel('Resource Download', offeringTypeLabel);
+
+  var isSponsorship =
+    (offeringTypeValue === TYPE_SPONSORSHIP) || isLabel('Sponsorship', offeringTypeLabel);
+
+  var isEOI =
+    (offeringTypeValue === TYPE_EOI) || isLabel('Expression of Interest', offeringTypeLabel);
+
+  var isFree = (pricingModelValue === PRICING_FREE);
+
+  var isSubscription =
+    (pricingModelValue === PRICING_FIXED_SUBSCRIPTION) ||
+    (pricingModelValue === PRICING_OPTIONS_SUBSCRIPTION);
+
+  var hasPriceOptions =
+    (pricingModelValue === PRICING_OPTIONS_ONEOFF) ||
+    (pricingModelValue === PRICING_OPTIONS_SUBSCRIPTION);
+
+  var isOneOffPriceOptions = (pricingModelValue === PRICING_OPTIONS_ONEOFF);
+  var isSubscriptionPriceOptions = (pricingModelValue === PRICING_OPTIONS_SUBSCRIPTION);
+
+  // ----------------------------
+// DEBUG – log interpreted values
+// ----------------------------
+console.group('Offering Detail Debug');
+
+console.log('offeringId', offeringId);
+console.log('slug', slug);
+
+console.log('offeringTypeValue', offeringTypeValue);
+console.log('offeringTypeLabel', offeringTypeLabel);
+
+console.log('pricingModelValue', pricingModelValue);
+console.log('pricingModelLabel', pricingModelLabel);
+
+console.log('isFree', isFree);
+console.log('isSubscription', isSubscription);
+console.log('hasPriceOptions', hasPriceOptions);
+console.log('isOneOffPriceOptions', isOneOffPriceOptions);
+console.log('isSubscriptionPriceOptions', isSubscriptionPriceOptions);
+
+console.groupEnd();
+
+  // ----------------------------
+  // Formatting on load
+  // ----------------------------
+  formatFixedPrice();
+  if(hasPriceOptions) formatAllOptionAmounts();
+
+  // ----------------------------
+  // Selection state
+  // ----------------------------
+  var selected = null;
+  var selectedPriceOptionId = '';
+
+  function updateContinueState(){
+    if(!continueBtn) return;
+
+    if(isFree){
+      continueBtn.disabled = false;
+      return;
+    }
+
+    // Subscription pricing
+    if(isSubscription){
+      if(isSubscriptionPriceOptions){
+        continueBtn.disabled = !selectedPriceOptionId;
+      } else {
+        continueBtn.disabled = false; // fixed subscription
+      }
+      return;
+    }
+
+    // One-off price options
+    if(isOneOffPriceOptions){
+      if(isDonation){
+        continueBtn.disabled = (validAmount(selected) == null); // option or other amount
+      } else {
+        continueBtn.disabled = !selectedPriceOptionId; // must pick an option
+      }
+      return;
+    }
+
+    // One-off fixed
+    continueBtn.disabled = false;
+  }
+
+  function setSelected(amount, priceOptionId){
+    selected = amount;
+    selectedPriceOptionId = priceOptionId || '';
+    if(priceOptionHidden) priceOptionHidden.value = selectedPriceOptionId;
+
+    if(selectedLabel){
+      var n = validAmount(amount);
+      selectedLabel.textContent = (n == null) ? '—' : formatCurrencySmart(n);
+    }
+
+    updateContinueState();
+  }
+
+  // Initial gating
+  updateContinueState();
+
+  // Bind option buttons for BOTH one-off and subscription price options
+  if(hasPriceOptions){
+    document.querySelectorAll('.opt').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        document.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('is-selected'); });
+        btn.classList.add('is-selected');
+        if(other) other.value = '';
+        setSelected(btn.getAttribute('data-amount'), btn.getAttribute('data-priceoptionid') || '');
+      });
+    });
+  }
+
+  // Bind “Other amount” ONLY for one-off donation price options (ladder behaviour)
+  if(other && isOneOffPriceOptions && isDonation){
+    other.addEventListener('input', function(){
+      document.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('is-selected'); });
+      var v = cleanNumber(other.value);
+      other.value = v;
+      setSelected(v, '');
+    });
+  }
+
+  if(!continueBtn) return;
+
+  // ----------------------------
+  // CTA routing
+  // ----------------------------
+  continueBtn.addEventListener('click', function(){
+
+    if(isDonation){
+      var n = null;
+
+      if(isOneOffPriceOptions){
+        n = validAmount(selected);
+        if(n == null) return;
+      } else {
+        n = toNumber('{{ fixedPrice | default: 0 }}');
+        if(!(n > 0)) return;
+      }
+
+      var url = ROUTES.donate
+        + '?slug=' + encodeURIComponent(slug)
+        + '&offeringid=' + encodeURIComponent(offeringId)
+        + '&amount=' + encodeURIComponent(n);
+
+      // Only pass priceoptionid when the user selected an option (not “Other”)
+      if(selectedPriceOptionId){
+        url += '&priceoptionid=' + encodeURIComponent(selectedPriceOptionId);
+      }
+
+      window.location.href = url;
+      return;
+    }
+
+    if(isCourse){
+      window.location.href = ROUTES.course
+        + '?offeringid=' + encodeURIComponent(offeringId)
+        + '&slug=' + encodeURIComponent(slug);
+      return;
+    }
+
+    if(isEvent){
+      if(ciEventId){
+        window.location.href = ROUTES.event
+          + '?offeringid=' + encodeURIComponent(offeringId)
+          + '&eventid=' + encodeURIComponent(ciEventId)
+          + '&slug=' + encodeURIComponent(slug);
+      } else {
+        window.location.href = ROUTES.eventsHome
+          + '?offeringid=' + encodeURIComponent(offeringId);
+      }
+      return;
+    }
+
+    if(isMembership){
+      // For subscription price options, selection is mandatory
+      if(isSubscriptionPriceOptions && !selectedPriceOptionId) return;
+
+      var url = ROUTES.membership
+        + '?offeringid=' + encodeURIComponent(offeringId)
+        + '&slug=' + encodeURIComponent(slug);
+
+      if(selectedPriceOptionId){
+        url += '&priceoptionid=' + encodeURIComponent(selectedPriceOptionId);
+      }
+
+      window.location.href = url;
+      return;
+    }
+
+    if(isVolunteer){
+      window.location.href = ROUTES.volunteer
+        + '?offeringid=' + encodeURIComponent(offeringId)
+        + '&slug=' + encodeURIComponent(slug);
+      return;
+    }
+
+    if(isResource){
+      window.location.href = ROUTES.resource
+        + '?offeringid=' + encodeURIComponent(offeringId)
+        + '&slug=' + encodeURIComponent(slug);
+      return;
+    }
+
+    if(isSponsorship){
+      window.location.href = ROUTES.sponsorship
+        + '?offeringid=' + encodeURIComponent(offeringId)
+        + '&slug=' + encodeURIComponent(slug);
+      return;
+    }
+
+    if(isEOI){
+      window.location.href = ROUTES.eoi
+        + '?offeringid=' + encodeURIComponent(offeringId)
+        + '&slug=' + encodeURIComponent(slug);
+      return;
+    }
+
+    window.location.href = ROUTES.offerings;
+  });
+
+})();
+</script>
+    </div>
+
+  {% endif %}
+{% endif %}

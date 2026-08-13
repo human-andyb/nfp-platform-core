@@ -1,0 +1,179 @@
+{% comment %}
+sections--persona-detail
+
+Supports:
+1. Persona selected on Slot (hit_persona)
+2. Querystring id (legacy support)
+
+Image:
+- hit_imageurl
+{% endcomment %}
+
+{% assign personaId = '' %}
+
+{% comment %}
+Preferred source = slot lookup
+Fallback = querystring id
+{% endcomment %}
+
+{% if slot.hit_persona %}
+  {% assign personaId = slot.hit_persona.id | default: slot.hit_persona | strip %}
+{% endif %}
+
+{% if personaId == '' %}
+  {% assign personaId = request.params.id | default: '' %}
+  {% assign personaId = personaId | replace: '{','' %}
+  {% assign personaId = personaId | replace: '}','' %}
+  {% assign personaId = personaId | strip %}
+{% endif %}
+
+{% if debug %}
+
+<div style="background:#0a2540;color:#fff;padding:10px;font-size:12px;margin-bottom:12px;">
+  Persona Detail Debug<br>
+  slot.hit_persona = {{ slot.hit_persona }}<br>
+  slot.hit_persona.id = {{ slot.hit_persona.id }}<br>
+  resolved personaId = {{ personaId }}
+</div>
+
+{% endif %}
+
+{% if personaId == '' %}
+
+<section class="hit-empty">
+  <h2>No Persona Selected</h2>
+  <p>This Persona Detail component has not been linked to a Persona.</p>
+</section>
+
+{% else %}
+
+{% fetchxml personaQuery %}
+<fetch top="1" mapping="logical">
+  <entity name="hit_persona">
+
+    <attribute name="hit_personaid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_displaytitle" />
+    <attribute name="hit_summary" />
+    <attribute name="hit_description" />
+    <attribute name="hit_imageurl" />
+    <attribute name="hit_isactive" />
+
+    <filter>
+      <condition attribute="hit_personaid"
+                 operator="eq"
+                 value="{{ personaId }}" />
+
+      <condition attribute="hit_isactive"
+                 operator="eq"
+                 value="1" />
+    </filter>
+
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% assign persona = personaQuery.results.entities | first %}
+
+{% if persona == nil %}
+
+<section class="hit-empty">
+  <h2>Persona not found</h2>
+  <p>The selected Persona could not be located.</p>
+</section>
+
+{% else %}
+
+{% assign title =  persona.hit_displaytitle  | default: persona.hit_name  | strip %}
+
+{% assign summary =  persona.hit_summary  | default: ''  | strip %}
+
+{% assign body =  persona.hit_description  | default: '' %}
+
+{% assign imageUrl =  persona.hit_imageurl  | default: '' %}
+
+<article class="hit-persona-detail">
+
+  {% if imageUrl != '' %}
+
+    <div class="hit-persona-detail__hero">
+
+      <img
+        class="hit-persona-detail__image"
+        src="{{ imageUrl | escape }}"
+        alt="{{ title | escape }}"
+        loading="lazy">
+
+    </div>
+
+  {% endif %}
+
+  <div class="hit-persona-detail__content">
+
+    <h1 class="hit-persona-detail__title">
+      {{ title }}
+    </h1>
+
+    {% if summary != blank %}
+      <div class="hit-persona-detail__summary">
+        {{ summary }}
+      </div>
+    {% endif %}
+
+    {% if body != blank %}
+      <div class="hit-persona-detail__body">
+        {{ body }}
+      </div>
+    {% endif %}
+
+  </div>
+
+</article>
+
+<style>
+
+.hit-persona-detail{
+  max-width:1200px;
+  margin:0 auto;
+}
+
+.hit-persona-detail__hero{
+  margin-bottom:32px;
+}
+
+.hit-persona-detail__image{
+  width:100%;
+  display:block;
+  border-radius:20px;
+}
+
+.hit-persona-detail__title{
+  font-size:42px;
+  font-weight:800;
+  line-height:1.1;
+  margin-bottom:20px;
+}
+
+.hit-persona-detail__summary{
+  font-size:1.15rem;
+  line-height:1.7;
+  font-weight:500;
+  margin-bottom:24px;
+  opacity:.85;
+}
+
+.hit-persona-detail__body{
+  line-height:1.8;
+  font-size:1.05rem;
+}
+
+.hit-empty{
+  max-width:1200px;
+  margin:0 auto;
+  padding:40px 20px;
+}
+
+</style>
+
+{% endif %}
+{% endif %}

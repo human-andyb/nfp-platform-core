@@ -1,0 +1,313 @@
+{% comment %}{%==
+ Strategy on a Page – Entry Renderer (with Debug)
+==================================================
+{% endcomment %}
+
+{% assign strategycycleid = request.params.strategycycleid %}
+{% assign debug = request.params.debug %}
+
+{% if strategycycleid == blank %}
+  <div class="error">
+    Strategy Cycle not specified.
+  </div>
+  {% return %}
+{% endif %}
+
+{% comment %}
+========================================
+ Strategy Cycle
+========================================
+{% endcomment %}
+{% fetchxml strategy_cycle %}
+<fetch top="1">
+  <entity name="hit_strategycycle">
+    <attribute name="hit_strategycycleid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_tagline" />
+    <attribute name="hit_startdate" />
+    <attribute name="hit_enddate" />
+    <filter>
+      <condition attribute="hit_strategycycleid"
+                 operator="eq"
+                 value="{{ strategycycleid }}" />
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+{% assign cycle = strategy_cycle.results.entities[0] %}
+
+{% comment %}
+========================================
+ Principles
+========================================
+{% endcomment %}
+{% fetchxml principles %}
+<fetch>
+  <entity name="hit_strategyprinciple">
+    <attribute name="hit_strategyprincipleid" />
+    <attribute name="hit_type" />
+    <attribute name="hit_statement" />
+    <attribute name="hit_sortorder" />
+    <filter>
+      <condition attribute="hit_strategycycleid"
+                 operator="eq"
+                 value="{{ strategycycleid }}" />
+    </filter>
+    <order attribute="hit_sortorder" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% comment %}
+========================================
+ Objectives
+========================================
+{% endcomment %}
+{% fetchxml objectives %}
+<fetch>
+  <entity name="hit_strategyobjective">
+    <attribute name="hit_strategyobjectiveid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_sortorder" />
+    <filter>
+      <condition attribute="hit_strategycycleid"
+                 operator="eq"
+                 value="{{ strategycycleid }}" />
+    </filter>
+    <order attribute="hit_sortorder" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% comment %}
+========================================
+ Priorities
+========================================
+{% endcomment %}
+{% fetchxml priorities %}
+<fetch>
+  <entity name="hit_strategypriority">
+    <attribute name="hit_strategypriorityid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_summary" />
+    <attribute name="hit_sortorder" />
+    <filter>
+      <condition attribute="hit_strategycycleid"
+                 operator="eq"
+                 value="{{ strategycycleid }}" />
+    </filter>
+    <order attribute="hit_sortorder" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% comment %}
+========================================
+ Initiatives
+========================================
+{% endcomment %}
+{% fetchxml initiatives %}
+<fetch>
+  <entity name="hit_strategyinitiative">
+    <attribute name="hit_strategyinitiativeid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_sortorder" />
+    <attribute name="hit_strategypriorityid" />
+    <filter>
+      <condition attribute="hit_strategypriorityid"
+                 operator="not-null" />
+    </filter>
+    <order attribute="hit_sortorder" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% comment %}
+========================================
+ Enablers
+========================================
+{% endcomment %}
+{% fetchxml enablers %}
+<fetch>
+  <entity name="hit_strategyenabler">
+    <attribute name="hit_strategyenablerid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_sortorder" />
+    <filter>
+      <condition attribute="hit_strategycycleid"
+                 operator="eq"
+                 value="{{ strategycycleid }}" />
+    </filter>
+    <order attribute="hit_sortorder" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% comment %}
+========================================
+ Values
+========================================
+{% endcomment %}
+{% fetchxml values %}
+<fetch>
+  <entity name="hit_strategyvalue">
+    <attribute name="hit_strategyvalueid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_sortorder" />
+    <filter>
+      <condition attribute="hit_strategycycleid"
+                 operator="eq"
+                 value="{{ strategycycleid }}" />
+    </filter>
+    <order attribute="hit_sortorder" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% comment %}
+========================================
+ Scorecard – Segments
+========================================
+{% endcomment %}
+{% fetchxml segments %}
+<fetch>
+  <entity name="hit_scorecardsegment">
+    <attribute name="hit_scorecardsegmentid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_sortorder" />
+    <filter>
+      <condition attribute="hit_strategycycleid"
+                 operator="eq"
+                 value="{{ strategycycleid }}" />
+    </filter>
+    <order attribute="hit_sortorder" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% comment %}
+========================================
+ Scorecard – Measures
+========================================
+{% endcomment %}
+{% fetchxml measures %}
+<fetch>
+  <entity name="hit_scorecardmeasure">
+    <attribute name="hit_scorecardmeasureid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_scorecardsegmentid" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% comment %}
+========================================
+ Scorecard – Metrics
+========================================
+{% endcomment %}
+{% fetchxml metrics %}
+<fetch>
+  <entity name="hit_scorecardmetric">
+    <attribute name="hit_scorecardmetricid" />
+    <attribute name="hit_scorecardmeasureid" />
+    <attribute name="hit_statement" />
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% comment %}
+========================================
+ DEBUG PANEL
+========================================
+{% endcomment %}
+{% if debug == "1" %}
+<div style="padding:16px; margin-bottom:24px; border:2px dashed #cc0000; background:#fff7f7;">
+  <h2>⚙ Strategy Renderer Debug</h2>
+
+  <p><strong>StrategyCycle ID:</strong> {{ strategycycleid }}</p>
+  <p><strong>Strategy Name:</strong> {{ cycle.hit_name }}</p>
+
+  <h3>Record Counts</h3>
+  <ul>
+    <li>Principles: {{ principles.results.entities.size }}</li>
+    <li>Objectives: {{ objectives.results.entities.size }}</li>
+    <li>Priorities: {{ priorities.results.entities.size }}</li>
+    <li>Initiatives: {{ initiatives.results.entities.size }}</li>
+    <li>Enablers: {{ enablers.results.entities.size }}</li>
+    <li>Values: {{ values.results.entities.size }}</li>
+    <li>Scorecard Segments: {{ segments.results.entities.size }}</li>
+    <li>Scorecard Measures: {{ measures.results.entities.size }}</li>
+    <li>Scorecard Metrics: {{ metrics.results.entities.size }}</li>
+  </ul>
+
+  <h3>Priority → Initiative Mapping</h3>
+  {% for p in priorities.results.entities %}
+    <p>
+      <strong>{{ p.hit_name }}</strong>
+      —
+      {% assign linked = initiatives.results.entities
+           | where: "hit_strategypriorityid.id", p.hit_strategypriorityid %}
+      {{ linked.size }} initiative(s)
+    </p>
+  {% endfor %}
+
+  <h3>Segment → Measure → Metric Mapping</h3>
+  {% for s in segments.results.entities %}
+    <p>
+      <strong>{{ s.hit_name }}</strong><br/>
+      {% assign seg_measures = measures.results.entities
+           | where: "hit_scorecardsegmentid.id", s.hit_scorecardsegmentid %}
+      Measures: {{ seg_measures.size }}
+      <br/>
+      {% for m in seg_measures %}
+        • {{ m.hit_name }} —
+        {% assign m_metrics = metrics.results.entities
+             | where: "hit_scorecardmeasureid.id", m.hit_scorecardmeasureid %}
+        {{ m_metrics.size }} metric(s)
+        <br/>
+      {% endfor %}
+    </p>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% comment %}
+========================================
+ RENDER PAGE (NORMAL)
+========================================
+{% endcomment %}
+
+<div class="strategy-on-a-page">
+
+  <header class="strategy-header">
+    <h1>{{ cycle.hit_name }}</h1>
+    {% if cycle.hit_tagline %}
+      <p class="tagline">{{ cycle.hit_tagline }}</p>
+    {% endif %}
+    <p class="period">
+      {{ cycle.hit_startdate | date: "%Y" }}
+      –
+      {{ cycle.hit_enddate | date: "%Y" }}
+    </p>
+  </header>
+
+  {% include "sections--strategy-belief-purpose"
+     principles: principles.results.entities %}
+
+  {% include "sections--strategy-objectives"
+     objectives: objectives.results.entities %}
+
+  {% include "sections--strategy-priorities-initiatives"
+     priorities: priorities.results.entities
+     initiatives: initiatives.results.entities %}
+
+  {% include "sections--strategy-enablers-values"
+     enablers: enablers.results.entities
+     values: values.results.entities %}
+
+  {% include "sections--strategy-scorecard"
+     segments: segments.results.entities
+     measures: measures.results.entities
+     metrics: metrics.results.entities %}
+
+</div>

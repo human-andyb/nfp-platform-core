@@ -1,0 +1,62 @@
+{% assign headingText = section.hit_headingtext | default:'' | strip %}
+{% assign introText = section.hit_introtext | default:'' | strip %}
+
+<div class="layout layout-3-col">
+
+    {% if headingText != '' or introText != '' %}
+        <div class="hit-section__header">
+
+            {% if headingText != '' %}
+                <h2 class="hit-section__title">
+                    {{ headingText }}
+                </h2>
+            {% endif %}
+
+            {% if introText != '' %}
+                <div class="hit-section__intro">
+                    {{ introText }}
+                </div>
+            {% endif %}
+
+        </div>
+    {% endif %}
+
+    <div class="layout-3-col__grid">
+
+        {% for slotIndex in (1..3) %}
+
+            {% assign currentSlot = slots | where: "hit_slotindex", slotIndex | first %}
+
+            <div class="layout-3-col__slot">
+
+                {% if currentSlot %}
+
+                    {% assign templateName = currentSlot['stype.hit_templatename'] | default:'' | strip | downcase %}
+
+                    {% if templateName != '' %}
+
+                        {% include templateName  slot: currentSlot  section: section  debug: debug  galleryParam: galleryParam  galleryOverride: galleryOverride   %}
+
+                    {% elsif debug %}
+
+                        <div class="hit-alert">
+                            Slot {{ slotIndex }} has no template name.
+                        </div>
+
+                    {% endif %}
+
+                {% elsif debug %}
+
+                    <div class="hit-alert">
+                        Slot {{ slotIndex }} not found.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>

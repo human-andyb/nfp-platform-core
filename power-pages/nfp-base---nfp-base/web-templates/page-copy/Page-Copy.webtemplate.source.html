@@ -1,0 +1,7 @@
+{% assign layoutMode = settings['Site/LayoutMode'] | default: 'boxed' %}
+
+<div data-site-layout="{{ layoutMode }}">
+  <div class="page-copy">
+    {% editable page 'adx_copy' type: 'html', liquid: true %}
+  </div>
+</div>

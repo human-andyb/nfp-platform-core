@@ -1,0 +1,92 @@
+ {%- comment -%}
+helpers--choice-token (locked-in)
+Maps Dataverse Choice integers -> stable semantic tokens.
+
+Usage:
+  {%- include 'helpers--choice-token'
+        value: s.hit_backgroundbleed
+        map: 'backgroundbleed'
+        default: 'inherit'
+  -%}
+  {%- assign bgMode = choiceToken -%}
+
+Outputs:
+  choiceToken (string)
+
+Design notes:
+- Choice fields arrive as integers (e.g., 815390001), not labels.
+- Centralise mapping here to keep section templates clean.
+{%- endcomment -%}
+
+{%- assign raw = value | default: '' | strip -%}
+{%- assign mapKey = map | default: '' | downcase | strip -%}
+{%- assign fallback = default | default: '' | downcase | strip -%}
+
+{%- assign token = fallback -%}
+
+{%- if raw == '' -%}
+  {%- assign token = fallback -%}
+
+{%- else -%}
+
+  {%- case mapKey -%}
+
+    {%- when 'backgroundbleed' -%}
+      {%- comment -%}
+      hit_backgroundbleed:
+        Inherit: 815390000 -> inherit
+        Boxed:   815390001 -> boxed
+        Full:    815390002 -> full
+      {%- endcomment -%}
+      {%- if raw == '815390000' -%}{%- assign token = 'inherit' -%}
+      {%- elsif raw == '815390001' -%}{%- assign token = 'boxed' -%}
+      {%- elsif raw == '815390002' -%}{%- assign token = 'full' -%}
+      {%- else -%}{%- assign token = fallback -%}
+      {%- endif -%}
+
+    {%- when 'contentwidthmode' -%}
+      {%- comment -%}
+      hit_contentwidthmode:
+        Inherit:     815390000 -> inherit
+        Constrained: 815390001 -> constrained
+        Full:        815390002 -> full
+      {%- endcomment -%}
+      {%- if raw == '815390000' -%}{%- assign token = 'inherit' -%}
+      {%- elsif raw == '815390001' -%}{%- assign token = 'constrained' -%}
+      {%- elsif raw == '815390002' -%}{%- assign token = 'full' -%}
+      {%- else -%}{%- assign token = fallback -%}
+      {%- endif -%}
+
+    {%- when 'mediatype' -%}
+      {%- comment -%}
+      hit_mediatype:
+        Image: 815390000 -> image
+        Video: 815390001 -> video
+      {%- endcomment -%}
+      {%- if raw == '815390000' -%}{%- assign token = 'image' -%}
+      {%- elsif raw == '815390001' -%}{%- assign token = 'video' -%}
+      {%- else -%}{%- assign token = fallback -%}
+      {%- endif -%}
+
+    {%- when 'herosize' -%}
+      {%- comment -%}
+      hit_herosize mapping goes here once you confirm the option values.
+      Example (REPLACE with your real values):
+        Small:  815390000 -> small
+        Medium: 815390001 -> medium
+        Large:  815390002 -> large
+      {%- endcomment -%}
+      {%- if raw == '815390000' -%}{%- assign token = 'small' -%}
+      {%- elsif raw == '815390001' -%}{%- assign token = 'medium' -%}
+      {%- elsif raw == '815390002' -%}{%- assign token = 'large' -%}
+      {%- else -%}{%- assign token = fallback -%}
+      {%- endif -%}
+
+    {%- else -%}
+      {%- assign token = fallback -%}
+
+  {%- endcase -%}
+
+{%- endif -%}
+
+{%- assign choiceToken = token -%}

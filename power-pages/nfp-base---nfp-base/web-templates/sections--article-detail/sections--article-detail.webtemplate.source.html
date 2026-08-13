@@ -1,0 +1,120 @@
+{% comment %}
+sections--article-detail
+
+Supports:
+1. Article selected on Slot (hit_article)
+2. Querystring id fallback
+
+Fields:
+- hit_displaytitle / hit_name
+- hit_summary
+- hit_body
+- hit_imageurl
+{% endcomment %}
+
+{% assign articleId = '' %}
+
+{% if slot and slot.hit_article %}
+  {% assign articleId = slot.hit_article.id | default: slot.hit_article | strip %}
+{% endif %}
+
+{% if articleId == '' %}
+  {% assign articleId = request.params.id | default: '' %}
+  {% assign articleId = articleId | replace: '{','' %}
+  {% assign articleId = articleId | replace: '}','' %}
+  {% assign articleId = articleId | strip %}
+{% endif %}
+
+{% assign DEBUG = request.params.debug == '1' %}
+
+{% if DEBUG %}
+<div class="hit-debug-panel hit-debug-panel--step">
+  Article Detail Debug<br>
+  slot.hit_article = {{ slot.hit_article }}<br>
+  slot.hit_article.id = {{ slot.hit_article.id }}<br>
+  resolved articleId = {{ articleId }}
+</div>
+{% endif %}
+
+{% if articleId == '' %}
+
+<section class="hit-empty hit-empty--article-detail">
+  <h2>No Article Selected</h2>
+  <p>This Article Detail component has not been linked to an article.</p>
+</section>
+
+{% else %}
+
+{% fetchxml articleQuery %}
+<fetch top="1" mapping="logical">
+  <entity name="hit_article">
+    <attribute name="hit_articleid" />
+    <attribute name="hit_name" />
+    <attribute name="hit_displaytitle" />
+    <attribute name="hit_summary" />
+    <attribute name="hit_body" />
+    <attribute name="hit_imageurl" />
+    <attribute name="hit_ispublished" />
+
+    <filter>
+      <condition attribute="hit_articleid" operator="eq" value="{{ articleId }}" />
+      <condition attribute="statecode" operator="eq" value="0" />
+      <condition attribute="hit_ispublished" operator="eq" value="1" />
+      <condition attribute="hit_contenttype" operator="eq" value="815390000" />
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% assign article = articleQuery.results.entities | first %}
+
+{% if article == nil %}
+
+<section class="hit-empty hit-empty--article-detail">
+  <h2>Article not found</h2>
+  <p>The selected article could not be located or is not published.</p>
+</section>
+
+{% else %}
+
+{% assign title = article.hit_displaytitle | default: article.hit_name | strip %}
+{% assign summary = article.hit_summary | default: '' | strip %}
+{% assign body = article.hit_body | default: '' %}
+{% assign imageUrl = article.hit_imageurl | default: '' | strip %}
+
+<article class="hit-article-detail">
+
+  {% if imageUrl != '' %}
+    <div class="hit-article-detail__hero">
+      <img
+        class="hit-article-detail__image"
+        src="{{ imageUrl | escape }}"
+        alt="{{ title | escape }}"
+        loading="lazy">
+    </div>
+  {% endif %}
+
+  <div class="hit-article-detail__content">
+
+    <h1 class="hit-article-detail__title">
+      {{ title }}
+    </h1>
+
+    {% if summary != blank %}
+      <div class="hit-article-detail__summary">
+        {{ summary }}
+      </div>
+    {% endif %}
+
+    {% if body != blank %}
+      <div class="hit-article-detail__body hit-content hit-content--richtext">
+        {{ body }}
+      </div>
+    {% endif %}
+
+  </div>
+
+</article>
+
+{% endif %}
+{% endif %}

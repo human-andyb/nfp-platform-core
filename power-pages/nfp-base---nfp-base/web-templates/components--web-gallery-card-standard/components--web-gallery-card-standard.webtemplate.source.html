@@ -1,0 +1,70 @@
+{%- comment -%}
+Generic Web Gallery Card — STANDARD
+
+Inputs:
+- title (string)
+- summary (string)
+- imageUrl (string URL - optional)
+- typeLabel (string - optional)
+- href (string - optional)
+- targetAttr (string - optional, already includes leading space if present)
+- ctaLabel (string - optional; defaults to "View")
+{%- endcomment -%}
+
+{%- assign ctaText = ctaLabel | default: 'View' -%}
+
+<article class="hit-card hit-card--standard">
+  <div class="hit-card__inner">
+
+    {%- if href and href != '' -%}
+      <a class="hit-card__stretchedLink"
+         href="{{ href | escape_once }}"{{ targetAttr }}
+         aria-label="{{ title | escape }}">
+      </a>
+    {%- endif -%}
+
+    {%- if imageUrl and imageUrl != '' -%}
+      <div class="hit-card__media hit-card__media--standard">
+        {%- if typeLabel and typeLabel != '' -%}
+          <div class="hit-card__badges">
+            <span class="hit-card__badge">{{ typeLabel | escape }}</span>
+          </div>
+        {%- endif -%}
+
+        <img class="hit-card__image hit-card__image--standard"
+             src="{{ imageUrl | escape }}"
+             alt="{{ title | escape }}">
+      </div>
+    {%- endif -%}
+
+    <div class="hit-card__body">
+
+      <h3 class="hit-card__title">
+        {%- if href and href != '' -%}
+          <a class="hit-card__titleLink"
+             href="{{ href | escape_once }}"{{ targetAttr }}>
+            {{ title | escape }}
+          </a>
+        {%- else -%}
+          {{ title | escape }}
+        {%- endif -%}
+      </h3>
+
+      {%- if summary and summary != '' -%}
+        <p class="hit-card__summary">
+          {{ summary | escape }}
+        </p>
+      {%- endif -%}
+
+      <div class="hit-card__cta">
+        {%- if href and href != '' -%}
+          <a class="hit-button hit-button--primary"
+             href="{{ href | escape_once }}"{{ targetAttr }}>
+            {{ ctaText | escape }}
+          </a>
+        {%- endif -%}
+      </div>
+
+    </div>
+  </div>
+</article>

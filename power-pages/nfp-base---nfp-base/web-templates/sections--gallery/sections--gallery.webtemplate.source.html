@@ -1,0 +1,153 @@
+{% comment %}
+sections--gallery (FINAL LOCKED)
+
+Rules:
+1. Querystring override (if enabled) ALWAYS wins
+2. Slot config is fallback ONLY
+3. Only ONE gallery include is ever executed
+4. Uses slug-only contract (no record passing)
+
+{% endcomment %}
+
+{% assign DEBUG = request.params.debug == '1' %}
+
+{% comment %} SECTION CONTEXT {% endcomment %}
+{% assign bg = section.hit_sectioncolour | default: 'none' | strip %}
+{% assign layout = section.hit_layout | default: 'inherit' | strip %}
+{% assign headerText = section.hit_headingtext | default: '' | strip %}
+{% assign introText  = section.hit_introtext  | default: '' | strip %}
+
+{% comment %} SLOT CONTEXT {% endcomment %}
+{% assign CTX_GALLERY = 815390003 %}
+
+{% assign slotAllowOverride = false %}
+{% if slot and slot.hit_allowqueryoverride %}
+  {% assign slotAllowOverride = slot.hit_allowqueryoverride %}
+{% endif %}
+
+{% assign qpGallery = request.params.gallery | default:'' | downcase | strip %}
+
+{% comment %}
+STEP 1 — Determine if override applies
+{% endcomment %}
+{% assign useQueryOverride = false %}
+
+{% if slotAllowOverride and qpGallery != '' %}
+  {% assign useQueryOverride = true %}
+{% endif %}
+
+{% comment %}
+STEP 2 — Resolve slug (SINGLE SOURCE OF TRUTH)
+{% endcomment %}
+{% assign resolvedGallerySlug = '' %}
+{% assign resolutionMode = '' %}
+
+{% if useQueryOverride %}
+  {% assign resolvedGallerySlug = qpGallery %}
+  {% assign resolutionMode = 'QUERY_OVERRIDE' %}
+
+{% elsif slot and slot.hit_webgalleryconfig %}
+
+  {% assign resolutionMode = 'SLOT_FALLBACK' %}
+
+  {% assign galleryId = '' %}
+
+  {% if slot.hit_webgalleryconfig.id %}
+    {% assign galleryId = slot.hit_webgalleryconfig.id %}
+  {% elsif slot.hit_webgalleryconfig.value %}
+    {% assign galleryId = slot.hit_webgalleryconfig.value %}
+  {% else %}
+    {% assign galleryId = slot.hit_webgalleryconfig %}
+  {% endif %}
+
+  {% if galleryId != '' %}
+
+    {% fetchxml galleryLookup %}
+      <fetch top="1">
+        <entity name="hit_webgalleryconfig">
+          <attribute name="hit_slug" />
+          <filter>
+            <condition attribute="hit_webgalleryconfigid" operator="eq" value="{{ galleryId }}" />
+          </filter>
+        </entity>
+      </fetch>
+    {% endfetchxml %}
+
+    {% assign galleryRec = galleryLookup.results.entities | first %}
+
+    {% if galleryRec %}
+      {% assign resolvedGallerySlug = galleryRec.hit_slug | default:'' | strip %}
+    {% endif %}
+
+  {% endif %}
+
+{% endif %}
+
+{% comment %}
+STEP 3 — DEBUG (KEEP THIS)
+{% endcomment %}
+{% if DEBUG %}
+<pre class="hit-gallery-debug-pre">
+
+SECTION DEBUG (FINAL CLEAN)
+
+qpGallery={{ qpGallery }}
+
+slotAllowOverride={{ slotAllowOverride }}
+useQueryOverride={{ useQueryOverride }}
+
+resolutionMode={{ resolutionMode }}
+
+resolvedGallerySlug={{ resolvedGallerySlug }}
+
+</pre>
+{% endif %}
+
+<section class="hit-section hit-section--gallery hit-section--bg-{{ bg }} hit-section--layout-{{ layout }} is-platform">
+  <div class="hit-section__inner">
+    <div class="hit-section__container">
+
+      {% if resolvedGallerySlug == '' %}
+
+        {% if DEBUG %}
+                    <div class="hit-gallery-debug-error">
+            ❌ Gallery not resolved  
+            resolutionMode={{ resolutionMode }}
+          </div>
+        {% endif %}
+
+      {% else %}
+
+        {% comment %}
+        ✅ SINGLE RENDER (CRITICAL)
+        {% endcomment %}
+
+        {% if DEBUG %}
+        <pre>
+   
+    width={{ widthClass }}
+    align={{ alignClass }}
+
+        slot.hit_displaystyle={{ slot.hit_displaystyle }}
+
+        slot.hit_displaystyle.value={{ slot.hit_displaystyle.value }}
+
+        slot.hit_displaystyle.label={{ slot.hit_displaystyle.label }}
+
+        slot.hit_displayvariant={{ slot.hit_displayvariant }}
+
+        slot.hit_displayvariant.value={{ slot.hit_displayvariant.value }}
+
+        slot.hit_displayvariant.label={{ slot.hit_displayvariant.label }}
+
+        </pre>
+        {% endif %}
+
+        {% include 'components--web-gallery'  gallerySlug: resolvedGallerySlug  allowQueryOverride: true  displayStyle: slot.hit_displaystyle.value  displayVariant: slot.hit_displayvariant.value maxColumns: slot.hit_maxcolumns  maxRows: slot.hit_maxrows  debug: DEBUG %}
+
+
+      {% endif %}
+
+    </div>
+  </div>
+</section>

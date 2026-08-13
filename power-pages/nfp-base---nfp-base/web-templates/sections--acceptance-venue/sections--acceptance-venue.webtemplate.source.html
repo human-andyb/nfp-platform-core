@@ -1,0 +1,889 @@
+{% comment %}
+sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
+
+- acceptanceId drives page
+- venue fields come from FetchXML alias: vs.*
+- bookings/holds/blackouts/images fetched by vs_id
+- Debug panel enabled via ?debug=1
+{% endcomment %}
+
+{% assign debugMode = request.params.debug | default: '' | strip %}
+{% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
+
+{% if debugMode == '1' %}
+  <div style="padding:10px 12px;margin:10px 0;border-radius:10px;background:#eef2ff;border:1px solid #c7d2fe;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace;font-size:12px;">
+    DEBUG: acceptanceId={{ acceptanceId | escape }}
+  </div>
+{% endif %}
+
+{% if acceptanceId == '' %}
+  <div class="hit-alert hit-alert-error">Missing acceptance id.</div>
+{% else %}
+
+  {% fetchxml acc_q %}
+<fetch top="1" mapping="logical">
+  <entity name="hit_offeringacceptance">
+    <attribute name="hit_offeringacceptanceid" />
+    <attribute name="hit_firstname" />
+    <attribute name="hit_lastname" />
+    <attribute name="hit_email" />
+    <attribute name="hit_mobilephone" />
+    <attribute name="hit_offering" />
+
+    <filter>
+      <condition attribute="hit_offeringacceptanceid" operator="eq" value="{{ acceptanceId }}" />
+    </filter>
+  </entity>
+</fetch>
+  {% endfetchxml %}
+
+  {% assign acc = acc_q.results.entities | first %}
+
+  {% assign offeringId = acc.hit_offering.id %}
+
+    {% fetchxml off_q %}
+    <fetch top="1">
+    <entity name="hit_offering">
+        <attribute name="hit_offeringname" />
+        <attribute name="hit_venuespace" />
+        <filter>
+        <condition attribute="hit_offeringid" operator="eq" value="{{ offeringId }}" />
+        </filter>
+    </entity>
+    </fetch>
+    {% endfetchxml %}
+
+{% assign off = off_q.results.entities | first %}
+{% assign vs_id = off.hit_venuespace.id %}
+
+{% fetchxml vs_q %}
+<fetch top="1">
+  <entity name="hit_venuespace">
+    <attribute name="hit_name" />
+    <attribute name="hit_displaytitle" />
+    <attribute name="hit_description" />
+    <attribute name="hit_capacityseated" />
+    <attribute name="hit_capacitystanding" />
+    <filter>
+      <condition attribute="hit_venuespaceid" operator="eq" value="{{ vs_id }}" />
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% if debugMode == '1' %}
+<div style="background:#e0ffe0;padding:10px;margin:10px 0;">
+  ✅ FINAL CHECK:
+  vs_id={{ vs_id }}
+  venueName={{ venuespace.hit_displaytitle }}
+</div>
+{% endif %}
+
+
+{% assign venuespace = vs_q.results.entities | first %}
+
+{% if debugMode == '1' %}
+<div style="background:#eef;padding:8px;margin:8px 0;">
+  acc: {{ acc.hit_offeringacceptanceid }}
+</div>
+
+<div style="background:#efe;padding:8px;margin:8px 0;">
+  offeringId: {{ offeringId }}
+  venueId: {{ vs_id }}
+</div>
+
+<div style="background:#fee;padding:8px;margin:8px 0;">
+  venueName: {{ venuespace.hit_displaytitle }}
+</div>
+{% endif %}
+
+  {% if debugMode == '1' %}
+    <div style="padding:10px 12px;margin:10px 0;border-radius:10px;background:#ecfeff;border:1px solid #a5f3fc;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace;font-size:12px;">
+      DEBUG: acc found={{ acc_q.results.entities.size }} |
+      accId={% if acc %}{{ acc.hit_offeringacceptanceid }}{% else %}(nil){% endif %}
+    </div>
+  {% endif %}
+
+  {% if acc == nil %}
+    <div class="hit-alert hit-alert-error">Acceptance not found.</div>
+  {% else %}
+
+  
+   {% assign venuespace = vs_q.results.entities | first %}
+  {% assign venuespace_name = venuespace.hit_displaytitle | default: venuespace.hit_name | default: 'Venue Space' %}
+
+  {% assign venuespace_desc = venuespace.hit_description | default: '' %}
+  {% assign cap_seated = venuespace.hit_capacityseated | default: '' %}
+  {% assign cap_standing = venuespace.hit_capacitystanding | default: '' %}
+
+  {% fetchxml venuespaceinclusions %}
+    <fetch mapping="logical">
+      <entity name="hit_venuespaceinclusion">
+        <attribute name="hit_name" />
+        <attribute name="hit_defaultincluded" />
+        <attribute name="hit_venueinclusioncategory" />
+        <order attribute="hit_venueinclusioncategory" descending="false" />
+        <order attribute="hit_name" descending="false" />
+      </entity>
+    </fetch>
+    {% endfetchxml %}
+
+    {% if debugMode == '1' %}
+      <div style="padding:10px 12px;margin:10px 0;border-radius:10px;background:#f0fdf4;border:1px solid #86efac;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace;font-size:12px;">
+        DEBUG: vs_id={{ vs_id | escape }} |
+        title={{ venuespace_name | escape }}
+      </div>
+    {% endif %}
+
+    {% if vs_id == '' %}
+      <div class="hit-alert hit-alert-error">Venue Space not linked to this acceptance/offering.</div>
+    {% else %}
+
+      {% fetchxml bookings %}
+      <fetch mapping="logical">
+        <entity name="hit_venuespacebooking">
+          <attribute name="hit_startdatetime" />
+          <attribute name="hit_enddatetime" />
+          <filter>
+            <condition attribute="hit_venuespace" operator="eq" value="{{ vs_id }}" />
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+      {% endfetchxml %}
+
+      {% fetchxml holds %}
+      <fetch mapping="logical">
+        <entity name="hit_venuespacehold">
+          <attribute name="hit_startdatetime" />
+          <attribute name="hit_enddatetime" />
+          <filter>
+            <condition attribute="hit_venuespace" operator="eq" value="{{ vs_id }}" />
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+      {% endfetchxml %}
+
+      {% fetchxml blackouts %}
+      <fetch mapping="logical">
+        <entity name="hit_venuespaceblackout">
+          <attribute name="hit_startdatetime" />
+          <attribute name="hit_enddatetime" />
+          <filter>
+            <condition attribute="hit_venuespace" operator="eq" value="{{ vs_id }}" />
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+      {% endfetchxml %}
+
+      {% fetchxml venuespaceimages %}
+      <fetch mapping="logical">
+        <entity name="hit_venuespaceimage">
+          <attribute name="hit_imageurl" />
+          <attribute name="hit_name" />
+          <filter>
+            <condition attribute="hit_venuespace" operator="eq" value="{{ vs_id }}" />
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+      {% endfetchxml %}
+
+      {% if debugMode == '1' %}
+        <div style="padding:10px 12px;margin:10px 0;border-radius:10px;background:#fff7ed;border:1px solid #fdba74;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace;font-size:12px;">
+          DEBUG: bookings={{ bookings.results.entities.size }} |
+          holds={{ holds.results.entities.size }} |
+          blackouts={{ blackouts.results.entities.size }} |
+          images={{ venuespaceimages.results.entities.size }}
+        </div>
+      {% endif %}
+
+<section class="section section--acceptance-venue">
+
+  <style>
+    /* ===============================
+       TEMP STYLES (move to css--site.css later)
+       =============================== */
+
+    .section--acceptance-venue .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    .section--acceptance-venue h2 {
+      margin: 0 0 16px;
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .section--acceptance-venue .layout--2col {
+      display: grid !important;
+      grid-template-columns: 2fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .section--acceptance-venue .layout--2col > div { min-width: 0; }
+
+    @media (max-width: 980px) {
+      .section--acceptance-venue .layout--2col { grid-template-columns: 1fr; }
+      .section--acceptance-venue .card--sticky { position: static; top: auto; }
+    }
+
+    /* Tabs */
+    .tabs {
+      background: #ffffff;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+
+    .tabs__nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .tab-button {
+      padding: 10px 12px;
+      border: 1px solid #e6e6e6;
+      background: #f6f6f6;
+      cursor: pointer;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1;
+      transition: background 140ms ease, border-color 140ms ease, transform 80ms ease;
+      user-select: none;
+    }
+
+    .tab-button:hover { background: #efefef; border-color: #dcdcdc; }
+    .tab-button:active { transform: translateY(1px); }
+    .tab-button.active { background: #1f2937; border-color: #1f2937; color: #ffffff; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Content blocks */
+    .info-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 16px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #f0f0f0;
+      font-size: 14px;
+    }
+
+    .info-item { display: flex; gap: 8px; align-items: baseline; }
+    .info-item__label { color: #6b7280; min-width: 72px; font-weight: 600; }
+    .info-item__value { color: #111827; font-weight: 500; }
+
+/* Inclusions */
+.inclusions-groups { display: grid; gap: 14px; }
+
+.inclusions-group {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 12px;
+}
+
+.inclusions-group__title {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #374151;
+}
+
+.inclusions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.inclusions-list__item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.inclusions-list__icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 1;
+  flex: 0 0 22px;
+}
+
+.inclusions-list__icon.is-yes { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+.inclusions-list__icon.is-no  { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+.inclusions-list__name {
+  color: #111827;
+  font-weight: 600;
+}
+
+
+    /* Card / Form */
+    .card {
+      background: #ffffff;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+
+    .card--sticky { position: sticky; top: 100px; align-self: start; }
+
+    .card__header {
+      padding: 14px 16px;
+      background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .card__title { margin: 0; font-size: 16px; font-weight: 800; color: #111827; }
+    .card__body { padding: 16px; }
+
+    .form { display: grid; gap: 12px; }
+
+    .form__section-title {
+      margin: 6px 0 0;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: #374151;
+      text-transform: uppercase;
+    }
+
+    .form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 520px) { .form__row { grid-template-columns: 1fr; } }
+
+    .form__group { display: grid; gap: 6px; }
+    .form__label { font-size: 13px; font-weight: 650; color: #374151; }
+
+    .form__control {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #d9d9d9;
+      background: #ffffff;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    .form__control:focus { border-color: #1f2937; box-shadow: 0 0 0 4px rgba(31, 41, 55, 0.12); }
+    textarea.form__control { min-height: 90px; resize: vertical; }
+
+    .hit-alert { padding: 10px 12px; border-radius: 10px; font-size: 13px; border: 1px solid transparent; }
+    .hit-alert-error { background: #fff1f2; border-color: #fecdd3; color: #9f1239; }
+
+    .btn-primary {
+      margin-top: 6px;
+      width: 100%;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 12px;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 90ms ease, opacity 140ms ease;
+    }
+
+    .btn-primary:hover { opacity: 0.94; }
+    .btn-primary:active { transform: translateY(1px); }
+    .btn-primary[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+    /* Calendar */
+    .calendar { margin-top: 10px; }
+    .calendar__header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .calendar__title { font-weight: 800; color: #111827; }
+
+    .calendar__navbtn {
+      border: 1px solid #e6e6e6;
+      background: #f6f6f6;
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: background 140ms ease, border-color 140ms ease;
+    }
+
+    .calendar__navbtn:hover { background: #efefef; border-color: #dcdcdc; }
+
+    .calendar__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+
+    .calendar__day {
+      padding: 10px 6px;
+      text-align: center;
+      border-radius: 10px;
+      border: 1px solid #eee;
+      background: white;
+      cursor: pointer;
+      font-weight: 650;
+      color: #111827;
+      transition: transform 80ms ease, background 140ms ease, border-color 140ms ease;
+      user-select: none;
+    }
+
+    .calendar__day:hover { transform: translateY(-1px); border-color: #d7d7d7; background: #fafafa; }
+
+    .calendar__day--booked { background: #e9e9e9; cursor: not-allowed; color: #6b7280; }
+    .calendar__day--held { background: #ffe7cc; border-color: #ffd3a6; }
+    .calendar__day--selected { outline: 3px solid #111827; outline-offset: 1px; }
+
+    /* Image gallery */
+    .image-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .image-gallery img { width: 100%; border-radius: 10px; border: 1px solid #f0f0f0; aspect-ratio: 4/3; object-fit: cover; background: #fafafa; }
+  </style>
+
+  <div class="container">
+
+    <h2>Book {{ venuespace_name }}</h2>
+
+    <div class="layout layout--2col">
+
+      <!-- ================= LEFT ================= -->
+      <div>
+
+        <div class="tabs">
+
+          <div class="tabs__nav">
+            <button type="button" class="tab-button active" data-tab="space">Space</button>
+            <button type="button" class="tab-button" data-tab="availability">Availability</button>
+            <button type="button" class="tab-button" data-tab="inclusions">Inclusions</button>
+            <button type="button" class="tab-button" data-tab="images">Images</button>
+          </div>
+
+          <!-- ===== SPACE TAB ===== -->
+          <div class="tab-content active" id="tab-space">
+
+            {% if venuespace_desc != '' %}
+              <p>{{ venuespace_desc }}</p>
+            {% else %}
+              <p style="color:#6b7280;margin:0;">Description coming soon.</p>
+            {% endif %}
+
+            <div class="info-list">
+              <div class="info-item">
+                <div class="info-item__label">Seated</div>
+                <div class="info-item__value">
+                  {% if cap_seated != '' %}{{ cap_seated }}{% else %}—{% endif %}
+                </div>
+              </div>
+
+              <div class="info-item">
+                <div class="info-item__label">Standing</div>
+                <div class="info-item__value">
+                  {% if cap_standing != '' %}{{ cap_standing }}{% else %}—{% endif %}
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ===== AVAILABILITY TAB ===== -->
+          <div class="tab-content" id="tab-availability">
+
+            <div class="calendar">
+              <div class="calendar__header">
+                <button type="button" class="calendar__navbtn" id="prevMonth">←</button>
+                <div class="calendar__title" id="calendarTitle"></div>
+                <button type="button" class="calendar__navbtn" id="nextMonth">→</button>
+              </div>
+
+              <div class="calendar__grid" id="calendarDays"></div>
+            </div>
+
+          </div>
+
+           <!-- ===== INCLUSIONS TAB ===== -->
+<div class="tab-content" id="tab-inclusions">
+
+  {% assign all_inclusions = venuespaceinclusions.results.entities %}
+
+  {% if all_inclusions == nil or all_inclusions.size == 0 %}
+    <div style="color:#6b7280;">No inclusions found.</div>
+  {% else %}
+
+    {%- comment -%}
+      Sort defensively (FetchXML already orders, but keep it deterministic)
+    {%- endcomment -%}
+    {% assign sorted_inclusions = all_inclusions | sort: "hit_venueinclusioncategory" %}
+
+    {% assign currentCatValue = "" %}
+
+    <div class="inclusions-groups">
+
+      {% assign currentCatKey = "" %}
+
+      {% for inc in sorted_inclusions %}
+
+        {% assign catKey = inc.hit_venueinclusioncategory.label | default: "Other" %}
+
+        {% if catKey != currentCatKey %}
+
+          {% if currentCatKey != "" %}
+              </ul>
+            </div>
+          {% endif %}
+
+          {% assign currentCatKey = catKey %}
+
+          <div class="inclusions-group">
+            <h3 class="inclusions-group__title">{{ catKey }}</h3>
+            <ul class="inclusions-list">
+
+        {% endif %}
+
+        {% assign isIncluded = inc.hit_defaultincluded == true or inc.hit_defaultincluded == 1 %}
+
+        <li class="inclusions-list__item">
+          <span class="inclusions-list__icon {% if isIncluded %}is-yes{% else %}is-no{% endif %}">
+            {% if isIncluded %}✓{% else %}✕{% endif %}
+          </span>
+          <span class="inclusions-list__name">{{ inc.hit_name }}</span>
+        </li>
+
+      {% endfor %}
+
+      {% if currentCatKey != "" %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+
+  {% endif %}
+
+</div>
+
+          <!-- ===== IMAGES TAB ===== -->
+          <div class="tab-content" id="tab-images">
+            <div class="image-gallery">
+              {% for img in venuespaceimages.results.entities %}
+                {% assign imgUrl = img.hit_imageurl | default: '' %}
+                {% if imgUrl != '' %}
+                  <img src="{{ imgUrl }}" alt="{{ img.hit_name | default: 'Venue image' | escape }}" />
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ================= RIGHT ================= -->
+      <div>
+
+        <div class="card card--sticky">
+
+          <div class="card__header">
+            <p class="card__title">Reserve this space</p>
+          </div>
+
+          <div class="card__body">
+
+            <form id="venueBookingForm" class="form">
+
+              <input type="hidden" id="acceptanceId" value="{{ acc.hit_offeringacceptanceid }}" />
+              <input type="hidden" id="venuespaceId" value="{{ vs_id }}" />
+
+              <div class="form__section-title">Contact details</div>
+
+              <div class="form__row">
+                <div class="form__group">
+                  <label class="form__label" for="firstName">First Name</label>
+                  <input class="form__control" type="text" id="firstName"
+                         value="{{ acc.hit_firstname | default: '' | escape }}"
+                         autocomplete="given-name" required />
+                </div>
+
+                <div class="form__group">
+                  <label class="form__label" for="lastName">Last Name</label>
+                  <input class="form__control" type="text" id="lastName"
+                         value="{{ acc.hit_lastname | default: '' | escape }}"
+                         autocomplete="family-name" required />
+                </div>
+              </div>
+
+              <div class="form__group">
+                <label class="form__label" for="email">Email</label>
+                <input class="form__control" type="email" id="email"
+                       value="{{ acc.hit_email | default: '' | escape }}"
+                       autocomplete="email" required />
+              </div>
+
+              <div class="form__group">
+                <label class="form__label" for="mobile">Mobile</label>
+                <input class="form__control" type="tel" id="mobile"
+                       value="{{ acc.hit_mobilephone | default: '' | escape }}"
+                       autocomplete="tel" placeholder="e.g. 04xx xxx xxx" />
+              </div>
+
+              <div class="form__section-title">Booking details</div>
+
+              <div class="form__group">
+                <label class="form__label" for="bookingDate">Date</label>
+                <input class="form__control" type="date" id="bookingDate" required />
+              </div>
+
+              <div class="form__row">
+                <div class="form__group">
+                  <label class="form__label" for="startTime">Start</label>
+                  <input class="form__control" type="time" id="startTime" required />
+                </div>
+
+                <div class="form__group">
+                  <label class="form__label" for="endTime">End</label>
+                  <input class="form__control" type="time" id="endTime" required />
+                </div>
+              </div>
+
+              <div class="form__row">
+                <div class="form__group">
+                  <label class="form__label" for="guestCount">Guests</label>
+                  <input class="form__control" type="number" id="guestCount" value="1" min="1" />
+                </div>
+
+                <div class="form__group">
+                  <label class="form__label" for="eventType">Event Type</label>
+                  <input class="form__control" type="text" id="eventType" placeholder="e.g. Birthday, Workshop" />
+                </div>
+              </div>
+
+              <div class="form__group">
+                <label class="form__label" for="notes">Notes</label>
+                <textarea class="form__control" id="notes" placeholder="Anything we should know?"></textarea>
+              </div>
+
+              <div id="errBox" class="hit-alert hit-alert-error" style="display:none;"></div>
+
+              <button class="btn-primary" type="submit" id="submitBtn">Reserve Booking</button>
+
+            </form>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+/* ---------- DEBUG ---------- */
+var __debug = {% if debugMode == '1' %}true{% else %}false{% endif %};
+
+function dbgLog(label, obj) {
+  if (!__debug) return;
+  try { console.log("[venue-debug] " + label, obj); } catch (e) {}
+}
+
+/* ---------- SAFE VALUES ---------- */
+var _acceptanceId = "{{ acceptanceId | default: '' | escape }}";
+var _vsId = "{{ vs_id | default: '' | escape }}";
+
+dbgLog("init", { acceptanceId: _acceptanceId, vsId: _vsId });
+
+/* ---------- TABS ---------- */
+document.querySelectorAll(".tab-button").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".tab-button").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+  };
+});
+
+/* ---------- AUTO SWITCH ---------- */
+document.getElementById("bookingDate")?.addEventListener("focus", () => {
+  document.querySelector('[data-tab="availability"]')?.click();
+});
+
+/* ---------- ARRAYS (SAFE ISO STRINGS) ---------- */
+var bookings = [
+{% for b in bookings.results.entities %}
+{ start: "{{ b.hit_startdatetime | date: '%Y-%m-%dT%H:%M:%S' }}", end: "{{ b.hit_enddatetime | date: '%Y-%m-%dT%H:%M:%S' }}" }{% unless forloop.last %},{% endunless %}
+{% endfor %}
+];
+
+var holds = [
+{% for h in holds.results.entities %}
+{ start: "{{ h.hit_startdatetime | date: '%Y-%m-%dT%H:%M:%S' }}", end: "{{ h.hit_enddatetime | date: '%Y-%m-%dT%H:%M:%S' }}" }{% unless forloop.last %},{% endunless %}
+{% endfor %}
+];
+
+var blackouts = [
+{% for bl in blackouts.results.entities %}
+{ start: "{{ bl.hit_startdatetime | date: '%Y-%m-%dT%H:%M:%S' }}", end: "{{ bl.hit_enddatetime | date: '%Y-%m-%dT%H:%M:%S' }}" }{% unless forloop.last %},{% endunless %}
+{% endfor %}
+];
+
+dbgLog("arrays", { bookings, holds, blackouts });
+
+/* ---------- CALENDAR ---------- */
+let currentDate = new Date();
+let selectedDate = null;
+
+const calendarEl = document.getElementById("calendarDays");
+const titleEl = document.getElementById("calendarTitle");
+
+function inRange(date, start, end) {
+  return date >= new Date(start) && date <= new Date(end);
+}
+
+function hasBooking(d) {
+  return bookings.some(b => inRange(d, b.start, b.end)) ||
+         blackouts.some(b => inRange(d, b.start, b.end));
+}
+
+function hasHold(d) {
+  return holds.some(h => inRange(d, h.start, h.end));
+}
+
+function renderCalendar() {
+  if (!calendarEl || !titleEl) return;
+
+  const y = currentDate.getFullYear();
+  const m = currentDate.getMonth();
+
+  titleEl.innerText = currentDate.toLocaleString("default",{month:"long",year:"numeric"});
+
+  const first = new Date(y,m,1);
+  const last = new Date(y,m+1,0);
+  const offset = first.getDay();
+
+  calendarEl.innerHTML = "";
+
+  for (let i=0;i<offset;i++) calendarEl.innerHTML += "<div></div>";
+
+  for (let d=1; d<=last.getDate(); d++) {
+    const dt = new Date(y,m,d);
+    const str = dt.toISOString().split("T")[0];
+
+    let cls="calendar__day";
+    if (hasBooking(dt)) cls+=" calendar__day--booked";
+    else if (hasHold(dt)) cls+=" calendar__day--held";
+    if (selectedDate===str) cls+=" calendar__day--selected";
+
+    calendarEl.innerHTML += `<div class="${cls}" data-date="${str}">${d}</div>`;
+  }
+
+  document.querySelectorAll(".calendar__day").forEach(el=>{
+    el.onclick = function(){
+      if (this.classList.contains("calendar__day--booked")) return;
+
+      selectedDate = this.dataset.date;
+      document.getElementById("bookingDate").value = selectedDate;
+      renderCalendar();
+    };
+  });
+}
+
+document.getElementById("prevMonth").onclick = () => { currentDate.setMonth(currentDate.getMonth()-1); renderCalendar(); };
+document.getElementById("nextMonth").onclick = () => { currentDate.setMonth(currentDate.getMonth()+1); renderCalendar(); };
+
+renderCalendar();
+
+/* ---------- ERRORS ---------- */
+function showErr(msg){
+  const box=document.getElementById("errBox");
+  if(!box) return;
+  box.style.display="block";
+  box.textContent=msg;
+}
+function clearErr(){
+  const box=document.getElementById("errBox");
+  if(!box) return;
+  box.style.display="none";
+}
+
+/* ---------- SUBMIT ---------- */
+document.getElementById("venueBookingForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  clearErr();
+
+  const acceptanceId = _acceptanceId;
+
+  const firstName = document.getElementById("firstName").value.trim();
+  const lastName  = document.getElementById("lastName").value.trim();
+  const email     = document.getElementById("email").value.trim();
+  const mobile    = document.getElementById("mobile").value.trim();
+
+  const date = document.getElementById("bookingDate").value;
+  const startTime = document.getElementById("startTime").value;
+  const endTime = document.getElementById("endTime").value;
+
+  const start = new Date(`${date}T${startTime}`);
+  const end = new Date(`${date}T${endTime}`);
+
+  const guests = parseInt(document.getElementById("guestCount").value || "1",10);
+  const eventType = document.getElementById("eventType").value.trim();
+  const notes = document.getElementById("notes").value.trim();
+
+  dbgLog("submit", { acceptanceId, start, end });
+
+  /* ---------- PATCH ACCEPTANCE ---------- */
+ var payload = {
+  "hit_VenueSpace@odata.bind": "/hit_venuespaces(" + _vsId + ")",
+  "hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(" + acceptanceId + ")",
+  "hit_startdatetime": start.toISOString(),
+  "hit_enddatetime": end.toISOString(),
+  "hit_guestcount": guests,
+  //"hit_venueeventtype": eventType,
+  "hit_notes": notes
+};
+
+dbgLog("create payload", payload);
+
+shell.ajaxSafePost({
+  url: "/_api/hit_venuespacebookingrequests",
+  type: "POST",
+  contentType: "application/json",
+  data: JSON.stringify(payload)
+})
+.done(function(){
+
+  dbgLog("booking","✅ created");
+  window.location.href = "/confirmation?acceptanceId=" + acceptanceId;
+
+})
+.fail(function(xhr){
+
+  console.error("BOOKING FAILED", xhr.status, xhr.responseText);
+  showErr("Booking failed — see console");
+
+});
+});
+
+});
+</script>
+
+</section>
+
+    {% endif %}
+  {% endif %}
+{% endif %}

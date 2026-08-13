@@ -1,0 +1,26 @@
+{% assign embedUrl = slot.hit_mediaurl %}
+{% assign embedHeight = slot.hit_contentheight | default: 600 %}
+
+{% if embedUrl contains 'youtu.be/' %}
+  {% assign youtubeId = embedUrl | split:'youtu.be/' | last | split:'?' | first %}
+  {% assign embedUrl = 'https://www.youtube.com/embed/' | append: youtubeId %}
+{% endif %}
+
+{% if embedUrl contains 'watch?v=' %}
+  {% assign youtubeId = embedUrl | split:'watch?v=' | last | split:'&' | first %}
+  {% assign embedUrl = 'https://www.youtube.com/embed/' | append: youtubeId %}
+{% endif %}
+
+<div class="hit-embed">
+
+{% if embedUrl != blank %}
+
+<iframe src="{{ embedUrl }}" width="100%" height="{{ embedHeight }}" frameborder="0" allowfullscreen></iframe>
+
+{% else %}
+
+<div class="hit-embed__empty">No Media URL configured.</div>
+
+{% endif %}
+
+</div>

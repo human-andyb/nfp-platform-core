@@ -1,0 +1,187 @@
+{%- comment -%}
+Component: components-offerings-gallery
+
+Usage:
+  {% include 'components-offerings-gallery' gallerySlug: 'donations-home' %}
+  {% include 'components-offerings-gallery' gallery: gallery %}
+
+Publish safety enforced (Offerings):
+  - hit_offering.hit_isactive = 1
+  - hit_offering.hit_webvisible = 1
+{%- endcomment -%}
+
+{%- assign DEBUG = false -%}
+{%- assign galleryRecord = gallery -%}
+{%- assign __stop = false -%}
+
+{%- assign SRC_OFFERINGS   = 815390000 -%}
+{%- assign LAYOUT_GRID     = 815390000 -%}
+{%- assign LAYOUT_CAROUSEL = 815390001 -%}
+{%- assign LAYOUT_LIST     = 815390002 -%}
+
+{%- assign CARD_STANDARD = 815390000 -%}
+{%- assign CARD_COMPACT  = 815390001 -%}
+{%- assign CARD_FEATURED = 815390002 -%}
+
+{%- comment -%} 1) Load config by slug if not passed in {%- endcomment -%}
+{%- if galleryRecord == nil and gallerySlug and gallerySlug != '' -%}
+  {%- fetchxml galleryFetch -%}
+  <fetch top="1" mapping="logical">
+    <entity name="hit_webgalleryconfig">
+      <attribute name="hit_webgalleryconfigid" />
+      <attribute name="hit_name" />
+      <attribute name="hit_slug" />
+      <attribute name="hit_isactive" />
+      <attribute name="hit_maxitems" />
+      <attribute name="hit_gallerysourcetype" />
+      <attribute name="hit_gallerylayouttype" />
+      <attribute name="hit_cardtemplate" />
+      <attribute name="hit_offeringtype" />
+      <attribute name="hit_columnscardsdesktop" />
+      <attribute name="hit_columnscardstablet" />
+      <attribute name="hit_columnscardsmobile" />
+      <attribute name="hit_gridgappx" />
+      <attribute name="hit_autoplay" />
+      <attribute name="hit_autoplayintervalms" />
+      <attribute name="hit_showarrows" />
+      <attribute name="hit_showdots" />
+      <attribute name="hit_loop" />
+      <attribute name="hit_pauseonhover" />
+      <filter type="and">
+        <condition attribute="hit_slug" operator="eq" value="{{ gallerySlug | append: '' | escape }}" />
+      </filter>
+    </entity>
+  </fetch>
+  {%- endfetchxml -%}
+  {%- assign galleryRecord = galleryFetch.results.entities | first -%}
+{%- endif -%}
+
+{%- comment -%} 2) Guard - config missing {%- endcomment -%}
+{%- if galleryRecord == nil -%}
+  <div class="hit-gallery hit-gallery--error">
+    <h3>Gallery configuration not found</h3>
+    <p>Check slug value and table permissions for read access.</p>
+  </div>
+  {%- assign __stop = true -%}
+{%- endif -%}
+
+{%- if __stop == false -%}
+  {%- assign galleryIsActive = galleryRecord.hit_isactive | default: true -%}
+  {%- if galleryIsActive == false or galleryIsActive == 0 -%}
+    {%- assign __stop = true -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- if __stop == false -%}
+
+  {%- comment -%} 3) Resolve config values {%- endcomment -%}
+  {%- assign maxItems = galleryRecord.hit_maxitems | default: 12 -%}
+  {%- assign sourceType = galleryRecord.hit_gallerysourcetype.value | default: galleryRecord.hit_gallerysourcetype | default: SRC_OFFERINGS -%}
+  {%- assign layoutType = galleryRecord.hit_gallerylayouttype.value | default: galleryRecord.hit_gallerylayouttype | default: LAYOUT_GRID -%}
+  {%- assign cardTemplate = galleryRecord.hit_cardtemplate.value | default: galleryRecord.hit_cardtemplate | default: CARD_STANDARD -%}
+  {%- assign offeringTypeValue = galleryRecord.hit_offeringtype.value | default: galleryRecord.hit_offeringtype | default: '' -%}
+
+  {%- assign colsD = galleryRecord.hit_columnscardsdesktop | default: 3 -%}
+  {%- assign colsT = galleryRecord.hit_columnscardstablet  | default: 2 -%}
+  {%- assign colsM = galleryRecord.hit_columnscardsmobile  | default: 1 -%}
+  {%- assign gridGap = galleryRecord.hit_gridgappx | default: 16 -%}
+
+  {%- comment -%} 4) Boolean normalisation (Power Pages-safe, NO arrays) {%- endcomment -%}
+  {%- assign _v = galleryRecord.hit_autoplay | append: '' | downcase -%}
+  {%- assign carAuto = false -%}
+  {%- if _v == 'true' or _v == '1' or _v == 'yes' -%}{%- assign carAuto = true -%}{%- endif -%}
+
+  {%- assign carInterval = galleryRecord.hit_autoplayintervalms | default: 5000 -%}
+
+  {%- assign _v = galleryRecord.hit_showarrows | append: '' | downcase -%}
+  {%- assign carArrows = true -%}
+  {%- if _v == 'false' or _v == '0' or _v == 'no' -%}{%- assign carArrows = false -%}{%- endif -%}
+
+  {%- assign _v = galleryRecord.hit_showdots | append: '' | downcase -%}
+  {%- assign carDots = true -%}
+  {%- if _v == 'false' or _v == '0' or _v == 'no' -%}{%- assign carDots = false -%}{%- endif -%}
+
+  {%- assign _v = galleryRecord.hit_loop | append: '' | downcase -%}
+  {%- assign carLoop = true -%}
+  {%- if _v == 'false' or _v == '0' or _v == 'no' -%}{%- assign carLoop = false -%}{%- endif -%}
+
+  {%- assign _v = galleryRecord.hit_pauseonhover | append: '' | downcase -%}
+  {%- assign carHover = true -%}
+  {%- if _v == 'false' or _v == '0' or _v == 'no' -%}{%- assign carHover = false -%}{%- endif -%}
+
+  {%- if sourceType != SRC_OFFERINGS -%}
+    <div class="hit-gallery hit-gallery--error">
+      <h3>Gallery source type is not Offerings</h3>
+      <p>This component only renders Offerings galleries.</p>
+    </div>
+  {%- else -%}
+
+    {%- comment -%} 5) Offerings query {%- endcomment -%}
+    {%- fetchxml offeringsFetch -%}
+    <fetch top="{{ maxItems }}" mapping="logical" distinct="true">
+      <entity name="hit_offering">
+        <attribute name="hit_offeringid" />
+        <attribute name="hit_offeringname" />
+        <attribute name="hit_slug" />
+        <attribute name="hit_summary" />
+        <attribute name="hit_imageurldetail" />
+        <attribute name="hit_imageurlcardgallery" />
+        <attribute name="hit_isactive" />
+        <attribute name="hit_webvisible" />
+        <attribute name="hit_offeringtype" />
+
+        <filter type="and">
+          <condition attribute="hit_isactive" operator="eq" value="1" />
+          <condition attribute="hit_webvisible" operator="eq" value="1" />
+          {%- if offeringTypeValue != '' -%}
+            <condition attribute="hit_offeringtype" operator="eq" value="{{ offeringTypeValue }}" />
+          {%- endif -%}
+        </filter>
+
+        <order attribute="hit_offeringname" descending="false" />
+      </entity>
+    </fetch>
+    {%- endfetchxml -%}
+
+    {%- assign offerings = offeringsFetch.results.entities -%}
+
+    {%- assign layoutClass = 'hit-gallery--grid' -%}
+    {%- if layoutType == LAYOUT_CAROUSEL -%}{%- assign layoutClass = 'hit-gallery--carousel' -%}{%- endif -%}
+    {%- if layoutType == LAYOUT_LIST -%}{%- assign layoutClass = 'hit-gallery--list' -%}{%- endif -%}
+
+    <section class="hit-gallery hit-gallery--offerings {{ layoutClass }}"
+             data-gallery="{{ galleryRecord.hit_slug | append: '' | escape }}"
+             data-layout="{{ layoutType | append: '' }}"
+             data-cardtemplate="{{ cardTemplate | append: '' }}"
+             data-cols-desktop="{{ colsD | append: '' }}"
+             data-cols-tablet="{{ colsT | append: '' }}"
+             data-cols-mobile="{{ colsM | append: '' }}"
+             data-grid-gap="{{ gridGap | append: '' }}"
+             data-carousel-autoplay="{{ carAuto | append: '' }}"
+             data-carousel-interval="{{ carInterval | append: '' }}"
+             data-carousel-arrows="{{ carArrows | append: '' }}"
+             data-carousel-dots="{{ carDots | append: '' }}"
+             data-carousel-loop="{{ carLoop | append: '' }}"
+             data-carousel-hoverpause="{{ carHover | append: '' }}">
+
+      {%- if offerings and offerings.size > 0 -%}
+        <div class="hit-gallery__items">
+          {%- for offering in offerings -%}
+            {%- if cardTemplate == CARD_COMPACT -%}
+              {%- include 'components-offering-card-compact' offering: offering gallery: galleryRecord -%}
+            {%- elsif cardTemplate == CARD_FEATURED -%}
+              {%- include 'components-offering-card-featured' offering: offering gallery: galleryRecord -%}
+            {%- else -%}
+              {%- include 'components-offering-card-standard' offering: offering gallery: galleryRecord -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="hit-gallery__empty">
+          <p class="hit-gallery__message">No offerings found.</p>
+        </div>
+      {%- endif -%}
+
+    </section>
+  {%- endif -%}
+{%- endif -%}

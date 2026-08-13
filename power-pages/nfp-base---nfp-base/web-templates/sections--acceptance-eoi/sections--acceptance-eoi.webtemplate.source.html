@@ -1,0 +1,674 @@
+{% assign DEBUG = debug | default: request.params.debug == '1' %}
+{% assign acceptanceId = acceptanceId | default: request.params.acceptanceid | default: '' | strip %}
+{% assign offeringName = offeringName | default: '' | strip %}
+
+{% comment %}
+  Generic copy defaults.
+  These can be overridden by the router, section properties, or future offering-driven fields.
+{% endcomment %}
+
+{% assign acceptanceTypeLabel = acceptanceTypeLabel | default: 'Expression of Interest' %}
+{% assign formTitle = formTitle | default: 'Tell us about yourself' %}
+{% assign formSubtitle = formSubtitle | default: "We'll use these details to respond to your expression of interest and keep you updated." %}
+{% assign progressText = progressText | default: 'Enter your details to continue' %}
+{% assign contactDetailsTitle = contactDetailsTitle | default: 'Contact details' %}
+{% assign submitButtonText = submitButtonText | default: 'Register My Interest' %}
+{% assign submittingButtonText = submittingButtonText | default: 'Saving...' %}
+{% assign successMessage = successMessage | default: 'Thanks. Your expression of interest has been saved.' %}
+{% assign privacyText = privacyText | default: 'Your information will only be used to respond to this expression of interest.' %}
+{% assign successRedirectUrl = successRedirectUrl | default: request.params.returnurl | default: request.params.redirect | default: '' | strip %}
+
+{% assign summaryIntro = summaryIntro | default: 'Register your interest and a member of our team will contact you with more information about this opportunity and the next steps.' %}
+{% assign nextSectionTitle = nextSectionTitle | default: 'What happens next' %}
+{% assign whySectionTitle = whySectionTitle | default: 'Why register?' %}
+
+{% if acceptanceId == '' %}
+
+  <div class="hit-alert hit-alert-error" role="alert">Missing acceptance id.</div>
+
+{% else %}
+
+  {% fetchxml acc_q %}
+  <fetch top="1">
+    <entity name="hit_offeringacceptance">
+      <attribute name="hit_offeringacceptanceid" />
+      <attribute name="hit_firstname" />
+      <attribute name="hit_lastname" />
+      <attribute name="hit_email" />
+      <attribute name="hit_mobilephone" />
+      <attribute name="hit_dsreoirole" />
+      <attribute name="hit_organisationinput" />
+      <attribute name="hit_contactroleinput" />
+
+      <filter>
+        <condition attribute="hit_offeringacceptanceid"
+                   operator="eq"
+                   value="{{ acceptanceId }}" />
+      </filter>
+    </entity>
+  </fetch>
+  {% endfetchxml %}
+
+  {% assign acc = acc_q.results.entities | first %}
+
+  {% if acc == nil %}
+
+    <div class="hit-alert hit-alert-error" role="alert">Acceptance not found.</div>
+
+  {% else %}
+
+{% assign firstName = acc.hit_firstname | default: '' %}
+{% assign lastName  = acc.hit_lastname | default: '' %}
+{% assign email     = acc.hit_email | default: '' %}
+{% assign mobile    = acc.hit_mobilephone | default: '' %}
+{% assign dsrEoiRole = acc.hit_dsreoirole.value | default: acc.hit_dsreoirole | default: '' | string %}
+{% assign organisationInput = acc.hit_organisationinput | default: '' %}
+{% assign contactRoleInput = acc.hit_contactroleinput | default: '' %}
+
+
+    {% if offeringName == '' %}
+      {% assign offeringName = acceptanceTypeLabel %}
+    {% endif %}
+
+    {% if DEBUG %}
+      <div class="hit-debug-panel hit-debug-panel--router-start">
+        ✅ sections--acceptance-eoi loaded<br>
+        acceptanceId={{ acceptanceId | escape }}<br>
+        offeringName={{ offeringName | escape }}<br>
+        successRedirectUrl={{ successRedirectUrl | escape }}
+      </div>
+    {% endif %}
+
+    <div class="hit-acceptance hit-acceptance--basic hit-acceptance--eoi">
+
+<div class="hit-acceptance__shell">
+        <div class="hit-acceptance__grid">
+
+          <aside class="hit-acceptance__left" aria-label="{{ acceptanceTypeLabel | escape }} summary">
+            <div class="hit-card hit-acceptance__summary-card">
+
+              <div class="hit-acceptance__eyebrow">
+                {{ acceptanceTypeLabel | escape }}
+              </div>
+
+              <h1 class="hit-acceptance__title">
+                {{ offeringName | escape }}
+              </h1>
+
+              <p class="hit-acceptance__lead">
+                {{ summaryIntro | escape }}
+              </p>
+
+              <div class="hit-acceptance__divider"></div>
+
+              <div class="hit-acceptance__section">
+                <h3 class="hit-acceptance__section-title">
+                  {{ whySectionTitle | escape }}
+                </h3>
+
+                <ul class="hit-list">
+                  <li>Be the 1st to hear when The Hub launches</li>
+                  <li>Learn about the benefits of The Hub</li>
+                  <li>Stay informed about next steps</li>
+                </ul>
+              </div>
+
+            </div>
+          </aside>
+
+          <main class="hit-acceptance__right">
+            <div class="hit-card hit-form-panel">
+
+              <h2 class="hit-form-title">
+                {{ formTitle | escape }}
+              </h2>
+
+              <p class="hit-form-subtitle">
+                {{ formSubtitle | escape }}
+              </p>
+
+<div class="hit-field hit-field--role">
+
+
+  <label for="hitDsrEoiRole">
+    I am a... <span class="hit-required">*</span>
+  </label>
+
+  <select id="hitDsrEoiRole"
+          name="hitDsrEoiRole"
+          required>
+    <option value="">Please select</option>
+
+    <option value="815390000" {% if dsrEoiRole == '815390000' %}selected{% endif %}>
+      I'm a person with a disability
+    </option>
+
+    <option value="815390001" {% if dsrEoiRole == '815390001' %}selected{% endif %}>
+      I'm a carer or support person for a person with disability
+    </option>
+
+    <option value="815390002" {% if dsrEoiRole == '815390002' %}selected{% endif %}>
+      I'm a team member in the sport and active recreation sector
+    </option>
+
+    <option value="815390003" {% if dsrEoiRole == '815390003' %}selected{% endif %}>
+      I'm a manager or leader in the sport and active recreation sector
+    </option>
+
+    <option value="815390004" {% if dsrEoiRole == '815390004' %}selected{% endif %}>
+      I work in the disability support or employment sector
+    </option>
+  </select>
+</div>
+
+              <input type="hidden"
+                     id="hitAcceptanceId"
+                     value="{{ acc.hit_offeringacceptanceid }}" />
+
+              <input type="hidden"
+                     id="hitSuccessRedirectUrl"
+                     value="{{ successRedirectUrl | escape }}" />
+
+              <div class="hit-form-card">
+
+                <h3 class="hit-form-card__title">
+                  {{ contactDetailsTitle | escape }}
+                </h3>
+              <label class="hit-checkbox-inline">
+                <input type="checkbox" id="hitOrgToggle">
+                <span>
+                  I am representing an organisation
+                </span>
+              </label>
+
+
+              <div id="hitOrgSection"
+                  class="hit-organisation-section"
+                  {% if organisationInput == blank and contactRoleInput == blank %}hidden{% endif %}>
+
+                <div class="hit-field">
+                  <label for="hitOrganisation">
+                    Organisation name <span class="hit-required">*</span>
+                  </label>
+
+                  <input id="hitOrganisation"
+                        name="hitOrganisation"
+                        type="text"
+                        autocomplete="organization"
+                        value="{{ organisationInput | escape }}" />
+                </div>
+
+                <div class="hit-field">
+                  <label for="hitContactRole">
+                    Your role <span class="hit-required">*</span>
+                  </label>
+
+                  <input id="hitContactRole"
+                        name="hitContactRole"
+                        type="text"
+                        autocomplete="organization-title"
+                        value="{{ contactRoleInput | escape }}" />
+                </div>
+
+              </div>
+
+                <div class="hit-field">
+                  <label for="hitFirstName">
+                    First name <span class="hit-required">*</span>
+                  </label>
+                  <input id="hitFirstName"
+                         name="hitFirstName"
+                         type="text"
+                         autocomplete="given-name"
+                         value="{{ firstName | escape }}"
+                         required />
+                </div>
+
+                <div class="hit-field">
+                  <label for="hitLastName">
+                    Last name <span class="hit-required">*</span>
+                  </label>
+                  <input id="hitLastName"
+                         name="hitLastName"
+                         type="text"
+                         autocomplete="family-name"
+                         value="{{ lastName | escape }}"
+                         required />
+                </div>
+
+                <div class="hit-field">
+                  <label for="hitEmail">
+                    Email <span class="hit-required">*</span>
+                  </label>
+                  <input id="hitEmail"
+                         name="hitEmail"
+                         type="email"
+                         autocomplete="email"
+                         value="{{ email | escape }}"
+                         required />
+                </div>
+
+                <div class="hit-field">
+                  <label for="hitMobile">
+                    Mobile
+                  </label>
+                  <input id="hitMobile"
+                         name="hitMobile"
+                         type="tel"
+                         autocomplete="tel"
+                         value="{{ mobile | escape }}" />
+
+                </div>
+
+              </div>
+
+              <div class="hit-actions">
+                <button id="hitSubmitAcceptance"
+                        class="hit-button"
+                        type="button"
+                        data-default-text="{{ submitButtonText | escape }}"
+                        data-busy-text="{{ submittingButtonText | escape }}">
+                  {{ submitButtonText | escape }}
+                </button>
+              </div>
+
+
+              <div id="hitErrorMessage"
+                   class="hit-message hit-message--error"
+                   role="alert"></div>
+
+              <div id="hitSuccessMessage"
+                   class="hit-message hit-message--success"
+                   role="status"
+                   aria-live="polite"></div>
+
+            </div>
+          </main>
+
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      (function(){
+        const acceptanceIdEl = document.getElementById("hitAcceptanceId");
+        const redirectUrlEl = document.getElementById("hitSuccessRedirectUrl");
+        const submitBtn = document.getElementById("hitSubmitAcceptance");
+        const errBox = document.getElementById("hitErrorMessage");
+        const successBox = document.getElementById("hitSuccessMessage");
+        const orgToggle = document.getElementById("hitOrgToggle");
+        const orgSection = document.getElementById("hitOrgSection");
+
+const fieldIds = [
+  "hitDsrEoiRole",
+  "hitFirstName",
+  "hitLastName",
+  "hitEmail",
+  "hitMobile",
+  "hitOrganisation",
+  "hitContactRole"
+];
+
+        if(!submitBtn){
+          return;
+        }
+
+        const defaultButtonText = submitBtn.getAttribute("data-default-text") || "Submit";
+        const busyButtonText = submitBtn.getAttribute("data-busy-text") || "Saving...";
+
+        function getEl(id){
+          return document.getElementById(id);
+        }
+
+        function getValue(id){
+          const el = getEl(id);
+          return el ? el.value.trim() : "";
+        }
+
+        function setOrganisationExpanded(expanded){
+          if(!orgToggle || !orgSection){
+            return;
+          }
+
+          orgToggle.setAttribute(
+            "aria-expanded",
+            expanded ? "true" : "false"
+          );
+
+          orgSection.hidden = !expanded;
+
+          if(!expanded){
+            const organisationEl = getEl("hitOrganisation");
+            const contactRoleEl = getEl("hitContactRole");
+
+            if(organisationEl){
+              organisationEl.removeAttribute("aria-invalid");
+            }
+
+            if(contactRoleEl){
+              contactRoleEl.removeAttribute("aria-invalid");
+            }
+          }
+        }
+
+        function setButtonBusy(isBusy){
+          submitBtn.disabled = isBusy;
+          submitBtn.textContent = isBusy ? busyButtonText : defaultButtonText;
+        }
+
+        function clearFieldErrors(){
+          fieldIds.forEach(function(id){
+            const el = getEl(id);
+            if(el){
+              el.removeAttribute("aria-invalid");
+            }
+          });
+        }
+
+        function markInvalid(id){
+          const el = getEl(id);
+          if(el){
+            el.setAttribute("aria-invalid", "true");
+            el.focus();
+          }
+        }
+
+        function hideMessage(el){
+          if(el){
+            el.style.display = "none";
+            el.textContent = "";
+          }
+        }
+
+        function showMessage(el, message){
+          if(el){
+            el.textContent = message;
+            el.style.display = "block";
+          }
+        }
+
+        function showError(message, fieldId){
+          hideMessage(successBox);
+          showMessage(errBox, message);
+
+          if(fieldId){
+            markInvalid(fieldId);
+          }
+        }
+
+        function showSuccess(message){
+          hideMessage(errBox);
+          showMessage(successBox, message);
+        }
+
+        function clearMessages(){
+          hideMessage(errBox);
+          hideMessage(successBox);
+          clearFieldErrors();
+        }
+
+        function isValidEmail(value){
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        }
+
+        function normaliseGuid(value){
+          return (value || "").replace(/[{}]/g, "").trim();
+        }
+
+        function getRedirectUrl(){
+          const value = redirectUrlEl ? redirectUrlEl.value.trim() : "";
+
+          if(!value){
+            return "";
+          }
+
+          /*
+            Avoid open redirects.
+            Only allow relative portal URLs.
+          */
+          if(value.indexOf("/") === 0 && value.indexOf("//") !== 0){
+            return value;
+          }
+
+          return "";
+        }
+
+        function validatePayload(payload){
+          if(!payload.hit_dsreoirole){
+            return {
+              message: "Please select the option that best describes you.",
+              fieldId: "hitDsrEoiRole"
+            };
+          }
+
+          if(!payload.hit_firstname){
+            return {
+              message: "Please enter your first name.",
+              fieldId: "hitFirstName"
+            };
+          }
+
+          if(!payload.hit_lastname){
+            return {
+              message: "Please enter your last name.",
+              fieldId: "hitLastName"
+            };
+          }
+
+          if(!payload.hit_email){
+            return {
+              message: "Please enter your email address.",
+              fieldId: "hitEmail"
+            };
+          }
+
+          if(!isValidEmail(payload.hit_email)){
+            return {
+              message: "Please enter a valid email address.",
+              fieldId: "hitEmail"
+            };
+          }
+
+          if(orgToggle && orgToggle.checked){
+            if(!payload.hit_organisationinput){
+              return {
+                message: "Please enter the organisation name.",
+                fieldId: "hitOrganisation"
+              };
+            }
+
+            if(!payload.hit_contactroleinput){
+              return {
+                message: "Please enter your role.",
+                fieldId: "hitContactRole"
+              };
+            }
+          }
+          return null;
+        }
+
+        async function getCsrfToken(){
+          if(window.shell && typeof window.shell.getTokenDeferred === "function"){
+            return new Promise(function(resolve){
+              window.shell.getTokenDeferred()
+                .done(function(token){
+                  resolve(token || "");
+                })
+                .fail(function(){
+                  resolve("");
+                });
+            });
+          }
+
+          const response = await fetch("/_layout/tokenhtml", {
+            credentials: "same-origin"
+          });
+
+          const html = await response.text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          const tokenInput = doc.querySelector("input[name='__RequestVerificationToken']");
+
+          return tokenInput ? tokenInput.value : "";
+        }
+
+        async function parseErrorMessage(response){
+          let message = "Save failed. Please try again.";
+
+          try{
+            const body = await response.json();
+
+            if(body && body.error && body.error.message){
+              message = body.error.message;
+            }
+          } catch(parseError){
+            try{
+              const text = await response.text();
+
+              if(text){
+                message = text;
+              }
+            } catch(textError){
+              // Keep the generic message.
+            }
+          }
+
+          return message;
+        }
+
+        function dispatchSavedEvent(payload){
+          try{
+            const event = new CustomEvent("hit:acceptance:saved", {
+              detail: payload
+            });
+
+            window.dispatchEvent(event);
+          } catch(eventError){
+            // CustomEvent should be available in modern browsers.
+          }
+        }
+        if(orgToggle && orgSection){
+          setOrganisationExpanded(orgToggle.checked);
+
+          orgToggle.addEventListener("change", function(){
+            setOrganisationExpanded(orgToggle.checked);
+          });
+        }
+        submitBtn.addEventListener("click", async function(){
+          clearMessages();
+          setButtonBusy(true);
+
+          try{
+            const acceptanceId = normaliseGuid(acceptanceIdEl ? acceptanceIdEl.value : "");
+
+            if(!acceptanceId){
+              showError("Missing acceptance id. Please refresh the page and try again.");
+              setButtonBusy(false);
+              return;
+            }
+
+            const payload = {
+              hit_dsreoirole: Number(getValue("hitDsrEoiRole")),
+              hit_firstname: getValue("hitFirstName"),
+              hit_lastname: getValue("hitLastName"),
+              hit_email: getValue("hitEmail"),
+              hit_mobilephone: getValue("hitMobile"),
+
+              hit_organisationinput:
+                orgToggle && orgToggle.checked
+                  ? getValue("hitOrganisation")
+                  : null,
+
+              hit_contactroleinput:
+                orgToggle && orgToggle.checked
+                  ? getValue("hitContactRole")
+                  : null
+            };
+
+            const validation = validatePayload(payload);
+
+            if(validation){
+              showError(validation.message, validation.fieldId);
+              setButtonBusy(false);
+              return;
+            }
+
+            const token = await getCsrfToken();
+
+            if(!token){
+              showError("Security token could not be loaded. Please refresh the page and try again.");
+              setButtonBusy(false);
+              return;
+            }
+
+            const response = await fetch("/_api/hit_offeringacceptances(" + acceptanceId + ")", {
+              method: "PATCH",
+              credentials: "same-origin",
+              headers: {
+                "Content-Type": "application/json",
+                "__RequestVerificationToken": token,
+                "If-Match": "*"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            if(!response.ok){
+              const errorMessage = await parseErrorMessage(response);
+              showError(errorMessage);
+              setButtonBusy(false);
+              return;
+            }
+
+            showSuccess("{{ successMessage | escape }}");
+
+            dispatchSavedEvent({
+              acceptanceId: acceptanceId,
+              payload: payload,
+              template: "sections--acceptance-eoi"
+            });
+
+            const redirectUrl = getRedirectUrl();
+
+            if(redirectUrl){
+              window.location.href = redirectUrl;
+              return;
+            }
+
+            submitBtn.textContent = "Saved";
+            submitBtn.disabled = true;
+
+          } catch(error){
+            console.error(error);
+            showError("Unexpected error. Please try again.");
+            setButtonBusy(false);
+          }
+        });
+      })();
+    </script>
+
+  {% endif %}
+
+{% endif %}
+
+<style>
+  .hit-checkbox-inline {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.hit-checkbox-inline input[type="checkbox"] {
+  margin-top: 0.2rem;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.hit-checkbox-inline span {
+  flex: 1;
+}
+</style>

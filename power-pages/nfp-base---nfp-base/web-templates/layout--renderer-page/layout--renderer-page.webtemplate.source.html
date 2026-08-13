@@ -1,0 +1,20 @@
+ {%- comment -%}
+Renderer Layout
+- No platform routing
+- No CMS assumptions
+- Used for canonical renderer pages (Strategy, Scorecard, etc.)
+{%- endcomment -%}
+
+
+{% include 'partials--head-css' %}
+{% include 'layout--header' %}
+
+<main id="content" role="main" class="hit-main">
+  <div id="content-container" class="content-container hit-container">
+    {{ content }}
+  </div>
+</main>
+
+
+{% include 'layout--footer' %}
+{% include 'partials--footer-js' %}

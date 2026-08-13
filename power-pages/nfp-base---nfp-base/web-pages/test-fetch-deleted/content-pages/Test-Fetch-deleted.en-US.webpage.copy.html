@@ -1,0 +1,146 @@
+<div class="row sectionBlockLayout text-start" style="min-height: auto; padding: 8px;">
+    <div class="container" style="display: flex; flex-wrap: wrap;">
+      <div class="col-lg-12 columnBlockLayout" style="padding: 16px; margin: 60px 0px; min-height: 200px;">
+
+{%- comment -%}
+Acceptance Debug 2 (Web API)
+
+URL:
+  /AcceptanceDebug2/?acceptanceid=<guid>&token=<clientToken>
+
+Purpose:
+  - Fetch acceptance status via Portal Web API (GET)
+  - Show offering name + hero image via $expand=hit_Offering(...)
+  - This bypasses Liquid fetchxml hydration issues
+{%- endcomment -%}
+
+{%- assign acceptanceid = request.params.acceptanceid | default: '' | strip -%}
+{%- assign token = request.params.token | default: '' | strip -%}
+
+<style>
+  .wrap{max-width:980px;margin:0 auto;padding:28px 16px 84px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#0f172a;}
+  .card{background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:26px;overflow:hidden;box-shadow:0 16px 40px rgba(15,23,42,.10);}
+  .heroimg{width:100%;aspect-ratio:16/6;overflow:hidden;background:#0b1220;border-bottom:1px solid rgba(15,23,42,.08);}
+  .heroimg img{width:100%;height:100%;object-fit:cover;display:block;opacity:.96;}
+  .header{padding:20px 24px;border-bottom:1px solid rgba(15,23,42,.08);}
+  .title{margin:0;font-size:24px;font-weight:900;}
+  .sub{margin-top:8px;color:rgba(15,23,42,.72);}
+  .body{padding:18px 24px;}
+  .row{display:flex;justify-content:space-between;gap:12px;margin:8px 0;}
+  .label{color:rgba(15,23,42,.7);font-size:13px;}
+  .val{font-weight:900;text-align:right;}
+  pre{background:#0b1220;color:#e5e7eb;padding:12px;border-radius:14px;overflow:auto;}
+  .err{margin-top:10px;color:#7f1d1d;background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.25);padding:10px 12px;border-radius:14px;display:none;white-space:pre-wrap;}
+</style>
+
+<div class="wrap">
+  <div class="card">
+
+    <div class="heroimg" id="hero" style="display:none;">
+      <img id="heroImg" src="" alt="" />
+    </div>
+
+    <div class="header">
+      <h1 class="title">Acceptance Debug 2 (Web API)</h1>
+      <div class="sub">AcceptanceId: <code id="aid">{{ acceptanceid | escape }}</code></div>
+      {% if token != blank %}
+        <div class="sub">Token: <code id="tok">{{ token | escape }}</code></div>
+      {% endif %}
+    </div>
+
+    <div class="body">
+      {% if acceptanceid == blank %}
+        <div class="err" style="display:block;">Missing acceptanceid query param.</div>
+      {% else %}
+        <div class="row"><div class="label">Acceptance Name</div><div class="val" id="accName">—</div></div>
+        <div class="row"><div class="label">Acceptance Status</div><div class="val" id="accStatus">—</div></div>
+        <div class="row"><div class="label">Email</div><div class="val" id="accEmail">—</div></div>
+        <div class="row"><div class="label">Amount</div><div class="val" id="accAmt">—</div></div>
+        <div class="row"><div class="label">Offering</div><div class="val" id="offName">—</div></div>
+
+        <div class="err" id="errBox"></div>
+
+        <h3 style="margin-top:16px;">Raw response</h3>
+        <pre id="raw">(loading…)</pre>
+
+        <script>
+        (function(){
+          const acceptanceId = "{{ acceptanceid | escape }}";
+          const token = "{{ token | escape }}"; // optional
+
+          const errBox = document.getElementById("errBox");
+          const rawEl = document.getElementById("raw");
+
+          function showErr(msg){
+            errBox.style.display = "block";
+            errBox.textContent = msg;
+          }
+
+          // NOTE: uses navigation/schema name hit_Offering (same as your successful @odata.bind discovery)
+          const url =
+            "/_api/hit_offeringacceptances(" + acceptanceId + ")" +
+            "?$select=hit_name,hit_email,hit_totalamount,hit_baseamount,hit_donationaddonamount,hit_acceptancestatus,hit_clienttoken" +
+            "&$expand=hit_Offering($select=hit_offeringname,hit_imageurldetail)";
+
+          function fmtMoney(n){
+            if(n === null || n === undefined || n === "") return "—";
+            const num = Number(n);
+            if (Number.isNaN(num)) return String(n);
+            return "$" + (Math.round(num) === num ? num.toFixed(0) : num.toFixed(2));
+          }
+
+          fetch(url, { headers:{ "Accept":"application/json" }, cache:"no-store" })
+            .then(async res => {
+              const text = await res.text().catch(()=> "");
+              rawEl.textContent = text || "(empty)";
+              if(!res.ok){
+                throw new Error("HTTP " + res.status + "\\n" + (text || ""));
+              }
+              return JSON.parse(text);
+            })
+            .then(data => {
+              // Optional token validation (only if you want it)
+              if(token && data.hit_clienttoken && token !== data.hit_clienttoken){
+                showErr("Token mismatch. URL token does not match record hit_clienttoken.");
+              }
+
+              document.getElementById("accName").textContent = data.hit_name || "—";
+
+              // Choice fields often come through as numbers here
+              document.getElementById("accStatus").textContent =
+                (data.hit_acceptancestatus !== undefined && data.hit_acceptancestatus !== null)
+                  ? String(data.hit_acceptancestatus)
+                  : "—";
+
+              document.getElementById("accEmail").textContent = data.hit_email || "—";
+
+              const amt = (data.hit_totalamount && Number(data.hit_totalamount) > 0)
+                ? data.hit_totalamount
+                : ((Number(data.hit_baseamount)||0) + (Number(data.hit_donationaddonamount)||0));
+
+              document.getElementById("accAmt").textContent = fmtMoney(amt);
+
+              const off = data.hit_Offering;
+              if(off){
+                document.getElementById("offName").textContent = off.hit_offeringname || "—";
+
+                const img = (off.hit_imageurldetail || "").trim();
+                if(img){
+                  document.getElementById("heroImg").src = img;
+                  document.getElementById("heroImg").alt = off.hit_offeringname || "Offering";
+                  document.getElementById("hero").style.display = "block";
+                }
+              }
+            })
+            .catch(e => showErr(e.message || String(e)));
+        })();
+        </script>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+      </div>
+    </div>
+  </div>
+  
