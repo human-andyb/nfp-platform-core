@@ -256,7 +256,7 @@ sections--acceptance-router (DEBUG HARDENED)
               Include: sections--acceptance-course
             </div>
           {% endif %}
-          {% include 'sections--acceptance-course' %}
+          {% include 'sections--acceptance-course' acceptanceId: acceptanceId offeringName: offeringName debug: DEBUG %}
 
         {% when 815390003 %}
           {% if DEBUG %}

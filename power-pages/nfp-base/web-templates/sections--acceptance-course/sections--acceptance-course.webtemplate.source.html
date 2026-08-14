@@ -1,617 +1,784 @@
 {% comment %}
-Offering Acceptance - Course (Donate-style)
+sections--acceptance-course
 
-Expected URL:
-  /Courses/Course-Registration?offeringid=<GUID>
+Parameters (from router via include):
+  acceptanceId  - acceptance record GUID
+  offeringName  - offering display name
+  debug         - debug mode flag
 
-Optional:
-  &courseid=<GUID>   (override; otherwise resolved via hit_offering.hit_coursedefinition)
+Architecture:
+  Router-integrated — receives acceptanceId from sections--acceptance-router.
+  Fetches acceptance + linked offering (single query with join).
+  Reads hit_courseaccessaudience + hit_courseaccessplan from offering
+  to derive form configuration via JavaScript AUDIENCE_CONFIG object.
+  PATCHes hit_offeringacceptances with contact fields + audience + plan.
+  No status written — Power Automate handles PENDING_PAYMENT / COMPLETED.
+  Redirects back through router with waitforpayment=1 (donation retry pattern).
+
+Audience → Field groups shown:
+  individual          → contact, postcode
+  organisation        → contact, postcode, organisation
+  organisation-member → contact, postcode, redemption
+
+Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
 {% endcomment %}
 
-{% assign offeringId = request.params['offeringid'] | default: request.params['id'] | default: '' | strip %}
-{% assign explicitCourseId = request.params['courseid'] | default: '' | strip %}
+{% assign DEBUG = debug | default: request.params.debug == '1' %}
+{% assign acceptanceId = acceptanceId | default: request.params.acceptanceid | default: '' | strip %}
+{% assign offeringName = offeringName | default: '' | strip %}
 
-{% assign offeringCount = 0 %}
-{% assign courseCount = 0 %}
-{% assign resolvedCourseId = '' %}
+{%- comment -%} Copy defaults — all overridable via include params {%- endcomment -%}
+{% assign acceptanceTypeLabel  = acceptanceTypeLabel  | default: 'Course Registration' %}
+{% assign formTitle            = formTitle            | default: 'Complete your registration' %}
+{% assign formSubtitle         = formSubtitle         | default: 'Confirm your details to secure your access.' %}
+{% assign progressText         = progressText         | default: 'Enter your details to continue' %}
+{% assign submitButtonText     = submitButtonText     | default: 'Confirm Registration' %}
+{% assign submittingButtonText = submittingButtonText | default: 'Saving...' %}
 
-{% assign offeringName = '' %}
-{% assign offeringDesc = '' %}
-{% assign heroImageUrl = '' %}
-{% assign fixedPrice = 0 %}
-{% assign allowQuantityBool = false %}
+{% if acceptanceId == '' %}
+  <div class="hit-alert hit-alert-warning" role="alert">Missing acceptance id.</div>
+{% else %}
 
-{%- comment -%}
-CSRF token: Render ONCE and reuse for all Web API calls (prevents token decrypt/mismatch errors).
-{%- endcomment -%}
-
-
-{%- comment -%}
-Fetch Offering
-IMPORTANT: Your FetchXML MUST include these attributes (names must be valid):
-- hit_offeringid
-- hit_offeringname
-- hit_description
-- hit_imageurl   (recommended; ensure this field exists)
-- hit_coursedefinition
-- hit_fixedprice
-- hit_allowquantity
-- (and your filters e.g., hit_isactive = 1)
-{%- endcomment -%}
-
-{% if offeringId != blank %}
-  {% fetchxml offering %}
-    <fetch top="1" mapping="logical">
-      <entity name="hit_offering">
-        <attribute name="hit_fixedprice" />
+  {% fetchxml acc_q %}
+  <fetch top="1" mapping="logical">
+    <entity name="hit_offeringacceptance">
+      <attribute name="hit_offeringacceptanceid" />
+      <attribute name="hit_firstname" />
+      <attribute name="hit_lastname" />
+      <attribute name="hit_email" />
+      <attribute name="hit_mobilephone" />
+      <attribute name="hit_postcode" />
+      <attribute name="hit_organisationinput" />
+      <attribute name="hit_contactroleinput" />
+      <attribute name="hit_redemptioncode" />
+      <attribute name="hit_courseaccessaudience" />
+      <attribute name="hit_courseaccessplan" />
+      <filter>
+        <condition attribute="hit_offeringacceptanceid" operator="eq" value="{{ acceptanceId | escape }}" />
+      </filter>
+      <link-entity name="hit_offering"
+                   from="hit_offeringid"
+                   to="hit_offering"
+                   alias="off"
+                   link-type="outer">
         <attribute name="hit_offeringname" />
         <attribute name="hit_description" />
         <attribute name="hit_imageurl" />
-        <attribute name="hit_allowquantity" />
-        <attribute name="hit_coursedefinition" />
-        <filter>
-          <condition attribute="hit_offeringid" operator="eq" value="{{ offeringId }}" />
-        </filter>
-      </entity>
-    </fetch>
-
+        <attribute name="hit_fixedprice" />
+        <attribute name="hit_courseaccessaudience" />
+        <attribute name="hit_courseaccessplan" />
+      </link-entity>
+    </entity>
+  </fetch>
   {% endfetchxml %}
 
-  {%- comment -%}
-  Guard: if FetchXML execution fails, offering/results can be null -> avoid object reference error.
-  {%- endcomment -%}
-  {% if offering and offering.results and offering.results.entities %}
-    {% assign offeringCount = offering.results.entities | size %}
+  {% assign acc = acc_q.results.entities | first %}
+
+  {% if acc == nil %}
+    <div class="hit-alert hit-alert-warning" role="alert">Acceptance not found.</div>
   {% else %}
-    {% assign offeringCount = 0 %}
-  {% endif %}
-{% endif %}
 
-{% if offeringCount > 0 %}
-  {% assign offeringRow = offering.results.entities[0] %}
+    {%- comment -%} Offering fields (via join alias 'off') {%- endcomment -%}
+    {% assign offeringName = acc['off.hit_offeringname'] | default: offeringName | default: acceptanceTypeLabel %}
+    {% assign offeringDesc = acc['off.hit_description']  | default: '' %}
+    {% assign heroImageUrl = acc['off.hit_imageurl']     | default: '' | strip %}
 
-  {%- comment -%} Assign offering fields {%- endcomment -%}
-  {% assign offeringName = offeringRow.hit_offeringname | default: '' %}
-  {% assign offeringDesc = offeringRow.hit_description | default: '' %}
-  {% assign heroImageUrl = offeringRow.hit_imageurl | default: '' | strip %}
-
-    {% assign fixedPrice = offeringRow.hit_fixedprice | default: 0 %}
+    {% assign fixedPrice = acc['off.hit_fixedprice'] | default: 0 %}
     {% if fixedPrice.value %}{% assign fixedPrice = fixedPrice.value %}{% endif %}
 
-  {%- comment -%}
-  Resolve allow quantity (robust boolean) — keep on one line where possible
-  {%- endcomment -%}
-  {% assign allowQtyRaw = offeringRow.hit_allowquantity | default: '' %}
-  {% if allowQtyRaw.value %}{% assign allowQtyRaw = allowQtyRaw.value %}{% endif %}
-  {% assign allowQtyLabel = offeringRow.hit_allowquantity.label | default: offeringRow.hit_allowquantity.Label | default: offeringRow["hit_allowquantity@OData.Community.Display.V1.FormattedValue"] | default: '' %}
-  {% assign allowQtyText = '' | append: allowQtyRaw | downcase %}
-  {% assign allowQtyLabelText = allowQtyLabel | downcase %}
-  {% if allowQtyText == 'true' or allowQtyText == '1' or allowQtyLabelText == 'yes' %}
-    {% assign allowQuantityBool = true %}
-  {% endif %}
+    {%- comment -%} Audience — from offering (drives form configuration) {%- endcomment -%}
+    {% assign aud_raw   = acc['off.hit_courseaccessaudience'] %}
+    {% assign aud_value = aud_raw.value | default: aud_raw | default: '' %}
+    {% assign aud_label = aud_raw.label | default: acc['off.hit_courseaccessaudience@OData.Community.Display.V1.FormattedValue'] | default: '' %}
+    {% assign aud_slug  = aud_label | downcase | replace: ' ', '-' %}
 
-  {%- comment -%} Resolve course id {%- endcomment -%}
-  {% assign resolvedCourseId = explicitCourseId %}
-  {% if resolvedCourseId == blank and offeringRow.hit_coursedefinition %}
-    {% assign resolvedCourseId = offeringRow.hit_coursedefinition.id | default: '' | strip %}
-  {% endif %}
+    {%- comment -%} Plan — from offering {%- endcomment -%}
+    {% assign plan_raw   = acc['off.hit_courseaccessplan'] %}
+    {% assign plan_value = plan_raw.value | default: plan_raw | default: '' %}
+    {% assign plan_label = plan_raw.label | default: acc['off.hit_courseaccessplan@OData.Community.Display.V1.FormattedValue'] | default: '' %}
+    {% assign plan_slug  = plan_label | downcase | replace: ' ', '-' %}
 
-  {%- comment -%}
-  Fetch Course Definition (optional)
-  Your FetchXML should include:
-  - hit_coursedefinitionid
-  - hit_name
-  - hit_description
-  - hit_courseid
-  {%- endcomment -%}
+    {%- comment -%}
+    If audience/plan already stored on acceptance (re-entry), use those values.
+    Offering values are authoritative for form configuration; acceptance values
+    are used for pre-population only.
+    {%- endcomment -%}
+    {% assign acc_aud_raw   = acc.hit_courseaccessaudience %}
+    {% assign acc_aud_value = acc_aud_raw.value | default: acc_aud_raw | default: '' %}
+    {% assign acc_plan_raw  = acc.hit_courseaccessplan %}
+    {% assign acc_plan_value = acc_plan_raw.value | default: acc_plan_raw | default: '' %}
+    {% if acc_aud_value  != '' %}{% assign aud_value  = acc_aud_value  %}{% endif %}
+    {% if acc_plan_value != '' %}{% assign plan_value = acc_plan_value %}{% endif %}
 
-  {% if resolvedCourseId != blank %}
-    {% fetchxml ev %}
-      <fetch top="1" mapping="logical">
-        <entity name="hit_coursedefinition">
-          <attribute name="hit_coursedefinitionid" />
-          <attribute name="hit_courseid" />
-          <attribute name="hit_name" />
-          <attribute name="hit_description" />
-          <filter type="and">
-            <condition attribute="hit_coursedefinitionid" operator="eq" value="{{ resolvedCourseId | escape }}" />
-          </filter>
-        </entity>
-      </fetch>
-    {% endfetchxml %}
-
-    {% if ev and ev.results and ev.results.entities %}
-      {% assign courseCount = ev.results.entities | size %}
-      {% if courseCount > 0 %}
-        {% assign courseRow = ev.results.entities[0] %}
+    {%- comment -%} Left panel "What happens next" copy — overridable via param {%- endcomment -%}
+    {% assign whatHappensNext = whatHappensNext | default: '' %}
+    {% if whatHappensNext == '' %}
+      {% if plan_slug == 'pwd' %}
+        {% assign whatHappensNext = "Your registration is free. Once confirmed you'll receive your access details by email." %}
+      {% elsif plan_slug == 'org-member' %}
+        {% assign whatHappensNext = "Enter your redemption code to join your organisation's access plan." %}
+      {% elsif plan_slug == 'partner' %}
+        {% assign whatHappensNext = "Once payment is confirmed, your organisation will receive a redemption code for staff access." %}
+      {% else %}
+        {% assign whatHappensNext = "Complete your details to continue to the next step." %}
       {% endif %}
-    {% else %}
-      {% assign courseCount = 0 %}
     {% endif %}
-  {% endif %}
-{% endif %}
 
-{% if request.params['debug'] == '1' %}
-  <pre style="background:#f6f6f6;padding:10px;border:1px solid #ddd;">
-    offeringid={{ offeringId }}
-    offeringCount={{ offeringCount }}
-    resolvedCourseId={{ resolvedCourseId }}
-    courseCount={{ courseCount }}
-    heroImageUrl={{ heroImageUrl }}
-    allowQuantityBool={{ allowQuantityBool }}
-    fixedPrice={{ fixedPrice }}
-  </pre>
-{% endif %}
-
-{% if offeringId == blank %}
-  <div class="alert alert-warning">
-    Missing <strong>offeringid</strong> in the URL. Please return to the Offering page and try again.
-  </div>
-{% elsif offeringCount == 0 %}
-  <div class="alert alert-warning">
-    We couldn't load this offering. This is usually because the record doesn't exist or the current portal user doesn't have permission to read <strong>hit_offering</strong>.
-    <div style="margin-top:6px; font-size: 0.9em;">
-      offeringid: <code>{{ offeringId | escape }}</code>
+    {% if DEBUG %}
+    <div class="hit-debug-panel">
+      ✅ sections--acceptance-course<br>
+      acceptanceId={{ acceptanceId | escape }}<br>
+      offeringName={{ offeringName | escape }}<br>
+      audience={{ aud_label | escape }} ({{ aud_value }}) → {{ aud_slug }}<br>
+      plan={{ plan_label | escape }} ({{ plan_value }}) → {{ plan_slug }}<br>
+      fixedPrice={{ fixedPrice }}<br>
+      heroImageUrl={{ heroImageUrl | escape }}
     </div>
-  </div>
-{% else %}
+    {% endif %}
 
-  {% if heroImageUrl != blank %}
-    <div class="hit-accept-hero">
-      <img class="hit-accept-hero__img"
-           src="{{ heroImageUrl | escape }}"
-           alt="{{ offeringName | escape }}">
-    </div>
-  {% endif %}
+    <div class="hit-acceptance hit-acceptance--course"
+         data-context="course"
+         data-acceptance-id="{{ acc.hit_offeringacceptanceid | escape }}">
 
-  <div class="hit-accept-card">
-    <div class="hit-accept-card__header">
-      <h1 class="hit-accept-card__title">Register</h1>
-      <p class="hit-accept-card__subtitle">Confirm your details and register for this course.</p>
-    </div>
+      <div class="hit-acceptance__grid">
 
-    <div id="hitFormAlert" class="hit-alert" style="display:none;"></div>
-    <div id="hitDebug" class="hit-debug" style="display:none;"></div>
+        <!-- =====================================================
+             LEFT: COURSE SUMMARY
+             ===================================================== -->
+        <aside class="hit-acceptance__left">
+          <div class="hit-card hit-acceptance__summary-card">
 
-    <div class="hit-accept-grid">
-
-      <!-- LEFT: Summary -->
-      <div class="hit-panel hit-panel--summary">
-        <div class="hit-panel__row">
-          <div class="hit-panel__label">Offering</div>
-          <div class="hit-panel__value">
-            <div class="hit-offering__name">{{ offeringName | escape }}</div>
-          </div>
-        </div>
-
-        {% if courseRow and courseRow.msevtmgt_description %}
-          <div class="hit-panel__row">
-            <div class="hit-panel__label">Description</div>
-            <div class="hit-panel__value">
-              <div class="hit-offering__desc">{{ courseRow.msevtmgt_description | newline_to_br }}</div>
-            </div>
-          </div>
-        {% elsif offeringDesc != blank %}
-          <div class="hit-panel__row">
-            <div class="hit-panel__label">Description</div>
-            <div class="hit-panel__value">
-              <div class="hit-offering__desc">{{ offeringDesc | newline_to_br }}</div>
-            </div>
-          </div>
-        {% endif %}
-
-
-        {% if fixedPrice > 0 %}
-          <div class="hit-panel__row">
-            <div class="hit-panel__label">Price</div>
-            <div class="hit-panel__value">
-              <span id="hitOfferingPrice" data-price="{{ fixedPrice | escape }}"></span>
-              <div style="color:#666; font-size:.92em; margin-top:2px;">Per registration • AUD</div>
-            </div>
-          </div>
-        {% else %}
-          <div class="hit-panel__row">
-            <div class="hit-panel__label">Price</div>
-            <div class="hit-panel__value">Free</div>
-          </div>
-        {% endif %}
-      </div>
-
-      <!-- RIGHT: Details -->
-      <div class="hit-panel hit-panel--details">
-        <div class="hit-panel__title">Your details</div>
-        <div class="hit-panel__hint">We’ll use this information to confirm your registration.</div>
-
-        <form id="hitCoursetRegForm" class="hit-form">
-          <div class="hit-form__row hit-form__row--2col">
-            <div class="hit-form__field">
-              <label class="form-label" for="hit_firstname">First name</label>
-              <input class="form-control" id="hit_firstname" name="hit_firstname" type="text" required>
-            </div>
-            <div class="hit-form__field">
-              <label class="form-label" for="hit_lastname">Last name</label>
-              <input class="form-control" id="hit_lastname" name="hit_lastname" type="text" required>
-            </div>
-          </div>
-
-          <div class="hit-form__row">
-            <div class="hit-form__field">
-              <label class="form-label" for="hit_email">Email</label>
-              <input class="form-control" id="hit_email" name="hit_email" type="email" required>
-            </div>
-          </div>
-
-          <div class="hit-form__row">
-            <div class="hit-form__field">
-              <label class="form-label" for="hit_mobilephone">Mobile</label>
-              <input class="form-control" id="hit_mobilephone" name="hit_mobilephone" type="tel">
-            </div>
-          </div>
-
-          {% if allowQuantityBool %}
-            <div class="hit-form__row">
-              <div class="hit-form__field">
-                <label class="form-label" for="hit_quantity">Quantity</label>
-                <input class="form-control" id="hit_quantity" name="hit_quantity" type="number" min="1" step="1" value="1" inputmode="numeric">
-                <div class="form-text" style="font-size: 0.9em; color:#666;">Enter the number of registrations (default 1).</div>
+            {% if heroImageUrl != '' %}
+              <div class="hca-hero">
+                <img src="{{ heroImageUrl | escape }}"
+                     alt="{{ offeringName | escape }}"
+                     class="hca-hero__img" />
               </div>
+            {% endif %}
+
+            <div class="hit-acceptance__eyebrow">{{ acceptanceTypeLabel | escape }}</div>
+
+            <h1 class="hit-acceptance__title">{{ offeringName | escape }}</h1>
+
+            {% if aud_label != '' or plan_label != '' %}
+              <div class="hca-access-badges">
+                {% if aud_label != '' %}
+                  <span class="hca-badge">{{ aud_label | escape }}</span>
+                {% endif %}
+                {% if plan_label != '' %}
+                  <span class="hca-badge hca-badge--plan">{{ plan_label | escape }}</span>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {% if offeringDesc != '' %}
+              <div class="hit-acceptance__lead">{{ offeringDesc }}</div>
+            {% endif %}
+
+            <div class="hca-price-row">
+              <span class="hca-price-row__label">Cost</span>
+              <span class="hca-price-row__value" id="caPriceDisplay" data-price="{{ fixedPrice | escape }}">
+                {% if fixedPrice > 0 %}{% else %}Free{% endif %}
+              </span>
             </div>
-          {% else %}
-            <input type="hidden" id="hit_quantity" value="1">
-          {% endif %}
 
-          <input type="hidden" id="hit_offeringid" value="{{ offeringId | escape }}">
-          <input type="hidden" id="hit_fixedprice" value="{{ fixedPrice | escape }}">
-          <input type="hidden" id="hit_csrf" value="{{ request.verificationToken }}">
+            {% if whatHappensNext != '' %}
+              <div class="hca-next">
+                <div class="hca-next__title">What happens next</div>
+                <p class="hca-next__body">{{ whatHappensNext | escape }}</p>
+              </div>
+            {% endif %}
 
-        </form>
+          </div>
+        </aside>
+
+        <!-- =====================================================
+             RIGHT: REGISTRATION FORM
+             ===================================================== -->
+        <main class="hit-acceptance__right">
+          <div class="hit-card hit-form-panel">
+
+            <h2 class="hit-heading">{{ formTitle | escape }}</h2>
+            <p class="hit-subtitle">{{ formSubtitle | escape }}</p>
+
+            <div class="hit-status-pill" aria-label="Current step">
+              <span class="hit-status-pill__indicator" aria-hidden="true"></span>
+              <span>{{ progressText | escape }}</span>
+            </div>
+
+            <input type="hidden" id="caAcceptanceId"
+                   value="{{ acc.hit_offeringacceptanceid | escape }}" />
+
+            {%- comment -%} Config data bridge: Liquid values → JavaScript {%- endcomment -%}
+            <div id="caConfig"
+                 data-audience="{{ aud_slug | escape }}"
+                 data-plan="{{ plan_slug | escape }}"
+                 data-audience-value="{{ aud_value | escape }}"
+                 data-plan-value="{{ plan_value | escape }}"
+                 data-price="{{ fixedPrice | escape }}"
+                 hidden>
+            </div>
+
+            <div id="caErrSummary"
+                 class="hit-error-summary"
+                 role="alert"
+                 aria-atomic="true"
+                 hidden>
+              <h3 class="hit-error-summary__title">There's a problem</h3>
+              <ul id="caErrList" class="hit-error-summary__list"></ul>
+            </div>
+
+            <form class="hit-form" id="caForm" novalidate>
+
+              <!-- -----------------------------------------------
+                   FIELD GROUP: contact (always shown)
+                   ----------------------------------------------- -->
+              <div class="hit-form-section" data-field-group="contact">
+
+                <div class="hit-form-section__title">Contact details</div>
+
+                <div class="hit-form__row hit-form__row--2col">
+                  <div class="hit-field">
+                    <label class="hit-label" for="caFirstName">
+                      First name <span class="hit-label__required" aria-hidden="true">*</span>
+                    </label>
+                    <input class="hit-input" type="text" id="caFirstName"
+                           value="{{ acc.hit_firstname | default: '' | escape }}"
+                           autocomplete="given-name"
+                           required aria-required="true" />
+                    <p class="hit-error-message" id="caFirstNameErr" role="alert" hidden></p>
+                  </div>
+                  <div class="hit-field">
+                    <label class="hit-label" for="caLastName">
+                      Last name <span class="hit-label__required" aria-hidden="true">*</span>
+                    </label>
+                    <input class="hit-input" type="text" id="caLastName"
+                           value="{{ acc.hit_lastname | default: '' | escape }}"
+                           autocomplete="family-name"
+                           required aria-required="true" />
+                    <p class="hit-error-message" id="caLastNameErr" role="alert" hidden></p>
+                  </div>
+                </div>
+
+                <div class="hit-field">
+                  <label class="hit-label" for="caEmail">
+                    Email address <span class="hit-label__required" aria-hidden="true">*</span>
+                  </label>
+                  <input class="hit-input" type="email" id="caEmail"
+                         value="{{ acc.hit_email | default: '' | escape }}"
+                         autocomplete="email"
+                         required aria-required="true" />
+                  <p class="hit-error-message" id="caEmailErr" role="alert" hidden></p>
+                </div>
+
+                <div class="hit-field">
+                  <label class="hit-label" for="caMobile">Mobile number</label>
+                  <input class="hit-input" type="tel" id="caMobile"
+                         value="{{ acc.hit_mobilephone | default: '' | escape }}"
+                         autocomplete="tel" />
+                </div>
+
+              </div>
+
+              <!-- -----------------------------------------------
+                   FIELD GROUP: postcode (always shown)
+                   ----------------------------------------------- -->
+              <div class="hit-form-section" data-field-group="postcode">
+
+                <div class="hit-field">
+                  <label class="hit-label" for="caPostcode">
+                    Postcode <span class="hit-label__required" aria-hidden="true">*</span>
+                  </label>
+                  <input class="hit-input" type="text" id="caPostcode"
+                         value="{{ acc.hit_postcode | default: '' | escape }}"
+                         autocomplete="postal-code"
+                         inputmode="numeric" maxlength="4"
+                         style="max-width:120px;"
+                         required aria-required="true" />
+                  <p class="hit-error-message" id="caPostcodeErr" role="alert" hidden></p>
+                </div>
+
+              </div>
+
+              <!-- -----------------------------------------------
+                   FIELD GROUP: organisation (Audience = Organisation)
+                   ----------------------------------------------- -->
+              <div class="hit-form-section" data-field-group="organisation" hidden>
+
+                <div class="hit-form-section__title">Organisation details</div>
+
+                <div class="hit-field">
+                  <label class="hit-label" for="caOrgName">
+                    Organisation name <span class="hit-label__required" aria-hidden="true">*</span>
+                  </label>
+                  <input class="hit-input" type="text" id="caOrgName"
+                         value="{{ acc.hit_organisationinput | default: '' | escape }}"
+                         autocomplete="organization" />
+                  <p class="hit-error-message" id="caOrgNameErr" role="alert" hidden></p>
+                </div>
+
+                <div class="hit-field">
+                  <label class="hit-label" for="caOrgRole">
+                    Primary contact role <span class="hit-label__required" aria-hidden="true">*</span>
+                  </label>
+                  <input class="hit-input" type="text" id="caOrgRole"
+                         value="{{ acc.hit_contactroleinput | default: '' | escape }}"
+                         autocomplete="organization-title" />
+                  <p class="hit-error-message" id="caOrgRoleErr" role="alert" hidden></p>
+                </div>
+
+              </div>
+
+              <!-- -----------------------------------------------
+                   FIELD GROUP: redemption (Audience = Organisation Member)
+                   ----------------------------------------------- -->
+              <div class="hit-form-section" data-field-group="redemption" hidden>
+
+                <div class="hit-form-section__title">Membership access</div>
+
+                <div class="hit-field">
+                  <label class="hit-label" for="caRedemption">
+                    Redemption code <span class="hit-label__required" aria-hidden="true">*</span>
+                  </label>
+                  <input class="hit-input" type="text" id="caRedemption"
+                         value="{{ acc.hit_redemptioncode | default: '' | escape }}"
+                         autocomplete="off"
+                         placeholder="Enter your organisation's access code" />
+                  <p class="hit-error-message" id="caRedemptionErr" role="alert" hidden></p>
+                </div>
+
+              </div>
+
+            </form>
+
+            <p class="hit-privacy-text">
+              Your information will only be used to process this registration.
+            </p>
+
+            <button type="button"
+                    id="caSubmitBtn"
+                    class="hit-button hit-button--primary">
+              {{ submitButtonText | escape }}
+            </button>
+
+          </div>
+        </main>
+
       </div>
-
-      <!-- CTA -->
-      <div class="hit-cta-bar">
-        <button id="hitSubmitBtn" class="btn btn-primary hit-cta-bar__primary" type="button">Confirm Registration</button>
-        <a class="btn btn-outline-secondary hit-cta-bar__secondary" href="javascript:history.back()">Back</a>
-      </div>
-
     </div>
-  </div>
 
-{% endif %}
+    <style>
+    /* ============================================================
+       COURSE ACCEPTANCE — supplementary styles
+       Builds on hit-acceptance platform base.
+       TODO: extract to css--site.css
+       ============================================================ */
 
-<style>
-.hit-debug{
-  margin: 0 26px 12px 26px; padding: 12px; border: 1px dashed #bbb; border-radius: 10px;
-  background: #fafafa; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-  font-size: 12px; white-space: pre-wrap; word-break: break-word; color: #222;
-}
-.hit-accept-hero{ max-width:980px; margin:0 auto 14px auto; border-radius:14px; overflow:hidden; }
-.hit-accept-hero__img{ width:100%; height:auto; display:block; }
+    /* Hero image */
+    .hca-hero { margin: -20px -20px 20px; overflow: hidden; }
+    .hca-hero__img { width: 100%; display: block; aspect-ratio: 16/9; object-fit: cover; }
 
-.hit-accept-card{ max-width:980px; margin:0 auto; background:#fff; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.08); overflow:hidden; }
-.hit-accept-card__header{ padding:22px 26px 8px 26px; }
-.hit-accept-card__title{ margin:0; font-size:28px; font-weight:700; }
-.hit-accept-card__subtitle{ margin:6px 0 0 0; color:#666; }
-
-.hit-accept-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:18px 26px 22px 26px; }
-@media (max-width: 991px){ .hit-accept-grid{ grid-template-columns:1fr; } }
-
-.hit-panel{ border:1px solid #e9e9ee; border-radius:12px; padding:18px; }
-.hit-panel__title{ font-weight:700; margin-bottom:4px; }
-.hit-panel__hint{ color:#666; font-size:.95em; margin-bottom:12px; }
-
-.hit-panel__row{ display:grid; grid-template-columns:110px 1fr; gap:12px; padding:10px 0; }
-.hit-panel__row + .hit-panel__row{ border-top:1px solid #f0f0f4; }
-.hit-panel__label{ color:#666; font-size:.92em; }
-.hit-panel__value{ color:#222; }
-
-.hit-form__row{ margin-bottom:12px; }
-.hit-form__row--2col{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-@media (max-width:575px){ .hit-form__row--2col{ grid-template-columns:1fr; } }
-
-.hit-cta-bar{ grid-column:1 / -1; display:flex; gap:12px; align-items:center; padding-top:8px; }
-.hit-cta-bar__primary{ flex:1; border-radius:999px; padding:10px 16px; }
-.hit-cta-bar__secondary{ white-space:nowrap; border-radius:999px; padding:10px 16px; }
-
-.hit-alert{ margin:0 26px 12px 26px; padding:10px 12px; border-radius:10px; }
-.hit-alert--success{ background:#e8f7ee; color:#1f6a3b; }
-.hit-alert--error{ background:#fdecec; color:#7a1c1c; }
-</style>
-
-<script>
-(function () {
-  // ---------------------------
-  // Debug (single source of truth)
-  // ---------------------------
-  var DEBUG = (new URLSearchParams(window.location.search).get('debug') === '1');
-  var dbgEl = document.getElementById('hitDebug');
-
-  function dbg(msg, obj){
-    if(!DEBUG) return;
-    var text = String(msg) + (obj ? ("\n" + JSON.stringify(obj, null, 2)) : "");
-    if(dbgEl){
-      dbgEl.style.display = 'block';
-      dbgEl.textContent = (dbgEl.textContent ? dbgEl.textContent + "\n\n" : "") + text;
+    /* Access badges */
+    .hca-access-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0 14px;
     }
-    try { console.log('[CourseReg]', msg, obj || ''); } catch(e){}
-  }
+    .hca-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #e5e7eb;
+    }
+    .hca-badge--plan {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
 
-  // ---------------------------
-  // UI helpers
-  // ---------------------------
-  var alertEl = document.getElementById('hitFormAlert');
-  function showAlert(message, type) {
-    if (!alertEl) return;
-    alertEl.style.display = "block";
-    alertEl.className = "hit-alert hit-alert--" + (type || "info");
-    alertEl.textContent = message;
-  }
-  function clearAlert() {
-    if (!alertEl) return;
-    alertEl.style.display = "none";
-    alertEl.textContent = "";
-  }
+    /* Price row */
+    .hca-price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 10px 0;
+      border-top: 1px solid #f0f0f0;
+      margin-top: 14px;
+    }
+    .hca-price-row__label { font-size: 13px; color: #6b7280; font-weight: 600; }
+    .hca-price-row__value { font-size: 20px; font-weight: 800; color: #111827; }
 
-  // ---------------------------
-  // Formatting (date range + price)
-  // ---------------------------
-  function formatAusDateTime(isoString) {
-    if (!isoString) return "";
-    var d = new Date(isoString);
-    if (isNaN(d)) return "";
-    var hasTime = !(d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0);
-    var datePart = new Intl.DateTimeFormat('en-AU',{day:'2-digit',month:'short',year:'numeric'}).format(d);
-    if (!hasTime) return datePart;
-    var timePart = new Intl.DateTimeFormat('en-AU',{hour:'numeric',minute:'2-digit',hour12:true}).format(d);
-    return datePart + " " + timePart;
-  }
-  (function setRangeText(){
-    var el = document.getElementById('hitCourseRange');
-    if (!el) return;
-    var startIso = el.getAttribute('data-start');
-    var endIso = el.getAttribute('data-end');
-    var startText = formatAusDateTime(startIso);
-    var endText = formatAusDateTime(endIso);
-    el.textContent = (startText && endText) ? (startText + " — " + endText) : (startText || endText || "");
-  })();
+    /* What happens next */
+    .hca-next {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .hca-next__title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+    .hca-next__body { font-size: 14px; color: #374151; line-height: 1.6; margin: 0; }
 
-  function toNumber(v){
-    if (v === null || v === undefined) return null;
-    var s = v.toString().trim();
-    if (!s) return null;
-    s = s.replace(/[^0-9.\-]/g, '');
-    if (!s) return null;
-    var n = parseFloat(s);
-    return isNaN(n) ? null : n;
-  }
-  function formatCurrencySmart(n){
-    if (n === null || n === undefined) return '';
-    var rounded2 = Math.round(n * 100) / 100;
-    var cents = Math.round((rounded2 - Math.floor(rounded2)) * 100);
-    if (cents === 0) return '$' + Math.round(rounded2).toString();
-    return '$' + rounded2.toFixed(2);
-  }
-  (function setPriceText(){
-    var el = document.getElementById('hitOfferingPrice');
-    if(!el) return;
-    var raw = el.getAttribute('data-price') || '';
-    var n = toNumber(raw);
-    if(n === null || n <= 0) return;
-    el.textContent = formatCurrencySmart(n);
-  })();
+    /* 2-col field row */
+    .hit-form__row--2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px) { .hit-form__row--2col { grid-template-columns: 1fr; } }
 
-  // ---------------------------
-  // CSRF token (ONE getter, cached; prevents decrypt errors)
-  // Prefer shell.getTokenDeferred if available; otherwise tokenhtml.
-  // ---------------------------
-  var _csrfPromise = null;
+    /* Required asterisk */
+    .hit-label__required { color: #dc2626; margin-left: 2px; }
+    </style>
 
-  function parseTokenHtml(html){
-    var doc = new DOMParser().parseFromString(html, "text/html");
-    var input = doc.querySelector("input[name='__RequestVerificationToken']");
-    return input ? ((input.getAttribute("value") || input.value || "").trim()) : "";
-  }
+    <script>
+    (function () {
 
-  async function getCsrfToken(){
-    if (_csrfPromise) return _csrfPromise;
+      var DEBUG = {% if DEBUG %}true{% else %}false{% endif %};
 
-    _csrfPromise = (async function(){
-      // A) shell token (Microsoft’s common pattern for Power Pages Web API) [2](https://teams.microsoft.com/l/entity/2e3a628d-6f54-4100-9e7a-f00bc3621a85/MyLearning?context=%7b%22subEntityId%22%3a%7b%22learningObjectId%22%3a%224a2fa62c-b3ba-4e76-937f-4132410b7588%22%7d%7d)
-      if (window.shell && typeof window.shell.getTokenDeferred === "function") {
-        dbg("CSRF source: shell.getTokenDeferred()");
-        var t = await new Promise(function(resolve, reject){
-          window.shell.getTokenDeferred().done(resolve).fail(function(){ reject(new Error("shell.getTokenDeferred failed")); });
-        });
-        t = (t || "").toString().trim();
-        if (t) return t;
+      function dbg(label, data) {
+        if (!DEBUG) return;
+        try { console.log('[course-access] ' + label, data !== undefined ? data : ''); } catch(e) {}
       }
 
-      // B) tokenhtml fallback (common SPA/custom template technique) [1](https://humanit365.sharepoint.com/teams/humanIT2.0/_layouts/15/Doc.aspx?sourcedoc=%7B1142881C-B6E9-4B8E-B892-9F4C19FB4C7F%7D&file=humanIT%20-%20CHA%20Discovery%20Recommendations%20-%20V2%20April%202024.docx&action=default&mobileredirect=true&DefaultItemOpen=1)
-      dbg("CSRF source: /_layout/tokenhtml (fallback)");
-      var res = await fetch("/_layout/tokenhtml", { credentials: "same-origin" });
-      var html = await res.text();
-      var tok = parseTokenHtml(html);
-      if(!tok) throw new Error("CSRF token not found in /_layout/tokenhtml.");
-      return tok;
+      /* -------------------------------------------------------
+         LIQUID VALUES
+         ------------------------------------------------------- */
+      var _acceptanceId = "{{ acc.hit_offeringacceptanceid | default: '' | escape }}";
+
+      var _cfg = document.getElementById('caConfig');
+      var _audience      = _cfg ? _cfg.dataset.audience      : '';
+      var _plan          = _cfg ? _cfg.dataset.plan          : '';
+      var _audienceValue = _cfg ? _cfg.dataset.audienceValue : '';
+      var _planValue     = _cfg ? _cfg.dataset.planValue     : '';
+      var _rawPrice      = _cfg ? _cfg.dataset.price         : '0';
+
+      dbg('init', { acceptanceId: _acceptanceId, audience: _audience, plan: _plan });
+
+      /* -------------------------------------------------------
+         FIELD GROUP CONFIGURATION
+         To add a new audience: add one entry here only.
+         ------------------------------------------------------- */
+      var AUDIENCE_CONFIG = {
+        'individual':          ['contact', 'postcode'],
+        'organisation':        ['contact', 'postcode', 'organisation'],
+        'organisation-member': ['contact', 'postcode', 'redemption']
+      };
+
+      var _activeGroups = AUDIENCE_CONFIG[_audience] || ['contact', 'postcode'];
+
+      /* Activate field groups */
+      document.querySelectorAll('[data-field-group]').forEach(function(el) {
+        var group = el.dataset.fieldGroup;
+        var active = _activeGroups.indexOf(group) !== -1;
+        el.hidden = !active;
+        /* Disable required on inputs in hidden groups so browser validation doesn't block submit */
+        if (!active) {
+          el.querySelectorAll('[required]').forEach(function(input) {
+            input.removeAttribute('required');
+          });
+        }
+      });
+
+      dbg('activeGroups', _activeGroups);
+
+      /* -------------------------------------------------------
+         PRICE DISPLAY
+         ------------------------------------------------------- */
+      (function() {
+        var el = document.getElementById('caPriceDisplay');
+        if (!el) return;
+        var raw = parseFloat(_rawPrice);
+        if (!isNaN(raw) && raw > 0) {
+          var cents = Math.round((raw - Math.floor(raw)) * 100);
+          el.textContent = '$' + (cents === 0 ? Math.round(raw).toString() : raw.toFixed(2));
+        }
+      })();
+
+      /* -------------------------------------------------------
+         ERROR DISPLAY (donation-style error summary)
+         ------------------------------------------------------- */
+      var _errSummary = document.getElementById('caErrSummary');
+      var _errList    = document.getElementById('caErrList');
+
+      function clearErrors() {
+        if (_errSummary) _errSummary.hidden = true;
+        if (_errList)    _errList.innerHTML = '';
+        document.querySelectorAll('.hit-error-message').forEach(function(p) {
+          p.hidden = true;
+          p.textContent = '';
+        });
+        document.querySelectorAll('.hit-input').forEach(function(i) {
+          i.setAttribute('aria-invalid', 'false');
+        });
+      }
+
+      function addError(inputId, errId, message) {
+        var input = document.getElementById(inputId);
+        var errEl = document.getElementById(errId);
+        if (input) input.setAttribute('aria-invalid', 'true');
+        if (errEl) { errEl.textContent = message; errEl.hidden = false; }
+        if (_errList) {
+          var li = document.createElement('li');
+          li.textContent = message;
+          _errList.appendChild(li);
+        }
+      }
+
+      function showSummary(firstInputId) {
+        if (_errSummary) {
+          _errSummary.hidden = false;
+          _errSummary.setAttribute('tabindex', '-1');
+          _errSummary.focus();
+        }
+        // Move focus to first invalid field after summary is shown
+        var first = document.getElementById(firstInputId);
+        if (first) first.focus();
+      }
+
+      /* -------------------------------------------------------
+         HELPERS
+         ------------------------------------------------------- */
+      function val(id) {
+        var el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+      }
+
+      function isGroupActive(group) {
+        return _activeGroups.indexOf(group) !== -1;
+      }
+
+      function setSubmitting(busy) {
+        var btn = document.getElementById('caSubmitBtn');
+        if (!btn) return;
+        btn.disabled = busy;
+        btn.textContent = busy ? '{{ submittingButtonText | escape }}' : '{{ submitButtonText | escape }}';
+        btn.classList.toggle('is-loading', busy);
+      }
+
+      /* -------------------------------------------------------
+         CSRF TOKEN (EOI pattern: shell first, tokenhtml fallback)
+         Result cached to prevent multiple requests.
+         ------------------------------------------------------- */
+      var _csrfPromise = null;
+
+      function parseTokenHtml(html) {
+        var doc = new DOMParser().parseFromString(html, 'text/html');
+        var input = doc.querySelector("input[name='__RequestVerificationToken']");
+        return input ? (input.getAttribute('value') || input.value || '').trim() : '';
+      }
+
+      async function getCsrfToken() {
+        if (_csrfPromise) return _csrfPromise;
+        _csrfPromise = (async function() {
+          if (window.shell && typeof window.shell.getTokenDeferred === 'function') {
+            dbg('CSRF: shell.getTokenDeferred');
+            try {
+              var t = await new Promise(function(resolve, reject) {
+                window.shell.getTokenDeferred()
+                  .done(resolve)
+                  .fail(function() { reject(new Error('shell.getTokenDeferred failed')); });
+              });
+              t = (t || '').toString().trim();
+              if (t) return t;
+            } catch(e) { dbg('CSRF: shell failed, falling back'); }
+          }
+          dbg('CSRF: /_layout/tokenhtml fallback');
+          var res = await fetch('/_layout/tokenhtml', { credentials: 'same-origin' });
+          var html = await res.text();
+          var tok = parseTokenHtml(html);
+          if (!tok) throw new Error('CSRF token not found in /_layout/tokenhtml.');
+          return tok;
+        })();
+        return _csrfPromise;
+      }
+
+      /* -------------------------------------------------------
+         VALIDATION
+         ------------------------------------------------------- */
+      function validate() {
+        clearErrors();
+        var errors = [];
+
+        /* Always required */
+        if (!val('caFirstName')) errors.push({ id: 'caFirstName', eid: 'caFirstNameErr', msg: 'First name is required.' });
+        if (!val('caLastName'))  errors.push({ id: 'caLastName',  eid: 'caLastNameErr',  msg: 'Last name is required.' });
+        if (!val('caEmail'))     errors.push({ id: 'caEmail',     eid: 'caEmailErr',     msg: 'Email address is required.' });
+        if (!val('caPostcode'))  errors.push({ id: 'caPostcode',  eid: 'caPostcodeErr',  msg: 'Postcode is required.' });
+
+        /* Audience: organisation */
+        if (isGroupActive('organisation')) {
+          if (!val('caOrgName')) errors.push({ id: 'caOrgName', eid: 'caOrgNameErr', msg: 'Organisation name is required.' });
+          if (!val('caOrgRole')) errors.push({ id: 'caOrgRole', eid: 'caOrgRoleErr', msg: 'Primary contact role is required.' });
+        }
+
+        /* Audience: organisation-member */
+        if (isGroupActive('redemption')) {
+          if (!val('caRedemption')) errors.push({ id: 'caRedemption', eid: 'caRedemptionErr', msg: 'Redemption code is required.' });
+        }
+
+        if (errors.length > 0) {
+          errors.forEach(function(e) { addError(e.id, e.eid, e.msg); });
+          showSummary(errors[0].id);
+          return false;
+        }
+        return true;
+      }
+
+      /* -------------------------------------------------------
+         API ERROR PARSING
+         ------------------------------------------------------- */
+      async function parseApiError(res) {
+        try {
+          var d = await res.json();
+          if (d && d.error && d.error.message) return d.error.message;
+        } catch(e) {}
+        return 'An error occurred. Please try again.';
+      }
+
+      /* -------------------------------------------------------
+         EXTENSION HOOK — ETrainU integration
+         Called after successful PATCH, before redirect.
+         Do not implement integrations here — route via Power Automate.
+         Replace stub body when ready.
+
+         Integration reference:
+           Individual + PWD        → Create Participant, Assign PWD access
+           Organisation + Partner  → Create Organisation, Generate Redemption Code
+           Org Member + Org Member → Validate Code, Create Participant, Associate to Org
+         ------------------------------------------------------- */
+      function onAcceptanceSaved(acceptanceId, audience, plan) {
+        dbg('onAcceptanceSaved (stub)', { acceptanceId: acceptanceId, audience: audience, plan: plan });
+      }
+
+      /* -------------------------------------------------------
+         PLATFORM EVENT (EOI convention)
+         ------------------------------------------------------- */
+      function dispatchSavedEvent(acceptanceId, payload) {
+        try {
+          window.dispatchEvent(new CustomEvent('hit:acceptance:saved', {
+            detail: {
+              acceptanceId: acceptanceId,
+              payload: payload,
+              template: 'sections--acceptance-course',
+              audience: _audience,
+              plan: _plan
+            }
+          }));
+        } catch(e) {}
+      }
+
+      /* -------------------------------------------------------
+         REDIRECT — back through router (donation retry pattern)
+         Power Automate sets PENDING_PAYMENT or COMPLETED;
+         router retry loop detects the status change.
+         ------------------------------------------------------- */
+      function redirectToRouter() {
+        window.location.href = '/accept/?acceptanceid=' + encodeURIComponent(_acceptanceId)
+          + '&waitforpayment=1&routeattempt=0&_ts=' + Date.now();
+      }
+
+      /* -------------------------------------------------------
+         SUBMIT HANDLER
+         ------------------------------------------------------- */
+      var _submitBtn = document.getElementById('caSubmitBtn');
+
+      if (_submitBtn) {
+        _submitBtn.addEventListener('click', async function() {
+
+          if (!validate()) return;
+
+          setSubmitting(true);
+
+          try {
+            var token = await getCsrfToken();
+
+            /* Build payload — always-included fields */
+            var payload = {
+              hit_firstname:            val('caFirstName'),
+              hit_lastname:             val('caLastName'),
+              hit_email:                val('caEmail'),
+              hit_mobilephone:          val('caMobile') || null,
+              hit_postcode:             val('caPostcode'),
+              hit_courseaccessaudience: parseInt(_audienceValue, 10) || null,
+              hit_courseaccessplan:     parseInt(_planValue,     10) || null
+            };
+
+            /* Audience-conditional fields (only from active groups) */
+            if (isGroupActive('organisation')) {
+              payload.hit_organisationinput = val('caOrgName');
+              payload.hit_contactroleinput  = val('caOrgRole');
+            }
+            if (isGroupActive('redemption')) {
+              payload.hit_redemptioncode = val('caRedemption');
+            }
+
+            dbg('PATCH payload', payload);
+
+            /* PATCH the existing acceptance record */
+            var response = await fetch(
+              '/_api/hit_offeringacceptances(' + _acceptanceId + ')',
+              {
+                method: 'PATCH',
+                credentials: 'same-origin',
+                headers: {
+                  'Content-Type': 'application/json',
+                  '__RequestVerificationToken': token,
+                  'If-Match': '*'
+                },
+                body: JSON.stringify(payload)
+              }
+            );
+
+            if (!response.ok) {
+              var errMsg = await parseApiError(response);
+              dbg('PATCH failed', { status: response.status, msg: errMsg });
+              addError('caFirstName', 'caFirstNameErr', errMsg);
+              if (_errList) {
+                _errList.innerHTML = '';
+                var li = document.createElement('li');
+                li.textContent = errMsg;
+                _errList.appendChild(li);
+              }
+              if (_errSummary) { _errSummary.hidden = false; _errSummary.focus(); }
+              setSubmitting(false);
+              return;
+            }
+
+            dbg('PATCH success', '✅ acceptance updated');
+
+            /* Platform event */
+            dispatchSavedEvent(_acceptanceId, payload);
+
+            /* ETrainU hook (stub — implement via Power Automate) */
+            onAcceptanceSaved(_acceptanceId, _audience, _plan);
+
+            /* Redirect through router — Power Automate handles status */
+            redirectToRouter();
+
+          } catch(err) {
+            console.error('[course-access] submission error:', err);
+            if (_errList) {
+              _errList.innerHTML = '';
+              var li = document.createElement('li');
+              li.textContent = 'An unexpected error occurred. Please try again.';
+              _errList.appendChild(li);
+            }
+            if (_errSummary) { _errSummary.hidden = false; _errSummary.focus(); }
+            setSubmitting(false);
+          }
+
+        });
+      }
+
     })();
+    </script>
 
-    var resolved = await _csrfPromise;
-    dbg("CSRF token resolved", { present: !!resolved, length: (resolved || "").length });
-    return resolved;
-  }
-
-  // ---------------------------
-  // Locked-in constants + field names
-  // ---------------------------
-  var ENTITYSET_ACCEPTANCE = "hit_offeringacceptances";
-  var ENTITYSET_OFFERING   = "hit_offerings";
-
-  // Donate template insight: use navigation/schema name for bind
-  var BIND_OFFERING = "hit_Offering@odata.bind";
-
-  var STATUS_DRAFT = 815390000;
-  var PAYMENT_URL_BASE = "/Payment/?acceptanceid=";
-
-  // Update ONLY these if your schema logical names differ
-  var F = {
-    firstname: "hit_firstname",
-    lastname: "hit_lastname",
-    email: "hit_email",
-    mobile: "hit_mobilephone",
-    quantity: "hit_quantity",
-    unitprice: "hit_unitprice",
-    baseamount: "hit_baseamount",
-    totalamount: "hit_totalamounteffective",
-    acceptancestatus: "hit_acceptancestatus",
-    clienttoken: "hit_clienttoken"
-  };
-
-  function makeGuid(){
-    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random()*16|0, v = c=='x' ? r : (r&0x3|0x8);
-      return v.toString(16);
-    });
-  }
-
-  function getQty(){
-    var el = document.getElementById('hit_quantity');
-    var n = parseInt((el && el.value ? el.value : "1"), 10);
-    if(isNaN(n) || n < 1) n = 1;
-    if(el) el.value = n;
-    return n;
-  }
-
-  function buildPayload(offeringId, fixedPrice, qty, firstName, lastName, email, mobile){
-    var unit = toNumber(fixedPrice);
-    if (unit === null) unit = 0;
-
-    qty = parseInt(qty, 10);
-    if (isNaN(qty) || qty < 1) qty = 1;
-
-    var base = Number(unit) * Number(qty);
-    var clientToken = makeGuid();
-
-    var p = {};
-
-    // ✅ Offering lookup bind MUST use navigation/schema name (Donate pattern)
-    p["hit_Offering@odata.bind"] = "/hit_offerings(" + offeringId + ")";
-
-    // ✅ Staging identity fields (Flow resolves Contact)
-    p["hit_firstname"] = firstName;
-    p["hit_lastname"]  = lastName;
-    p["hit_email"]     = email;
-    if (mobile) p["hit_mobilephone"] = mobile;
-
-    // ✅ Quantity + pricing (LOCKED IN)
-    p["hit_quantity"]    = qty;
-    p["hit_unitprice"]   = Number(unit);
-    p["hit_baseamount"]  = Number(base);
-    p["hit_totalamounteffective"] = Number(base);
-
-    // ✅ Lifecycle + token (LOCKED IN)
-    p["hit_acceptancestatus"] = STATUS_DRAFT;
-    p["hit_clienttoken"]      = clientToken;
-
-    // Optional but helpful for downstream routing
-    p["hit_paymentrequired"] = (Number(base) > 0);
-
-    return { payload: p, clientToken: clientToken };
-  }
-
-  function extractGuidFromHeader(entityIdHeader){
-    if(!entityIdHeader) return "";
-    var m = entityIdHeader.match(/\(([0-9a-fA-F-]{36})\)/);
-    if(m) return m[1];
-    var m2 = entityIdHeader.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-    return m2 ? m2[0] : "";
-  }
-
-  async function createAcceptance(payload){
-    var token = await getCsrfToken();
-
-    var res = await fetch("/_api/" + ENTITYSET_ACCEPTANCE, {
-      method: "POST",
-      credentials: "same-origin",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "OData-Version": "4.0",
-        "OData-MaxVersion": "4.0",
-        "__RequestVerificationToken": token,
-        "Prefer": "return=representation"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    var raw = "";
-    try { raw = await res.text(); } catch(e){ raw = ""; }
-
-    var entityIdHeader =
-      res.headers.get("OData-EntityId") ||
-      res.headers.get("odata-entityid") ||
-      res.headers.get("Location") ||
-      res.headers.get("location") ||
-      "";
-
-    dbg("Create acceptance response", {
-      ok: res.ok,
-      status: res.status,
-      entityIdHeader: entityIdHeader || "(none)",
-      rawPreview: raw ? raw.substring(0, 350) : "(empty body)"
-    });
-
-    if(!res.ok){
-      throw new Error(raw || ("HTTP " + res.status));
-    }
-
-    var obj = null;
-    if(raw && raw.trim()){
-      try { obj = JSON.parse(raw); } catch(e){ obj = null; }
-    }
-
-    var acceptanceId = (obj && (obj.hit_offeringacceptanceid || obj.id)) || extractGuidFromHeader(entityIdHeader);
-    return acceptanceId;
-  }
-
-  // ---------------------------
-  // Submit
-  // ---------------------------
-  var btn = document.getElementById('hitSubmitBtn');
-  if (!btn) return;
-
-  btn.addEventListener('click', async function () {
-    clearAlert();
-    if (DEBUG && dbgEl) { dbgEl.style.display = 'none'; dbgEl.textContent = ''; }
-    btn.disabled = true;
-
-    try{
-      var offeringId = document.getElementById('hit_offeringid')?.value?.trim();
-      var fixedPrice = document.getElementById('hit_fixedprice')?.value;
-      var firstName  = document.getElementById('hit_firstname')?.value?.trim();
-      var lastName   = document.getElementById('hit_lastname')?.value?.trim();
-      var email      = document.getElementById('hit_email')?.value?.trim();
-      var mobile     = document.getElementById('hit_mobilephone')?.value?.trim();
-      var qty        = getQty();
-
-      if(!offeringId) throw new Error("Missing offeringid.");
-      if(!firstName || !lastName || !email) throw new Error("Please complete First name, Last name, and Email.");
-
-      var built = buildPayload(offeringId, fixedPrice, qty, firstName, lastName, email, mobile);
-      dbg("POST payload", built.payload);
-
-      var acceptanceId = await createAcceptance(built.payload);
-      if(!acceptanceId) throw new Error("Acceptance created but acceptanceId could not be resolved.");
-
-      // Redirect with token (Donate pattern)
-      window.location.href = PAYMENT_URL_BASE + encodeURIComponent(acceptanceId) + "&token=" + encodeURIComponent(built.clientToken);
-
-    } catch(e){
-      showAlert("Registration failed: " + (e.message || e), "error");
-      dbg("ERROR", { message: e.message, stack: e.stack });
-    } finally {
-      btn.disabled = false;
-    }
-  });
-
-})();
-</script>
+  {% endif %}
+{% endif %}

@@ -366,7 +366,7 @@ hit_priceoption:
 (function(){
   var ROUTES = {
     donate:      '/Donate/',
-    course:      '/Courses/Course-Registration/',
+    course:      '/Course-Access/',
     event:       '/Events/Event-Registration/',
     eventsHome:  '/Events/',
     offerings:   '/Offerings/',
@@ -374,7 +374,8 @@ hit_priceoption:
     volunteer:   '/Volunteer/Volunteer-EOI/',
     resource:    '/Resources/Download/',
     sponsorship: '/Sponsorship/Enquire/',
-    eoi:         '/Enquire/'
+    eoi:         '/Enquire/',
+    venue:       '/Venue-Booking/'
   };
 
   var TYPE_DONATION    = 815390000;
@@ -385,6 +386,7 @@ hit_priceoption:
   var TYPE_RESOURCE    = 815390005;
   var TYPE_SPONSORSHIP = 815390006;
   var TYPE_EOI         = 815390007;
+  var TYPE_VENUE       = 815390008;
 
   var PRICING_FREE                 = 815390002;
   var PRICING_FIXED_ONEOFF         = 815390000;
@@ -483,6 +485,9 @@ hit_priceoption:
 
   var isEOI =
     (offeringTypeValue === TYPE_EOI) || isLabel('Expression of Interest', offeringTypeLabel);
+
+  var isVenue =
+    (offeringTypeValue === TYPE_VENUE) || isLabel('Venue', offeringTypeLabel);
 
   var isFree = (pricingModelValue === PRICING_FREE);
 
@@ -692,6 +697,13 @@ console.groupEnd();
 
     if(isEOI){
       window.location.href = ROUTES.eoi
+        + '?offeringid=' + encodeURIComponent(offeringId)
+        + '&slug=' + encodeURIComponent(slug);
+      return;
+    }
+
+    if(isVenue){
+      window.location.href = ROUTES.venue
         + '?offeringid=' + encodeURIComponent(offeringId)
         + '&slug=' + encodeURIComponent(slug);
       return;
