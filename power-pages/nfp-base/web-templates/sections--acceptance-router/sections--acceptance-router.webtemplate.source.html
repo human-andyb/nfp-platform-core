@@ -304,7 +304,7 @@ sections--acceptance-router (DEBUG HARDENED)
               Include: sections--acceptance-venue
             </div>
           {% endif %}
-          {% include 'sections--acceptance-venue' %}
+          {% include 'sections--acceptance-venue' acceptanceId: acceptanceId debug: DEBUG %}
 
         {% else %}
           {% if DEBUG %}

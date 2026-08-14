@@ -7,8 +7,8 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
 - Debug panel enabled via ?debug=1
 {% endcomment %}
 
-{% assign debugMode = request.params.debug | default: '' | strip %}
-{% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
+{% assign debugMode = debug | default: request.params.debug | default: '' | strip %}
+{% assign acceptanceId = acceptanceId | default: request.params.acceptanceid | default: '' | strip %}
 
 {% if debugMode == '1' %}
   <div style="padding:10px 12px;margin:10px 0;border-radius:10px;background:#eef2ff;border:1px solid #c7d2fe;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace;font-size:12px;">
@@ -821,62 +821,101 @@ function clearErr(){
   box.style.display="none";
 }
 
+/* ---------- CSRF TOKEN HELPER ---------- */
+async function getCsrfToken() {
+  try {
+    const response = await fetch("/_api/GetAccessToken", {
+      method: "POST",
+      credentials: "same-origin"
+    });
+    const data = await response.json();
+    return data.value;
+  } catch (error) {
+    console.error("CSRF token fetch failed", error);
+    return null;
+  }
+}
+
+async function parseErrorMessage(response) {
+  try {
+    const data = await response.json();
+    if (data && data.error && data.error.message) {
+      return data.error.message;
+    }
+  } catch (e) {}
+  return "An error occurred. Please try again.";
+}
+
 /* ---------- SUBMIT ---------- */
-document.getElementById("venueBookingForm").addEventListener("submit", function(e){
+document.getElementById("venueBookingForm").addEventListener("submit", async function(e){
   e.preventDefault();
   clearErr();
 
   const acceptanceId = _acceptanceId;
+
+  if (!acceptanceId) {
+    showErr("Acceptance ID is missing.");
+    return;
+  }
 
   const firstName = document.getElementById("firstName").value.trim();
   const lastName  = document.getElementById("lastName").value.trim();
   const email     = document.getElementById("email").value.trim();
   const mobile    = document.getElementById("mobile").value.trim();
 
-  const date = document.getElementById("bookingDate").value;
-  const startTime = document.getElementById("startTime").value;
-  const endTime = document.getElementById("endTime").value;
+  if (!firstName) { showErr("First name is required."); return; }
+  if (!lastName)  { showErr("Last name is required.");  return; }
+  if (!email)     { showErr("Email is required.");      return; }
 
-  const start = new Date(`${date}T${startTime}`);
-  const end = new Date(`${date}T${endTime}`);
+  dbgLog("submit", { acceptanceId, firstName, lastName, email });
 
-  const guests = parseInt(document.getElementById("guestCount").value || "1",10);
-  const eventType = document.getElementById("eventType").value.trim();
-  const notes = document.getElementById("notes").value.trim();
+  try {
+    const token = await getCsrfToken();
 
-  dbgLog("submit", { acceptanceId, start, end });
+    if (!token) {
+      showErr("Security token could not be loaded. Please refresh the page and try again.");
+      return;
+    }
 
-  /* ---------- PATCH ACCEPTANCE ---------- */
- var payload = {
-  "hit_VenueSpace@odata.bind": "/hit_venuespaces(" + _vsId + ")",
-  "hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(" + acceptanceId + ")",
-  "hit_startdatetime": start.toISOString(),
-  "hit_enddatetime": end.toISOString(),
-  "hit_guestcount": guests,
-  //"hit_venueeventtype": eventType,
-  "hit_notes": notes
-};
+    const payload = {
+      "hit_firstname": firstName,
+      "hit_lastname": lastName,
+      "hit_email": email,
+      "hit_mobilephone": mobile || null,
+      "hit_acceptancestatus": 815390002
+    };
 
-dbgLog("create payload", payload);
+    dbgLog("PATCH payload", payload);
 
-shell.ajaxSafePost({
-  url: "/_api/hit_venuespacebookingrequests",
-  type: "POST",
-  contentType: "application/json",
-  data: JSON.stringify(payload)
-})
-.done(function(){
+    const response = await fetch(
+      "/_api/hit_offeringacceptances(" + acceptanceId + ")",
+      {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          "__RequestVerificationToken": token,
+          "If-Match": "*"
+        },
+        body: JSON.stringify(payload)
+      }
+    );
 
-  dbgLog("booking","✅ created");
-  window.location.href = "/confirmation?acceptanceId=" + acceptanceId;
+    if (!response.ok) {
+      const errorMessage = await parseErrorMessage(response);
+      showErr(errorMessage || "Booking failed. Please try again.");
+      dbgLog("PATCH failed", { status: response.status });
+      return;
+    }
 
-})
-.fail(function(xhr){
+    dbgLog("PATCH success", "✅ Acceptance updated to Pending Approval");
 
-  console.error("BOOKING FAILED", xhr.status, xhr.responseText);
-  showErr("Booking failed — see console");
+    window.location.href = "/confirmation/?acceptanceId=" + acceptanceId;
 
-});
+  } catch (error) {
+    console.error("Booking submission error:", error);
+    showErr("An unexpected error occurred. Please try again.");
+  }
 });
 
 });

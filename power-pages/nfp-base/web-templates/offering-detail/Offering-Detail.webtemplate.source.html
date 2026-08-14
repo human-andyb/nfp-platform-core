@@ -165,6 +165,8 @@ hit_priceoption:
       {% assign defaultCta = 'Enquire' %}
     {% elsif offeringTypeValue == TYPE_EOI or offeringTypeLabel == 'Expression of Interest' %}
       {% assign defaultCta = 'Register interest' %}
+    {% elsif offeringTypeValue == TYPE_VENUE or offeringTypeLabel == 'Venue' %}
+      {% assign defaultCta = 'Book Venue' %}
     {% endif %}
     {% if ctaLabel == blank %}{% assign ctaLabel = defaultCta %}{% endif %}
 
