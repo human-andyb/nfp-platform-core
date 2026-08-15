@@ -149,11 +149,9 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
           <div class="hit-card hit-acceptance__summary-card">
 
             {% if heroImageUrl != '' %}
-              <div class="hca-hero">
-                <img src="{{ heroImageUrl | escape }}"
-                     alt="{{ offeringName | escape }}"
-                     class="hca-hero__img" />
-              </div>
+              <img src="{{ heroImageUrl | escape }}"
+                   alt="{{ offeringName | escape }}"
+                   style="margin: -20px -20px 20px; overflow: hidden; width: 100%; display: block; aspect-ratio: 16/9; object-fit: cover;" />
             {% endif %}
 
             <div class="hit-acceptance__eyebrow">{{ acceptanceTypeLabel | escape }}</div>
@@ -161,31 +159,31 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
             <h1 class="hit-acceptance__title">{{ offeringName | escape }}</h1>
 
             {% if aud_label != '' or plan_label != '' %}
-              <div class="hca-access-badges">
+              <p style="display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px;">
                 {% if aud_label != '' %}
-                  <span class="hca-badge">{{ aud_label | escape }}</span>
+                  <span style="display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb;">{{ aud_label | escape }}</span>
                 {% endif %}
                 {% if plan_label != '' %}
-                  <span class="hca-badge hca-badge--plan">{{ plan_label | escape }}</span>
+                  <span style="display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">{{ plan_label | escape }}</span>
                 {% endif %}
-              </div>
+              </p>
             {% endif %}
 
             {% if offeringDesc != '' %}
-              <div class="hit-acceptance__lead">{{ offeringDesc }}</div>
+              <div style="font-size: 14px; line-height: 1.7; color: #374151; margin-bottom: 14px;">{{ offeringDesc }}</div>
             {% endif %}
 
-            <div class="hca-price-row">
-              <span class="hca-price-row__label">Cost</span>
-              <span class="hca-price-row__value" id="caPriceDisplay" data-price="{{ fixedPrice | escape }}">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-top: 1px solid #f0f0f0; margin-top: 14px;">
+              <span style="font-size: 13px; color: #6b7280; font-weight: 600;">Cost</span>
+              <span id="caPriceDisplay" data-price="{{ fixedPrice | escape }}" style="font-size: 20px; font-weight: 800; color: #111827;">
                 {% if fixedPrice > 0 %}{% else %}Free{% endif %}
               </span>
             </div>
 
             {% if whatHappensNext != '' %}
-              <div class="hca-next">
-                <div class="hca-next__title">What happens next</div>
-                <p class="hca-next__body">{{ whatHappensNext | escape }}</p>
+              <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid #f0f0f0;">
+                <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 6px;">What happens next</div>
+                <p style="font-size: 14px; color: #374151; line-height: 1.6; margin: 0;">{{ whatHappensNext | escape }}</p>
               </div>
             {% endif %}
 
@@ -196,14 +194,13 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
              RIGHT: REGISTRATION FORM
              ===================================================== -->
         <main class="hit-acceptance__right">
-          <div class="hit-card hit-form-panel">
+          <div class="hit-card hit-form-card">
 
             <h2 class="hit-heading">{{ formTitle | escape }}</h2>
-            <p class="hit-subtitle">{{ formSubtitle | escape }}</p>
+            <p style="margin: 6px 0 0; color: #666; font-size: 0.95em;">{{ formSubtitle | escape }}</p>
 
-            <div class="hit-status-pill" aria-label="Current step">
-              <span class="hit-status-pill__indicator" aria-hidden="true"></span>
-              <span>{{ progressText | escape }}</span>
+            <div style="margin: 16px 0; padding: 10px 0; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 12px; font-size: 13px; color: #6b7280; text-align: center;">
+              {{ progressText | escape }}
             </div>
 
             <input type="hidden" id="caAcceptanceId"
@@ -351,13 +348,14 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
 
             </form>
 
-            <p class="hit-privacy-text">
+            <p style="font-size: 12px; color: #6b7280; margin-top: 16px; margin-bottom: 16px;">
               Your information will only be used to process this registration.
             </p>
 
             <button type="button"
                     id="caSubmitBtn"
-                    class="hit-button hit-button--primary">
+                    class="hit-button hit-button--primary"
+                    style="width: 100%;">
               {{ submitButtonText | escape }}
             </button>
 
@@ -368,69 +366,9 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
     </div>
 
     <style>
-    /* ============================================================
-       COURSE ACCEPTANCE — supplementary styles
-       Builds on hit-acceptance platform base.
-       TODO: extract to css--site.css
-       ============================================================ */
-
-    /* Hero image */
-    .hca-hero { margin: -20px -20px 20px; overflow: hidden; }
-    .hca-hero__img { width: 100%; display: block; aspect-ratio: 16/9; object-fit: cover; }
-
-    /* Access badges */
-    .hca-access-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin: 8px 0 14px;
-    }
-    .hca-badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      background: #f3f4f6;
-      color: #374151;
-      border: 1px solid #e5e7eb;
-    }
-    .hca-badge--plan {
-      background: #eff6ff;
-      color: #1d4ed8;
-      border-color: #bfdbfe;
-    }
-
-    /* Price row */
-    .hca-price-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 10px 0;
-      border-top: 1px solid #f0f0f0;
-      margin-top: 14px;
-    }
-    .hca-price-row__label { font-size: 13px; color: #6b7280; font-weight: 600; }
-    .hca-price-row__value { font-size: 20px; font-weight: 800; color: #111827; }
-
-    /* What happens next */
-    .hca-next {
-      margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid #f0f0f0;
-    }
-    .hca-next__title {
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #6b7280;
-      margin-bottom: 6px;
-    }
-    .hca-next__body { font-size: 14px; color: #374151; line-height: 1.6; margin: 0; }
-
-    /* 2-col field row */
-    .hit-form__row--2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    /* 2-col field row — responsive grid */
+    .hit-form__row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .hit-form__row--2col { grid-template-columns: 1fr 1fr; }
     @media (max-width: 480px) { .hit-form__row--2col { grid-template-columns: 1fr; } }
 
     /* Required asterisk */
