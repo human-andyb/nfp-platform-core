@@ -4046,13 +4046,13 @@ button.hit-option-card.is-selected{
            DONATION SUMMARY
            ========================================================== */
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) :is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary) {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) :is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary) {
           padding: clamp(1.5rem, 4vw, 2.5rem);
           overflow: hidden;
           position: relative;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) :is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)::before {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) :is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)::before {
           content: "";
           position: absolute;
           top: 0;
@@ -4062,7 +4062,7 @@ button.hit-option-card.is-selected{
           background: var(--hit-brand-primary);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__eyebrow, .hit-membership-summary__eyebrow, .hit-sponsorship-summary__eyebrow, .hit-volunteer-summary__eyebrow) {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__eyebrow, .hit-membership-summary__eyebrow, .hit-sponsorship-summary__eyebrow, .hit-volunteer-summary__eyebrow) {
           margin: 0 0 var(--hit-space-3);
           color: var(--hit-brand-primary);
           font-size: .82rem;
@@ -4072,7 +4072,7 @@ button.hit-option-card.is-selected{
           text-transform: uppercase;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__title, .hit-membership-summary__title, .hit-sponsorship-summary__title, .hit-volunteer-summary__title) {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__title, .hit-membership-summary__title, .hit-sponsorship-summary__title, .hit-volunteer-summary__title) {
           margin: 0;
           color: var(--hit-text);
           font-size: clamp(2.15rem, 4vw, 3.25rem);
@@ -4081,7 +4081,7 @@ button.hit-option-card.is-selected{
           letter-spacing: -.035em;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__option, .hit-membership-summary__option, .hit-sponsorship-summary__option, .hit-volunteer-summary__option) {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__option, .hit-membership-summary__option, .hit-sponsorship-summary__option, .hit-volunteer-summary__option) {
           display: inline-flex;
           margin-top: var(--hit-space-3);
           padding: .45rem .75rem;
@@ -4094,7 +4094,7 @@ button.hit-option-card.is-selected{
           font-weight: 800;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__amount, .hit-membership-summary__amount, .hit-sponsorship-summary__amount, .hit-volunteer-summary__amount) {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__amount, .hit-membership-summary__amount, .hit-sponsorship-summary__amount, .hit-volunteer-summary__amount) {
           margin-top: var(--hit-space-7);
           color: var(--hit-brand-primary);
           font-size: clamp(3rem, 8vw, 4.75rem);
@@ -4103,7 +4103,7 @@ button.hit-option-card.is-selected{
           letter-spacing: -.045em;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__description, .hit-membership-summary__description, .hit-sponsorship-summary__description, .hit-volunteer-summary__description) {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__description, .hit-membership-summary__description, .hit-sponsorship-summary__description, .hit-volunteer-summary__description) {
           max-width: 38rem;
           margin-top: var(--hit-space-6);
           color: var(--hit-text-muted);
@@ -4111,7 +4111,7 @@ button.hit-option-card.is-selected{
           line-height: 1.7;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-benefit-list {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-benefit-list {
           margin: var(--hit-space-7) 0 0;
           padding: var(--hit-space-6) 0 0;
           border-top: 1px solid var(--hit-border);
@@ -4120,7 +4120,7 @@ button.hit-option-card.is-selected{
           list-style: none;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-benefit-list__item {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-benefit-list__item {
           display: flex;
           align-items: center;
           gap: var(--hit-space-3);
@@ -4130,7 +4130,7 @@ button.hit-option-card.is-selected{
           font-weight: 800;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-benefit-list__icon {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-benefit-list__icon {
           width: 24px;
           height: 24px;
           flex: 0 0 24px;
@@ -4188,11 +4188,11 @@ button.hit-option-card.is-selected{
            FORM CARD AND HEADINGS
            ========================================================== */
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-form-card {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-form-card {
           padding: clamp(1.5rem, 3vw, 2.25rem);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-heading {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-heading {
           margin: 0;
           color: var(--hit-text);
           font-size: clamp(2rem, 3vw, 2.35rem);
@@ -4201,7 +4201,7 @@ button.hit-option-card.is-selected{
           letter-spacing: -.035em;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-subtitle {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-subtitle {
           margin: var(--hit-space-3) 0 0;
           color: var(--hit-text-muted);
           font-size: 1rem;
@@ -4212,7 +4212,7 @@ button.hit-option-card.is-selected{
            STATUS PILL
            ========================================================== */
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-status-pill {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-status-pill {
           width: 100%;
           margin-top: var(--hit-space-5);
           padding: .75rem 1rem;
@@ -4228,7 +4228,7 @@ button.hit-option-card.is-selected{
           font-weight: 900;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-status-pill__indicator {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-status-pill__indicator {
           width: 10px;
           height: 10px;
           flex: 0 0 10px;
@@ -4240,55 +4240,55 @@ button.hit-option-card.is-selected{
            FORM
            ========================================================== */
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-form {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-form {
           margin-top: var(--hit-space-6);
           display: grid;
           gap: var(--hit-space-4);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-form-section {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-form-section {
           padding: var(--hit-space-5);
           border: 1px solid var(--hit-border);
           border-radius: var(--hit-radius-md);
           background: var(--hit-surface-soft);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-form-section--plain {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-form-section--plain {
           background: var(--hit-surface);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-form-section[hidden] {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-form-section[hidden] {
           display: none;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-field {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-field {
           display: grid;
           gap: .55rem;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-field + .hit-field {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-field + .hit-field {
           margin-top: var(--hit-space-4);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-field-row {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-field-row {
           display: grid;
           grid-template-columns: minmax(0, 1fr);
           gap: var(--hit-space-4);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-field-row--two {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-field-row--two {
           grid-template-columns: minmax(0, 1fr);
         }
 
         @media (min-width: 768px) {
-          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-field-row--two {
+          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-field-row--two {
             grid-template-columns:
               minmax(0, 1fr)
               minmax(0, 1fr);
           }
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-label {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-label {
           margin: 0;
           color: var(--hit-text);
           font-size: .92rem;
@@ -4296,13 +4296,13 @@ button.hit-option-card.is-selected{
           font-weight: 900;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-required {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-required {
           margin-left: .2rem;
           color: var(--hit-warning);
           font-weight: 950;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-help {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-help {
           margin: 0;
           color: var(--hit-text-muted);
           font-size: .88rem;
@@ -4313,7 +4313,7 @@ button.hit-option-card.is-selected{
            INPUTS
            ========================================================== */
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-input {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-input {
           width: 100%;
           min-height: 48px;
           padding: .85rem 1rem;
@@ -4332,13 +4332,13 @@ button.hit-option-card.is-selected{
             background-color .16s ease;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) textarea.hit-input {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) textarea.hit-input {
           min-height: 120px;
           border-radius: var(--hit-radius-md);
           resize: vertical;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) select.hit-input {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) select.hit-input {
           padding-right: 2.75rem;
           background-image:
             linear-gradient(45deg, transparent 50%, var(--hit-text-muted) 50%),
@@ -4350,17 +4350,17 @@ button.hit-option-card.is-selected{
           background-repeat: no-repeat;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-input:hover {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-input:hover {
           border-color: var(--hit-brand-primary);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-input:focus {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-input:focus {
           outline: none;
           border-color: var(--hit-brand-primary);
           box-shadow: 0 0 0 4px var(--hit-brand-primary-ring);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-input[aria-invalid="true"] {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-input[aria-invalid="true"] {
           border-color: var(--hit-danger);
           background: #fffafa;
           box-shadow: 0 0 0 3px rgba(180, 35, 24, .10);
@@ -4370,14 +4370,14 @@ button.hit-option-card.is-selected{
            CHECKBOX
            ========================================================== */
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-checkbox {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-checkbox {
           display: flex;
           align-items: flex-start;
           gap: var(--hit-space-3);
           cursor: pointer;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-checkbox__input {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-checkbox__input {
           width: 20px;
           height: 20px;
           flex: 0 0 20px;
@@ -4386,11 +4386,11 @@ button.hit-option-card.is-selected{
           cursor: pointer;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-checkbox__content {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-checkbox__content {
           min-width: 0;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-checkbox__label {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-checkbox__label {
           display: block;
           color: var(--hit-text);
           font-size: .96rem;
@@ -4399,7 +4399,7 @@ button.hit-option-card.is-selected{
           cursor: pointer;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-checkbox__help {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-checkbox__help {
           display: block;
           margin-top: .3rem;
           color: var(--hit-text-muted);
@@ -4412,7 +4412,7 @@ button.hit-option-card.is-selected{
            ERRORS
            ========================================================== */
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-error-summary {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-error-summary {
           margin-top: var(--hit-space-5);
           padding: var(--hit-space-4);
           border: 1px solid var(--hit-danger-border);
@@ -4421,11 +4421,11 @@ button.hit-option-card.is-selected{
           color: var(--hit-danger);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-error-summary[hidden] {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-error-summary[hidden] {
           display: none;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-error-summary__title {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-error-summary__title {
           margin: 0 0 var(--hit-space-2);
           color: var(--hit-danger);
           font-size: 1rem;
@@ -4433,14 +4433,14 @@ button.hit-option-card.is-selected{
           font-weight: 950;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-error-summary__list {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-error-summary__list {
           margin: 0;
           padding-left: 1.25rem;
           font-size: .9rem;
           line-height: 1.5;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-error-message {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-error-message {
           display: none;
           margin: 0;
           color: var(--hit-danger);
@@ -4453,11 +4453,11 @@ button.hit-option-card.is-selected{
            BUTTONS
            ========================================================== */
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-form-actions {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-form-actions {
           margin-top: var(--hit-space-2);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-button {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-button {
           width: 100%;
           min-height: 56px;
           padding: 1rem 1.5rem;
@@ -4480,42 +4480,42 @@ button.hit-option-card.is-selected{
             box-shadow .16s ease;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-button--primary {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-button--primary {
           background: var(--hit-brand-primary);
           color: #fff;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-button--primary:hover:not(:disabled) {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-button--primary:hover:not(:disabled) {
           background: var(--hit-brand-primary-hover);
           transform: translateY(-1px);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-button:focus,
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-button:focus-visible {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-button:focus,
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-button:focus-visible {
           outline: none;
           box-shadow: 0 0 0 4px var(--hit-brand-primary-ring);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-button:disabled {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-button:disabled {
           background: #E5E7EB;
           color: #64748B;
           cursor: not-allowed;
           transform: none;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-button.is-loading {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-button.is-loading {
           pointer-events: none;
           opacity: .82;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-button__loading {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-button__loading {
           display: none;
           align-items: center;
           justify-content: center;
           gap: var(--hit-space-2);
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-spinner {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-spinner {
           width: 16px;
           height: 16px;
           flex: 0 0 16px;
@@ -4531,7 +4531,7 @@ button.hit-option-card.is-selected{
           }
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-form-footnote {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-form-footnote {
           margin: var(--hit-space-3) 0 0;
           color: var(--hit-text-muted);
           font-size: .83rem;
@@ -4543,7 +4543,7 @@ button.hit-option-card.is-selected{
            DEBUG
            ========================================================== */
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-debug {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-debug {
           padding: 1rem;
           margin: 1rem 0;
           border: 1px solid var(--hit-border);
@@ -4559,21 +4559,21 @@ button.hit-option-card.is-selected{
            ========================================================== */
 
         @media (max-width: 767px) {
-          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-acceptance__grid {
+          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-acceptance__grid {
             padding-top: var(--hit-space-5);
             padding-bottom: 5rem;
           }
 
-          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) :is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary),
-          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-form-card {
+          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) :is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary),
+          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-form-card {
             padding: var(--hit-space-5);
           }
 
-          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-form-section {
+          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-form-section {
             padding: var(--hit-space-4);
           }
 
-          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__amount, .hit-membership-summary__amount, .hit-sponsorship-summary__amount, .hit-volunteer-summary__amount) {
+          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) :is(:is(.hit-donation-summary, .hit-membership-summary, .hit-sponsorship-summary, .hit-volunteer-summary)__amount, .hit-membership-summary__amount, .hit-sponsorship-summary__amount, .hit-volunteer-summary__amount) {
             margin-top: var(--hit-space-5);
           }
         }
@@ -4583,9 +4583,9 @@ button.hit-option-card.is-selected{
            ========================================================== */
 
         @media (prefers-reduced-motion: reduce) {
-          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) *,
-          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) *::before,
-          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) *::after {
+          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) *,
+          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) *::before,
+          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) *::after {
             scroll-behavior: auto !important;
             transition-duration: .01ms !important;
             animation-duration: .01ms !important;
