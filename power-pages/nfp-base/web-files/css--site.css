@@ -2058,7 +2058,6 @@ body {
   color:var(--hit-text-muted);
   font-size:1.05rem;
   line-height:1.65;
-  text-align:justify;
 }
 
 .hit-offering-detail .hit-offering__description p:first-child{
@@ -2067,11 +2066,6 @@ body {
 
 .hit-offering-detail .hit-offering__description p:last-child{
   margin-bottom:0;
-}
-
-/* Global description class for uniform text justification across all acceptance forms */
-.hit-description{
-  text-align:justify;
 }
 
 .hit-offering-detail .hit-card{
