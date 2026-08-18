@@ -159,7 +159,7 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
             <h1 class="hit-acceptance__title">{{ offeringName | escape }}</h1>
 
             {% if offeringDesc != '' %}
-              <div class="hit-description hit-acceptance__description">{{ offeringDesc }}</div>
+              <div class="hit-acceptance__description">{{ offeringDesc }}</div>
             {% endif %}
 
             <div class="hit-acceptance__cost-section">
@@ -438,6 +438,11 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
     /* ========================================
        FORM LAYOUT
        ======================================== */
+
+    /* Remove sibling margin inside 2-col row — prevents first name input stretching */
+    .hit-acceptance--course .hit-field-row .hit-field + .hit-field {
+      margin-top: 0;
+    }
     </style>
 
     <script>
