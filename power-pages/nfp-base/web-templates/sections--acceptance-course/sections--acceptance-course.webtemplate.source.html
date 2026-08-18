@@ -222,12 +222,10 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
                    ----------------------------------------------- -->
               <div class="hit-form-section" data-field-group="contact">
 
-                <div class="hit-form-section__title">Contact details</div>
-
-                <div class="hit-form__row hit-form__row--2col">
+                <div class="hit-field-row hit-field-row--two">
                   <div class="hit-field">
                     <label class="hit-label" for="caFirstName">
-                      First name <span class="hit-label__required" aria-hidden="true">*</span>
+                      First name <span class="hit-required" aria-hidden="true">*</span>
                     </label>
                     <input class="hit-input" type="text" id="caFirstName"
                            value="{{ acc.hit_firstname | default: '' | escape }}"
@@ -237,7 +235,7 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
                   </div>
                   <div class="hit-field">
                     <label class="hit-label" for="caLastName">
-                      Last name <span class="hit-label__required" aria-hidden="true">*</span>
+                      Last name <span class="hit-required" aria-hidden="true">*</span>
                     </label>
                     <input class="hit-input" type="text" id="caLastName"
                            value="{{ acc.hit_lastname | default: '' | escape }}"
@@ -249,7 +247,7 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
 
                 <div class="hit-field">
                   <label class="hit-label" for="caEmail">
-                    Email address <span class="hit-label__required" aria-hidden="true">*</span>
+                    Email address <span class="hit-required" aria-hidden="true">*</span>
                   </label>
                   <input class="hit-input" type="email" id="caEmail"
                          value="{{ acc.hit_email | default: '' | escape }}"
@@ -274,13 +272,12 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
 
                 <div class="hit-field">
                   <label class="hit-label" for="caPostcode">
-                    Postcode <span class="hit-label__required" aria-hidden="true">*</span>
+                    Postcode <span class="hit-required" aria-hidden="true">*</span>
                   </label>
                   <input class="hit-input" type="text" id="caPostcode"
                          value="{{ acc.hit_postcode | default: '' | escape }}"
                          autocomplete="postal-code"
                          inputmode="numeric" maxlength="4"
-                         style="max-width:120px;"
                          required aria-required="true" />
                   <p class="hit-error-message" id="caPostcodeErr" role="alert" hidden></p>
                 </div>
@@ -292,11 +289,9 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
                    ----------------------------------------------- -->
               <div class="hit-form-section" data-field-group="organisation" hidden>
 
-                <div class="hit-form-section__title">Organisation details</div>
-
                 <div class="hit-field">
                   <label class="hit-label" for="caOrgName">
-                    Organisation name <span class="hit-label__required" aria-hidden="true">*</span>
+                    Organisation name <span class="hit-required" aria-hidden="true">*</span>
                   </label>
                   <input class="hit-input" type="text" id="caOrgName"
                          value="{{ acc.hit_organisationinput | default: '' | escape }}"
@@ -306,7 +301,7 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
 
                 <div class="hit-field">
                   <label class="hit-label" for="caOrgRole">
-                    Primary contact role <span class="hit-label__required" aria-hidden="true">*</span>
+                    Primary contact role <span class="hit-required" aria-hidden="true">*</span>
                   </label>
                   <input class="hit-input" type="text" id="caOrgRole"
                          value="{{ acc.hit_contactroleinput | default: '' | escape }}"
@@ -321,11 +316,9 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
                    ----------------------------------------------- -->
               <div class="hit-form-section" data-field-group="redemption" hidden>
 
-                <div class="hit-form-section__title">Membership access</div>
-
                 <div class="hit-field">
                   <label class="hit-label" for="caRedemption">
-                    Redemption code <span class="hit-label__required" aria-hidden="true">*</span>
+                    Redemption code <span class="hit-required" aria-hidden="true">*</span>
                   </label>
                   <input class="hit-input" type="text" id="caRedemption"
                          value="{{ acc.hit_redemptioncode | default: '' | escape }}"
@@ -338,16 +331,15 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
 
             </form>
 
-            <p style="font-size: 12px; color: #6b7280; margin-top: 16px; margin-bottom: 16px;">
-              Your information will only be used to process this registration.
-            </p>
+            <p class="hit-form-footnote">Your information will only be used to process this registration.</p>
 
-            <button type="button"
-                    id="caSubmitBtn"
-                    class="hit-button hit-button--primary"
-                    style="width: 100%;">
-              {{ submitButtonText | escape }}
-            </button>
+            <div class="hit-form-actions">
+              <button type="button"
+                      id="caSubmitBtn"
+                      class="hit-button hit-button--primary">
+                {{ submitButtonText | escape }}
+              </button>
+            </div>
 
           </div>
         </main>
@@ -446,14 +438,6 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
     /* ========================================
        FORM LAYOUT
        ======================================== */
-
-    /* 2-col field row — responsive grid */
-    .hit-form__row { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .hit-form__row--2col { grid-template-columns: 1fr 1fr; }
-    @media (max-width: 480px) { .hit-form__row--2col { grid-template-columns: 1fr; } }
-
-    /* Required asterisk */
-    .hit-label__required { color: #dc2626; margin-left: 2px; }
     </style>
 
     <script>
