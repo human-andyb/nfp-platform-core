@@ -1,10 +1,18 @@
 {%- comment -%}
 components--web-nav-header
-Platform Route first, CMS fallback optional
-
-DEBUG:
-- Add ?navdebug=1 to any URL
+DSR TEMPORARY MENU (commented out original below)
 {%- endcomment -%}
+
+<ul class="hit-nav__menu" role="list">
+  <li class="hit-nav__item">
+    <a href="https://www.dsr.org.au/" class="hit-nav__link">DSR Home</a>
+  </li>
+</ul>
+
+{%- comment -%}
+===========================================
+ORIGINAL MENU CODE (TEMPORARILY DISABLED)
+===========================================
 
 {%- assign DEBUG = false -%}
 {%- if request.params.navdebug == '1' -%}{%- assign DEBUG = true -%}{%- endif -%}
@@ -69,7 +77,6 @@ menuFound={% if menuRecord %}YES{% else %}NO{% endif %}
 
       <order attribute="hit_sortorder" descending="false" />
 
-      <!-- Platform Route -->
       <link-entity name="hit_platformroute"
                    from="hit_platformrouteid"
                    to="hit_platformroute"
@@ -80,7 +87,6 @@ menuFound={% if menuRecord %}YES{% else %}NO{% endif %}
         <attribute name="hit_name" />
       </link-entity>
 
-      <!-- CMS fallback -->
       <link-entity name="mspp_webpage"
                    from="mspp_webpageid"
                    to="hit_webpage"
@@ -146,3 +152,6 @@ itemsCount={{ items | size }}
   </ul>
 
 {%- endif -%}
+
+END OF ORIGINAL MENU CODE
+{%- endcomment -%}
