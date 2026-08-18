@@ -1,38 +1,151 @@
- <div class="hit-card" style="padding:16px;">
-  <div style="font-weight:600;margin-bottom:6px;">
-    Preparing payment…
-  </div>
-  <div style="color:#667085;">
-    Please wait while we generate your secure payment session.
+<div class="hit-acceptance hit-acceptance--payment-preparing">
+  <div class="hit-acceptance__grid">
+
+    <aside class="hit-acceptance__left">
+      <div class="hit-card hit-acceptance__summary-card">
+        <div class="hit-acceptance__eyebrow">Payment</div>
+        <h1 class="hit-acceptance__title">Setting up your payment</h1>
+        <p style="font-size:14px;color:#374151;line-height:1.7;margin-top:8px;">
+          We're generating a secure payment session for your registration.
+          This usually takes just a few seconds.
+        </p>
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f0f0f0;">
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:#6b7280;margin-bottom:8px;">What happens next</div>
+          <p style="font-size:14px;color:#374151;line-height:1.6;margin:0;">
+            Once your session is ready you'll be taken directly to a secure payment form.
+            You won't need to re-enter any details.
+          </p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="hit-acceptance__right">
+      <div class="hit-card hit-form-card" style="text-align:center;padding:40px 32px;">
+
+        <div id="ppSpinner" style="display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:#f0fdfa;margin-bottom:24px;">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"
+               style="animation:pp-spin 1s linear infinite;" aria-hidden="true">
+            <circle cx="18" cy="18" r="15" stroke="#e5e7eb" stroke-width="3" fill="none"/>
+            <path d="M18 3 A15 15 0 0 1 33 18" stroke="#0d7377" stroke-width="3" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+
+        <h2 class="hit-heading" style="margin-bottom:8px;">Preparing your payment</h2>
+        <p id="ppStatus" style="font-size:14px;color:#6b7280;margin:0 0 24px;">
+          Please wait while we generate your secure payment session…
+        </p>
+
+        <div aria-hidden="true" style="display:flex;justify-content:center;gap:8px;margin-bottom:32px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#0d7377;display:inline-block;animation:pp-pulse 1.4s ease-in-out 0s infinite;"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#0d7377;display:inline-block;animation:pp-pulse 1.4s ease-in-out 0.2s infinite;"></span>
+          <span style="width:8px;height:8px;border-radius:50%;background:#0d7377;display:inline-block;animation:pp-pulse 1.4s ease-in-out 0.4s infinite;"></span>
+        </div>
+
+        <div style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#6b7280;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:6px 12px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Secure payment powered by Stripe
+        </div>
+
+        <div id="ppTimeout" hidden style="margin-top:28px;padding:16px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;text-align:left;">
+          <p style="font-size:14px;font-weight:600;color:#92400e;margin:0 0 8px;">Taking longer than expected</p>
+          <p style="font-size:13px;color:#92400e;margin:0 0 12px;">The payment session is still being prepared. Please wait a moment or refresh to try again.</p>
+          <button id="ppRetryBtn" class="hit-button hit-button--primary" style="font-size:13px;padding:8px 18px;">Refresh now</button>
+        </div>
+
+      </div>
+    </main>
+
   </div>
 </div>
+
+<style>
+@keyframes pp-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes pp-pulse {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); }
+  40%            { opacity: 1;    transform: scale(1); }
+}
+</style>
 
 <script>
 (function () {
 
-    const params = new URLSearchParams(window.location.search);
-    const attempts = parseInt(params.get("routeattempt") || "0", 10);
+  var _acceptanceId = "{{ request.params.acceptanceid | default: '' | escape }}";
 
-    if (attempts >= 5) {
-        window.location.href =
-            window.location.pathname +
-            "?page=offering-acceptance" +
-            "&acceptanceid={{ acceptanceid }}";
-        return;
+  var MAX_POLLS = 30;   /* 30 × 3 s = 90 s max wait */
+  var POLL_MS   = 3000; /* 3 seconds between background polls */
+  var _attempt  = 0;
+  var _timer    = null;
+
+  var statusEl  = document.getElementById('ppStatus');
+  var timeoutEl = document.getElementById('ppTimeout');
+  var retryBtn  = document.getElementById('ppRetryBtn');
+
+  function setStatus(msg) {
+    if (statusEl) statusEl.textContent = msg;
+  }
+
+  function navigateToPayment() {
+    window.location.href =
+      window.location.pathname +
+      '?page=offering-acceptance' +
+      '&acceptanceid=' + encodeURIComponent(_acceptanceId) +
+      '&_ts=' + Date.now();
+  }
+
+  function showTimeout() {
+    clearTimeout(_timer);
+    if (timeoutEl) timeoutEl.hidden = false;
+    var spinner = document.getElementById('ppSpinner');
+    if (spinner) spinner.style.opacity = '0.3';
+    setStatus('Payment session is taking longer than expected.');
+  }
+
+  function poll() {
+    if (!_acceptanceId) { showTimeout(); return; }
+
+    _attempt++;
+    if (_attempt > MAX_POLLS) { showTimeout(); return; }
+
+    if (_attempt > 5) {
+      setStatus('Still preparing your secure session\u2026 (' + _attempt + ')');
     }
 
-    setTimeout(function () {
+    fetch(
+      '/_api/hit_offeringacceptances(' + _acceptanceId + ')' +
+      '?$select=hit_stripepaymentintentid',
+      { credentials: 'same-origin', headers: { 'Accept': 'application/json' } }
+    )
+    .then(function (res) {
+      if (!res.ok) throw new Error('API ' + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      var intentId = (data.hit_stripepaymentintentid || '').trim();
+      if (intentId) {
+        setStatus('Payment session ready. Taking you to checkout\u2026');
+        setTimeout(navigateToPayment, 400);
+      } else {
+        _timer = setTimeout(poll, POLL_MS);
+      }
+    })
+    .catch(function () {
+      /* Network error — keep polling silently */
+      _timer = setTimeout(poll, POLL_MS);
+    });
+  }
 
-        const nextAttempt = attempts + 1;
+  if (retryBtn) {
+    retryBtn.addEventListener('click', navigateToPayment);
+  }
 
-        window.location.href =
-            window.location.pathname +
-            "?page=offering-acceptance" +
-            "&acceptanceid={{ acceptanceid }}" +
-            "&waitforpayment=1" +
-            "&routeattempt=" + nextAttempt;
-
-    }, 2000);
+  /* Start polling after a short initial delay */
+  _timer = setTimeout(poll, 1500);
 
 })();
 </script>
