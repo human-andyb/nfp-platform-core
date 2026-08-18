@@ -158,17 +158,6 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
 
             <h1 class="hit-acceptance__title">{{ offeringName | escape }}</h1>
 
-            {% if aud_label != '' or plan_label != '' %}
-              <div class="hit-acceptance__badges">
-                {% if aud_label != '' %}
-                  <span class="hit-acceptance__badge">{{ aud_label | escape }}</span>
-                {% endif %}
-                {% if plan_label != '' %}
-                  <span class="hit-acceptance__badge hit-acceptance__badge--secondary">{{ plan_label | escape }}</span>
-                {% endif %}
-              </div>
-            {% endif %}
-
             {% if offeringDesc != '' %}
               <div class="hit-description hit-acceptance__description">{{ offeringDesc }}</div>
             {% endif %}
