@@ -3999,7 +3999,7 @@ button.hit-option-card.is-selected{
            ACCEPTANCE LAYOUT
            ========================================================== */
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-acceptance__grid {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-acceptance__grid {
           width: 100%;
           max-width: 1200px;
           margin: 0 auto;
@@ -4010,7 +4010,7 @@ button.hit-option-card.is-selected{
         }
 
         @media (min-width: 992px) {
-          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-acceptance__grid {
+          :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-acceptance__grid {
             grid-template-columns:
               minmax(0, 1fr)
               minmax(420px, .9fr);
@@ -4021,12 +4021,12 @@ button.hit-option-card.is-selected{
           }
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-acceptance__left,
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-acceptance__right {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-acceptance__left,
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-acceptance__right {
           min-width: 0;
         }
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-acceptance__right {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-acceptance__right {
           width: 100%;
         }
 
@@ -4034,7 +4034,7 @@ button.hit-option-card.is-selected{
            GENERIC CARD
            ========================================================== */
 
-        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer) .hit-card {
+        :is(.hit-acceptance--donation, .hit-acceptance--membership, .hit-acceptance--sponsorship, .hit-acceptance--volunteer, .hit-acceptance--course) .hit-card {
           width: 100%;
           background: var(--hit-surface);
           border: 1px solid var(--hit-border);
