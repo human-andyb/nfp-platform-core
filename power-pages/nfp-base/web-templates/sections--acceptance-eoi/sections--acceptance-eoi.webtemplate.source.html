@@ -372,6 +372,7 @@ const fieldIds = [
         function buildRouterUrl(attempt){
           const targetUrl = new URL(window.location.pathname, window.location.origin);
 
+          targetUrl.searchParams.set("page", "offering-acceptance");
           targetUrl.searchParams.set("acceptanceid", acceptanceIdEl ? acceptanceIdEl.value.trim() : "");
           targetUrl.searchParams.set("waitforpayment", "1");
           targetUrl.searchParams.set("routeattempt", String(attempt));
@@ -387,6 +388,7 @@ const fieldIds = [
         function stopRouterRetry(){
           const cleanUrl = new URL(window.location.href);
 
+          cleanUrl.searchParams.delete("page");
           cleanUrl.searchParams.delete("waitforpayment");
           cleanUrl.searchParams.delete("routeattempt");
           cleanUrl.searchParams.delete("_ts");
