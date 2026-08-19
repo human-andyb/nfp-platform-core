@@ -687,15 +687,69 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
          Power Automate sets PENDING_PAYMENT or COMPLETED;
          router retry loop detects the status change.
          ------------------------------------------------------- */
+      var currentUrl = new URL(window.location.href);
+      var waitingForPayment = currentUrl.searchParams.get('waitforpayment') === '1';
+      var parsedRouteAttempt = parseInt(currentUrl.searchParams.get('routeattempt') || '0', 10);
+      var currentRouteAttempt = Number.isFinite(parsedRouteAttempt) ? parsedRouteAttempt : 0;
+      var maximumRouteAttempts = 20;
+      var routeRetryDelayMilliseconds = 1250;
+
+      function buildRouterUrl(attempt) {
+        return '/accept/?page=offering-acceptance&acceptanceid=' + encodeURIComponent(_acceptanceId)
+          + '&waitforpayment=1&routeattempt=' + encodeURIComponent(String(attempt))
+          + '&_ts=' + Date.now();
+      }
+
       function redirectToRouter() {
-        window.location.href = '/accept/?page=offering-acceptance&acceptanceid=' + encodeURIComponent(_acceptanceId)
-          + '&waitforpayment=1&routeattempt=0&_ts=' + Date.now();
+        window.location.replace(buildRouterUrl(0));
+      }
+
+      function stopRouterRetry() {
+        currentUrl.searchParams.delete('page');
+        currentUrl.searchParams.delete('waitforpayment');
+        currentUrl.searchParams.delete('routeattempt');
+        currentUrl.searchParams.delete('_ts');
+
+        window.history.replaceState({}, document.title, currentUrl.toString());
+
+        setSubmitting(false);
+
+        if (_errList) {
+          _errList.innerHTML = '';
+          var li = document.createElement('li');
+          li.textContent = 'Your details were saved, but the status update is taking longer than expected. Please refresh the page to continue.';
+          _errList.appendChild(li);
+        }
+
+        if (_errSummary) {
+          _errSummary.hidden = false;
+          _errSummary.setAttribute('tabindex', '-1');
+          _errSummary.focus();
+        }
+      }
+
+      function retryRouter() {
+        if (currentRouteAttempt >= maximumRouteAttempts) {
+          stopRouterRetry();
+          return;
+        }
+
+        setSubmitting(true);
+
+        window.setTimeout(function() {
+          window.location.replace(buildRouterUrl(currentRouteAttempt + 1));
+        }, routeRetryDelayMilliseconds);
       }
 
       /* -------------------------------------------------------
          SUBMIT HANDLER
          ------------------------------------------------------- */
       var _submitBtn = document.getElementById('caSubmitBtn');
+
+      if (waitingForPayment) {
+        retryRouter();
+        return;
+      }
 
       if (_submitBtn) {
         _submitBtn.addEventListener('click', async function() {
