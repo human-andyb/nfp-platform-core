@@ -273,6 +273,13 @@
         const errBox = document.getElementById("hitErrorMessage");
         const successBox = document.getElementById("hitSuccessMessage");
 
+        const currentUrl = new URL(window.location.href);
+        const waitingForStatus = currentUrl.searchParams.get("waitforpayment") === "1";
+        const parsedRouteAttempt = parseInt(currentUrl.searchParams.get("routeattempt") || "0", 10);
+        const currentRouteAttempt = Number.isFinite(parsedRouteAttempt) ? parsedRouteAttempt : 0;
+        const maximumRouteAttempts = 20;
+        const routeRetryDelayMilliseconds = 1250;
+
 const fieldIds = [
   "hitDsrEoiRole",
   "hitFirstName",
@@ -362,22 +369,44 @@ const fieldIds = [
           return (value || "").replace(/[{}]/g, "").trim();
         }
 
-        function getRedirectUrl(){
-          const value = redirectUrlEl ? redirectUrlEl.value.trim() : "";
+        function buildRouterUrl(attempt){
+          const targetUrl = new URL(window.location.pathname, window.location.origin);
 
-          if(!value){
-            return "";
+          targetUrl.searchParams.set("acceptanceid", acceptanceIdEl ? acceptanceIdEl.value.trim() : "");
+          targetUrl.searchParams.set("waitforpayment", "1");
+          targetUrl.searchParams.set("routeattempt", String(attempt));
+          targetUrl.searchParams.set("_ts", String(Date.now()));
+
+          return targetUrl.toString();
+        }
+
+        function redirectToRouter(){
+          window.location.replace(buildRouterUrl(0));
+        }
+
+        function stopRouterRetry(){
+          const cleanUrl = new URL(window.location.href);
+
+          cleanUrl.searchParams.delete("waitforpayment");
+          cleanUrl.searchParams.delete("routeattempt");
+          cleanUrl.searchParams.delete("_ts");
+
+          window.history.replaceState({}, document.title, cleanUrl.toString());
+          setButtonBusy(false);
+          showError("Your details were saved, but the status update is taking longer than expected. Please refresh the page to continue.");
+        }
+
+        function retryRouter(){
+          if(currentRouteAttempt >= maximumRouteAttempts){
+            stopRouterRetry();
+            return;
           }
 
-          /*
-            Avoid open redirects.
-            Only allow relative portal URLs.
-          */
-          if(value.indexOf("/") === 0 && value.indexOf("//") !== 0){
-            return value;
-          }
+          setButtonBusy(true);
 
-          return "";
+          window.setTimeout(function(){
+            window.location.replace(buildRouterUrl(currentRouteAttempt + 1));
+          }, routeRetryDelayMilliseconds);
         }
 
         function validatePayload(payload){
@@ -441,6 +470,11 @@ const fieldIds = [
           const tokenInput = doc.querySelector("input[name='__RequestVerificationToken']");
 
           return tokenInput ? tokenInput.value : "";
+        }
+
+        if(waitingForStatus){
+          retryRouter();
+          return;
         }
 
         async function parseErrorMessage(response){
@@ -543,15 +577,8 @@ const fieldIds = [
               template: "sections--acceptance-eoi"
             });
 
-            const redirectUrl = getRedirectUrl();
-
-            if(redirectUrl){
-              window.location.href = redirectUrl;
-              return;
-            }
-
-            submitBtn.textContent = "Saved";
-            submitBtn.disabled = true;
+            redirectToRouter();
+            return;
 
           } catch(error){
             console.error(error);
