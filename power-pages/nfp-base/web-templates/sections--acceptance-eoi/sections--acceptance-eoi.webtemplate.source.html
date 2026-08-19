@@ -174,43 +174,6 @@
                 <h3 class="hit-form-card__title">
                   {{ contactDetailsTitle | escape }}
                 </h3>
-              <label class="hit-checkbox-inline">
-                <input type="checkbox" id="hitOrgToggle">
-                <span>
-                  I am representing an organisation
-                </span>
-              </label>
-
-
-              <div id="hitOrgSection"
-                  class="hit-organisation-section"
-                  {% if organisationInput == blank and contactRoleInput == blank %}hidden{% endif %}>
-
-                <div class="hit-field">
-                  <label for="hitOrganisation">
-                    Organisation name <span class="hit-required">*</span>
-                  </label>
-
-                  <input id="hitOrganisation"
-                        name="hitOrganisation"
-                        type="text"
-                        autocomplete="organization"
-                        value="{{ organisationInput | escape }}" />
-                </div>
-
-                <div class="hit-field">
-                  <label for="hitContactRole">
-                    Your role <span class="hit-required">*</span>
-                  </label>
-
-                  <input id="hitContactRole"
-                        name="hitContactRole"
-                        type="text"
-                        autocomplete="organization-title"
-                        value="{{ contactRoleInput | escape }}" />
-                </div>
-
-              </div>
 
                 <div class="hit-field">
                   <label for="hitFirstName">
@@ -260,6 +223,18 @@
 
                 </div>
 
+                <div class="hit-field">
+                  <label for="hitOrganisation">
+                    Organisation name
+                  </label>
+
+                  <input id="hitOrganisation"
+                        name="hitOrganisation"
+                        type="text"
+                        autocomplete="organization"
+                        value="{{ organisationInput | escape }}" />
+                </div>
+
               </div>
 
               <div class="hit-actions">
@@ -297,8 +272,6 @@
         const submitBtn = document.getElementById("hitSubmitAcceptance");
         const errBox = document.getElementById("hitErrorMessage");
         const successBox = document.getElementById("hitSuccessMessage");
-        const orgToggle = document.getElementById("hitOrgToggle");
-        const orgSection = document.getElementById("hitOrgSection");
 
 const fieldIds = [
   "hitDsrEoiRole",
@@ -306,8 +279,7 @@ const fieldIds = [
   "hitLastName",
   "hitEmail",
   "hitMobile",
-  "hitOrganisation",
-  "hitContactRole"
+  "hitOrganisation"
 ];
 
         if(!submitBtn){
@@ -324,32 +296,6 @@ const fieldIds = [
         function getValue(id){
           const el = getEl(id);
           return el ? el.value.trim() : "";
-        }
-
-        function setOrganisationExpanded(expanded){
-          if(!orgToggle || !orgSection){
-            return;
-          }
-
-          orgToggle.setAttribute(
-            "aria-expanded",
-            expanded ? "true" : "false"
-          );
-
-          orgSection.hidden = !expanded;
-
-          if(!expanded){
-            const organisationEl = getEl("hitOrganisation");
-            const contactRoleEl = getEl("hitContactRole");
-
-            if(organisationEl){
-              organisationEl.removeAttribute("aria-invalid");
-            }
-
-            if(contactRoleEl){
-              contactRoleEl.removeAttribute("aria-invalid");
-            }
-          }
         }
 
         function setButtonBusy(isBusy){
@@ -470,21 +416,6 @@ const fieldIds = [
             };
           }
 
-          if(orgToggle && orgToggle.checked){
-            if(!payload.hit_organisationinput){
-              return {
-                message: "Please enter the organisation name.",
-                fieldId: "hitOrganisation"
-              };
-            }
-
-            if(!payload.hit_contactroleinput){
-              return {
-                message: "Please enter your role.",
-                fieldId: "hitContactRole"
-              };
-            }
-          }
           return null;
         }
 
@@ -547,13 +478,6 @@ const fieldIds = [
             // CustomEvent should be available in modern browsers.
           }
         }
-        if(orgToggle && orgSection){
-          setOrganisationExpanded(orgToggle.checked);
-
-          orgToggle.addEventListener("change", function(){
-            setOrganisationExpanded(orgToggle.checked);
-          });
-        }
         submitBtn.addEventListener("click", async function(){
           clearMessages();
           setButtonBusy(true);
@@ -573,16 +497,8 @@ const fieldIds = [
               hit_lastname: getValue("hitLastName"),
               hit_email: getValue("hitEmail"),
               hit_mobilephone: getValue("hitMobile"),
-
-              hit_organisationinput:
-                orgToggle && orgToggle.checked
-                  ? getValue("hitOrganisation")
-                  : null,
-
-              hit_contactroleinput:
-                orgToggle && orgToggle.checked
-                  ? getValue("hitContactRole")
-                  : null
+              hit_organisationinput: getValue("hitOrganisation"),
+              hit_contactroleinput: ""
             };
 
             const validation = validatePayload(payload);
