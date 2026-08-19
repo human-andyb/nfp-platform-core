@@ -688,7 +688,7 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
          router retry loop detects the status change.
          ------------------------------------------------------- */
       function redirectToRouter() {
-        window.location.href = '/accept/?acceptanceid=' + encodeURIComponent(_acceptanceId)
+        window.location.href = '/accept/?page=offering-acceptance&acceptanceid=' + encodeURIComponent(_acceptanceId)
           + '&waitforpayment=1&routeattempt=0&_ts=' + Date.now();
       }
 
