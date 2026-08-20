@@ -61,6 +61,7 @@ Priority:
       <attribute name="hit_description" />
       <attribute name="hit_imageurl" />
       <attribute name="hit_isactive" />
+        <attribute name="hit_offeringtype" />
 
       <filter>
         <condition attribute="hit_isactive" operator="eq" value="1" />
@@ -97,6 +98,24 @@ Priority:
   {% else %}
 
     {% assign hasPricing = false %}
+    {% assign offeringTypeLabel = '' %}
+    {% assign freeTitle = 'Register your interest' %}
+    {% assign freeSubtitle = 'Register your interest and we’ll keep you updated as more details become available.' %}
+
+    {% if offering.hit_offeringtype and offering.hit_offeringtype.label %}
+      {% assign offeringTypeLabel = offering.hit_offeringtype.label %}
+    {% elsif offering['hit_offeringtype@OData.Community.Display.V1.FormattedValue'] %}
+      {% assign offeringTypeLabel = offering['hit_offeringtype@OData.Community.Display.V1.FormattedValue'] %}
+    {% elsif offering.hit_offeringtype %}
+      {% assign offeringTypeLabel = offering.hit_offeringtype %}
+    {% endif %}
+
+    {% assign offeringTypeLabelNormalized = offeringTypeLabel | append: '' | strip | downcase %}
+
+    {% if offeringTypeLabelNormalized == 'course' %}
+      {% assign freeTitle = 'Sign up for access' %}
+      {% assign freeSubtitle = 'Click the continue button below to complete your information and access The Hub.' %}
+    {% endif %}
 
     {% for r in rows %}
       {% if r['po.hit_priceoptionid'] %}
@@ -238,11 +257,11 @@ Priority:
                   <div class="hit-form-card">
 
                     <h2 class="hit-form-card__title">
-                      Register your interest
+                      {{ freeTitle }}
                     </h2>
 
                     <p class="hit-form-subtitle hit-eoi-msg">
-                      Register your interest and we’ll keep you updated as more details become available.
+                      {{ freeSubtitle }}
                     </p>
 
                   </div>

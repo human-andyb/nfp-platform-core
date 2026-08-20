@@ -2013,6 +2013,17 @@ body {
   width:100%;
 }
 
+/* Mobile visual order: show capture/CTA above content while keeping desktop unchanged. */
+@media(max-width:991px){
+  .hit-offering-detail .hit-offering__capture{
+    order:1;
+  }
+
+  .hit-offering-detail .hit-offering__content{
+    order:2;
+  }
+}
+
 @media(min-width:992px){
   .hit-offering-detail .hit-offering__shell{
     padding:3rem 1rem 7rem;
