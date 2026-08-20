@@ -192,25 +192,20 @@ Purpose:
       <div class="hit-confirm-np-card">
 
         <div class="hit-confirm-np-head">
-          <h1 class="hit-confirm-np-title">Thanks, you are all set.</h1>
+          <h1 class="hit-confirm-np-title">Thank you for your submission.</h1>
           <p class="hit-confirm-np-subtitle">
-            Your details have been received for <strong>{{ offeringName | escape }}</strong>.
-            Our team will continue processing your request and contact you with next steps.
+            Thank you. Your information has been completed and submitted. 
           </p>
         </div>
 
         <div class="hit-confirm-np-body">
           <div class="hit-confirm-np-panel">
-            <h3>What happens next</h3>
-            <ul class="hit-confirm-np-list">
-              <li>Your submission has been saved successfully.</li>
-              <li>Any required follow-up will continue in the background.</li>
-              <li>We will reach out using the contact details you provided.</li>
-            </ul>
+            <h3>We look forward to interacting again with you soon! Disability Sport & Recreation.</h3>
+
           </div>
 
           <div class="hit-confirm-np-meta">
-            <div class="hit-confirm-np-meta-label">Offering</div>
+            <div class="hit-confirm-np-meta-label">Submission</div>
             <div class="hit-confirm-np-meta-value">{{ offeringName | escape }}</div>
 
             {% if fullName != '' %}
@@ -223,14 +218,10 @@ Purpose:
               <div class="hit-confirm-np-meta-value">{{ acc.hit_email | escape }}</div>
             {% endif %}
 
-            <div class="hit-confirm-np-meta-label">Reference</div>
-            <div class="hit-confirm-np-meta-value">{{ acc.hit_offeringacceptanceid | escape }}</div>
+
           </div>
 
-          <div class="hit-confirm-np-actions">
-            <a class="hit-confirm-np-btn hit-confirm-np-btn--primary" href="/">Return Home</a>
-            <a class="hit-confirm-np-btn hit-confirm-np-btn--secondary" href="/Offerings/">Browse Offerings</a>
-          </div>
+
         </div>
 
       </div>
