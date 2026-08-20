@@ -10,6 +10,7 @@ sections--acceptance-router (DEBUG HARDENED)
 
 {% assign DEBUG = request.params.debug == '1' %}
 {% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
+{% assign waitingForStatus = request.params.waitforpayment == '1' %}
 
 {% assign STATUS_DRAFT = 0 %}
 {% assign STATUS_PENDING_INFORMATION = 815390000 %}
@@ -111,6 +112,10 @@ sections--acceptance-router (DEBUG HARDENED)
     SAFE: payment flags
     {%- endcomment -%}
     {% assign requiresPayment = acceptance.hit_paymentrequired | default: false %}
+    {% assign isPaymentRequired = false %}
+    {% if requiresPayment == true or requiresPayment == 'true' or requiresPayment == 1 or requiresPayment == '1' %}
+      {% assign isPaymentRequired = true %}
+    {% endif %}
     {% assign clientSecret = acceptance.hit_stripeclientsecret | default: '' | strip %}
     {% assign paymentIntentId = acceptance.hit_stripepaymentintentid | default: '' | strip %}
 
@@ -144,6 +149,8 @@ sections--acceptance-router (DEBUG HARDENED)
         <div>status = {{ status }}</div>
         <div>statusLabel = {{ statusLabel }}</div>
         <div>requiresPayment = {{ requiresPayment }}</div>
+        <div>isPaymentRequired = {{ isPaymentRequired }}</div>
+        <div>waitingForStatus = {{ waitingForStatus }}</div>
         <div>clientSecret length = {{ clientSecret | size }}</div>
         <div>paymentIntentId = {{ paymentIntentId }}</div>
         <div>offeringType exists = {{ offeringTypeExists }}</div>
@@ -181,7 +188,16 @@ sections--acceptance-router (DEBUG HARDENED)
       </div>
     {% endif %}
 
-    {% if status == STATUS_COMPLETED %}
+    {% if waitingForStatus and isPaymentRequired == false %}
+
+      {% if DEBUG %}
+        <div class="hit-debug-panel hit-debug-panel--include-success">
+          Include: sections--confirmation-nonpayment
+        </div>
+      {% endif %}
+      {% include 'sections--confirmation-nonpayment' %}
+
+    {% elsif status == STATUS_COMPLETED %}
 
       {% if DEBUG %}
         <div class="hit-debug-panel hit-debug-panel--include-success">

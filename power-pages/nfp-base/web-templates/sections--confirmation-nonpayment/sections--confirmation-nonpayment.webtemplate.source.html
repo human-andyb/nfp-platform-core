@@ -1,0 +1,247 @@
+{% comment %}
+sections--confirmation-nonpayment
+
+Purpose:
+- Immediate confirmation for no-payment acceptance records.
+- Short-circuit UX after acceptance forms save details.
+- Read-only view driven by acceptanceId.
+{% endcomment %}
+
+{% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
+
+{% if acceptanceId == '' %}
+
+  <div class="alert alert-warning" role="alert">
+    Missing acceptance id.
+  </div>
+
+{% else %}
+
+  {% fetchxml acc_q %}
+  <fetch top="1" mapping="logical">
+    <entity name="hit_offeringacceptance">
+      <attribute name="hit_offeringacceptanceid" />
+      <attribute name="hit_firstname" />
+      <attribute name="hit_lastname" />
+      <attribute name="hit_email" />
+
+      <link-entity name="hit_offering"
+                   from="hit_offeringid"
+                   to="hit_offering"
+                   alias="off"
+                   link-type="outer">
+        <attribute name="hit_offeringname" />
+      </link-entity>
+
+      <filter>
+        <condition attribute="hit_offeringacceptanceid"
+                   operator="eq"
+                   value="{{ acceptanceId | escape }}" />
+      </filter>
+    </entity>
+  </fetch>
+  {% endfetchxml %}
+
+  {% assign acc = acc_q.results.entities | first %}
+
+  {% if acc %}
+
+    {% assign offeringName = acc['off.hit_offeringname'] | default: 'Offering' %}
+    {% assign fullName = '' %}
+
+    {% if acc.hit_firstname %}
+      {% assign fullName = acc.hit_firstname %}
+    {% endif %}
+
+    {% if acc.hit_lastname %}
+      {% if fullName != '' %}
+        {% assign fullName = fullName | append: ' ' %}
+      {% endif %}
+      {% assign fullName = fullName | append: acc.hit_lastname %}
+    {% endif %}
+
+<style>
+.hit-confirm-np-wrap{
+  max-width:1040px;
+  margin:0 auto;
+  padding:28px 16px 72px;
+}
+
+.hit-confirm-np-card{
+  background:#fff;
+  border:1px solid rgba(15,23,42,.10);
+  border-radius:24px;
+  box-shadow:0 16px 40px rgba(15,23,42,.10);
+  overflow:hidden;
+}
+
+.hit-confirm-np-head{
+  padding:24px 28px;
+  border-bottom:1px solid rgba(15,23,42,.10);
+  background:linear-gradient(to bottom, rgba(15,23,42,.03), rgba(15,23,42,0));
+}
+
+.hit-confirm-np-title{
+  margin:0;
+  font-size:clamp(28px,3.4vw,40px);
+  line-height:1.08;
+  letter-spacing:-.02em;
+  font-weight:900;
+  color:#0f172a;
+}
+
+.hit-confirm-np-subtitle{
+  margin:12px 0 0;
+  max-width:64ch;
+  line-height:1.6;
+  color:rgba(15,23,42,.72);
+}
+
+.hit-confirm-np-body{
+  padding:24px 28px 30px;
+}
+
+.hit-confirm-np-panel{
+  border:1px solid rgba(15,23,42,.12);
+  border-radius:16px;
+  background:rgba(15,23,42,.02);
+  padding:16px;
+}
+
+.hit-confirm-np-panel h3{
+  margin:0 0 10px;
+  font-size:18px;
+  font-weight:900;
+}
+
+.hit-confirm-np-list{
+  margin:0;
+  padding-left:20px;
+}
+
+.hit-confirm-np-list li{
+  margin-bottom:8px;
+  line-height:1.55;
+}
+
+.hit-confirm-np-list li:last-child{
+  margin-bottom:0;
+}
+
+.hit-confirm-np-meta{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:minmax(130px,180px) 1fr;
+  gap:8px 14px;
+  font-size:14px;
+}
+
+.hit-confirm-np-meta-label{
+  color:rgba(15,23,42,.66);
+}
+
+.hit-confirm-np-meta-value{
+  font-weight:800;
+  color:#0f172a;
+  word-break:break-word;
+}
+
+.hit-confirm-np-actions{
+  margin-top:22px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.hit-confirm-np-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:11px 18px;
+  font-weight:850;
+  text-decoration:none;
+  border:1px solid rgba(15,23,42,.12);
+}
+
+.hit-confirm-np-btn--primary{
+  background:#007f89;
+  color:#fff;
+  border-color:#007f89;
+}
+
+.hit-confirm-np-btn--secondary{
+  background:#fff;
+  color:#0f172a;
+}
+
+@media(max-width:767px){
+  .hit-confirm-np-head,
+  .hit-confirm-np-body{
+    padding:20px 18px;
+  }
+
+  .hit-confirm-np-meta{
+    grid-template-columns:1fr;
+    gap:4px 0;
+  }
+}
+</style>
+
+    <div class="hit-confirm-np-wrap">
+      <div class="hit-confirm-np-card">
+
+        <div class="hit-confirm-np-head">
+          <h1 class="hit-confirm-np-title">Thanks, you are all set.</h1>
+          <p class="hit-confirm-np-subtitle">
+            Your details have been received for <strong>{{ offeringName | escape }}</strong>.
+            Our team will continue processing your request and contact you with next steps.
+          </p>
+        </div>
+
+        <div class="hit-confirm-np-body">
+          <div class="hit-confirm-np-panel">
+            <h3>What happens next</h3>
+            <ul class="hit-confirm-np-list">
+              <li>Your submission has been saved successfully.</li>
+              <li>Any required follow-up will continue in the background.</li>
+              <li>We will reach out using the contact details you provided.</li>
+            </ul>
+          </div>
+
+          <div class="hit-confirm-np-meta">
+            <div class="hit-confirm-np-meta-label">Offering</div>
+            <div class="hit-confirm-np-meta-value">{{ offeringName | escape }}</div>
+
+            {% if fullName != '' %}
+              <div class="hit-confirm-np-meta-label">Submitted for</div>
+              <div class="hit-confirm-np-meta-value">{{ fullName | escape }}</div>
+            {% endif %}
+
+            {% if acc.hit_email %}
+              <div class="hit-confirm-np-meta-label">Contact email</div>
+              <div class="hit-confirm-np-meta-value">{{ acc.hit_email | escape }}</div>
+            {% endif %}
+
+            <div class="hit-confirm-np-meta-label">Reference</div>
+            <div class="hit-confirm-np-meta-value">{{ acc.hit_offeringacceptanceid | escape }}</div>
+          </div>
+
+          <div class="hit-confirm-np-actions">
+            <a class="hit-confirm-np-btn hit-confirm-np-btn--primary" href="/">Return Home</a>
+            <a class="hit-confirm-np-btn hit-confirm-np-btn--secondary" href="/Offerings/">Browse Offerings</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  {% else %}
+
+    <div class="alert alert-warning" role="alert">
+      Confirmation could not be loaded for this acceptance record.
+    </div>
+
+  {% endif %}
+
+{% endif %}
