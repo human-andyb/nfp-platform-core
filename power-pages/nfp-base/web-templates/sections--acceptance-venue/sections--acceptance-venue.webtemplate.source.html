@@ -879,21 +879,25 @@ body.venue-lightbox-open {
   {% if all_inclusions == nil or all_inclusions.size == 0 %}
     <div style="color:#6b7280;">No inclusions found.</div>
   {% else %}
-
-    {%- comment -%}
-      Sort defensively (FetchXML already orders, but keep it deterministic)
-    {%- endcomment -%}
-    {% assign sorted_inclusions = all_inclusions | sort: "hit_venueinclusioncategory" %}
-
-    {% assign currentCatValue = "" %}
-
     <div class="inclusions-groups">
 
       {% assign currentCatKey = "" %}
 
-      {% for inc in sorted_inclusions %}
+      {% for inc in all_inclusions %}
 
-        {% assign catKey = inc.hit_venueinclusioncategory.label | default: "Other" %}
+        {% assign catRaw = inc.hit_venueinclusioncategory %}
+        {% assign catLabel = "" %}
+
+        {% if catRaw and catRaw.label %}
+          {% assign catLabel = catRaw.label %}
+        {% else %}
+          {% assign catLabel = inc['hit_venueinclusioncategory@OData.Community.Display.V1.FormattedValue'] | default: catRaw | default: "Other" %}
+        {% endif %}
+
+        {% assign catKey = catLabel | append: "" | strip %}
+        {% if catKey == "" %}
+          {% assign catKey = "Other" %}
+        {% endif %}
 
         {% if catKey != currentCatKey %}
 
@@ -910,13 +914,18 @@ body.venue-lightbox-open {
 
         {% endif %}
 
-        {% assign isIncluded = inc.hit_defaultincluded == true or inc.hit_defaultincluded == 1 %}
+        {% assign includedRaw = inc.hit_defaultincluded.value | default: inc.hit_defaultincluded | default: "" %}
+        {% assign includedStr = includedRaw | append: "" | downcase | strip %}
+        {% assign isIncluded = false %}
+        {% if includedRaw == true or includedRaw == 1 or includedStr == "1" or includedStr == "true" %}
+          {% assign isIncluded = true %}
+        {% endif %}
 
         <li class="inclusions-list__item">
           <span class="inclusions-list__icon {% if isIncluded %}is-yes{% else %}is-no{% endif %}">
             {% if isIncluded %}✓{% else %}✕{% endif %}
           </span>
-          <span class="inclusions-list__name">{{ inc.hit_name }}</span>
+          <span class="inclusions-list__name">{{ inc.hit_name | default: "Unnamed inclusion" }}</span>
         </li>
 
       {% endfor %}
