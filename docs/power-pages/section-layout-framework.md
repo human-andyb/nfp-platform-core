@@ -48,15 +48,15 @@ This contract is real in practice even though it is not currently formalized in 
 
 ### Current resolution patterns
 
-The current implementation uses three different slot-resolution styles:
+The current implementation now uses shared helpers for slot state, slot discovery, and slot rendering, but still has two structural layers to be aware of.
 
-| Pattern | Layouts | Behavior |
+| Layer | Layouts | Behavior |
 | --- | --- | --- |
-| direct lookup | 1-column | fetches slot 1 for layout-specific width and alignment behavior |
-| manual extraction | 2-column | loops through `slots` and manually assigns slot 1 and slot 2 |
-| indexed iteration | 3-column, 4-column, 5-column | loops over `(1..N)` and resolves each slot by index |
+| slot state | 1-column, 2-column, 3-column, 4-column, 5-column | validates expected count, missing slot indexes, and unexpected slot indexes through `helpers--layout-slot-state` |
+| slot discovery | 1-column, 2-column, 3-column, 4-column, 5-column | resolves a slot by index through `helpers--layout-slot-discovery` |
+| slot rendering | 1-column, 2-column, 3-column, 4-column, 5-column | delegates rendering to `helpers--layout-slot-render` |
 
-This inconsistency is one of the main reasons the system is brittle.
+This is stronger than the previous state, because missing-slot, invalid-cardinality, and missing-template behavior are now shared. The remaining brittleness is in the layout design itself, especially one-column specialization and the assumption that sequential slot indexes are always the right model.
 
 ## One-Column Specialization
 
@@ -118,11 +118,11 @@ The following matrix should be the working target for maintainers and future har
 
 | Layout | Current Behavior | Current Weakness | Target State |
 | --- | --- | --- | --- |
-| 1-column | slot 1 only, special width/alignment handling | duplicated lookup, special-case logic | reuse shared slot resolution, keep special settings explicit |
-| 2-column | manual extraction of slots 1 and 2 | repetitive branching | shared resolution with explicit slot contract |
-| 3-column | sequential loop 1..3 | assumes no slot gaps | shared resolution with slot validation |
-| 4-column | sequential loop 1..4 | assumes no slot gaps | shared resolution with slot validation |
-| 5-column | sequential loop 1..5 | assumes no slot gaps | shared resolution with slot validation |
+| 1-column | shared slot state, shared slot discovery, shared slot rendering, special width/alignment handling | special-case layout logic remains | preserve shared helper contract, keep special settings explicit |
+| 2-column | shared slot state, shared slot discovery, shared slot rendering | assumes no slot gaps | explicit slot validation and cardinality checks |
+| 3-column | shared slot state, shared slot discovery, shared slot rendering | assumes no slot gaps | explicit slot validation and cardinality checks |
+| 4-column | shared slot state, shared slot discovery, shared slot rendering | assumes no slot gaps | explicit slot validation and cardinality checks |
+| 5-column | shared slot state, shared slot discovery, shared slot rendering | assumes no slot gaps | explicit slot validation and cardinality checks |
 
 ## Responsive Behavior
 
@@ -143,10 +143,10 @@ When strengthening the section-layout system, prioritize the owning contract rat
 Recommended order:
 
 1. formalize slot cardinality and slot-index rules in documentation
-2. unify slot resolution across all layout templates
-3. normalize missing-slot and missing-template behavior
-4. make one-column specialization intentional and explicit
-5. align CSS and layout semantics where they currently drift apart
+2. preserve and reuse `helpers--layout-slot-state`, `helpers--layout-slot-discovery`, and `helpers--layout-slot-render` as the shared helper contract
+3. make one-column specialization intentional and explicit
+4. align CSS and layout semantics where they currently drift apart
+5. decide whether future layout variants should continue the sequential slot-index contract or move to richer layout metadata
 
 ## Debug And Verification
 

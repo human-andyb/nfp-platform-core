@@ -1,0 +1,65 @@
+{%- comment -%}
+helpers--layout-slot-state
+
+Shared layout slot-state helper for content-mode section layouts.
+
+Inputs:
+- slots
+- expectedSlotCount
+- debug
+- layoutName
+
+Outputs:
+- layoutExpectedSlotCount
+- layoutActualSlotCount
+- layoutSlotsEmpty
+- layoutMissingSlotIndexes
+- layoutExtraSlotIndexes
+- layoutHasRequiredSlots
+{%- endcomment -%}
+
+{%- assign layoutExpectedSlotCount = expectedSlotCount | default: 0 | plus: 0 -%}
+{%- assign layoutDebug = debug | default: false -%}
+{%- assign layoutNameValue = layoutName | default: '' | append: '' | strip -%}
+{%- assign layoutActualSlotCount = 0 -%}
+{%- if slots and slots.size -%}
+  {%- assign layoutActualSlotCount = slots.size | plus: 0 -%}
+{%- endif -%}
+
+{%- assign layoutSlotsEmpty = false -%}
+{%- if layoutActualSlotCount == 0 -%}
+  {%- assign layoutSlotsEmpty = true -%}
+{%- endif -%}
+
+{%- assign layoutMissingSlotIndexes = '' -%}
+{%- for expectedIndex in (1..layoutExpectedSlotCount) -%}
+  {%- include 'helpers--layout-slot-discovery' slots: slots slotIndex: expectedIndex -%}
+  {%- if discoveredSlot == nil -%}
+    {%- if layoutMissingSlotIndexes != '' -%}
+      {%- assign layoutMissingSlotIndexes = layoutMissingSlotIndexes | append: ',' -%}
+    {%- endif -%}
+    {%- assign layoutMissingSlotIndexes = layoutMissingSlotIndexes | append: expectedIndex -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- assign layoutExtraSlotIndexes = '' -%}
+{%- if slots and slots.size > 0 -%}
+  {%- for listedSlot in slots -%}
+    {%- assign listedSlotIndex = listedSlot.hit_slotindex | default: 0 | plus: 0 -%}
+    {%- if listedSlotIndex < 1 or listedSlotIndex > layoutExpectedSlotCount -%}
+      {%- if layoutExtraSlotIndexes != '' -%}
+        {%- assign layoutExtraSlotIndexes = layoutExtraSlotIndexes | append: ',' -%}
+      {%- endif -%}
+      {%- assign layoutExtraSlotIndexes = layoutExtraSlotIndexes | append: listedSlotIndex -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+{%- assign layoutHasRequiredSlots = true -%}
+{%- if layoutMissingSlotIndexes != '' -%}
+  {%- assign layoutHasRequiredSlots = false -%}
+{%- endif -%}
+
+{%- if layoutDebug -%}
+{% include 'helpers--debug-pre' preClass: 'hit-debug-pre' debugScope: 'LAYOUT_SLOT_STATE' k1: 'layout' v1: layoutNameValue k2: 'expectedSlotCount' v2: layoutExpectedSlotCount k3: 'actualSlotCount' v3: layoutActualSlotCount k4: 'slotsEmpty' v4: layoutSlotsEmpty k5: 'hasRequiredSlots' v5: layoutHasRequiredSlots k6: 'missingSlotIndexes' v6: layoutMissingSlotIndexes k7: 'extraSlotIndexes' v7: layoutExtraSlotIndexes %}
+{%- endif -%}

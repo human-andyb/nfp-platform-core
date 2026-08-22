@@ -1,18 +1,7 @@
 {% assign headingText = section.hit_headingtext | default:'' | strip %}
 {% assign introText = section.hit_introtext | default:'' | strip %}
 
-{% assign slot1 = null %}
-{% assign slot2 = null %}
-
-{% if slots and slots.size > 0 %}
-    {% for currentSlot in slots %}
-        {% if currentSlot.hit_slotindex == 1 %}
-            {% assign slot1 = currentSlot %}
-        {% elsif currentSlot.hit_slotindex == 2 %}
-            {% assign slot2 = currentSlot %}
-        {% endif %}
-    {% endfor %}
-{% endif %}
+{% include 'helpers--layout-slot-state' slots: slots expectedSlotCount: 2 debug: debug layoutName: 'layout-2-col' %}
 
 <div class="layout layout-2-col">
 
@@ -38,73 +27,36 @@
 
     <div class="layout-2-col__grid">
 
-        <div class="layout-2-col__slot layout-2-col__slot--1">
+        {% if debug and layoutSlotsEmpty %}
+            <div class="hit-alert">
+                Slots array empty.
+            </div>
+        {% endif %}
 
-            {% if slot1 %}
+        {% if debug and layoutMissingSlotIndexes != '' %}
+            <div class="hit-alert">
+                Missing required slot indexes: {{ layoutMissingSlotIndexes }}.
+            </div>
+        {% endif %}
 
-                {% assign template1 = slot1['stype.hit_templatename'] | default:'' | strip | downcase %}
+        {% if debug and layoutExtraSlotIndexes != '' %}
+            <div class="hit-alert">
+                Unexpected slot indexes for 2-column layout: {{ layoutExtraSlotIndexes }}.
+            </div>
+        {% endif %}
 
-                {% if debug %}
-                    <div class="hit-debug">
-                        Slot 1 template: {{ template1 }}
-                    </div>
-                {% endif %}
+        {% for slotIndex in (1..2) %}
 
-                {% if template1 != '' %}
+            {% include 'helpers--layout-slot-discovery' slots: slots slotIndex: slotIndex %}
+            {% assign currentSlot = discoveredSlot %}
 
-                    {% include template1 slot: slot1 section: section  debug: debug  galleryParam: galleryParam  galleryOverride: galleryOverride  %}
+            <div class="layout-2-col__slot layout-2-col__slot--{{ slotIndex }}">
 
-                {% elsif debug %}
+                {% include 'helpers--layout-slot-render' currentSlot: currentSlot slotIndex: slotIndex section: section debug: debug galleryParam: galleryParam galleryOverride: galleryOverride %}
 
-                    <div class="hit-alert">
-                        Slot 1 has no template name.
-                    </div>
+            </div>
 
-                {% endif %}
-
-            {% elsif debug %}
-
-                <div class="hit-alert">
-                    Slot 1 not found.
-                </div>
-
-            {% endif %}
-
-        </div>
-
-        <div class="layout-2-col__slot layout-2-col__slot--2">
-
-            {% if slot2 %}
-
-                {% assign template2 = slot2['stype.hit_templatename'] | default:'' | strip | downcase %}
-
-                {% if debug %}
-                    <div class="hit-debug">
-                        Slot 2 template: {{ template2 }}
-                    </div>
-                {% endif %}
-
-                {% if template2 != '' %}
-
-                    {% include template2  slot: slot2  section: section  debug: debug  galleryParam: galleryParam  galleryOverride: galleryOverride  %}
-
-                {% elsif debug %}
-
-                    <div class="hit-alert">
-                        Slot 2 has no template name.
-                    </div>
-
-                {% endif %}
-
-            {% elsif debug %}
-
-                <div class="hit-alert">
-                    Slot 2 not found.
-                </div>
-
-            {% endif %}
-
-        </div>
+        {% endfor %}
 
     </div>
 

@@ -134,11 +134,14 @@ Current state observations:
 
 - all layouts dynamically include slot section-type templates
 - the 1-column layout has special width and horizontal-alignment behavior based on slot 1
-- the 2-column layout manually extracts slot 1 and slot 2
-- the 3-5 column layouts iterate through sequential slot indexes
-- missing-slot behavior is inconsistent across templates
+- all 1-5 column layouts now route slot rendering through `helpers--layout-slot-render`
+- the 2-5 column layouts resolve slots through sequential slot indexes
+- missing-slot and missing-template diagnostics are now consistent in debug mode across the layout family
+- all 1-5 column layouts now evaluate slot cardinality through `helpers--layout-slot-state`
+- all 1-5 column layouts now resolve slot lookup through `helpers--layout-slot-discovery`
+- renderer, section, and layout-slot-state debug pre output now routes through `helpers--debug-pre`
 
-This is the main structural reason the layout system is brittle today.
+The main remaining brittleness is no longer the slot-rendering or slot-discovery branch itself. It is the higher-level design around one-column specialization, the assumption that slot indexes are sequential and complete, and the absence of a richer layout metadata model.
 
 Target contract:
 
@@ -182,10 +185,11 @@ Recommended design direction:
 
 1. keep page, section, layout, slot, and section-type as the core composition model
 2. explicitly define valid slot indexes per layout
-3. converge all layouts on one slot-resolution pattern
-4. define consistent failure behavior for missing slots, missing templates, and invalid cardinality
-5. keep app-mode routing explicit and separate from content-mode layout composition
-6. document the layout contract separately from component-specific behavior
+3. preserve the shared slot-resolution helper as the single layout slot-rendering path
+4. preserve shared slot discovery and slot-state helpers as the single layout validation path
+5. define consistent failure behavior for missing slots, missing templates, and invalid cardinality
+6. keep app-mode routing explicit and separate from content-mode layout composition
+7. document the layout contract separately from component-specific behavior
 
 ## Operator Checklist
 

@@ -1,0 +1,83 @@
+{%- comment -%}
+helpers--debug-pre
+
+Reusable debug pre block for renderer/section diagnostics.
+
+Inputs:
+- preClass
+- debugScope
+- debugStage
+- k1..k20
+- v1..v20
+{%- endcomment -%}
+
+{%- assign preClassValue = preClass | default: 'hit-debug-pre' | append: '' | strip -%}
+{%- assign debugScopeValue = debugScope | default: 'DEBUG' | append: '' | strip -%}
+{%- assign debugStageValue = debugStage | default: '' | append: '' | strip -%}
+
+<pre class="{{ preClassValue }}">
+DEBUG_SCOPE={{ debugScopeValue }}
+{%- if debugStageValue != '' -%}
+DEBUG_STAGE={{ debugStageValue }}
+{%- endif -%}
+{%- if k1 != nil and k1 != '' -%}
+{{ k1 }}={{ v1 }}
+{%- endif -%}
+{%- if k2 != nil and k2 != '' -%}
+{{ k2 }}={{ v2 }}
+{%- endif -%}
+{%- if k3 != nil and k3 != '' -%}
+{{ k3 }}={{ v3 }}
+{%- endif -%}
+{%- if k4 != nil and k4 != '' -%}
+{{ k4 }}={{ v4 }}
+{%- endif -%}
+{%- if k5 != nil and k5 != '' -%}
+{{ k5 }}={{ v5 }}
+{%- endif -%}
+{%- if k6 != nil and k6 != '' -%}
+{{ k6 }}={{ v6 }}
+{%- endif -%}
+{%- if k7 != nil and k7 != '' -%}
+{{ k7 }}={{ v7 }}
+{%- endif -%}
+{%- if k8 != nil and k8 != '' -%}
+{{ k8 }}={{ v8 }}
+{%- endif -%}
+{%- if k9 != nil and k9 != '' -%}
+{{ k9 }}={{ v9 }}
+{%- endif -%}
+{%- if k10 != nil and k10 != '' -%}
+{{ k10 }}={{ v10 }}
+{%- endif -%}
+{%- if k11 != nil and k11 != '' -%}
+{{ k11 }}={{ v11 }}
+{%- endif -%}
+{%- if k12 != nil and k12 != '' -%}
+{{ k12 }}={{ v12 }}
+{%- endif -%}
+{%- if k13 != nil and k13 != '' -%}
+{{ k13 }}={{ v13 }}
+{%- endif -%}
+{%- if k14 != nil and k14 != '' -%}
+{{ k14 }}={{ v14 }}
+{%- endif -%}
+{%- if k15 != nil and k15 != '' -%}
+{{ k15 }}={{ v15 }}
+{%- endif -%}
+{%- if k16 != nil and k16 != '' -%}
+{{ k16 }}={{ v16 }}
+{%- endif -%}
+{%- if k17 != nil and k17 != '' -%}
+{{ k17 }}={{ v17 }}
+{%- endif -%}
+{%- if k18 != nil and k18 != '' -%}
+{{ k18 }}={{ v18 }}
+{%- endif -%}
+{%- if k19 != nil and k19 != '' -%}
+{{ k19 }}={{ v19 }}
+{%- endif -%}
+{%- if k20 != nil and k20 != '' -%}
+{{ k20 }}={{ v20 }}
+{%- endif -%}
+</pre>

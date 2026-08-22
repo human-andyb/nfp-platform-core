@@ -1,0 +1,20 @@
+{%- comment -%}
+helpers--layout-slot-discovery
+
+Shared slot discovery helper for content-mode section layouts.
+
+Inputs:
+- slots
+- slotIndex
+
+Outputs:
+- discoveredSlot
+{%- endcomment -%}
+
+{%- assign requestedSlotIndex = slotIndex | default: '' | append: '' | strip -%}
+{%- assign discoveredSlot = nil -%}
+
+{%- if slots and requestedSlotIndex != '' -%}
+  {%- assign requestedSlotIndexNumber = requestedSlotIndex | plus: 0 -%}
+  {%- assign discoveredSlot = slots | where: 'hit_slotindex', requestedSlotIndexNumber | first -%}
+{%- endif -%}

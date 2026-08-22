@@ -189,46 +189,17 @@ This belongs on the gallery wrapper.
 
 
 {%- if DEBUG -%}
-  <pre class="hit-gallery-debug-pre hit-gallery-debug-pre--bordered">
-OFFERINGS DEBUG
-
-rows={{ q.results.entities.size }}
-
-targetPage={{ targetPage }}
-idParamName={{ idParamName }}
-openNewTab={{ openNewTab }}
-currentGalleryParam={{ currentGalleryParam }}
-
-offeringTypeValue={{ offeringTypeValue }}
-
-displayStyle={{ displayStyle }}
-displayStyleValue={{ displayStyleValue }}
-galleryStyleClass={{ galleryStyleClass }}
-
-maxColumns={{ maxColumns }}
-colsClass={{ colsClass }}
-
-maxRows={{ maxRows }}
-rowsClass={{ rowsClass }}
-
-displayVariant={{ displayVariant }}
-displayVariantValue={{ displayVariantValue }}
-
-
-
-expectedRouter=
-{% if displayVariantValue == VARIANT_COMPACT %}
-components--web-gallery-card-compact
-{% elsif displayVariantValue == VARIANT_FEATURED %}
-components--web-gallery-card-featured
-{% elsif displayVariantValue == VARIANT_MINIMAL %}
-components--web-gallery-card-standard fallback for minimal
-{% elsif displayVariantValue == VARIANT_PROMINENT %}
-components--web-gallery-card-standard fallback for prominent
-{% else %}
-components--web-gallery-card-standard
-{% endif %}
-  </pre>
+  {%- assign expectedRouter = 'components--web-gallery-card-standard' -%}
+  {%- if displayVariantValue == VARIANT_COMPACT -%}
+    {%- assign expectedRouter = 'components--web-gallery-card-compact' -%}
+  {%- elsif displayVariantValue == VARIANT_FEATURED -%}
+    {%- assign expectedRouter = 'components--web-gallery-card-featured' -%}
+  {%- elsif displayVariantValue == VARIANT_MINIMAL -%}
+    {%- assign expectedRouter = 'components--web-gallery-card-standard fallback for minimal' -%}
+  {%- elsif displayVariantValue == VARIANT_PROMINENT -%}
+    {%- assign expectedRouter = 'components--web-gallery-card-standard fallback for prominent' -%}
+  {%- endif -%}
+  {% include 'helpers--gallery-source-debug' sourceAdapter: 'article' sourceEntity: 'hit_article' rows: q.results.entities.size targetPage: targetPage idParamName: idParamName openNewTab: openNewTab currentGalleryParam: currentGalleryParam offeringTypeValue: offeringTypeValue displayStyle: displayStyle displayStyleValue: displayStyleValue galleryStyleClass: galleryStyleClass maxColumns: maxColumns colsClass: colsClass maxRows: maxRows rowsClass: rowsClass displayVariant: displayVariant displayVariantValue: displayVariantValue expectedRouter: expectedRouter %}
 {%- endif -%}
 
 

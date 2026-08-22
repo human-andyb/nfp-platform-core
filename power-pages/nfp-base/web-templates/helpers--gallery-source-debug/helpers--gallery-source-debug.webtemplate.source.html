@@ -1,0 +1,78 @@
+{%- comment -%}
+helpers--gallery-source-debug
+
+Shared debug block for gallery source adapters.
+
+Inputs:
+- debugScope
+- debugStage
+- sourceAdapter
+- sourceEntity
+- rows
+- targetPage
+- idParamName
+- openNewTab
+- currentGalleryParam
+- offeringTypeValue
+- displayStyle
+- displayStyleValue
+- galleryStyleClass
+- maxColumns
+- colsClass
+- maxRows
+- rowsClass
+- displayVariant
+- displayVariantValue
+- cardTemplateValue
+- expectedRouter
+{%- endcomment -%}
+
+<pre class="hit-gallery-debug-pre hit-gallery-debug-pre--bordered">
+DEBUG_SCOPE={{ debugScope | default: 'WEB_GALLERY_SOURCE' }}
+DEBUG_STAGE={{ debugStage | default: 'ADAPTER_RESOLUTION' }}
+sourceAdapter={{ sourceAdapter }}
+sourceEntity={{ sourceEntity }}
+rows={{ rows }}
+targetPage={{ targetPage }}
+idParamName={{ idParamName }}
+openNewTab={{ openNewTab }}
+{%- if currentGalleryParam != nil and currentGalleryParam != '' -%}
+currentGalleryParam={{ currentGalleryParam }}
+{%- endif -%}
+{%- if offeringTypeValue != nil and offeringTypeValue != '' -%}
+offeringTypeValue={{ offeringTypeValue }}
+{%- endif -%}
+{%- if displayStyle != nil and displayStyle != '' -%}
+displayStyle={{ displayStyle }}
+{%- endif -%}
+{%- if displayStyleValue != nil and displayStyleValue != '' -%}
+displayStyleValue={{ displayStyleValue }}
+{%- endif -%}
+{%- if galleryStyleClass != nil and galleryStyleClass != '' -%}
+galleryStyleClass={{ galleryStyleClass }}
+{%- endif -%}
+{%- if maxColumns != nil and maxColumns != '' -%}
+maxColumns={{ maxColumns }}
+{%- endif -%}
+{%- if colsClass != nil and colsClass != '' -%}
+colsClass={{ colsClass }}
+{%- endif -%}
+{%- if maxRows != nil and maxRows != '' -%}
+maxRows={{ maxRows }}
+{%- endif -%}
+{%- if rowsClass != nil and rowsClass != '' -%}
+rowsClass={{ rowsClass }}
+{%- endif -%}
+{%- if displayVariant != nil and displayVariant != '' -%}
+displayVariant={{ displayVariant }}
+{%- endif -%}
+{%- if displayVariantValue != nil and displayVariantValue != '' -%}
+displayVariantValue={{ displayVariantValue }}
+{%- endif -%}
+{%- if cardTemplateValue != nil and cardTemplateValue != '' -%}
+cardTemplateValue={{ cardTemplateValue }}
+{%- endif -%}
+{%- if expectedRouter != nil and expectedRouter != '' -%}
+expectedRouter={{ expectedRouter }}
+{%- endif -%}
+</pre>

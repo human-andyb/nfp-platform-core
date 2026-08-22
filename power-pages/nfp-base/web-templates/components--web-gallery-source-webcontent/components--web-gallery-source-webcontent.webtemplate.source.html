@@ -70,13 +70,7 @@ ASSUMED PK: hit_webcontentid  (change if needed)
 
 
 {%- if DEBUG -%}
-  <pre style="white-space:pre-wrap;font-size:12px;background:#f7f7f7;border:1px solid #ddd;padding:8px;">
-WEB CONTENT DEBUG
-rows={{ q.results.entities.size }}
-targetPage={{ targetPage }}
-idParamName={{ idParamName }}
-openNewTab={{ openNewTab }}
-  </pre>
+  {% include 'helpers--gallery-source-debug' sourceAdapter: 'webcontent' sourceEntity: 'hit_webcontent' rows: q.results.entities.size targetPage: targetPage idParamName: idParamName openNewTab: openNewTab cardTemplateValue: cardTemplateValue %}
 {%- endif -%}
 
 

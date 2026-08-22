@@ -8,6 +8,7 @@ Impact Stories adapter (v2.1 REVERT)
 - Renders via components--web-gallery-card-* (ONE-LINE include to avoid DotLiquid parse errors)
 {%- endcomment -%}
 
+{%- assign DEBUG = debug | default: false -%}
 {%- assign maxItems = maxItems | default: 12 -%}
 
 {%- assign cardTemplateValue = cardTemplateValue | default: CARD_STANDARD -%}
@@ -51,6 +52,10 @@ Impact Stories adapter (v2.1 REVERT)
   </entity>
 </fetch>
 {%- endfetchxml -%}
+
+{%- if DEBUG -%}
+  {% include 'helpers--gallery-source-debug' sourceAdapter: 'impactstory' sourceEntity: 'hit_impactstory' rows: q.results.entities.size targetPage: targetPage idParamName: idParamName openNewTab: openNewTab cardTemplateValue: cardTemplateValue %}
+{%- endif -%}
 
 {%- if q.results.entities and q.results.entities.size > 0 -%}
   <div class="hit-gallery hit-gallery--impactstories">

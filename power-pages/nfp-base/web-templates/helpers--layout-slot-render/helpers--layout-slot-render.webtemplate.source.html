@@ -1,0 +1,52 @@
+{%- comment -%}
+helpers--layout-slot-render
+
+Shared slot renderer for content-mode section layouts.
+
+Inputs:
+- currentSlot
+- slotIndex
+- section
+- debug
+- galleryParam
+- galleryOverride
+
+Behavior:
+- emits a consistent debug line with the resolved template name
+- includes the resolved section-type template when present
+- emits consistent debug-only alerts for missing slots and missing templates
+{%- endcomment -%}
+
+{%- assign resolvedSlot = currentSlot -%}
+{%- assign resolvedSlotIndex = slotIndex | default: '' | append: '' | strip -%}
+{%- assign debugMode = debug | default: false -%}
+
+{%- if resolvedSlot -%}
+
+  {%- assign templateName = resolvedSlot['stype.hit_templatename'] | default: '' | strip | downcase -%}
+
+  {%- if debugMode -%}
+    <div class="hit-debug">
+      Slot {{ resolvedSlotIndex }} template: {{ templateName }}
+    </div>
+  {%- endif -%}
+
+  {%- if templateName != '' -%}
+
+    {% include templateName slot: resolvedSlot section: section debug: debugMode galleryParam: galleryParam galleryOverride: galleryOverride %}
+
+  {%- elsif debugMode -%}
+
+    <div class="hit-alert">
+      Slot {{ resolvedSlotIndex }} has no template name.
+    </div>
+
+  {%- endif -%}
+
+{%- elsif debugMode -%}
+
+  <div class="hit-alert">
+    Slot {{ resolvedSlotIndex }} not found.
+  </div>
+
+{%- endif -%}

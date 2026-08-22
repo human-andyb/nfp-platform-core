@@ -24,26 +24,26 @@ This prevents:
 {% assign colsClass = 'hit-gallery--cols-' | append: cols %}
 
 
-{%- assign SRC_OFFERINGS        = 815390000 -%}
-{%- assign SRC_PERSONAS         = 815390001 -%}
-{%- assign SRC_PROGRAMS         = 815390002 -%}
-{%- assign SRC_FEATURED_CONTENT = 815390003 -%}
-{%- assign SRC_ARTICLES         = 815390004 -%}
-{%- assign SRC_OTHER            = 815390005 -%}
+{%- assign SRC_OFFERINGS        = '815390000' -%}
+{%- assign SRC_PERSONAS         = '815390001' -%}
+{%- assign SRC_PROGRAMS         = '815390002' -%}
+{%- assign SRC_FEATURED_CONTENT = '815390003' -%}
+{%- assign SRC_ARTICLES         = '815390004' -%}
+{%- assign SRC_OTHER            = '815390005' -%}
 
-{%- assign CARD_STANDARD = 815390000 -%}
-{%- assign CARD_COMPACT  = 815390001 -%}
-{%- assign CARD_FEATURED = 815390002 -%}
+{%- assign CARD_STANDARD = '815390000' -%}
+{%- assign CARD_COMPACT  = '815390001' -%}
+{%- assign CARD_FEATURED = '815390002' -%}
 
-{%- assign STYLE_GRID      = 815390000 -%}
-{%- assign STYLE_CAROUSEL  = 815390001 -%}
-{%- assign STYLE_TILES     = 815390002 -%}
-{%- assign STYLE_ACTIONS   = 815390003 -%}
-{%- assign STYLE_MASONRY   = 815390004 -%}
-{%- assign STYLE_MEDIA     = 815390005 -%}
+{%- assign STYLE_GRID      = '815390000' -%}
+{%- assign STYLE_CAROUSEL  = '815390001' -%}
+{%- assign STYLE_TILES     = '815390002' -%}
+{%- assign STYLE_ACTIONS   = '815390003' -%}
+{%- assign STYLE_MASONRY   = '815390004' -%}
+{%- assign STYLE_MEDIA     = '815390005' -%}
 
-{%- assign displayStyle = displayStyle | default: STYLE_GRID -%}
-{%- assign displayVariant = displayVariant | default: CARD_STANDARD -%}
+{%- assign displayStyle = displayStyle | default: STYLE_GRID | append: '' | strip -%}
+{%- assign displayVariant = displayVariant | default: CARD_STANDARD | append: '' | strip -%}
 
 {%- comment -%}
 1) Determine effective slug
@@ -121,12 +121,7 @@ This prevents:
     <p>Gallery slug "{{ effectiveSlug }}" not found.</p>
 
     {%- if DEBUG -%}
-      <pre class="hit-gallery-debug-pre">
-WEB-GALLERY HARD FAIL
-effectiveSlug={{ effectiveSlug }}
-matchCount={{ galleryMatchCount }}
-resolutionMode={{ resolutionMode }}
-      </pre>
+      {% include 'helpers--debug-pre' preClass: 'hit-gallery-debug-pre' debugScope: 'WEB_GALLERY' debugStage: 'HARD_FAIL' k1: 'effectiveSlug' v1: effectiveSlug k2: 'matchCount' v2: galleryMatchCount k3: 'resolutionMode' v3: resolutionMode %}
     {%- endif -%}
 
   </div>
@@ -134,8 +129,8 @@ resolutionMode={{ resolutionMode }}
 {%- else -%}
 
   {%- assign maxItems = galleryRecord.hit_maxitems | default: 12 -%}
-  {%- assign sourceType = galleryRecord.hit_gallerysourcetype.value | default: 0 -%}
-  {%- assign cardTemplateValue = galleryRecord.hit_cardtemplate.value | default: CARD_STANDARD -%}
+  {%- assign sourceType = galleryRecord.hit_gallerysourcetype.value | default: galleryRecord.hit_gallerysourcetype | default: SRC_OTHER | append: '' | strip -%}
+  {%- assign cardTemplateValue = galleryRecord.hit_cardtemplate.value | default: galleryRecord.hit_cardtemplate | default: CARD_STANDARD | append: '' | strip -%}
 
   {%- assign sourceClass = '' -%}
   {%- if sourceType == SRC_PROGRAMS -%}{%- assign sourceClass = 'hit-gallery--programs' -%}
@@ -169,31 +164,7 @@ resolutionMode={{ resolutionMode }}
   {%- assign gallerySubtitle = galleryRecord.hit_gallerysubtitle | default:'' -%}
 
   {%- if DEBUG -%}
-    <pre class="hit-gallery-debug-pre">
-WEB-GALLERY DEBUG (FINAL LOCKED)
-
-effectiveSlug={{ effectiveSlug }}
-allowQueryOverride={{ allowQueryOverride }}
-
-resolutionMode={{ resolutionMode }}
-
-resolvedSlug={{ galleryRecord.hit_slug }}
-galleryId={{ galleryRecord.hit_webgalleryconfigid }}
-
-matchCount={{ galleryMatchCount }}
-
-sourceType={{ sourceType }}
-sourceClass={{ sourceClass }}
-
-maxItems={{ maxItems }}
-cardTemplateValue={{ cardTemplateValue }}
-
-passedGallerySlug={{ gallery.hit_slug }}
-
-displayStyle={{ displayStyle }}
-displayVariant={{ displayVariant }}
-
-    </pre>
+    {% include 'helpers--debug-pre' preClass: 'hit-gallery-debug-pre' debugScope: 'WEB_GALLERY' debugStage: 'RESOLVED' k1: 'effectiveSlug' v1: effectiveSlug k2: 'allowQueryOverride' v2: allowQueryOverride k3: 'resolutionMode' v3: resolutionMode k4: 'resolvedSlug' v4: galleryRecord.hit_slug k5: 'galleryId' v5: galleryRecord.hit_webgalleryconfigid k6: 'matchCount' v6: galleryMatchCount k7: 'sourceType' v7: sourceType k8: 'sourceClass' v8: sourceClass k9: 'maxItems' v9: maxItems k10: 'cardTemplateValue' v10: cardTemplateValue k11: 'passedGallerySlug' v11: gallery.hit_slug k12: 'displayStyle' v12: displayStyle k13: 'displayVariant' v13: displayVariant %}
 
     {%- if galleryMatchCount > 1 -%}
       <div class="hit-gallery-debug-duplicate">⚠️ Duplicate slugs detected</div>

@@ -66,6 +66,10 @@ Gallery rendering therefore depends on both:
 1. the section-layout contract being satisfied
 2. the gallery contract being satisfied
 
+Current implementation note:
+
+- slot rendering across the layout family now flows through `helpers--layout-slot-render`, which makes gallery slot failures more consistent to diagnose once a slot is discovered by the active layout
+
 ## Gallery Resolution Rules
 
 The current gallery-resolution precedence is intentionally strict.
@@ -125,6 +129,18 @@ Each adapter is responsible for:
 2. normalizing title, summary, image, URL, and type metadata
 3. applying gallery style and variant context
 4. delegating item rendering to the correct card template
+
+Adapter debug output is now centralized through:
+
+- `helpers--gallery-source-debug`
+- `helpers--debug-pre` (shared pre formatter used by renderer, section, web-gallery, and layout-slot-state layers)
+
+Expected adapter debug contract:
+
+- `DEBUG_SCOPE=WEB_GALLERY_SOURCE`
+- `DEBUG_STAGE=ADAPTER_RESOLUTION`
+- `sourceAdapter=<adapter-name>`
+- `sourceEntity=<logical-entity-name>`
 
 ## Display Style And Variant Inputs
 

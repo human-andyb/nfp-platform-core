@@ -1,16 +1,20 @@
 {% assign headingText = section.hit_headingtext | default:'' | strip %}
 {% assign introText = section.hit_introtext | default:'' | strip %}
+{% assign slot1 = nil %}
+
+{% include 'helpers--layout-slot-state' slots: slots expectedSlotCount: 1 debug: debug layoutName: 'layout-1-col' %}
 
 {% assign widthClass = 'layout--medium' %}
 {% assign alignClass = 'layout--centre' %}
 
 {% if slots and slots.size > 0 %}
-    {% assign slot1 = slots | where: "hit_slotindex", 1 | first %}
+    {% include 'helpers--layout-slot-discovery' slots: slots slotIndex: 1 %}
+    {% assign slot1 = discoveredSlot %}
 
     {% if slot1 %}
 
-        {% assign widthValue = slot1.hit_contentwidth.value | default: '' | append:'' %}
-        {% assign alignValue = slot1.hit_contenthalign.value | default: '' | append:'' %}
+        {% assign widthValue = slot1.hit_contentwidth.value | default: slot1.hit_contentwidth | default: '' | append:'' | strip %}
+        {% assign alignValue = slot1.hit_contenthalign.value | default: slot1.hit_contenthalign | default: '' | append:'' | strip %}
 
         {% comment %}
         Content Width
@@ -74,36 +78,34 @@
 
     {% if slots and slots.size > 0 %}
 
-        {% assign slot1 = slots | where: "hit_slotindex", 1 | first %}
+        {% if debug and layoutMissingSlotIndexes != '' %}
+            <div class="hit-alert">
+                Missing required slot indexes: {{ layoutMissingSlotIndexes }}.
+            </div>
+        {% endif %}
+
+        {% if debug and layoutExtraSlotIndexes != '' %}
+            <div class="hit-alert">
+                Unexpected slot indexes for 1-column layout: {{ layoutExtraSlotIndexes }}.
+            </div>
+        {% endif %}
 
         {% if slot1 %}
 
-            {% assign templateName = slot1['stype.hit_templatename'] | default:'' | strip | downcase %}
+            {% include 'helpers--layout-slot-render' currentSlot: slot1 slotIndex: 1 section: section debug: debug galleryParam: galleryParam galleryOverride: galleryOverride %}
 
-            {% if templateName != '' %}
+        {% elsif debug %}
 
-                {% include templateName  section: section  slot: slot1  debug: debug  galleryParam: galleryParam  galleryOverride: galleryOverride   %}
-
-            {% else %}
-
-                <div style="color:red;">
-                    ❌ Slot has no template
-                </div>
-
-            {% endif %}
-
-        {% else %}
-
-            <div style="color:red;">
-                ❌ Slot index 1 not found
+            <div class="hit-alert">
+                Slot 1 not found.
             </div>
 
         {% endif %}
 
-    {% else %}
+    {% elsif debug %}
 
-        <div style="color:red;">
-            ❌ Slots array empty
+        <div class="hit-alert">
+            Slots array empty.
         </div>
 
     {% endif %}

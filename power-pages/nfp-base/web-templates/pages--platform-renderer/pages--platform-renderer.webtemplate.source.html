@@ -29,9 +29,7 @@ Platform Renderer — CLEAN APP + CONTENT MODE
 <div class="hit-page">
 
 {% if DEBUG %}
-  <div style="background:#000;color:#0f0;padding:6px;font-size:11px;">
-    DEBUG → slug={{ resolvedSlug }}
-  </div>
+  {% include 'helpers--debug-pre' preClass: 'hit-debug-pre' debugScope: 'PLATFORM_RENDERER' debugStage: 'REQUEST' k1: 'resolvedSlug' v1: resolvedSlug k2: 'requestedSlug' v2: requestedSlug k3: 'entryPoint' v3: currentEntryPoint k4: 'galleryParam' v4: galleryParam %}
 {% endif %}
 
 {% if resolvedSlug != '' %}
@@ -85,20 +83,27 @@ Platform Renderer — CLEAN APP + CONTENT MODE
 
     {% assign sections = sectionQuery.results.entities %}
 
+    {% if DEBUG %}
+      {% include 'helpers--debug-pre' preClass: 'hit-debug-pre' debugScope: 'PLATFORM_RENDERER' debugStage: 'PAGE_RESOLUTION' k1: 'resolvedSlug' v1: resolvedSlug k2: 'pageId' v2: pageRec.hit_platformpageid k3: 'sectionsCount' v3: sections.size | default: 0 k4: 'galleryParam' v4: galleryParam %}
+    {% endif %}
+
     <div class="hit-page__content">
+
+    {% if sections == nil or sections.size == 0 %}
+      {% if DEBUG %}
+        <div class="hit-alert">
+          No sections found for page {{ resolvedSlug }}.
+        </div>
+      {% endif %}
+    {% endif %}
 
     {% for section in sections %}
 
       {% if section.hit_isvisible != false %}
 
         {% assign sectionId = section.hit_platformpagesectionid %}
+        {% assign sectionName = section.hit_name | default: '' | strip %}
         {% assign layoutTemplate = section['layout.hit_template'] | default: '' | downcase | strip %}
-
-        {% if DEBUG %}
-          <div style="background:black;color:cyan;padding:4px;">
-            sectionId = {{ sectionId }}
-          </div>
-        {% endif %}
 
 
         {% fetchxml slotQuery %}
@@ -156,13 +161,7 @@ Platform Renderer — CLEAN APP + CONTENT MODE
         {% assign slots = slotQuery.results.entities %}
 
 {% if DEBUG %}
-  <div style="background:black;color:lime;padding:4px;">
-    layoutTemplate = {{ section['layout.hit_template'] }}
-  </div>
-
-  <div style="background:black;color:yellow;padding:4px;">
-    slots count = {{ slots.size }}
-  </div>
+  {% include 'helpers--debug-pre' preClass: 'hit-debug-pre' debugScope: 'PLATFORM_RENDERER' debugStage: 'SECTION_DISCOVERY' k1: 'sectionId' v1: sectionId k2: 'sectionName' v2: sectionName k3: 'layoutTemplate' v3: layoutTemplate k4: 'slotsCount' v4: slots.size | default: 0 %}
 {% endif %}
 
         {% assign isRouter = false %}
@@ -173,6 +172,10 @@ Platform Renderer — CLEAN APP + CONTENT MODE
           {% endif %}
         {% endfor %}
 
+{% if DEBUG %}
+  {% include 'helpers--debug-pre' preClass: 'hit-debug-pre' debugScope: 'PLATFORM_RENDERER' debugStage: 'SECTION_MODE' k1: 'sectionId' v1: sectionId k2: 'isRouter' v2: isRouter %}
+{% endif %}
+
         {% if isRouter %}
 
           <!-- ✅ APPLICATION MODE -->
@@ -180,9 +183,7 @@ Platform Renderer — CLEAN APP + CONTENT MODE
             {% assign templateName = slot['stype.hit_templatename'] | downcase %}
 
             {% if DEBUG %}
-              <div style="background:#222;color:#0ff;padding:4px;font-size:11px;">
-                APP slot={{ slot.hit_name }} → {{ templateName }}
-              </div>
+              {% include 'helpers--debug-pre' preClass: 'hit-debug-pre' debugScope: 'PLATFORM_RENDERER' debugStage: 'APP_SLOT_INCLUDE' k1: 'sectionId' v1: sectionId k2: 'slotName' v2: slot.hit_name k3: 'templateName' v3: templateName %}
             {% endif %}
 
             {% if templateName == 'sections--acceptance-router' %}
@@ -194,9 +195,9 @@ Platform Renderer — CLEAN APP + CONTENT MODE
 
 <!-- ✅ CONTENT MODE -->
 
-{% assign sectionColour = section.hit_sectioncolour.label | default:'None' | downcase | strip %}
-{% assign backgroundBleed = section.hit_backgroundbleed.label | default:'Full' | downcase | strip %}
-{% assign contentWidth = section.hit_contentwidthmode.label | default:'Inherit' | downcase | strip %}
+{% assign sectionColour = section.hit_sectioncolour.label | default: section.hit_sectioncolour | default: 'None' | append: '' | downcase | strip %}
+{% assign backgroundBleed = section.hit_backgroundbleed.label | default: section.hit_backgroundbleed | default: 'Full' | append: '' | downcase | strip %}
+{% assign contentWidth = section.hit_contentwidthmode.label | default: section.hit_contentwidthmode | default: 'Inherit' | append: '' | downcase | strip %}
 
 {% assign showImage = section.hit_showimage %}
 {% assign mediaUrl = section.hit_mediaurl | default:'' | strip %}
@@ -230,14 +231,7 @@ Platform Renderer — CLEAN APP + CONTENT MODE
   ">
 
     {% if DEBUG %}
-      <div style="background:#333;color:#fff;padding:4px;font-size:11px;">
-        CONTENT
-        | layout={{ layoutTemplate }}
-        | colour={{ sectionColour }}
-        | bleed={{ backgroundBleed }}
-        | width={{ contentWidth }}
-        | image={{ hasBackgroundImage }}
-      </div>
+      {% include 'helpers--debug-pre' preClass: 'hit-debug-pre' debugScope: 'PLATFORM_RENDERER' debugStage: 'CONTENT_SECTION_RENDER' k1: 'sectionId' v1: sectionId k2: 'layout' v2: layoutTemplate k3: 'colour' v3: sectionColour k4: 'bleed' v4: backgroundBleed k5: 'contentWidth' v5: contentWidth k6: 'hasBackgroundImage' v6: hasBackgroundImage %}
     {% endif %}
 
     {% if layoutTemplate != '' %}
@@ -247,8 +241,8 @@ Platform Renderer — CLEAN APP + CONTENT MODE
     {% else %}
 
       {% if DEBUG %}
-        <div style="color:red;">
-          ❌ No layout assigned to section
+        <div class="hit-alert">
+          No layout assigned to section.
         </div>
       {% endif %}
 
@@ -268,6 +262,9 @@ Platform Renderer — CLEAN APP + CONTENT MODE
     </div>
 
   {% else %}
+    {% if DEBUG %}
+      {% include 'helpers--debug-pre' preClass: 'hit-debug-pre' debugScope: 'PLATFORM_RENDERER' debugStage: 'PAGE_RESOLUTION' k1: 'resolvedSlug' v1: resolvedSlug k2: 'pageFound' v2: 'false' %}
+    {% endif %}
     <div style="color:red;">❌ Page not found</div>
   {% endif %}
 

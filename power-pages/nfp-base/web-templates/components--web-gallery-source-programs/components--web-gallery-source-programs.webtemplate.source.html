@@ -4,7 +4,7 @@ components--web-gallery-source-programs
 Adapter: Programs -> hit_program
 
 Responsibilities:
-1. Fetch visible offering records for the selected gallery config
+1. Fetch visible program records for the selected gallery config
 2. Build the correct href for each item
 3. Resolve Display Variant
 4. Route each item to the correct card template
@@ -43,7 +43,7 @@ Href priority:
 2. else build from gallery.hit_targetpage + id parameter
 
 Assumed PK:
-- hit_offeringid
+- hit_programid
 
 {%- endcomment -%}
 
@@ -68,7 +68,10 @@ sometimes arrive as numbers and sometimes render as text.
 
 {%- assign STYLE_GRID     = '815390000' -%}
 {%- assign STYLE_CAROUSEL = '815390001' -%}
+{%- assign STYLE_TILES    = '815390002' -%}
+{%- assign STYLE_ACTIONS  = '815390003' -%}
 {%- assign STYLE_MASONRY  = '815390004' -%}
+{%- assign STYLE_MEDIA    = '815390005' -%}
 
 
 
@@ -90,7 +93,7 @@ sometimes arrive as numbers and sometimes render as text.
 Gallery config values
 {%- endcomment -%}
 
-{%- assign targetPage = gallery.hit_targetpage | default: '/donate/?page=offerings-detail' | append: '' | strip -%}
+{%- assign targetPage = gallery.hit_targetpage | default: '/our-hub/?page=program-detail' | append: '' | strip -%}
 {%- assign idParamName = gallery.hit_idparametername | default: 'id' | append: '' | strip -%}
 
 {%- unless targetPage startswith '/' -%}
@@ -121,7 +124,7 @@ Choice-safe handling.
 
 
 {%- comment -%}
-Resolve offering type filter.
+Resolve optional offering-type-like filter.
 Choice-safe handling.
 {%- endcomment -%}
 
@@ -137,7 +140,7 @@ Useful for preserving gallery context on detail pages.
 
 
 {%- comment -%}
-Fetch visible offerings.
+Fetch visible programs.
 {%- endcomment -%}
 
 {%- fetchxml q -%}
@@ -189,46 +192,17 @@ This belongs on the gallery wrapper.
 
 
 {%- if DEBUG -%}
-  <pre class="hit-gallery-debug-pre hit-gallery-debug-pre--bordered">
-OFFERINGS DEBUG
-
-rows={{ q.results.entities.size }}
-
-targetPage={{ targetPage }}
-idParamName={{ idParamName }}
-openNewTab={{ openNewTab }}
-currentGalleryParam={{ currentGalleryParam }}
-
-offeringTypeValue={{ offeringTypeValue }}
-
-displayStyle={{ displayStyle }}
-displayStyleValue={{ displayStyleValue }}
-galleryStyleClass={{ galleryStyleClass }}
-
-maxColumns={{ maxColumns }}
-colsClass={{ colsClass }}
-
-maxRows={{ maxRows }}
-rowsClass={{ rowsClass }}
-
-displayVariant={{ displayVariant }}
-displayVariantValue={{ displayVariantValue }}
-
-
-
-expectedRouter=
-{% if displayVariantValue == VARIANT_COMPACT %}
-components--web-gallery-card-compact
-{% elsif displayVariantValue == VARIANT_FEATURED %}
-components--web-gallery-card-featured
-{% elsif displayVariantValue == VARIANT_MINIMAL %}
-components--web-gallery-card-standard fallback for minimal
-{% elsif displayVariantValue == VARIANT_PROMINENT %}
-components--web-gallery-card-standard fallback for prominent
-{% else %}
-components--web-gallery-card-standard
-{% endif %}
-  </pre>
+  {%- assign expectedRouter = 'components--web-gallery-card-standard' -%}
+  {%- if displayVariantValue == VARIANT_COMPACT -%}
+    {%- assign expectedRouter = 'components--web-gallery-card-compact' -%}
+  {%- elsif displayVariantValue == VARIANT_FEATURED -%}
+    {%- assign expectedRouter = 'components--web-gallery-card-featured' -%}
+  {%- elsif displayVariantValue == VARIANT_MINIMAL -%}
+    {%- assign expectedRouter = 'components--web-gallery-card-standard fallback for minimal' -%}
+  {%- elsif displayVariantValue == VARIANT_PROMINENT -%}
+    {%- assign expectedRouter = 'components--web-gallery-card-standard fallback for prominent' -%}
+  {%- endif -%}
+  {% include 'helpers--gallery-source-debug' sourceAdapter: 'programs' sourceEntity: 'hit_program' rows: q.results.entities.size targetPage: targetPage idParamName: idParamName openNewTab: openNewTab currentGalleryParam: currentGalleryParam offeringTypeValue: offeringTypeValue displayStyle: displayStyle displayStyleValue: displayStyleValue galleryStyleClass: galleryStyleClass maxColumns: maxColumns colsClass: colsClass maxRows: maxRows rowsClass: rowsClass displayVariant: displayVariant displayVariantValue: displayVariantValue expectedRouter: expectedRouter %}
 {%- endif -%}
 
 
@@ -253,7 +227,7 @@ components--web-gallery-card-standard
         {%- assign title = r.hit_displaytitle | default: r.hit_name | default: '' | append: '' | strip -%}
         {%- assign summary = r.hit_summary | default: '' | append: '' | strip -%}
         {%- assign imageUrl = r.hit_imageurl | default: '' | append: '' | strip -%}
-        {%- assign typeLabel = r.hit_typelabel | default: 'Offering' | append: '' | strip -%}
+        {%- assign typeLabel = r.hit_typelabel | default: 'Program' | append: '' | strip -%}
 
         {%- assign href = r.hit_weburl | default: '' | append: '' | strip -%}
 
@@ -276,7 +250,7 @@ components--web-gallery-card-standard
             {%- assign joiner = '&' -%}
           {%- endif -%}
 
-          {%- assign encodedId = id | r.hit_programid -%}
+          {%- assign encodedId = id | url_encode -%}
 
           {%- assign href = base  | append: joiner  | append: idParamName  | append: '='  | append: encodedId   -%}
 
@@ -369,7 +343,7 @@ components--web-gallery-card-standard
     {%- else -%}
 
       <div class="hit-gallery__empty">
-        <p>No offerings found.</p>
+        <p>No programs found.</p>
       </div>
 
     {%- endif -%}

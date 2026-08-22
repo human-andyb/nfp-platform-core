@@ -1,6 +1,8 @@
 {% assign headingText = section.hit_headingtext | default:'' | strip %}
 {% assign introText = section.hit_introtext | default:'' | strip %}
 
+{% include 'helpers--layout-slot-state' slots: slots expectedSlotCount: 3 debug: debug layoutName: 'layout-3-col' %}
+
 <div class="layout layout-3-col">
 
     {% if headingText != '' or introText != '' %}
@@ -23,35 +25,32 @@
 
     <div class="layout-3-col__grid">
 
+        {% if debug and layoutSlotsEmpty %}
+            <div class="hit-alert">
+                Slots array empty.
+            </div>
+        {% endif %}
+
+        {% if debug and layoutMissingSlotIndexes != '' %}
+            <div class="hit-alert">
+                Missing required slot indexes: {{ layoutMissingSlotIndexes }}.
+            </div>
+        {% endif %}
+
+        {% if debug and layoutExtraSlotIndexes != '' %}
+            <div class="hit-alert">
+                Unexpected slot indexes for 3-column layout: {{ layoutExtraSlotIndexes }}.
+            </div>
+        {% endif %}
+
         {% for slotIndex in (1..3) %}
 
-            {% assign currentSlot = slots | where: "hit_slotindex", slotIndex | first %}
+            {% include 'helpers--layout-slot-discovery' slots: slots slotIndex: slotIndex %}
+            {% assign currentSlot = discoveredSlot %}
 
             <div class="layout-3-col__slot">
 
-                {% if currentSlot %}
-
-                    {% assign templateName = currentSlot['stype.hit_templatename'] | default:'' | strip | downcase %}
-
-                    {% if templateName != '' %}
-
-                        {% include templateName  slot: currentSlot  section: section  debug: debug  galleryParam: galleryParam  galleryOverride: galleryOverride   %}
-
-                    {% elsif debug %}
-
-                        <div class="hit-alert">
-                            Slot {{ slotIndex }} has no template name.
-                        </div>
-
-                    {% endif %}
-
-                {% elsif debug %}
-
-                    <div class="hit-alert">
-                        Slot {{ slotIndex }} not found.
-                    </div>
-
-                {% endif %}
+                {% include 'helpers--layout-slot-render' currentSlot: currentSlot slotIndex: slotIndex section: section debug: debug galleryParam: galleryParam galleryOverride: galleryOverride %}
 
             </div>
 

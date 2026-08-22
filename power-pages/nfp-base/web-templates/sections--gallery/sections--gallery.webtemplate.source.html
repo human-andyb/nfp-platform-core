@@ -41,6 +41,8 @@ STEP 2 — Resolve slug (SINGLE SOURCE OF TRUTH)
 {% endcomment %}
 {% assign resolvedGallerySlug = '' %}
 {% assign resolutionMode = '' %}
+{% assign galleryId = '' %}
+{% assign resolutionIssue = '' %}
 
 {% if useQueryOverride %}
   {% assign resolvedGallerySlug = qpGallery %}
@@ -49,8 +51,6 @@ STEP 2 — Resolve slug (SINGLE SOURCE OF TRUTH)
 {% elsif slot and slot.hit_webgalleryconfig %}
 
   {% assign resolutionMode = 'SLOT_FALLBACK' %}
-
-  {% assign galleryId = '' %}
 
   {% if slot.hit_webgalleryconfig.id %}
     {% assign galleryId = slot.hit_webgalleryconfig.id %}
@@ -77,9 +77,22 @@ STEP 2 — Resolve slug (SINGLE SOURCE OF TRUTH)
 
     {% if galleryRec %}
       {% assign resolvedGallerySlug = galleryRec.hit_slug | default:'' | strip %}
+      {% if resolvedGallerySlug == '' %}
+        {% assign resolutionIssue = 'GALLERY_SLUG_EMPTY' %}
+      {% endif %}
+    {% else %}
+      {% assign resolutionIssue = 'GALLERY_LOOKUP_NOT_FOUND' %}
     {% endif %}
 
+  {% else %}
+
+    {% assign resolutionIssue = 'GALLERY_LOOKUP_EMPTY' %}
+
   {% endif %}
+
+{% else %}
+
+  {% assign resolutionIssue = 'NO_SLOT_GALLERY_CONFIG' %}
 
 {% endif %}
 
@@ -87,20 +100,7 @@ STEP 2 — Resolve slug (SINGLE SOURCE OF TRUTH)
 STEP 3 — DEBUG (KEEP THIS)
 {% endcomment %}
 {% if DEBUG %}
-<pre class="hit-gallery-debug-pre">
-
-SECTION DEBUG (FINAL CLEAN)
-
-qpGallery={{ qpGallery }}
-
-slotAllowOverride={{ slotAllowOverride }}
-useQueryOverride={{ useQueryOverride }}
-
-resolutionMode={{ resolutionMode }}
-
-resolvedGallerySlug={{ resolvedGallerySlug }}
-
-</pre>
+{% include 'helpers--debug-pre' preClass: 'hit-gallery-debug-pre' debugScope: 'GALLERY_SECTION' debugStage: 'RESOLUTION' k1: 'qpGallery' v1: qpGallery k2: 'slotAllowOverride' v2: slotAllowOverride k3: 'useQueryOverride' v3: useQueryOverride k4: 'resolutionMode' v4: resolutionMode k5: 'galleryId' v5: galleryId k6: 'resolutionIssue' v6: resolutionIssue k7: 'resolvedGallerySlug' v7: resolvedGallerySlug %}
 {% endif %}
 
 <section class="hit-section hit-section--gallery hit-section--bg-{{ bg }} hit-section--layout-{{ layout }} is-platform">
@@ -110,9 +110,10 @@ resolvedGallerySlug={{ resolvedGallerySlug }}
       {% if resolvedGallerySlug == '' %}
 
         {% if DEBUG %}
-                    <div class="hit-gallery-debug-error">
-            ❌ Gallery not resolved  
+          <div class="hit-gallery-debug-error">
+            ❌ Gallery not resolved
             resolutionMode={{ resolutionMode }}
+            resolutionIssue={{ resolutionIssue }}
           </div>
         {% endif %}
 
@@ -123,27 +124,13 @@ resolvedGallerySlug={{ resolvedGallerySlug }}
         {% endcomment %}
 
         {% if DEBUG %}
-        <pre>
-   
-    width={{ widthClass }}
-    align={{ alignClass }}
-
-        slot.hit_displaystyle={{ slot.hit_displaystyle }}
-
-        slot.hit_displaystyle.value={{ slot.hit_displaystyle.value }}
-
-        slot.hit_displaystyle.label={{ slot.hit_displaystyle.label }}
-
-        slot.hit_displayvariant={{ slot.hit_displayvariant }}
-
-        slot.hit_displayvariant.value={{ slot.hit_displayvariant.value }}
-
-        slot.hit_displayvariant.label={{ slot.hit_displayvariant.label }}
-
-        </pre>
+          {% include 'helpers--debug-pre' preClass: 'hit-gallery-debug-pre' debugScope: 'GALLERY_SECTION' debugStage: 'SLOT_DISPLAY_CONFIG' k1: 'slotDisplayStyleRaw' v1: slot.hit_displaystyle k2: 'slotDisplayStyleValue' v2: slot.hit_displaystyle.value | default: slot.hit_displaystyle k3: 'slotDisplayVariantRaw' v3: slot.hit_displayvariant k4: 'slotDisplayVariantValue' v4: slot.hit_displayvariant.value | default: slot.hit_displayvariant k5: 'maxColumns' v5: slot.hit_maxcolumns k6: 'maxRows' v6: slot.hit_maxrows %}
         {% endif %}
 
-        {% include 'components--web-gallery'  gallerySlug: resolvedGallerySlug  allowQueryOverride: true  displayStyle: slot.hit_displaystyle.value  displayVariant: slot.hit_displayvariant.value maxColumns: slot.hit_maxcolumns  maxRows: slot.hit_maxrows  debug: DEBUG %}
+        {% assign slotDisplayStyle = slot.hit_displaystyle.value | default: slot.hit_displaystyle | default: '' | append: '' | strip %}
+        {% assign slotDisplayVariant = slot.hit_displayvariant.value | default: slot.hit_displayvariant | default: '' | append: '' | strip %}
+
+        {% include 'components--web-gallery'  gallerySlug: resolvedGallerySlug  allowQueryOverride: true  displayStyle: slotDisplayStyle  displayVariant: slotDisplayVariant maxColumns: slot.hit_maxcolumns  maxRows: slot.hit_maxrows  debug: DEBUG %}
 
 
       {% endif %}
