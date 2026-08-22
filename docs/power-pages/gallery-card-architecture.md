@@ -1,5 +1,11 @@
 # Gallery and Card Architecture
 
+See also:
+
+- [page-builder.md](page-builder.md) for the upstream page, section, and slot composition model
+- [section-layout-framework.md](section-layout-framework.md) for the 1-5 column layout contract and slot-index rules
+- [gallery-framework.md](gallery-framework.md) for gallery resolution, source routing, and troubleshooting
+
 ## Overview
 
 This repository contains two gallery systems:
