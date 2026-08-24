@@ -43,6 +43,7 @@ STEP 2 — Resolve slug (SINGLE SOURCE OF TRUTH)
 {% assign resolutionMode = '' %}
 {% assign galleryId = '' %}
 {% assign resolutionIssue = '' %}
+{% assign galleryRecord = nil %}
 
 {% if useQueryOverride %}
   {% assign resolvedGallerySlug = qpGallery %}
@@ -65,7 +66,19 @@ STEP 2 — Resolve slug (SINGLE SOURCE OF TRUTH)
     {% fetchxml galleryLookup %}
       <fetch top="1">
         <entity name="hit_webgalleryconfig">
+          <attribute name="hit_webgalleryconfigid" />
+          <attribute name="hit_name" />
           <attribute name="hit_slug" />
+          <attribute name="hit_isactive" />
+          <attribute name="hit_maxitems" />
+          <attribute name="hit_gallerysourcetype" />
+          <attribute name="hit_offeringtype" />
+          <attribute name="hit_cardtemplate" />
+          <attribute name="hit_gallerytitle" />
+          <attribute name="hit_gallerysubtitle" />
+          <attribute name="hit_targetpage" />
+          <attribute name="hit_idparametername" />
+          <attribute name="hit_openinnewtab" />
           <filter>
             <condition attribute="hit_webgalleryconfigid" operator="eq" value="{{ galleryId }}" />
           </filter>
@@ -76,6 +89,7 @@ STEP 2 — Resolve slug (SINGLE SOURCE OF TRUTH)
     {% assign galleryRec = galleryLookup.results.entities | first %}
 
     {% if galleryRec %}
+      {% assign galleryRecord = galleryRec %}
       {% assign resolvedGallerySlug = galleryRec.hit_slug | default:'' | strip %}
       {% if resolvedGallerySlug == '' %}
         {% assign resolutionIssue = 'GALLERY_SLUG_EMPTY' %}
@@ -100,14 +114,21 @@ STEP 2 — Resolve slug (SINGLE SOURCE OF TRUTH)
 STEP 3 — DEBUG (KEEP THIS)
 {% endcomment %}
 {% if DEBUG %}
-{% include 'helpers--debug-pre' preClass: 'hit-gallery-debug-pre' debugScope: 'GALLERY_SECTION' debugStage: 'RESOLUTION' k1: 'qpGallery' v1: qpGallery k2: 'slotAllowOverride' v2: slotAllowOverride k3: 'useQueryOverride' v3: useQueryOverride k4: 'resolutionMode' v4: resolutionMode k5: 'galleryId' v5: galleryId k6: 'resolutionIssue' v6: resolutionIssue k7: 'resolvedGallerySlug' v7: resolvedGallerySlug %}
+{% include 'helpers--debug-pre' preClass: 'hit-gallery-debug-pre' debugScope: 'GALLERY_SECTION' debugStage: 'RESOLUTION' k1: 'qpGallery' v1: qpGallery k2: 'slotAllowOverride' v2: slotAllowOverride k3: 'useQueryOverride' v3: useQueryOverride k4: 'resolutionMode' v4: resolutionMode k5: 'galleryId' v5: galleryId k6: 'resolutionIssue' v6: resolutionIssue k7: 'resolvedGallerySlug' v7: resolvedGallerySlug k8: 'hasGalleryRecord' v8: galleryRecord %}
+{% endif %}
+
+{% assign canRenderGallery = false %}
+{% if resolvedGallerySlug != '' %}
+  {% assign canRenderGallery = true %}
+{% elsif resolutionMode == 'SLOT_FALLBACK' and galleryRecord %}
+  {% assign canRenderGallery = true %}
 {% endif %}
 
 <section class="hit-section hit-section--gallery hit-section--bg-{{ bg }} hit-section--layout-{{ layout }} is-platform">
   <div class="hit-section__inner">
     <div class="hit-section__container">
 
-      {% if resolvedGallerySlug == '' %}
+      {% if canRenderGallery == false %}
 
         {% if DEBUG %}
           <div class="hit-gallery-debug-error">
@@ -130,7 +151,7 @@ STEP 3 — DEBUG (KEEP THIS)
         {% assign slotDisplayStyle = slot.hit_displaystyle.value | default: slot.hit_displaystyle | default: '' | append: '' | strip %}
         {% assign slotDisplayVariant = slot.hit_displayvariant.value | default: slot.hit_displayvariant | default: '' | append: '' | strip %}
 
-        {% include 'components--web-gallery'  gallerySlug: resolvedGallerySlug  allowQueryOverride: true  displayStyle: slotDisplayStyle  displayVariant: slotDisplayVariant maxColumns: slot.hit_maxcolumns  maxRows: slot.hit_maxrows  debug: DEBUG %}
+        {% include 'components--web-gallery'  gallery: galleryRecord  gallerySlug: resolvedGallerySlug  allowQueryOverride: true  displayStyle: slotDisplayStyle  displayVariant: slotDisplayVariant maxColumns: slot.hit_maxcolumns  maxRows: slot.hit_maxrows  debug: DEBUG %}
 
 
       {% endif %}

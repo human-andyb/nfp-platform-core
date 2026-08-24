@@ -23,12 +23,25 @@ Behavior:
 
 {%- if resolvedSlot -%}
 
-  {%- assign templateName = resolvedSlot['stype.hit_templatename'] | default: '' | strip | downcase -%}
+  {%- assign templateNameRaw = resolvedSlot['stype.hit_templatename'] | default: '' | append: '' | strip -%}
+  {%- assign sectionTypeName = resolvedSlot['stype.hit_name'] | default: '' | append: '' | downcase | strip -%}
+  {%- assign templateName = templateNameRaw | downcase -%}
+  {%- assign appliedFallback = '' -%}
+
+  {%- if templateName == '' and sectionTypeName contains 'hero' -%}
+    {%- assign templateName = 'sections--hero' -%}
+    {%- assign appliedFallback = 'SECTION_TYPE_NAME_HERO' -%}
+  {%- endif -%}
 
   {%- if debugMode -%}
     <div class="hit-debug">
       Slot {{ resolvedSlotIndex }} template: {{ templateName }}
     </div>
+    {%- if appliedFallback != '' -%}
+      <div class="hit-debug">
+        Slot {{ resolvedSlotIndex }} fallback: {{ appliedFallback }} (sectionType={{ sectionTypeName }})
+      </div>
+    {%- endif -%}
   {%- endif -%}
 
   {%- if templateName != '' -%}
