@@ -16,5 +16,11 @@ Outputs:
 
 {%- if slots and requestedSlotIndex != '' -%}
   {%- assign requestedSlotIndexNumber = requestedSlotIndex | plus: 0 -%}
-  {%- assign discoveredSlot = slots | where: 'hit_slotindex', requestedSlotIndexNumber | first -%}
+  {%- for candidateSlot in slots -%}
+    {%- assign candidateSlotIndex = candidateSlot.hit_slotindex | default: 0 | plus: 0 -%}
+    {%- if candidateSlotIndex == requestedSlotIndexNumber -%}
+      {%- assign discoveredSlot = candidateSlot -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
 {%- endif -%}
