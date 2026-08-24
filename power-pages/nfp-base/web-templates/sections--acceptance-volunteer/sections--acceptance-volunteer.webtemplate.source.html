@@ -709,17 +709,37 @@ Temporary:
         }
 
         function buildPaymentReadinessApiUrl(){
-          const cacheBypass = encodeURIComponent(
-            new Date().toISOString()
-          );
-
           return (
             "/_api/hit_offeringacceptances(" +
             acceptanceId +
             ")" +
-            "?$select=hit_acceptancestatus,hit_stripepaymentintentid" +
-            "&$filter=modifiedon lt " +
-            cacheBypass
+            "?$select=hit_acceptancestatus"
+          );
+        }
+
+        function navigateToReadyRouter(){
+          const targetUrl = new URL(
+            window.location.pathname,
+            window.location.origin
+          );
+
+          targetUrl.searchParams.set(
+            "page",
+            "offering-acceptance"
+          );
+
+          targetUrl.searchParams.set(
+            "acceptanceid",
+            acceptanceId
+          );
+
+          targetUrl.searchParams.set(
+            "_ts",
+            String(Date.now())
+          );
+
+          window.location.replace(
+            targetUrl.toString()
           );
         }
 
@@ -760,15 +780,7 @@ Temporary:
             data.hit_acceptancestatus
           );
 
-          const paymentIntentId =
-            String(
-              data.hit_stripepaymentintentid || ""
-            ).trim();
-
-          return (
-            status === STATUS_PENDING_PAYMENT ||
-            paymentIntentId !== ""
-          );
+          return status === STATUS_PENDING_PAYMENT;
         }
 
         function startPaymentReadinessPolling(){
@@ -794,7 +806,7 @@ Temporary:
                 await isPaymentReady();
 
               if (paymentReady) {
-                retryRouter();
+                navigateToReadyRouter();
                 return;
               }
             } catch (error) {

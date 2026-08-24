@@ -118,8 +118,7 @@
 
     fetch(
       '/_api/hit_offeringacceptances(' + _acceptanceId + ')' +
-      '?$select=hit_stripepaymentintentid' +
-      '&$filter=modifiedon lt ' + encodeURIComponent(new Date().toISOString()),
+      '?$select=hit_stripepaymentintentid',
       {
         method: 'GET',
         credentials: 'same-origin',
