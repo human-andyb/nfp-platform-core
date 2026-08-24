@@ -45,8 +45,14 @@
 
         {% for slotIndex in (1..4) %}
 
-            {% include 'helpers--layout-slot-discovery' slots: slots slotIndex: slotIndex %}
-            {% assign currentSlot = discoveredSlot %}
+            {% assign currentSlot = nil %}
+            {% for candidateSlot in slots %}
+                {% assign candidateSlotIndex = candidateSlot.hit_slotindex | default: 0 | plus: 0 %}
+                {% if candidateSlotIndex == slotIndex %}
+                    {% assign currentSlot = candidateSlot %}
+                    {% break %}
+                {% endif %}
+            {% endfor %}
 
             <div class="layout-4-col__slot">
 

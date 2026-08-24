@@ -8,8 +8,14 @@
 {% assign alignClass = 'layout--centre' %}
 
 {% if slots and slots.size > 0 %}
-    {% include 'helpers--layout-slot-discovery' slots: slots slotIndex: 1 %}
-    {% assign slot1 = discoveredSlot %}
+    {% assign slot1 = nil %}
+    {% for candidateSlot in slots %}
+        {% assign candidateSlotIndex = candidateSlot.hit_slotindex | default: 0 | plus: 0 %}
+        {% if candidateSlotIndex == 1 %}
+            {% assign slot1 = candidateSlot %}
+            {% break %}
+        {% endif %}
+    {% endfor %}
 
     {% if slot1 %}
 

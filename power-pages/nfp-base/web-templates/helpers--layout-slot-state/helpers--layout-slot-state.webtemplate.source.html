@@ -33,8 +33,17 @@ Outputs:
 
 {%- assign layoutMissingSlotIndexes = '' -%}
 {%- for expectedIndex in (1..layoutExpectedSlotCount) -%}
-  {%- include 'helpers--layout-slot-discovery' slots: slots slotIndex: expectedIndex -%}
-  {%- if discoveredSlot == nil -%}
+  {%- assign expectedSlotFound = false -%}
+  {%- if slots and slots.size > 0 -%}
+    {%- for candidateSlot in slots -%}
+      {%- assign candidateSlotIndex = candidateSlot.hit_slotindex | default: 0 | plus: 0 -%}
+      {%- if candidateSlotIndex == expectedIndex -%}
+        {%- assign expectedSlotFound = true -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- if expectedSlotFound == false -%}
     {%- if layoutMissingSlotIndexes != '' -%}
       {%- assign layoutMissingSlotIndexes = layoutMissingSlotIndexes | append: ',' -%}
     {%- endif -%}
