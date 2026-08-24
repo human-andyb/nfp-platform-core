@@ -83,25 +83,26 @@ ASSUMED PK: hit_webcontentid  (change if needed)
   {%- assign title = s.hit_displaytitle | default: s.hit_name | default: '' | append: '' | strip -%}
   {%- assign summary = s.hit_summary | default: '' | append: '' | strip -%}
   {%- assign imageUrl = s.hit_imageurl | default: '' | append: '' | strip -%}
-  {%- assign typeLabel = s.hit_typelabel | default: 'Article' | append: '' | strip -%}
+  {%- assign typeLabel = s.hit_typelabel | default: 'Web Content' | append: '' | strip -%}
 
   {%- assign storyId = s.hit_webcontentid | default: '' | append: '' | strip -%}
 
 
   {%- comment -%} Locked href resolution {%- endcomment -%}
-  {%- assign href = p.hit_weburl | default: '' | append: '' | strip -%}
+  {%- assign href = s.hit_weburl | default: '' | append: '' | strip -%}
   {%- if href == '' -%}
     {%- assign joiner = '?' -%}
     {%- if targetPage contains '?' -%}{%- assign joiner = '&' -%}{%- endif -%}
-    {%- assign href = targetPage | append: joiner | append: idParamName | append: '=' | append: storyid -%}
+    {%- assign encodedId = storyId | url_encode -%}
+    {%- assign href = targetPage | append: joiner | append: idParamName | append: '=' | append: encodedId -%}
   {%- endif -%}
 
   {%- if cardTemplateValue == CARD_COMPACT -%}
-    {% include 'components--web-gallery-card-compact' title: title summary: summary imageUrl: imageUrl typeLabel: typeLabel href: href targetAttr: targetAttr ctaLabel: 'View' %}
+    {% include 'components--web-gallery-card-compact' title: title summary: summary imageUrl: imageUrl typeLabel: typeLabel href: href targetAttr: targetAttrs ctaLabel: 'View' %}
   {%- elsif cardTemplateValue == CARD_FEATURED -%}
-    {% include 'components--web-gallery-card-featured' title: title summary: summary imageUrl: imageUrl typeLabel: typeLabel href: href targetAttr: targetAttr ctaLabel: 'View' %}
+    {% include 'components--web-gallery-card-featured' title: title summary: summary imageUrl: imageUrl typeLabel: typeLabel href: href targetAttr: targetAttrs ctaLabel: 'View' %}
   {%- else -%}
-    {% include 'components--web-gallery-card-standard' title: title summary: summary imageUrl: imageUrl typeLabel: typeLabel href: href targetAttr: targetAttr ctaLabel: 'View' %}
+    {% include 'components--web-gallery-card-standard' title: title summary: summary imageUrl: imageUrl typeLabel: typeLabel href: href targetAttr: targetAttrs ctaLabel: 'View' %}
   {%- endif -%}
 
 {%- endfor -%}

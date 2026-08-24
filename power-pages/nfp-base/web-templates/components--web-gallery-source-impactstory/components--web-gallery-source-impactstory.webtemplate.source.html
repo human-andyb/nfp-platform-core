@@ -72,11 +72,12 @@ Impact Stories adapter (v2.1 REVERT)
 
 
   {%- comment -%} Locked href resolution {%- endcomment -%}
-  {%- assign href = p.hit_weburl | default: '' | append: '' | strip -%}
+  {%- assign href = s.hit_weburl | default: '' | append: '' | strip -%}
   {%- if href == '' -%}
     {%- assign joiner = '?' -%}
     {%- if targetPage contains '?' -%}{%- assign joiner = '&' -%}{%- endif -%}
-    {%- assign href = targetPage | append: joiner | append: idParamName | append: '=' | append: storyid -%}
+    {%- assign encodedId = storyId | url_encode -%}
+    {%- assign href = targetPage | append: joiner | append: idParamName | append: '=' | append: encodedId -%}
   {%- endif -%}
 
   {%- if cardTemplateValue == CARD_COMPACT -%}
