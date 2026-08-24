@@ -443,6 +443,11 @@ Temporary:
         const waitingForPayment =
           currentUrl.searchParams.get("waitforpayment") === "1";
 
+        const acceptanceId =
+          "{{ acc.hit_offeringacceptanceid }}";
+
+        const STATUS_PENDING_PAYMENT = 815390001;
+
         const parsedRouteAttempt =
           parseInt(currentUrl.searchParams.get("routeattempt") || "0", 10);
 
@@ -451,8 +456,10 @@ Temporary:
             ? parsedRouteAttempt
             : 0;
 
-        const maximumRouteAttempts = 20;
-        const routeRetryDelayMilliseconds = 1250;
+        const maximumRouteAttempts = 4;
+        const routeRetryDelayMilliseconds = 1500;
+        const paymentReadinessPollIntervalMilliseconds = 2500;
+        const maximumPaymentReadinessPolls = 72;
 
         function getElement(id){
           return root.querySelector("#" + id);
@@ -701,13 +708,120 @@ Temporary:
           }, routeRetryDelayMilliseconds);
         }
 
+        function buildPaymentReadinessApiUrl(){
+          const cacheBypass = encodeURIComponent(
+            new Date().toISOString()
+          );
+
+          return (
+            "/_api/hit_offeringacceptances(" +
+            acceptanceId +
+            ")" +
+            "?$select=hit_acceptancestatus,hit_stripepaymentintentid" +
+            "&$filter=modifiedon lt " +
+            cacheBypass
+          );
+        }
+
+        function normalizeStatusValue(rawStatus){
+          if (rawStatus && typeof rawStatus === "object") {
+            if (Object.prototype.hasOwnProperty.call(rawStatus, "value")) {
+              return Number(rawStatus.value);
+            }
+          }
+
+          return Number(rawStatus);
+        }
+
+        async function isPaymentReady(){
+          const response = await fetch(
+            buildPaymentReadinessApiUrl(),
+            {
+              method: "GET",
+              credentials: "same-origin",
+              cache: "no-store",
+              headers: {
+                "Accept": "application/json",
+                "OData-MaxVersion": "4.0",
+                "OData-Version": "4.0"
+              }
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              "Unable to read payment readiness."
+            );
+          }
+
+          const data = await response.json();
+
+          const status = normalizeStatusValue(
+            data.hit_acceptancestatus
+          );
+
+          const paymentIntentId =
+            String(
+              data.hit_stripepaymentintentid || ""
+            ).trim();
+
+          return (
+            status === STATUS_PENDING_PAYMENT ||
+            paymentIntentId !== ""
+          );
+        }
+
+        function startPaymentReadinessPolling(){
+          let pollCount = 0;
+
+          setLoading(
+            true,
+            "Preparing payment..."
+          );
+
+          disableFormWhileRouting();
+
+          async function poll(){
+            pollCount++;
+
+            if (pollCount > maximumPaymentReadinessPolls) {
+              stopRouterRetry();
+              return;
+            }
+
+            try {
+              const paymentReady =
+                await isPaymentReady();
+
+              if (paymentReady) {
+                retryRouter();
+                return;
+              }
+            } catch (error) {
+              console.warn(error);
+            }
+
+            setLoading(
+              true,
+              "Preparing payment..."
+            );
+
+            window.setTimeout(
+              poll,
+              paymentReadinessPollIntervalMilliseconds
+            );
+          }
+
+          poll();
+        }
+
         /*
          * If this section has been returned by the router while waiting for
          * Pending Payment, do not submit the form again. Request the router
          * again after a short delay.
          */
         if (waitingForPayment) {
-          retryRouter();
+          startPaymentReadinessPolling();
           return;
         }
 
