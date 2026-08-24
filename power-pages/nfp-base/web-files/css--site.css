@@ -248,6 +248,20 @@ html:has([data-site-layout="full"]) .content-container.hit-container {
     padding-top: var(--hit-header-height);
 }
 
+/*
+  Renderer fallback offset:
+  Some runtime layouts do not wrap platform-renderer output in .hit-main.
+  Apply the fixed-header offset at .hit-page level, then cancel inside .hit-main
+  to prevent double spacing where .hit-main already provides offset.
+*/
+.hit-page {
+  padding-top: var(--hit-header-height);
+}
+
+.hit-main .hit-page {
+  padding-top: 0;
+}
+
 /* Header wrapper */
 .site-header {
   position: fixed;
