@@ -68,6 +68,8 @@
 {% assign customFontUrl = '' %}
 {% assign headerBackgroundUrl = '' %}
 {% assign headerOverlayUrl = '' %}
+{% assign headerLogoUrl = '' %}
+{% assign headerLogoHeight = '64px' %}
 
 {% if branding.results.entities.size > 0 %}
 
@@ -75,6 +77,16 @@
   {% assign customFontUrl = brand.hit_customfonturl.url | default: brand.hit_customfonturl.value | default: brand.hit_customfonturl | default: '' | append: '' | strip %}
   {% assign headerBackgroundUrl = brand.hit_headerbackgroundurl.url | default: brand.hit_headerbackgroundurl.value | default: brand.hit_headerbackgroundurl | default: '' | append: '' | strip %}
   {% assign headerOverlayUrl = brand.hit_headerbackgroundoverlayurl.url | default: brand.hit_headerbackgroundoverlayurl.value | default: brand.hit_headerbackgroundoverlayurl | default: '' | append: '' | strip %}
+  {% assign headerLogoUrl = brand.hit_headerlogo.url | default: brand.hit_headerlogo.value | default: brand.hit_headerlogo | default: '' | append: '' | strip %}
+
+  {% assign logoHeightRaw = brand.hit_headerlogoheight | default: '' | append: '' | strip %}
+  {% if logoHeightRaw != '' %}
+    {% if logoHeightRaw contains 'px' %}
+      {% assign headerLogoHeight = logoHeightRaw %}
+    {% else %}
+      {% assign headerLogoHeight = logoHeightRaw | append: 'px' %}
+    {% endif %}
+  {% endif %}
 
 {% if customFontUrl != '' %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -132,7 +144,7 @@
          ====================================================== */
       --header-bg: {{ brand.hit_headerbackgroundcolour }};
       --header-border: {{ brand.hit_headerbordercolour }};
-      --header-logo-height: {{ brand.hit_headerlogoheight | default: 64 }}px;
+      --header-logo-height: {{ headerLogoHeight }};
     }
   </style>
 {% endif %}
@@ -142,7 +154,19 @@
 <header class="site-header" role="banner">
   <div class="header-inner">
 
-    <div class="site-brand site-brand--placeholder" aria-hidden="true"></div>
+    {% if headerLogoUrl != '' %}
+      <div class="site-brand">
+        <a class="brand-link" href="/" aria-label="{{ website.name | default: 'Home' | escape }}">
+          <img class="brand-logo"
+               src="{{ headerLogoUrl | escape }}"
+               alt="{{ website.name | default: 'Home' | escape }}"
+               loading="eager"
+               decoding="async" />
+        </a>
+      </div>
+    {% else %}
+      <div class="site-brand site-brand--placeholder" aria-hidden="true"></div>
+    {% endif %}
 
     <!-- Navigation -->
     <nav class="primary-nav" aria-label="Primary navigation">
