@@ -106,8 +106,8 @@ Supports:
   {% if paymentintent_url != '' %}
   <script>
   (function(){
-    var flowUrl = "{{ paymentintent_url | escape }}";
-    var acceptanceId = "{{ acceptanceId | escape }}";
+    var flowUrl = {{ paymentintent_url | json }};
+    var acceptanceId = {{ acceptanceId | json }};
     var statusEl = document.getElementById("secretRecoveryStatus");
     var attempts = 0;
     var maxAttempts = 4;
