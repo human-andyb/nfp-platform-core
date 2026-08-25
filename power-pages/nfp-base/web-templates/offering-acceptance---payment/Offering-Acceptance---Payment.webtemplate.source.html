@@ -410,6 +410,8 @@
             <input type="hidden" id="totalAmount" value="{{ total }}">
             <input type="hidden" id="baseAmount" value="{{ baseamt }}">
             <input type="hidden" id="addonAmount" value="{{ addonamt }}">
+            <input type="hidden" id="paymentCurrency" value="AUD">
+            <input type="hidden" id="paymentDescription" value="{{ offering_name | escape }} donation">
             <input type="hidden" id="isSubscription"   value="{{ is_subscription }}">
             <input type="hidden" id="subFreqLabel"     value="{{ sub_freq_label | escape }}">
           </div>
@@ -451,6 +453,8 @@
   var totalEl = document.getElementById("totalAmount");
   var baseEl  = document.getElementById("baseAmount");
   var addEl   = document.getElementById("addonAmount");
+  var paymentCurrency = (document.getElementById("paymentCurrency") || {}).value || "AUD";
+  var paymentDescription = (document.getElementById("paymentDescription") || {}).value || "Donation";
   var amountDisplay = document.getElementById("amountDisplay");
 
   // Recurring inputs (may not exist if recurring disabled)
@@ -574,9 +578,18 @@
     activeMode = "payment";
     setStatus("Loading secure payment…", "busy");
 
+    var numericAmount = parseFloat(cleanNumber(totalAmount));
+    if (Number.isNaN(numericAmount) || numericAmount <= 0) {
+      throw new Error("Unable to determine the payment amount.");
+    }
+
     const data = await postJson(FLOW_PAYMENTINTENT_URL, {
       acceptanceId: acceptanceId,
-      clientToken: clientToken
+      clientToken: clientToken,
+      amount: numericAmount,
+      currency: paymentCurrency,
+      email: email,
+      description: paymentDescription
     });
 
     if (!data || !data.clientSecret || data.clientSecret.indexOf("_secret_") === -1) {

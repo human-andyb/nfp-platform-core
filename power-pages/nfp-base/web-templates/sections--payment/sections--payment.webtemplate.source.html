@@ -71,6 +71,8 @@ Supports:
 {% assign total = acc.hit_totalamounteffective | default: '' %}
 {% if total.value %}{% assign total = total.value %}{% endif %}
 {% assign offering_name = acc['o.hit_offeringname'] | default: 'Donation' %}
+{% assign payment_currency = 'AUD' %}
+{% assign payment_description = offering_name | append: ' donation' %}
 
 {% assign allow_recurring_raw = acc['o.hit_allowrecurring'] | default: false %}
 {% assign allow_recurring = false %}
@@ -110,9 +112,18 @@ Supports:
     var flowUrlInput = document.getElementById("paymentIntentFlowUrl");
     var flowUrl = flowUrlInput ? flowUrlInput.value : "";
     var acceptanceId = "{{ acceptanceId | escape }}";
+    var amountInput = document.getElementById("totalAmount");
+    var currencyInput = document.getElementById("paymentCurrency");
+    var emailInput = document.getElementById("paymentEmail");
+    var descriptionInput = document.getElementById("paymentDescription");
     var statusEl = document.getElementById("secretRecoveryStatus");
     var attempts = 0;
     var maxAttempts = 4;
+
+    function parseAmount(value){
+      var numericValue = parseFloat(String(value || "").replace(/[^\d.-]/g, ""));
+      return Number.isFinite(numericValue) ? numericValue : null;
+    }
 
     function setStatus(message){
       if (statusEl) {
@@ -142,33 +153,51 @@ Supports:
       setStatus("Completing payment setup… (" + attempts + "/" + maxAttempts + ")");
 
       try {
+        var amount = parseAmount(amountInput ? amountInput.value : "");
+        var currency = (currencyInput ? currencyInput.value : "") || "AUD";
+        var email = (emailInput ? emailInput.value : "") || "";
+        var description = (descriptionInput ? descriptionInput.value : "") || "Donation";
+
+        if (amount === null || amount <= 0) {
+          throw new Error("Unable to determine the payment amount.");
+        }
+
         var response = await fetch(flowUrl, {
           method: "POST",
-          mode: "cors",
           cache: "no-store",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
             acceptanceId: acceptanceId,
-            clientToken: generateClientToken()
+            clientToken: generateClientToken(),
+            amount: amount,
+            currency: currency,
+            email: email,
+            description: description
           })
         });
 
         var raw = await response.text();
-        var data = null;
+        var data;
 
         try {
-          data = raw ? JSON.parse(raw) : null;
+          data = JSON.parse(raw);
         } catch (_parseError) {
-          data = null;
+          throw new Error("Flow returned invalid JSON: " + (raw || "(empty)"));
         }
 
-        if (response.ok && data && (data.clientSecret || data.client_secret)) {
+        if (!response.ok) {
+          throw new Error(data.error || data.message || ("Flow call failed (HTTP " + response.status + ")"));
+        }
+
+        if (data && (data.clientSecret || data.client_secret)) {
           setStatus("Payment setup complete. Redirecting…");
           setTimeout(navigateToPayment, 250);
           return;
         }
+
+        throw new Error("The payment setup flow did not return a Stripe client secret.");
       } catch (_error) {}
 
       if (attempts < maxAttempts) {
@@ -321,6 +350,9 @@ Supports:
       <input type="hidden" id="clientSecret" value="{{ clientSecret | escape }}">
       <input type="hidden" id="stripePk" value="{{ stripe_pk | escape }}">
       <input type="hidden" id="totalAmount" value="{{ total | escape }}">
+      <input type="hidden" id="paymentCurrency" value="{{ payment_currency | escape }}">
+      <input type="hidden" id="paymentDescription" value="{{ payment_description | escape }}">
+      <input type="hidden" id="paymentEmail" value="{{ acc.hit_email | default: '' | escape }}">
       <input type="hidden" id="allowRecurring" value="{{ allow_recurring }}">
       <input type="hidden" id="setupIntentUrl" value="{{ setupintent_url | escape }}">
       <input type="hidden" id="email" value="{{ acc.hit_email | default: '' | escape }}">
