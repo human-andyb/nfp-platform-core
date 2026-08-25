@@ -13,6 +13,7 @@ Supports:
 {% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
 {% assign stripe_pk = settings['Stripe/PublishableKey'] | default: '' | strip %}
 {% assign setupintent_url = settings['Stripe/CreateCustomerSetupIntentUrl'] | default: '' | strip %}
+{% assign paymentintent_url = settings['Flow/PaymentIntentUrl'] | default: '' | strip %}
 
 {% if acceptanceId == '' %}
   <div class="alert alert-warning">Missing acceptance id.</div>
@@ -85,17 +86,100 @@ Supports:
 {% if clientSecret == '' %}
   <div class="hit-alert">
     <strong>Payment is still being prepared.</strong>
-    <div>Please wait a moment and refresh the page.</div>
+    <div id="secretRecoveryStatus">Please wait a moment while we complete your payment setup.</div>
+
+    {% if paymentintent_url == '' %}
+      <div>Please refresh the page to try again.</div>
+    {% endif %}
 
     {% if DEBUG %}
       <div class="hit-debug">
         status={{ status_label }} ({{ status_val }})<br>
         clientSecret missing<br>
         allowRecurring={{ allow_recurring }}<br>
-        setupIntentUrlPresent={{ setupintent_url != '' }}
+        setupIntentUrlPresent={{ setupintent_url != '' }}<br>
+        paymentIntentUrlPresent={{ paymentintent_url != '' }}
       </div>
     {% endif %}
   </div>
+
+  {% if paymentintent_url != '' %}
+  <script>
+  (function(){
+    var flowUrl = "{{ paymentintent_url | escape }}";
+    var acceptanceId = "{{ acceptanceId | escape }}";
+    var statusEl = document.getElementById("secretRecoveryStatus");
+    var attempts = 0;
+    var maxAttempts = 4;
+
+    function setStatus(message){
+      if (statusEl) {
+        statusEl.textContent = message;
+      }
+    }
+
+    function generateClientToken(){
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+
+      return "pi-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+    }
+
+    function navigateToPayment(){
+      var targetUrl = new URL(window.location.pathname, window.location.origin);
+      targetUrl.searchParams.set("page", "offering-acceptance");
+      targetUrl.searchParams.set("acceptanceid", acceptanceId);
+      targetUrl.searchParams.set("paymentmode", "direct");
+      targetUrl.searchParams.set("_ts", String(Date.now()));
+      window.location.replace(targetUrl.toString());
+    }
+
+    async function recoverClientSecret(){
+      attempts++;
+      setStatus("Completing payment setup… (" + attempts + "/" + maxAttempts + ")");
+
+      try {
+        var response = await fetch(flowUrl, {
+          method: "POST",
+          mode: "cors",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            acceptanceId: acceptanceId,
+            clientToken: generateClientToken()
+          })
+        });
+
+        var raw = await response.text();
+        var data = null;
+
+        try {
+          data = raw ? JSON.parse(raw) : null;
+        } catch (_parseError) {
+          data = null;
+        }
+
+        if (response.ok && data && (data.clientSecret || data.client_secret)) {
+          setStatus("Payment setup complete. Redirecting…");
+          setTimeout(navigateToPayment, 250);
+          return;
+        }
+      } catch (_error) {}
+
+      if (attempts < maxAttempts) {
+        setTimeout(recoverClientSecret, 1200);
+      } else {
+        setStatus("Payment setup is taking longer than expected. Refresh the page to continue.");
+      }
+    }
+
+    setTimeout(recoverClientSecret, 300);
+  })();
+  </script>
+  {% endif %}
 {% else %}
 
 <div class="hit-payment__grid">

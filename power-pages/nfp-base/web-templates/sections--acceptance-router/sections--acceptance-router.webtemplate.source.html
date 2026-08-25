@@ -12,6 +12,7 @@ sections--acceptance-router (DEBUG HARDENED)
 {% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
 {% assign waitingForStatus = request.params.waitforpayment == '1' %}
 {% assign hasRecoveryCycle = request.params.ppcycle != blank %}
+{% assign directPaymentMode = request.params.paymentmode == 'direct' %}
 
 {% assign STATUS_DRAFT = '0' %}
 {% assign STATUS_PENDING_INFORMATION = '815390000' %}
@@ -191,7 +192,16 @@ sections--acceptance-router (DEBUG HARDENED)
       </div>
     {% endif %}
 
-    {% if hasRecoveryCycle and isPaymentRequired and clientSecret == '' and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
+    {% if directPaymentMode and isPaymentRequired and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
+
+      {% if DEBUG %}
+        <div class="hit-debug-panel hit-debug-panel--include-payment">
+          Include: sections--payment (paymentmode direct)
+        </div>
+      {% endif %}
+      {% include 'sections--payment' %}
+
+    {% elsif hasRecoveryCycle and isPaymentRequired and clientSecret == '' and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
 
       {% if DEBUG %}
         <div class="hit-debug-panel hit-debug-panel--include-payment">
