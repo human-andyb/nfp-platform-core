@@ -217,25 +217,12 @@ sections--acceptance-router (DEBUG HARDENED)
 
     {% elsif status == STATUS_PENDING_PAYMENT %}
 
-      {% if requiresPayment and paymentIntentId == '' %}
-
-        {% if DEBUG %}
-          <div class="hit-debug-panel hit-debug-panel--include-payment">
-            Include: sections--payment-preparing
-          </div>
-        {% endif %}
-        {% include 'sections--payment-preparing' %}
-
-      {% else %}
-
-        {% if DEBUG %}
-          <div class="hit-debug-panel hit-debug-panel--include-payment">
-            Include: sections--payment
-          </div>
-        {% endif %}
-        {% include 'sections--payment' %}
-
+      {% if DEBUG %}
+        <div class="hit-debug-panel hit-debug-panel--include-payment">
+          Include: sections--payment (status pending payment)
+        </div>
       {% endif %}
+      {% include 'sections--payment' %}
 
     {% elsif status == STATUS_FAILED %}
 
