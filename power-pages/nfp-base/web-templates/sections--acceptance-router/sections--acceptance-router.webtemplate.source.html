@@ -11,7 +11,6 @@ sections--acceptance-router (DEBUG HARDENED)
 {% assign DEBUG = request.params.debug == '1' %}
 {% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
 {% assign waitingForStatus = request.params.waitforpayment == '1' %}
-{% assign hasRecoveryCycle = request.params.ppcycle != blank %}
 {% assign directPaymentMode = request.params.paymentmode == 'direct' %}
 
 {% assign STATUS_DRAFT = '0' %}
@@ -217,24 +216,6 @@ sections--acceptance-router (DEBUG HARDENED)
       {% if DEBUG %}
         <div class="hit-debug-panel hit-debug-panel--include-payment">
           Include: sections--payment (paymentmode direct)
-        </div>
-      {% endif %}
-      {% include 'sections--payment' %}
-
-    {% elsif hasRecoveryCycle and isPaymentRequired and clientSecret == '' and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
-
-      {% if DEBUG %}
-        <div class="hit-debug-panel hit-debug-panel--include-payment">
-          Include: sections--payment-preparing (ppcycle missing secret)
-        </div>
-      {% endif %}
-      {% include 'sections--payment-preparing' %}
-
-    {% elsif hasRecoveryCycle and isPaymentRequired and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
-
-      {% if DEBUG %}
-        <div class="hit-debug-panel hit-debug-panel--include-payment">
-          Include: sections--payment (ppcycle recovery override)
         </div>
       {% endif %}
       {% include 'sections--payment' %}

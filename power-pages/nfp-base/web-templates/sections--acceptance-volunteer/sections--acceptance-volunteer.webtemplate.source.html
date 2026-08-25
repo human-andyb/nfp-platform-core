@@ -851,11 +851,18 @@ Temporary:
 
         /*
          * If this section has been returned by the router while waiting for
-         * Pending Payment, do not submit the form again. Request the router
-         * again after a short delay.
+         * Pending Payment, do not submit the form again. Hand back to the
+         * router once so it can coordinate the next state.
          */
         if (waitingForPayment) {
-          startPaymentReadinessPolling();
+          setLoading(
+            true,
+            "Preparing payment..."
+          );
+
+          disableFormWhileRouting();
+
+          window.location.replace(buildDirectPaymentUrl());
           return;
         }
 

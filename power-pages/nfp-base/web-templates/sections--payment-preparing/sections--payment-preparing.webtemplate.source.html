@@ -178,10 +178,6 @@
     _attempt++;
     if (_attempt > MAX_POLLS) { showTimeout(); return; }
 
-    if (_attempt > 5) {
-      setStatus('Still preparing your secure session\u2026 (' + _attempt + ')');
-    }
-
     var seedIntent = (seedIntentInput && seedIntentInput.value ? seedIntentInput.value : '').trim();
     var seedSecret = (seedSecretInput && seedSecretInput.value ? seedSecretInput.value : '').trim();
 
@@ -200,57 +196,16 @@
       setStatus('Payment session ready. Finalizing secure checkout…');
     }
 
-    fetch(
-      '/_api/hit_offeringacceptances(' + _acceptanceId + ')' +
-      '?$select=hit_stripepaymentintentid,hit_stripeclientsecret',
-      {
-        method: 'GET',
-        credentials: 'same-origin',
-        cache: 'no-store',
-        headers: {
-          'Accept': 'application/json',
-          'OData-MaxVersion': '4.0',
-          'OData-Version': '4.0'
-        }
-      }
-    )
-    .then(function (res) {
-      if (!res.ok) throw new Error('API ' + res.status);
-      return res.json();
-    })
-    .then(function (data) {
-      var intentId = (data.hit_stripepaymentintentid || '').trim();
-      var clientSecret = (data.hit_stripeclientsecret || '').trim();
+    if (_attempt % SERVER_REFRESH_EVERY_POLLS === 0) {
+      _autoRecheckCount++;
+      setStatus('Refreshing payment state…');
+      setTimeout(function () {
+        refreshPreparing(_autoRecheckCount);
+      }, 250);
+      return;
+    }
 
-      if (clientSecret) {
-        setStatus('Payment session ready. Taking you to checkout\u2026');
-        try {
-          var seededUrl = new URL(window.location.href);
-          seededUrl.searchParams.set('clientsecret', clientSecret);
-          window.history.replaceState({}, document.title, seededUrl.toString());
-        } catch (_ignored) {}
-        setTimeout(navigateToPayment, 400);
-      } else {
-        if (intentId) {
-          setStatus('Payment session ready. Finalizing secure checkout…');
-        }
-
-        if (_attempt % SERVER_REFRESH_EVERY_POLLS === 0) {
-          _autoRecheckCount++;
-          setStatus('Refreshing payment state…');
-          setTimeout(function () {
-            refreshPreparing(_autoRecheckCount);
-          }, 250);
-          return;
-        }
-
-        _timer = setTimeout(poll, POLL_MS);
-      }
-    })
-    .catch(function () {
-      /* Network error — keep polling silently */
-      _timer = setTimeout(poll, POLL_MS);
-    });
+    _timer = setTimeout(poll, POLL_MS);
   }
 
   if (retryBtn) {
