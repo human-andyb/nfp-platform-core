@@ -197,7 +197,7 @@ sections--acceptance-router (DEBUG HARDENED)
       {% endif %}
       {% include 'sections--confirmation-nonpayment' %}
 
-    {% elsif waitingForStatus and isPaymentRequired and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
+    {% elsif waitingForStatus and isPaymentRequired and status != STATUS_PENDING_PAYMENT and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
 
       {% if DEBUG %}
         <div class="hit-debug-panel hit-debug-panel--include-payment">

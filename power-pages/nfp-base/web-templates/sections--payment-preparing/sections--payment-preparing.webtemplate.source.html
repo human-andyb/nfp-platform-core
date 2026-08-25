@@ -110,6 +110,8 @@
       window.location.pathname +
       '?page=offering-acceptance' +
       '&acceptanceid=' + encodeURIComponent(_acceptanceId) +
+      '&waitforpayment=1' +
+      '&routeattempt=0' +
       '&ppcycle=' + encodeURIComponent(String(nextCycle)) +
       '&_ts=' + Date.now();
   }
