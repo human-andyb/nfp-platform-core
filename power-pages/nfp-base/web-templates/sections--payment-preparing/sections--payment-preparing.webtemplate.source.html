@@ -79,22 +79,38 @@
 
   var MAX_POLLS = 90;   /* 90 × 2 s = 180 s max wait */
   var POLL_MS   = 2000; /* 2 seconds between background polls */
+  var AUTO_RECHECK_EVERY_POLLS = 4; /* every ~8 seconds */
+  var MAX_AUTO_RECHECKS = 8;
   var _attempt  = 0;
   var _timer    = null;
+  var _autoRecheckCount = 0;
 
   var statusEl  = document.getElementById('ppStatus');
   var timeoutEl = document.getElementById('ppTimeout');
   var retryBtn  = document.getElementById('ppRetryBtn');
 
+  try {
+    var currentUrl = new URL(window.location.href);
+    var parsedCycle = parseInt(currentUrl.searchParams.get('ppcycle') || '0', 10);
+    if (Number.isFinite(parsedCycle) && parsedCycle > 0) {
+      _autoRecheckCount = parsedCycle;
+    }
+  } catch (_ignored) {
+    _autoRecheckCount = 0;
+  }
+
   function setStatus(msg) {
     if (statusEl) statusEl.textContent = msg;
   }
 
-  function navigateToPayment() {
+  function navigateToPayment(cycleCount) {
+    var nextCycle = Number.isFinite(cycleCount) ? cycleCount : _autoRecheckCount;
+
     window.location.href =
       window.location.pathname +
       '?page=offering-acceptance' +
       '&acceptanceid=' + encodeURIComponent(_acceptanceId) +
+      '&ppcycle=' + encodeURIComponent(String(nextCycle)) +
       '&_ts=' + Date.now();
   }
 
@@ -140,6 +156,15 @@
         setStatus('Payment session ready. Taking you to checkout\u2026');
         setTimeout(navigateToPayment, 400);
       } else {
+        if (_attempt % AUTO_RECHECK_EVERY_POLLS === 0 && _autoRecheckCount < MAX_AUTO_RECHECKS) {
+          _autoRecheckCount++;
+          setStatus('Still preparing your secure session\u2026 refreshing (' + _autoRecheckCount + '/' + MAX_AUTO_RECHECKS + ')');
+          setTimeout(function () {
+            navigateToPayment(_autoRecheckCount);
+          }, 250);
+          return;
+        }
+
         _timer = setTimeout(poll, POLL_MS);
       }
     })
