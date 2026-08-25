@@ -229,7 +229,7 @@ This belongs on the gallery wrapper.
         {%- assign imageUrl = r.hit_imageurl | default: '' | append: '' | strip -%}
         {%- assign typeLabel = r.hit_typelabel | default: 'Program' | append: '' | strip -%}
 
-        {%- assign href = r.hit_weburl | default: '' | append: '' | strip -%}
+        {%- assign href = r.hit_weburl.url | default: r.hit_weburl.value | default: r.hit_weburl | default: '' | append: '' | strip -%}
 
 
         {%- comment -%}

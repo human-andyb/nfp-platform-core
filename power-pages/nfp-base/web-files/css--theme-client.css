@@ -20,6 +20,40 @@
    HERO / CONTENT STYLE VARIANTS
    ========================================================================== */
 
+/* ==========================================================================
+   FEATURED GALLERY CARD
+   --------------------------------------------------------------------------
+   Featured gallery cards should render as image-only tiles.
+   ========================================================================== */
+
+.hit-card--featured {
+    display: block;
+}
+
+.hit-card--featured .hit-card__inner--featured {
+    background-color: transparent;
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.hit-card--featured .hit-card__overlay,
+.hit-card--featured .hit-card__body--featured,
+.hit-card--featured .hit-card__badges,
+.hit-card--featured .hit-card__title--featured,
+.hit-card--featured .hit-card__summary--featured,
+.hit-card--featured .hit-card__cta {
+    display: none !important;
+}
+
+.hit-card--featured .hit-card__stretchedLink {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+}
+
 .style-brand-panel {
     background: var(--hit-brand-panel-bg);
     color: var(--hit-brand-panel-text);

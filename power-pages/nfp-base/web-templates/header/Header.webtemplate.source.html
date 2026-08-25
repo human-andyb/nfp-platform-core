@@ -49,6 +49,8 @@
     <attribute name="hit_headingfontfamilycss" />
     <attribute name="hit_customfonturl" />
     <attribute name="hit_headerlogo" />
+    <attribute name="hit_headerbackgroundurl" />
+    <attribute name="hit_headerbackgroundoverlayurl" />
   
     <attribute name="hit_surfacecolour" />
     <attribute name="hit_surfacemutedcolour" />
@@ -63,15 +65,23 @@
 </fetch>
 {% endfetchxml %}
 
+{% assign customFontUrl = '' %}
+{% assign headerBackgroundUrl = '' %}
+{% assign headerOverlayUrl = '' %}
+
 {% if branding.results.entities.size > 0 %}
 
-{% if brand.hit_customfonturl %}
+  {% assign brand = branding.results.entities[0] %}
+  {% assign customFontUrl = brand.hit_customfonturl.url | default: brand.hit_customfonturl.value | default: brand.hit_customfonturl | default: '' | append: '' | strip %}
+  {% assign headerBackgroundUrl = brand.hit_headerbackgroundurl.url | default: brand.hit_headerbackgroundurl.value | default: brand.hit_headerbackgroundurl | default: '' | append: '' | strip %}
+  {% assign headerOverlayUrl = brand.hit_headerbackgroundoverlayurl.url | default: brand.hit_headerbackgroundoverlayurl.value | default: brand.hit_headerbackgroundoverlayurl | default: '' | append: '' | strip %}
+
+{% if customFontUrl != '' %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="{{ brand.hit_customfonturl | escape }}">
+  <link rel="stylesheet" href="{{ customFontUrl | escape }}">
 {% endif %}
 
-  {% assign brand = branding.results.entities[0] %}
   <style id="hit-brand-theme">
     :root {
       /* ======================================================
@@ -132,14 +142,7 @@
 <header class="site-header" role="banner">
   <div class="header-inner">
 
-    <!-- Brand -->
-    <div class="site-brand">
-      <a href="/" class="brand-link">
-        <img src="/site-logo.png"
-             alt="{{ website.name | default: 'Home' }}"
-             class="brand-logo" />
-      </a>
-    </div>
+    <div class="site-brand site-brand--placeholder" aria-hidden="true"></div>
 
     <!-- Navigation -->
     <nav class="primary-nav" aria-label="Primary navigation">
@@ -149,3 +152,14 @@
 
   </div>
 </header>
+
+<div class="site-header-banner"
+     {% if headerBackgroundUrl != '' %}
+     style="background-image:url('{{ headerBackgroundUrl | escape }}');"
+     {% endif %}>
+  {% if headerOverlayUrl != '' %}
+    <img class="site-header-banner__overlay"
+         src="{{ headerOverlayUrl | escape }}"
+         alt="{{ website.name | default: 'Header overlay' | escape }}" />
+  {% endif %}
+</div>

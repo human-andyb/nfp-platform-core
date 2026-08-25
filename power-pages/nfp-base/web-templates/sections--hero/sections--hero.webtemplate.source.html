@@ -48,6 +48,7 @@ MEDIA
 {%- assign heroImageUrl = context.hit_mediaurl | default:'' | strip -%}
 {%- assign heroVideoUrl = context.hit_mediaurl | default:'' | strip -%}
 {%- assign heroPosterUrl = context.hit_fallbackimageurl | default:'' | strip -%}
+{%- assign heroItemClickUrl = context.hit_itemclickurl.url | default: context.hit_itemclickurl.value | default: context.hit_itemclickurl | default:'' | append:'' | strip -%}
 
 
 {%- comment -%}
@@ -118,10 +119,19 @@ STYLING
 
         {% elsif heroImageUrl != '' %}
 
+        {% if heroItemClickUrl != '' %}
+        <a href="{{ heroItemClickUrl | escape }}" class="hit-hero__media-link" aria-label="Open hero image link">
+            <div
+                class="hit-hero__image mediafit-{{ mediaFit | replace:' ','-' }}"
+                style="background-image:url('{{ heroImageUrl | escape }}');">
+            </div>
+        </a>
+        {% else %}
         <div
             class="hit-hero__image mediafit-{{ mediaFit | replace:' ','-' }}"
             style="background-image:url('{{ heroImageUrl | escape }}');">
         </div>
+        {% endif %}
 
         {% endif %}
 
@@ -194,6 +204,7 @@ CTA Enabled={{ ctaEnabled }}
 CTA Text={{ heroCtaText }}
 CTA Button={{ heroCtaButton }}
 CTA URL={{ heroCtaUrl }}
+Item Click URL={{ heroItemClickUrl }}
 
 Content Height={{ contentHeight }}
 Media Fit={{ mediaFit }}
