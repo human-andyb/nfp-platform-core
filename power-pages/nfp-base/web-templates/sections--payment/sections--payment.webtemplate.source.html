@@ -87,6 +87,7 @@ Supports:
   <div class="hit-alert">
     <strong>Payment is still being prepared.</strong>
     <div id="secretRecoveryStatus">Please wait a moment while we complete your payment setup.</div>
+    <input type="hidden" id="paymentIntentFlowUrl" value="{{ paymentintent_url | escape }}">
 
     {% if paymentintent_url == '' %}
       <div>Please refresh the page to try again.</div>
@@ -106,8 +107,9 @@ Supports:
   {% if paymentintent_url != '' %}
   <script>
   (function(){
-    var flowUrl = {{ paymentintent_url | json }};
-    var acceptanceId = {{ acceptanceId | json }};
+    var flowUrlInput = document.getElementById("paymentIntentFlowUrl");
+    var flowUrl = flowUrlInput ? flowUrlInput.value : "";
+    var acceptanceId = "{{ acceptanceId | escape }}";
     var statusEl = document.getElementById("secretRecoveryStatus");
     var attempts = 0;
     var maxAttempts = 4;
