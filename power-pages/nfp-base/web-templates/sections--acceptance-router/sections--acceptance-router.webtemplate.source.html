@@ -12,13 +12,13 @@ sections--acceptance-router (DEBUG HARDENED)
 {% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
 {% assign waitingForStatus = request.params.waitforpayment == '1' %}
 
-{% assign STATUS_DRAFT = 0 %}
-{% assign STATUS_PENDING_INFORMATION = 815390000 %}
-{% assign STATUS_PENDING_PAYMENT = 815390001 %}
-{% assign STATUS_PENDING_APPROVAL = 815390002 %}
-{% assign STATUS_COMPLETED = 815390003 %}
-{% assign STATUS_FAILED = 815390004 %}
-{% assign STATUS_CANCELLED = 815390005 %}
+{% assign STATUS_DRAFT = '0' %}
+{% assign STATUS_PENDING_INFORMATION = '815390000' %}
+{% assign STATUS_PENDING_PAYMENT = '815390001' %}
+{% assign STATUS_PENDING_APPROVAL = '815390002' %}
+{% assign STATUS_COMPLETED = '815390003' %}
+{% assign STATUS_FAILED = '815390004' %}
+{% assign STATUS_CANCELLED = '815390005' %}
 
 <div class="hit-app-shell">
 
@@ -107,6 +107,8 @@ sections--acceptance-router (DEBUG HARDENED)
         {% assign statusLabel = statusRaw.label %}
       {% endif %}
     {% endif %}
+
+    {% assign status = status | append: '' | strip %}
 
     {%- comment -%}
     SAFE: payment flags
