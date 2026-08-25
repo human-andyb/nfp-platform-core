@@ -11,6 +11,7 @@ Supports:
 
 {% assign DEBUG = request.params.debug == '1' %}
 {% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
+{% assign clientSecretFromRequest = request.params.clientsecret | default: '' | strip %}
 {% assign stripe_pk = settings['Stripe/PublishableKey'] | default: '' | strip %}
 {% assign setupintent_url = settings['Stripe/CreateCustomerSetupIntentUrl'] | default: '' | strip %}
 {% assign paymentintent_url = settings['Flow/PaymentIntentUrl'] | default: '' | strip %}
@@ -67,7 +68,7 @@ Supports:
 
 {% assign status_val = acc.hit_acceptancestatus.value | default: acc.hit_acceptancestatus %}
 {% assign status_label = acc.hit_acceptancestatus.label | default: acc['hit_acceptancestatus@OData.Community.Display.V1.FormattedValue'] | default: '' %}
-{% assign clientSecret = acc.hit_stripeclientsecret | default: '' | strip %}
+{% assign clientSecret = clientSecretFromRequest | default: acc.hit_stripeclientsecret | default: '' | strip %}
 {% assign total = acc.hit_totalamounteffective | default: '' %}
 {% if total.value %}{% assign total = total.value %}{% endif %}
 {% assign offering_name = acc['o.hit_offeringname'] | default: 'Donation' %}
@@ -90,6 +91,10 @@ Supports:
     <strong>Payment is still being prepared.</strong>
     <div id="secretRecoveryStatus">Please wait a moment while we complete your payment setup.</div>
     <input type="hidden" id="paymentIntentFlowUrl" value="{{ paymentintent_url | escape }}">
+    <input type="hidden" id="totalAmount" value="{{ total | escape }}">
+    <input type="hidden" id="paymentCurrency" value="{{ payment_currency | escape }}">
+    <input type="hidden" id="paymentDescription" value="{{ payment_description | escape }}">
+    <input type="hidden" id="paymentEmail" value="{{ acc.hit_email | default: '' | escape }}">
 
     {% if paymentintent_url == '' %}
       <div>Please refresh the page to try again.</div>
@@ -118,7 +123,8 @@ Supports:
     var descriptionInput = document.getElementById("paymentDescription");
     var statusEl = document.getElementById("secretRecoveryStatus");
     var attempts = 0;
-    var maxAttempts = 4;
+    var maxAttempts = 20;
+    var settleDelayMilliseconds = 1500;
 
     function parseAmount(value){
       var numericValue = parseFloat(String(value || "").replace(/[^\d.-]/g, ""));
@@ -131,79 +137,112 @@ Supports:
       }
     }
 
-    function generateClientToken(){
-      if (window.crypto && typeof window.crypto.randomUUID === "function") {
-        return window.crypto.randomUUID();
-      }
-
-      return "pi-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+    function asTrimmedString(value){
+      if (value === null || value === undefined) return "";
+      return String(value).trim();
     }
 
-    function navigateToPayment(){
+    function readField(data, logicalName){
+      if (!data || typeof data !== "object") return "";
+
+      var raw = asTrimmedString(data[logicalName]);
+      if (raw) return raw;
+
+      var formattedKey = logicalName + "@OData.Community.Display.V1.FormattedValue";
+      var formatted = asTrimmedString(data[formattedKey]);
+      if (formatted) return formatted;
+
+      return "";
+    }
+
+    function navigateToPayment(recoveredSecret){
+      var nextSecret = recoveredSecret || "";
       var targetUrl = new URL(window.location.pathname, window.location.origin);
       targetUrl.searchParams.set("page", "offering-acceptance");
       targetUrl.searchParams.set("acceptanceid", acceptanceId);
       targetUrl.searchParams.set("paymentmode", "direct");
+      if (nextSecret) {
+        targetUrl.searchParams.set("clientsecret", nextSecret);
+      }
       targetUrl.searchParams.set("_ts", String(Date.now()));
       window.location.replace(targetUrl.toString());
+    }
+
+    async function getAcceptancePaymentState(){
+      try {
+        var response = await fetch(
+          '/_api/hit_offeringacceptances(' + acceptanceId + ')?$select=hit_stripepaymentintentid,hit_stripeclientsecret',
+          {
+            method: 'GET',
+            credentials: 'same-origin',
+            cache: 'no-store',
+            headers: {
+              'Accept': 'application/json',
+              'OData-MaxVersion': '4.0',
+              'OData-Version': '4.0'
+            }
+          }
+        );
+
+        if (!response.ok) return { hasIntent: false, hasSecret: false, clientSecret: "" };
+
+        var data = await response.json();
+        var intentId = readField(data, 'hit_stripepaymentintentid');
+        var secret = readField(data, 'hit_stripeclientsecret');
+        return {
+          hasIntent: Boolean(intentId),
+          hasSecret: Boolean(secret),
+          clientSecret: secret
+        };
+      } catch (_ignored) {
+        return { hasIntent: false, hasSecret: false, clientSecret: "" };
+      }
     }
 
     async function recoverClientSecret(){
       attempts++;
       setStatus("Completing payment setup… (" + attempts + "/" + maxAttempts + ")");
 
+      if (attempts > maxAttempts) {
+        setStatus("Payment setup is taking longer than expected. Refresh the page to continue.");
+        return;
+      }
+
       try {
-        var amount = parseAmount(amountInput ? amountInput.value : "");
-        var currency = (currencyInput ? currencyInput.value : "") || "AUD";
-        var email = (emailInput ? emailInput.value : "") || "";
-        var description = (descriptionInput ? descriptionInput.value : "") || "Donation";
-
-        if (amount === null || amount <= 0) {
-          throw new Error("Unable to determine the payment amount.");
-        }
-
-        var response = await fetch(flowUrl, {
-          method: "POST",
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            acceptanceId: acceptanceId,
-            clientToken: generateClientToken(),
-            amount: amount,
-            currency: currency,
-            email: email,
-            description: description
-          })
-        });
-
-        var raw = await response.text();
-        var data;
-
-        try {
-          data = JSON.parse(raw);
-        } catch (_parseError) {
-          throw new Error("Flow returned invalid JSON: " + (raw || "(empty)"));
-        }
-
-        if (!response.ok) {
-          throw new Error(data.error || data.message || ("Flow call failed (HTTP " + response.status + ")"));
-        }
-
-        if (data && (data.clientSecret || data.client_secret)) {
+        var preState = await getAcceptancePaymentState();
+        if (preState.hasSecret) {
           setStatus("Payment setup complete. Redirecting…");
-          setTimeout(navigateToPayment, 250);
+          setTimeout(function () { navigateToPayment(preState.clientSecret); }, 250);
           return;
         }
 
-        throw new Error("The payment setup flow did not return a Stripe client secret.");
-      } catch (_error) {}
+        if (preState.hasIntent && !preState.hasSecret) {
+          setStatus("Payment session ready. Finalizing secure checkout…");
+          setTimeout(recoverClientSecret, settleDelayMilliseconds);
+          return;
+        }
 
-      if (attempts < maxAttempts) {
-        setTimeout(recoverClientSecret, 1200);
-      } else {
-        setStatus("Payment setup is taking longer than expected. Refresh the page to continue.");
+        // Do not invoke createpaymentintent from browser in this branch.
+        // The backend flow is already updating Dataverse; wait for the secret
+        // to become readable and then hand off to payment.
+        setTimeout(recoverClientSecret, settleDelayMilliseconds);
+        return;
+      } catch (_error) {
+        var postState = await getAcceptancePaymentState();
+        if (postState.hasSecret) {
+          setStatus("Payment setup complete. Redirecting…");
+          setTimeout(function () { navigateToPayment(postState.clientSecret); }, 250);
+          return;
+        }
+
+        if (postState.hasIntent && !postState.hasSecret) {
+          setStatus("Payment session ready. Finalizing secure checkout…");
+          setTimeout(recoverClientSecret, settleDelayMilliseconds);
+          return;
+        }
+
+        setTimeout(recoverClientSecret, settleDelayMilliseconds);
+        return;
       }
     }
 

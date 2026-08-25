@@ -1,3 +1,28 @@
+{% assign pp_acceptance_id = request.params.acceptanceid | default: '' | strip %}
+{% assign pp_seed_intent = '' %}
+{% assign pp_seed_secret = '' %}
+
+{% if pp_acceptance_id != '' %}
+  {% fetchxml pp_acc_q %}
+  <fetch top="1" mapping="logical">
+    <entity name="hit_offeringacceptance">
+      <attribute name="hit_offeringacceptanceid" />
+      <attribute name="hit_stripepaymentintentid" />
+      <attribute name="hit_stripeclientsecret" />
+      <filter>
+        <condition attribute="hit_offeringacceptanceid" operator="eq" value="{{ pp_acceptance_id | escape }}" />
+      </filter>
+    </entity>
+  </fetch>
+  {% endfetchxml %}
+
+  {% assign pp_acc = pp_acc_q.results.entities | first %}
+  {% if pp_acc %}
+    {% assign pp_seed_intent = pp_acc.hit_stripepaymentintentid | default: '' | strip %}
+    {% assign pp_seed_secret = pp_acc.hit_stripeclientsecret | default: '' | strip %}
+  {% endif %}
+{% endif %}
+
 <div class="hit-acceptance hit-acceptance--payment-preparing">
   <div class="hit-acceptance__grid">
 
@@ -55,6 +80,9 @@
           <button id="ppRetryBtn" class="hit-button hit-button--primary" style="font-size:13px;padding:8px 18px;">Refresh now</button>
         </div>
 
+        <input type="hidden" id="ppSeedIntent" value="{{ pp_seed_intent | escape }}">
+        <input type="hidden" id="ppSeedSecret" value="{{ pp_seed_secret | escape }}">
+
       </div>
     </main>
 
@@ -77,11 +105,9 @@
 
   var _acceptanceId = "{{ request.params.acceptanceid | default: '' | escape }}";
 
-  var MAX_POLLS = 90;   /* 90 × 2 s = 180 s max wait */
+  var MAX_POLLS = 120;  /* 120 × 2 s = 240 s max wait */
   var POLL_MS   = 2000; /* 2 seconds between background polls */
-  var DIRECT_HANDOFF_AFTER_POLLS = 3; /* ~6 seconds */
-  var AUTO_RECHECK_EVERY_POLLS = 4; /* every ~8 seconds */
-  var MAX_AUTO_RECHECKS = 8;
+  var SERVER_REFRESH_EVERY_POLLS = 8;
   var _attempt  = 0;
   var _timer    = null;
   var _autoRecheckCount = 0;
@@ -89,6 +115,8 @@
   var statusEl  = document.getElementById('ppStatus');
   var timeoutEl = document.getElementById('ppTimeout');
   var retryBtn  = document.getElementById('ppRetryBtn');
+  var seedIntentInput = document.getElementById('ppSeedIntent');
+  var seedSecretInput = document.getElementById('ppSeedSecret');
 
   try {
     var currentUrl = new URL(window.location.href);
@@ -105,6 +133,26 @@
   }
 
   function navigateToPayment(cycleCount) {
+    var nextCycle = Number.isFinite(cycleCount) ? cycleCount : _autoRecheckCount;
+
+    var secret = "";
+    try {
+      secret = new URL(window.location.href).searchParams.get('clientsecret') || "";
+    } catch (_ignored) {
+      secret = "";
+    }
+
+    window.location.href =
+      window.location.pathname +
+      '?page=offering-acceptance' +
+      '&acceptanceid=' + encodeURIComponent(_acceptanceId) +
+      '&paymentmode=direct' +
+      '&ppcycle=' + encodeURIComponent(String(nextCycle)) +
+      (secret ? '&clientsecret=' + encodeURIComponent(secret) : '') +
+      '&_ts=' + Date.now();
+  }
+
+  function refreshPreparing(cycleCount) {
     var nextCycle = Number.isFinite(cycleCount) ? cycleCount : _autoRecheckCount;
 
     window.location.href =
@@ -134,9 +182,27 @@
       setStatus('Still preparing your secure session\u2026 (' + _attempt + ')');
     }
 
+    var seedIntent = (seedIntentInput && seedIntentInput.value ? seedIntentInput.value : '').trim();
+    var seedSecret = (seedSecretInput && seedSecretInput.value ? seedSecretInput.value : '').trim();
+
+    if (seedSecret) {
+      setStatus('Payment session ready. Taking you to checkout\u2026');
+      try {
+        var seededUrl = new URL(window.location.href);
+        seededUrl.searchParams.set('clientsecret', seedSecret);
+        window.history.replaceState({}, document.title, seededUrl.toString());
+      } catch (_ignored) {}
+      setTimeout(navigateToPayment, 300);
+      return;
+    }
+
+    if (seedIntent) {
+      setStatus('Payment session ready. Finalizing secure checkout…');
+    }
+
     fetch(
       '/_api/hit_offeringacceptances(' + _acceptanceId + ')' +
-      '?$select=hit_stripepaymentintentid',
+      '?$select=hit_stripepaymentintentid,hit_stripeclientsecret',
       {
         method: 'GET',
         credentials: 'same-origin',
@@ -154,23 +220,26 @@
     })
     .then(function (data) {
       var intentId = (data.hit_stripepaymentintentid || '').trim();
-      if (intentId) {
+      var clientSecret = (data.hit_stripeclientsecret || '').trim();
+
+      if (clientSecret) {
         setStatus('Payment session ready. Taking you to checkout\u2026');
+        try {
+          var seededUrl = new URL(window.location.href);
+          seededUrl.searchParams.set('clientsecret', clientSecret);
+          window.history.replaceState({}, document.title, seededUrl.toString());
+        } catch (_ignored) {}
         setTimeout(navigateToPayment, 400);
       } else {
-        if (_attempt >= DIRECT_HANDOFF_AFTER_POLLS) {
-          setStatus('Completing payment setup\u2026');
-          setTimeout(function () {
-            navigateToPayment(_autoRecheckCount);
-          }, 250);
-          return;
+        if (intentId) {
+          setStatus('Payment session ready. Finalizing secure checkout…');
         }
 
-        if (_attempt % AUTO_RECHECK_EVERY_POLLS === 0 && _autoRecheckCount < MAX_AUTO_RECHECKS) {
+        if (_attempt % SERVER_REFRESH_EVERY_POLLS === 0) {
           _autoRecheckCount++;
-          setStatus('Still preparing your secure session\u2026 refreshing (' + _autoRecheckCount + '/' + MAX_AUTO_RECHECKS + ')');
+          setStatus('Refreshing payment state…');
           setTimeout(function () {
-            navigateToPayment(_autoRecheckCount);
+            refreshPreparing(_autoRecheckCount);
           }, 250);
           return;
         }
@@ -185,7 +254,10 @@
   }
 
   if (retryBtn) {
-    retryBtn.addEventListener('click', navigateToPayment);
+    retryBtn.addEventListener('click', function () {
+      _autoRecheckCount++;
+      refreshPreparing(_autoRecheckCount);
+    });
   }
 
   /* Start polling after a short initial delay */

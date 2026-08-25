@@ -141,6 +141,17 @@ sections--acceptance-router (DEBUG HARDENED)
       {% endif %}
     {% endif %}
 
+    {% assign offeringType = offeringType | append: '' | strip %}
+
+    {%- comment -%}
+    Donation payment flows can transiently present hit_paymentrequired as false
+    during waitforpayment transitions. Treat donation offering type as payment-required
+    unless already terminal, to avoid premature non-payment completion routing.
+    {%- endcomment -%}
+    {% if offeringType == '815390000' and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
+      {% assign isPaymentRequired = true %}
+    {% endif %}
+
     {% if acceptance['off.hit_offeringname'] %}
       {% assign offeringNameExists = true %}
       {% assign offeringName = acceptance['off.hit_offeringname'] %}
@@ -192,7 +203,16 @@ sections--acceptance-router (DEBUG HARDENED)
       </div>
     {% endif %}
 
-    {% if directPaymentMode and isPaymentRequired and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
+    {% if directPaymentMode and isPaymentRequired and clientSecret == '' and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
+
+      {% if DEBUG %}
+        <div class="hit-debug-panel hit-debug-panel--include-payment">
+          Include: sections--payment-preparing (paymentmode direct missing secret)
+        </div>
+      {% endif %}
+      {% include 'sections--payment-preparing' %}
+
+    {% elsif directPaymentMode and isPaymentRequired and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
 
       {% if DEBUG %}
         <div class="hit-debug-panel hit-debug-panel--include-payment">
@@ -219,7 +239,7 @@ sections--acceptance-router (DEBUG HARDENED)
       {% endif %}
       {% include 'sections--payment' %}
 
-    {% elsif waitingForStatus and isPaymentRequired == false %}
+    {% elsif waitingForStatus and isPaymentRequired == false and (status == STATUS_COMPLETED or status == STATUS_PENDING_APPROVAL) %}
 
       {% if DEBUG %}
         <div class="hit-debug-panel hit-debug-panel--include-success">

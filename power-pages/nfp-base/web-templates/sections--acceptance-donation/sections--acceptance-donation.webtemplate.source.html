@@ -652,6 +652,35 @@ Temporary:
           return targetUrl.toString();
         }
 
+        function buildDirectPaymentUrl(){
+          const targetUrl = new URL(
+            window.location.pathname,
+            window.location.origin
+          );
+
+          targetUrl.searchParams.set(
+            "page",
+            "offering-acceptance"
+          );
+
+          targetUrl.searchParams.set(
+            "acceptanceid",
+            acceptanceId
+          );
+
+          targetUrl.searchParams.set(
+            "paymentmode",
+            "direct"
+          );
+
+          targetUrl.searchParams.set(
+            "_ts",
+            String(Date.now())
+          );
+
+          return targetUrl.toString();
+        }
+
         function redirectToRouter(){
           setLoading(
             true,
@@ -661,7 +690,7 @@ Temporary:
           disableFormWhileRouting();
 
           window.location.replace(
-            buildRouterUrl(0)
+            buildDirectPaymentUrl()
           );
         }
 
@@ -729,29 +758,7 @@ Temporary:
         }
 
         function navigateToReadyRouter(){
-          const targetUrl = new URL(
-            window.location.pathname,
-            window.location.origin
-          );
-
-          targetUrl.searchParams.set(
-            "page",
-            "offering-acceptance"
-          );
-
-          targetUrl.searchParams.set(
-            "acceptanceid",
-            acceptanceId
-          );
-
-          targetUrl.searchParams.set(
-            "_ts",
-            String(Date.now())
-          );
-
-          window.location.replace(
-            targetUrl.toString()
-          );
+          window.location.replace(buildDirectPaymentUrl());
         }
 
         function normalizeStatusValue(rawStatus){
@@ -865,7 +872,14 @@ Temporary:
          * again after a short delay.
          */
         if (waitingForPayment) {
-          startPaymentReadinessPolling();
+          setLoading(
+            true,
+            "Preparing payment..."
+          );
+
+          disableFormWhileRouting();
+
+          window.location.replace(buildDirectPaymentUrl());
           return;
         }
 
