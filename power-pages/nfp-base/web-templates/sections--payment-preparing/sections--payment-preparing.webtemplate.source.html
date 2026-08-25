@@ -77,8 +77,8 @@
 
   var _acceptanceId = "{{ request.params.acceptanceid | default: '' | escape }}";
 
-  var MAX_POLLS = 60;   /* 60 × 3 s = 180 s max wait */
-  var POLL_MS   = 3000; /* 3 seconds between background polls */
+  var MAX_POLLS = 90;   /* 90 × 2 s = 180 s max wait */
+  var POLL_MS   = 2000; /* 2 seconds between background polls */
   var _attempt  = 0;
   var _timer    = null;
 
@@ -154,7 +154,7 @@
   }
 
   /* Start polling after a short initial delay */
-  _timer = setTimeout(poll, 1500);
+  _timer = setTimeout(poll, 500);
 
 })();
 </script>
