@@ -456,10 +456,11 @@ Temporary:
             ? parsedRouteAttempt
             : 0;
 
-        const maximumRouteAttempts = 4;
+        const maximumRouteAttempts = 24;
         const routeRetryDelayMilliseconds = 1500;
         const paymentReadinessPollIntervalMilliseconds = 2500;
         const maximumPaymentReadinessPolls = 72;
+        const routeRefreshEveryPolls = 4;
 
         function getElement(id){
           return root.querySelector("#" + id);
@@ -785,6 +786,7 @@ Temporary:
 
         function startPaymentReadinessPolling(){
           let pollCount = 0;
+          let localRouteAttempt = currentRouteAttempt;
 
           setLoading(
             true,
@@ -792,6 +794,20 @@ Temporary:
           );
 
           disableFormWhileRouting();
+
+          function tryRefreshRouter(){
+            if (localRouteAttempt >= maximumRouteAttempts) {
+              return false;
+            }
+
+            localRouteAttempt++;
+
+            window.location.replace(
+              buildRouterUrl(localRouteAttempt)
+            );
+
+            return true;
+          }
 
           async function poll(){
             pollCount++;
@@ -811,6 +827,12 @@ Temporary:
               }
             } catch (error) {
               console.warn(error);
+            }
+
+            if (pollCount % routeRefreshEveryPolls === 0) {
+              if (tryRefreshRouter()) {
+                return;
+              }
             }
 
             setLoading(
