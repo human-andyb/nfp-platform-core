@@ -79,6 +79,7 @@
 
   var MAX_POLLS = 90;   /* 90 × 2 s = 180 s max wait */
   var POLL_MS   = 2000; /* 2 seconds between background polls */
+  var DIRECT_HANDOFF_AFTER_POLLS = 3; /* ~6 seconds */
   var AUTO_RECHECK_EVERY_POLLS = 4; /* every ~8 seconds */
   var MAX_AUTO_RECHECKS = 8;
   var _attempt  = 0;
@@ -110,8 +111,7 @@
       window.location.pathname +
       '?page=offering-acceptance' +
       '&acceptanceid=' + encodeURIComponent(_acceptanceId) +
-      '&waitforpayment=1' +
-      '&routeattempt=0' +
+      '&paymentmode=direct' +
       '&ppcycle=' + encodeURIComponent(String(nextCycle)) +
       '&_ts=' + Date.now();
   }
@@ -158,6 +158,14 @@
         setStatus('Payment session ready. Taking you to checkout\u2026');
         setTimeout(navigateToPayment, 400);
       } else {
+        if (_attempt >= DIRECT_HANDOFF_AFTER_POLLS) {
+          setStatus('Completing payment setup\u2026');
+          setTimeout(function () {
+            navigateToPayment(_autoRecheckCount);
+          }, 250);
+          return;
+        }
+
         if (_attempt % AUTO_RECHECK_EVERY_POLLS === 0 && _autoRecheckCount < MAX_AUTO_RECHECKS) {
           _autoRecheckCount++;
           setStatus('Still preparing your secure session\u2026 refreshing (' + _autoRecheckCount + '/' + MAX_AUTO_RECHECKS + ')');
