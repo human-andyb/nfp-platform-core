@@ -61,6 +61,7 @@ Priority:
       <attribute name="hit_description" />
       <attribute name="hit_imageurl" />
       <attribute name="hit_isactive" />
+      <attribute name="hit_autoloadtemplate" />
 
       <filter>
         <condition attribute="hit_isactive" operator="eq" value="1" />
@@ -105,8 +106,34 @@ Priority:
       {% endif %}
     {% endfor %}
 
+    {% assign autoLoadRaw = offering.hit_autoloadtemplate | default: false %}
+    {% if autoLoadRaw.value %}
+      {% assign autoLoadRaw = autoLoadRaw.value %}
+    {% endif %}
+
+    {% assign autoLoadText = '' | append: autoLoadRaw | downcase %}
+    {% assign autoLoadTemplate = false %}
+
+    {% if autoLoadText == 'true' or autoLoadText == '1' or autoLoadText == 'yes' %}
+      {% assign autoLoadTemplate = true %}
+    {% endif %}
+
+    {% assign shouldAutoCreate = false %}
+    {% if autoLoadTemplate and hasPricing == false %}
+      {% assign shouldAutoCreate = true %}
+    {% endif %}
+
+    {% if DEBUG %}
+      <div class="hit-offering-debug">
+        hasPricing = {{ hasPricing }}<br><br>
+        autoLoadTemplate = {{ autoLoadTemplate }}<br><br>
+        shouldAutoCreate = {{ shouldAutoCreate }}
+      </div>
+    {% endif %}
+
     <div class="hit-offering-detail"
-         data-offeringid="{{ offering.hit_offeringid }}">
+         data-offeringid="{{ offering.hit_offeringid }}"
+         data-autocreate="{% if shouldAutoCreate %}true{% else %}false{% endif %}">
 
       <div class="hit-offering__shell">
         <div class="hit-offering__grid">
@@ -235,6 +262,12 @@ Priority:
                 <!-- EOI / FREE OFFERING -->
                 <div class="hit-offering-eoi">
 
+                  {% if shouldAutoCreate %}
+                    <div class="hit-status-pill hit-autoload-note">
+                      Preparing your registration form...
+                    </div>
+                  {% endif %}
+
                   <div class="hit-form-card">
 
                     <h2 class="hit-form-card__title">
@@ -264,6 +297,12 @@ Priority:
 
               <div class="hit-message hit-message--error hit-offering-error" role="alert"></div>
 
+              {% if DEBUG %}
+                <div class="hit-offering-debug hit-offering-debug--autoload" data-autoload-debug="true">
+                  autoload runtime events:<br>
+                </div>
+              {% endif %}
+
             </div>
 
           </div>
@@ -284,8 +323,13 @@ Priority:
 
         let selectedMode = null;
         let selectedOpt = null;
+        let autoCreateInProgress = false;
 
         const offeringId = "{{ offering.hit_offeringid }}";
+        const shouldAutoCreate = root.dataset.autocreate === "true";
+        const autoCreateSessionKey = "hit-autoload-acceptance-" + offeringId;
+        const autoCreateLockWindowMs = 30000;
+        const JS_DEBUG = "{{ DEBUG | default: false }}" === "true";
 
         function getContinueButton(){
           return root.querySelector(".continue-btn");
@@ -305,6 +349,26 @@ Priority:
 
         function getErrorBox(){
           return root.querySelector(".hit-offering-error");
+        }
+
+        function getAutoloadDebugBox(){
+          return root.querySelector("[data-autoload-debug='true']");
+        }
+
+        function logAutoloadDebug(message){
+          if (!JS_DEBUG) {
+            return;
+          }
+
+          console.log("[offering-detail]", message);
+
+          const box = getAutoloadDebugBox();
+
+          if (!box) {
+            return;
+          }
+
+          box.innerHTML += message + "<br>";
         }
 
         function showError(message){
@@ -577,6 +641,92 @@ Priority:
             encodeURIComponent(acceptanceId);
         }
 
+        function hasRecentAutoCreateAttempt(){
+          try {
+            const raw = window.sessionStorage.getItem(autoCreateSessionKey);
+
+            if (!raw) {
+              return false;
+            }
+
+            const timestamp = Number(raw);
+
+            if (!Number.isFinite(timestamp)) {
+              return false;
+            }
+
+            return (Date.now() - timestamp) < autoCreateLockWindowMs;
+          } catch (error) {
+            return false;
+          }
+        }
+
+        function markAutoCreateAttempt(){
+          try {
+            window.sessionStorage.setItem(autoCreateSessionKey, String(Date.now()));
+          } catch (error) {
+            // Best-effort guard only.
+          }
+        }
+
+        function clearAutoCreateAttempt(){
+          try {
+            window.sessionStorage.removeItem(autoCreateSessionKey);
+          } catch (error) {
+            // Best-effort guard only.
+          }
+        }
+
+        async function createEoiAcceptanceAndRedirect(button, source){
+
+          if (autoCreateInProgress) {
+            logAutoloadDebug("create blocked: in-flight request already active");
+            return;
+          }
+
+          autoCreateInProgress = true;
+          clearError();
+          logAutoloadDebug("create start: source=" + source);
+
+          const eoiButton = button || root.querySelector(".eoi-btn");
+
+          if (eoiButton) {
+            setButtonLoading(eoiButton, true);
+          }
+
+          try {
+
+            const payload = {
+              "hit_Offering@odata.bind": "/hit_offerings(" + offeringId + ")"
+            };
+
+            const id = await createAcceptance(payload);
+
+            if (!id) {
+              throw new Error("No acceptance id returned from create.");
+            }
+
+            logAutoloadDebug("create success: acceptanceId=" + id + " source=" + source);
+            logAutoloadDebug("redirect: " + buildAcceptanceUrl(id));
+
+            window.location.href = buildAcceptanceUrl(id);
+
+          } catch (error) {
+
+            console.error(error);
+            showError(error.message || "Something went wrong. Please try again.");
+
+            if (eoiButton) {
+              setButtonLoading(eoiButton, false);
+              eoiButton.disabled = false;
+            }
+
+            autoCreateInProgress = false;
+            clearAutoCreateAttempt();
+            logAutoloadDebug("create failed: " + (error.message || "unknown error"));
+          }
+        }
+
         root.addEventListener("click", async function(event){
 
           clearError();
@@ -664,33 +814,26 @@ Priority:
               return;
             }
 
-            setButtonLoading(eoiButton, true);
-
-            try {
-
-              const payload = {
-                "hit_Offering@odata.bind": "/hit_offerings(" + offeringId + ")"
-              };
-
-              const id = await createAcceptance(payload);
-
-              if (!id) {
-                throw new Error("No acceptance id returned from create.");
-              }
-
-              window.location.href = buildAcceptanceUrl(id);
-
-            } catch (error) {
-
-              console.error(error);
-              showError(error.message || "Something went wrong. Please try again.");
-
-              setButtonLoading(eoiButton, false);
-              eoiButton.disabled = false;
-            }
+            markAutoCreateAttempt();
+            await createEoiAcceptanceAndRedirect(eoiButton, "manual");
           }
 
         });
+
+        if (shouldAutoCreate) {
+
+          logAutoloadDebug("autoload eligible: true");
+
+          if (hasRecentAutoCreateAttempt()) {
+            logAutoloadDebug("autoload skipped: recent attempt lock active");
+          } else {
+            logAutoloadDebug("autoload start: marking attempt and creating acceptance");
+            markAutoCreateAttempt();
+            createEoiAcceptanceAndRedirect(null, "auto");
+          }
+        } else {
+          logAutoloadDebug("autoload eligible: false");
+        }
 
         root.addEventListener("input", function(event){
 

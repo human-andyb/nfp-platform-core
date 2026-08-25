@@ -165,6 +165,39 @@ Examples include:
 
 This makes `hit_platformpagesectiontype` the template-routing contract for slot content. A slot without a valid section type template is structurally incomplete and should be treated as a configuration error.
 
+## Offering Autoload Contract
+
+The offering detail section supports an optional offering-level autoload behavior using `hit_offering.hit_autoloadtemplate`.
+
+Current runtime contract:
+
+1. offering detail still owns acceptance creation
+2. router still owns acceptance lifecycle and template routing
+3. autoload is currently gated to no-pricing offerings only
+
+Execution path:
+
+1. offering detail fetch resolves `hit_autoloadtemplate`
+2. offering detail computes `shouldAutoCreate` when:
+	- `hit_autoloadtemplate` is true
+	- the offering has no `hit_priceoption` rows
+3. when eligible, offering detail auto-creates `hit_offeringacceptance`
+4. offering detail redirects to router using:
+	- `?page=offering-acceptance&acceptanceid=<guid>`
+5. router resolves status and offering type, then includes the correct acceptance template
+
+Why this contract is used:
+
+1. most acceptance templates are PATCH-based and require pre-existing acceptance ids
+2. router behavior remains stable and acceptance-id-first
+3. no-pricing autoload can be rolled out per offering with lower regression risk than template-first creation
+
+Safety notes:
+
+1. autoload path uses client-side duplicate guards to reduce double creates on refresh
+2. manual continue remains the fallback path if autoload create fails
+3. paid offerings continue to require explicit user amount selection unless a separate paid-autoload contract is introduced
+
 ## Current Brittleness
 
 The current implementation is workable but brittle for several reasons:
