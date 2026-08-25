@@ -26,7 +26,38 @@ Platform Renderer — CLEAN APP + CONTENT MODE
   {% assign resolvedSlug = 'home' %}
 {% endif %}
 
+{% assign resolvedSlugLabel = resolvedSlug | replace: '-', ' ' | strip %}
+{% assign contextualTitle = '' %}
+{% if resolvedSlugLabel != '' %}
+  {% assign titleWords = resolvedSlugLabel | split: ' ' %}
+  {% for w in titleWords %}
+    {% assign cleanWord = w | strip %}
+    {% if cleanWord != '' %}
+      {% assign wordTitle = cleanWord | capitalize %}
+      {% if contextualTitle == '' %}
+        {% assign contextualTitle = wordTitle %}
+      {% else %}
+        {% assign contextualTitle = contextualTitle | append: ' ' | append: wordTitle %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% if contextualTitle == '' %}
+  {% assign contextualTitle = 'Home' %}
+{% endif %}
+
+{% assign siteTitleSuffix = website.name | default: 'CSE' | strip %}
+{% assign tabTitle = contextualTitle %}
+{% if siteTitleSuffix != '' %}
+  {% assign tabTitle = contextualTitle | append: ' | ' | append: siteTitleSuffix %}
+{% endif %}
+
 <div class="hit-page">
+
+<script>
+  document.title = "{{ tabTitle | escape }}";
+</script>
 
 {% if DEBUG %}
   {% include 'helpers--debug-pre' preClass: 'hit-debug-pre' debugScope: 'PLATFORM_RENDERER' debugStage: 'REQUEST' k1: 'resolvedSlug' v1: resolvedSlug k2: 'requestedSlug' v2: requestedSlug k3: 'entryPoint' v3: currentEntryPoint k4: 'galleryParam' v4: galleryParam %}
