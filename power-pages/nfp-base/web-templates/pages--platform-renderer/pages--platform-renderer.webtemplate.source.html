@@ -53,6 +53,91 @@ Platform Renderer — CLEAN APP + CONTENT MODE
   {% assign tabTitle = contextualTitle | append: ' | ' | append: siteTitleSuffix %}
 {% endif %}
 
+{% assign routeName = '' %}
+{% assign routeHeaderColourRaw = '' %}
+{% assign showPageHeader = false %}
+
+{% if resolvedSlug != '' %}
+  {% fetchxml routeQueryByPageParam %}
+  <fetch top="1">
+    <entity name="hit_platformroute">
+      <attribute name="hit_platformrouteid" />
+      <attribute name="hit_name" />
+      <attribute name="hit_queryparameters" />
+      <attribute name="hit_physicalpath" />
+      <attribute name="hit_showpageheader" />
+      <attribute name="hit_headercolour" />
+      <filter>
+        <condition attribute="hit_queryparameters" operator="like" value="%page={{ resolvedSlug | escape }}%" />
+      </filter>
+    </entity>
+  </fetch>
+  {% endfetchxml %}
+
+  {% assign routeRec = routeQueryByPageParam.results.entities | first %}
+
+  {% if routeRec == nil and currentEntryPoint != '' %}
+    {% fetchxml routeQueryByPath %}
+    <fetch top="1">
+      <entity name="hit_platformroute">
+        <attribute name="hit_platformrouteid" />
+        <attribute name="hit_name" />
+        <attribute name="hit_queryparameters" />
+        <attribute name="hit_physicalpath" />
+        <attribute name="hit_showpageheader" />
+        <attribute name="hit_headercolour" />
+        <filter type="or">
+          <condition attribute="hit_physicalpath" operator="eq" value="{{ currentEntryPoint | escape }}" />
+          <condition attribute="hit_physicalpath" operator="eq" value="/{{ currentEntryPoint | escape }}" />
+        </filter>
+      </entity>
+    </fetch>
+    {% endfetchxml %}
+
+    {% assign routeRec = routeQueryByPath.results.entities | first %}
+  {% endif %}
+
+  {% if routeRec %}
+    {% assign routeName = routeRec.hit_name | default: '' | append: '' | strip %}
+    {% assign routeHeaderColourRaw = routeRec.hit_headercolour | default: '' | append: '' | strip %}
+
+    {% assign showPageHeaderRaw = routeRec.hit_showpageheader | default: false %}
+    {% if showPageHeaderRaw.value %}
+      {% assign showPageHeaderRaw = showPageHeaderRaw.value %}
+    {% endif %}
+
+    {% assign showPageHeaderText = '' | append: showPageHeaderRaw | downcase | strip %}
+    {% if showPageHeaderText == 'true' or showPageHeaderText == '1' or showPageHeaderText == 'yes' %}
+      {% assign showPageHeader = true %}
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+{% assign routeHeaderColourToken = routeHeaderColourRaw | downcase | strip | replace: ' ', '' | replace: '-', '' | replace: '_', '' %}
+{% assign pageHeaderBackground = routeHeaderColourRaw %}
+
+{% if routeHeaderColourToken == '' %}
+  {% assign pageHeaderBackground = 'var(--header-bg, var(--hit-accent-primary, #0f172a))' %}
+{% elsif routeHeaderColourToken == 'primary' or routeHeaderColourToken == 'brandprimary' %}
+  {% assign pageHeaderBackground = 'var(--hit-accent-primary, #0f172a)' %}
+{% elsif routeHeaderColourToken == 'secondary' or routeHeaderColourToken == 'brandsecondary' %}
+  {% assign pageHeaderBackground = 'var(--hit-accent-secondary, #1e293b)' %}
+{% elsif routeHeaderColourToken == 'context1' %}
+  {% assign pageHeaderBackground = 'var(--hit-context-1, var(--hit-accent-primary, #0f172a))' %}
+{% elsif routeHeaderColourToken == 'context2' %}
+  {% assign pageHeaderBackground = 'var(--hit-context-2, var(--hit-accent-secondary, #1e293b))' %}
+{% elsif routeHeaderColourToken == 'context3' %}
+  {% assign pageHeaderBackground = 'var(--hit-context-3, #334155)' %}
+{% elsif routeHeaderColourToken == 'context4' %}
+  {% assign pageHeaderBackground = 'var(--hit-context-4, #475569)' %}
+{% elsif routeHeaderColourToken == 'context5' %}
+  {% assign pageHeaderBackground = 'var(--hit-context-5, #64748b)' %}
+{% elsif routeHeaderColourToken == 'surface' %}
+  {% assign pageHeaderBackground = 'var(--hit-bg-surface, #ffffff)' %}
+{% elsif routeHeaderColourToken == 'surfacemuted' or routeHeaderColourToken == 'muted' %}
+  {% assign pageHeaderBackground = 'var(--hit-bg-muted, #f8fafc)' %}
+{% endif %}
+
 <div class="hit-page">
 
 <script>
@@ -61,6 +146,15 @@ Platform Renderer — CLEAN APP + CONTENT MODE
 
 {% if DEBUG %}
   {% include 'helpers--debug-pre' preClass: 'hit-debug-pre' debugScope: 'PLATFORM_RENDERER' debugStage: 'REQUEST' k1: 'resolvedSlug' v1: resolvedSlug k2: 'requestedSlug' v2: requestedSlug k3: 'entryPoint' v3: currentEntryPoint k4: 'galleryParam' v4: galleryParam %}
+  {% include 'helpers--debug-pre' preClass: 'hit-debug-pre' debugScope: 'PLATFORM_RENDERER' debugStage: 'PAGE_HEADER' k1: 'routeName' v1: routeName k2: 'showPageHeader' v2: showPageHeader k3: 'headerColourRaw' v3: routeHeaderColourRaw k4: 'headerBg' v4: pageHeaderBackground %}
+{% endif %}
+
+{% if showPageHeader %}
+  <section class="hit-page-header" style="background: {{ pageHeaderBackground }};">
+    <div class="hit-page-header__inner">
+      <h1 class="hit-page-header__title">{{ routeName | default: contextualTitle | escape }}</h1>
+    </div>
+  </section>
 {% endif %}
 
 {% if resolvedSlug != '' %}
@@ -345,5 +439,25 @@ Platform Renderer — CLEAN APP + CONTENT MODE
 .layout--right {
     margin-left: auto;
     margin-right: 0;
+}
+
+.hit-page-header {
+  width: 100%;
+  margin: 0;
+}
+
+.hit-page-header__inner {
+  max-width: var(--hit-box-width, 1200px);
+  margin: 0 auto;
+  padding: 1.1rem 1.25rem;
+  box-sizing: border-box;
+}
+
+.hit-page-header__title {
+  margin: 0;
+  color: var(--hit-text-on-accent, #ffffff);
+  font-family: var(--hit-font-heading, var(--hit-font-base, inherit));
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.2;
 }
 </style>

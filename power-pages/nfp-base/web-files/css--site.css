@@ -523,8 +523,8 @@ body {
 
     padding-left: var(--hit-space-3);
     padding-right: var(--hit-space-3);
-    padding-top: 40px;
-    padding-bottom: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 
     margin-left: auto;
     margin-right: auto;
@@ -1512,6 +1512,44 @@ body {
   font-weight: 600;
   margin-top: 2rem;
   margin-bottom: 0.75rem;
+}
+
+/* Keep heading typography when rich text heading text is linked. */
+.hit-content--richtext h1 a,
+.hit-content--richtext h2 a,
+.hit-content--richtext h3 a,
+.hit-content--richtext h4 a,
+.hit-content--richtext h5 a,
+.hit-content--richtext h6 a {
+  font-size: inherit !important;
+  line-height: inherit;
+  font-weight: inherit;
+}
+
+.hit-content--richtext a {
+  font-size: inherit !important;
+  line-height: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+}
+
+.hit-content--richtext h1 a *,
+.hit-content--richtext h2 a *,
+.hit-content--richtext h3 a *,
+.hit-content--richtext h4 a *,
+.hit-content--richtext h5 a *,
+.hit-content--richtext h6 a * {
+  font-size: inherit !important;
+  line-height: inherit;
+  font-weight: inherit;
+  font-family: inherit;
+}
+
+.hit-content--richtext a * {
+  font-size: inherit !important;
+  line-height: inherit;
+  font-weight: inherit;
+  font-family: inherit;
 }
 
 
