@@ -1806,8 +1806,8 @@ document.getElementById("venueBookingForm").addEventListener("submit", function(
 
   /* ---------- PATCH ACCEPTANCE ---------- */
  var payload = {
-  "hit_VenueSpace@odata.bind": "/hit_venuespaces(" + _vsId + ")",
-  "hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(" + acceptanceId + ")",
+    "hit_venuespace@odata.bind": "/hit_venuespaces(" + _vsId + ")",
+    "hit_offeringacceptance@odata.bind": "/hit_offeringacceptances(" + acceptanceId + ")",
   "hit_startdatetime": start.toISOString(),
   "hit_enddatetime": end.toISOString(),
   "hit_guestcount": guests,
