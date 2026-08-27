@@ -90,6 +90,12 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
     <attribute name="hit_sortorder" />
     <attribute name="hit_isdefault" />
     <attribute name="hit_isactive" />
+    <attribute name="hit_singledateallowed" />
+    <attribute name="hit_daterangeallowed" />
+    <attribute name="hit_multidateallowed" />
+    <attribute name="hit_allowfullday" />
+    <attribute name="hit_allowmorning" />
+    <attribute name="hit_allowafternoon" />
     <attribute name="hit_allowedbookingtypes" />
     <attribute name="hit_allowedsessiontype" />
     <filter>
@@ -817,6 +823,18 @@ body.venue-lightbox-open {
   font-size: 14px;
 }
 
+.checkbox-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.checkbox-option input {
+  margin-top: 2px;
+}
+
 .layout-selector {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -841,6 +859,10 @@ body.venue-lightbox-open {
   background: #eff6ff;
 }
 
+.layout-card--hidden {
+  display: none;
+}
+
 .layout-card__title {
   font-weight: 700;
   color: #111827;
@@ -850,6 +872,18 @@ body.venue-lightbox-open {
   margin-top: 4px;
   font-size: 12px;
   color: #6b7280;
+}
+
+.layout-no-options {
+  display: none;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .selected-date-chips {
@@ -1090,7 +1124,15 @@ body.venue-lightbox-open {
       class="form__control"
       type="text"
       id="organisationName"
+      required
       placeholder="Organisation name" />
+  </div>
+
+  <div class="form__group">
+    <label class="checkbox-option" for="schoolNfp">
+      <input type="checkbox" id="schoolNfp" />
+      <span>School or not-for-profit organisation</span>
+    </label>
   </div>
 
   <div class="form__group">
@@ -1098,7 +1140,7 @@ body.venue-lightbox-open {
       Your Role
     </label>
 
-    <select class="form__control" id="contactRole">
+    <select class="form__control" id="contactRole" required>
       <option value="">Select Role</option>
       <option>Coordinator</option>
       <option>Administrator</option>
@@ -1126,6 +1168,7 @@ body.venue-lightbox-open {
         class="form__control"
         type="text"
         id="firstName"
+        required
         value="{{ acc.hit_firstname | default: '' | escape }}" />
     </div>
 
@@ -1138,6 +1181,7 @@ body.venue-lightbox-open {
         class="form__control"
         type="text"
         id="lastName"
+        required
         value="{{ acc.hit_lastname | default: '' | escape }}" />
     </div>
 
@@ -1152,6 +1196,7 @@ body.venue-lightbox-open {
       class="form__control"
       type="email"
       id="email"
+      required
       value="{{ acc.hit_email | default: '' | escape }}" />
   </div>
 
@@ -1359,8 +1404,31 @@ body.venue-lightbox-open {
           {% assign cfgName = cfg.hit_name | default: 'Configuration' %}
           {% assign cfgMax = cfg.hit_maxcapacity | default: '' %}
           {% assign cfgRec = cfg.hit_recommendedcapacity | default: '' %}
-          {% assign cfgAllowedBooking = cfg.hit_allowedbookingtypes.value | default: cfg.hit_allowedbookingtypes | default: '' %}
-          {% assign cfgAllowedSession = cfg.hit_allowedsessiontype.value | default: cfg.hit_allowedsessiontype | default: '' %}
+          {% assign allowSingle = 'false' %}
+          {% assign allowRange = 'false' %}
+          {% assign allowMulti = 'false' %}
+          {% assign allowFull = 'false' %}
+          {% assign allowMorning = 'false' %}
+          {% assign allowAfternoon = 'false' %}
+
+          {% if cfg.hit_singledateallowed == true or cfg.hit_singledateallowed == 1 %}
+            {% assign allowSingle = 'true' %}
+          {% endif %}
+          {% if cfg.hit_daterangeallowed == true or cfg.hit_daterangeallowed == 1 %}
+            {% assign allowRange = 'true' %}
+          {% endif %}
+          {% if cfg.hit_multidateallowed == true or cfg.hit_multidateallowed == 1 %}
+            {% assign allowMulti = 'true' %}
+          {% endif %}
+          {% if cfg.hit_allowfullday == true or cfg.hit_allowfullday == 1 %}
+            {% assign allowFull = 'true' %}
+          {% endif %}
+          {% if cfg.hit_allowmorning == true or cfg.hit_allowmorning == 1 %}
+            {% assign allowMorning = 'true' %}
+          {% endif %}
+          {% if cfg.hit_allowafternoon == true or cfg.hit_allowafternoon == 1 %}
+            {% assign allowAfternoon = 'true' %}
+          {% endif %}
           {% assign isDefaultCfg = cfg.hit_isdefault == true or cfg.hit_isdefault == 1 %}
           {% assign isSelectedCfg = false %}
 
@@ -1374,8 +1442,12 @@ body.venue-lightbox-open {
 
           <div class="layout-card{% if isSelectedCfg %} selected{% endif %}"
                data-config-id="{{ cfgId | escape }}"
-               data-allowed-booking="{{ cfgAllowedBooking | escape }}"
-               data-allowed-session="{{ cfgAllowedSession | escape }}">
+            data-allow-single="{{ allowSingle }}"
+            data-allow-range="{{ allowRange }}"
+            data-allow-multi="{{ allowMulti }}"
+            data-allow-full="{{ allowFull }}"
+            data-allow-morning="{{ allowMorning }}"
+            data-allow-afternoon="{{ allowAfternoon }}">
             <div class="layout-card__title">{{ cfgName | escape }}</div>
             <div class="layout-card__capacity">
               {% if cfgRec != '' %}
@@ -1391,13 +1463,21 @@ body.venue-lightbox-open {
       {% else %}
         <div class="layout-card selected"
              data-config-id=""
-             data-allowed-booking=""
-             data-allowed-session="">
+             data-allow-single="true"
+             data-allow-range="true"
+             data-allow-multi="true"
+             data-allow-full="true"
+             data-allow-morning="true"
+             data-allow-afternoon="true">
           <div class="layout-card__title">Standard Setup</div>
           <div class="layout-card__capacity">Configuration details coming soon</div>
         </div>
       {% endif %}
 
+    </div>
+
+    <div id="layoutNoOptions" class="layout-no-options">
+      No layout options are available for the selected booking type and session.
     </div>
 
   </div>
@@ -1607,6 +1687,7 @@ const bookingTypeSingle = document.getElementById("bookingTypeSingle");
 const bookingTypeRange = document.getElementById("bookingTypeRange");
 const bookingTypeMultiple = document.getElementById("bookingTypeMultiple");
 const selectedConfigurationIdEl = document.getElementById("selectedConfigurationId");
+const layoutNoOptionsEl = document.getElementById("layoutNoOptions");
 
 function getCheckedValue(name) {
   const checked = document.querySelector(`input[name="${name}"]:checked`);
@@ -1621,71 +1702,94 @@ function updateBookingTypeUI() {
   if (bookingTypeMultiple) bookingTypeMultiple.style.display = bookingType === BOOKING_TYPE_MULTIPLE ? "block" : "none";
 }
 
-function applyConfigurationRules() {
-  const selectedCard = document.querySelector(".layout-card.selected");
+function attrIsTrue(value) {
+  const txt = String(value || "").toLowerCase().trim();
+  return txt === "true" || txt === "1";
+}
 
-  if (!selectedCard) {
-    return;
+function isLayoutCardMatch(card) {
+  const bookingType = getCheckedValue("bookingType");
+  const sessionType = getCheckedValue("sessionType");
+
+  let bookingMatch = true;
+  if (bookingType === BOOKING_TYPE_SINGLE) {
+    bookingMatch = attrIsTrue(card.dataset.allowSingle);
+  } else if (bookingType === BOOKING_TYPE_RANGE) {
+    bookingMatch = attrIsTrue(card.dataset.allowRange);
+  } else if (bookingType === BOOKING_TYPE_MULTIPLE) {
+    bookingMatch = attrIsTrue(card.dataset.allowMulti);
   }
 
-  const cfgId = selectedCard.dataset.configId || "";
-  const allowedBooking = selectedCard.dataset.allowedBooking || "";
-  const allowedSession = selectedCard.dataset.allowedSession || "";
+  let sessionMatch = true;
+  if (sessionType === "815390000") {
+    sessionMatch = attrIsTrue(card.dataset.allowFull);
+  } else if (sessionType === "815390001") {
+    sessionMatch = attrIsTrue(card.dataset.allowMorning);
+  } else if (sessionType === "815390002") {
+    sessionMatch = attrIsTrue(card.dataset.allowAfternoon);
+  }
 
+  return bookingMatch && sessionMatch;
+}
+
+function syncSelectedConfigurationId() {
+  const selectedCard = document.querySelector(".layout-card.selected:not(.layout-card--hidden)");
   if (selectedConfigurationIdEl) {
-    selectedConfigurationIdEl.value = cfgId;
+    selectedConfigurationIdEl.value = selectedCard ? (selectedCard.dataset.configId || "") : "";
   }
+}
 
-  const bookingRadios = document.querySelectorAll('input[name="bookingType"]');
-  bookingRadios.forEach(function(radio) {
-    const keepEnabled = !allowedBooking || radio.value === allowedBooking;
-    radio.disabled = !keepEnabled;
+function applyConfigurationRules() {
+  const cards = Array.from(document.querySelectorAll(".layout-card"));
+  const visibleCards = [];
 
-    if (!keepEnabled && radio.checked) {
-      radio.checked = false;
+  cards.forEach(function(card) {
+    const shouldShow = isLayoutCardMatch(card);
+    card.classList.toggle("layout-card--hidden", !shouldShow);
+    if (!shouldShow) {
+      card.classList.remove("selected");
+      return;
     }
+    visibleCards.push(card);
   });
 
-  if (allowedBooking) {
-    const allowedBookingRadio = document.querySelector(`input[name="bookingType"][value="${allowedBooking}"]`);
-    if (allowedBookingRadio) {
-      allowedBookingRadio.checked = true;
-    }
+  let selectedCard = document.querySelector(".layout-card.selected:not(.layout-card--hidden)");
+  if (!selectedCard && visibleCards.length > 0) {
+    visibleCards[0].classList.add("selected");
+    selectedCard = visibleCards[0];
   }
 
-  const sessionRadios = document.querySelectorAll('input[name="sessionType"]');
-  sessionRadios.forEach(function(radio) {
-    const keepEnabled = !allowedSession || radio.value === allowedSession;
-    radio.disabled = !keepEnabled;
-
-    if (!keepEnabled && radio.checked) {
-      radio.checked = false;
-    }
-  });
-
-  if (allowedSession) {
-    const allowedSessionRadio = document.querySelector(`input[name="sessionType"][value="${allowedSession}"]`);
-    if (allowedSessionRadio) {
-      allowedSessionRadio.checked = true;
-    }
+  if (layoutNoOptionsEl) {
+    layoutNoOptionsEl.style.display = visibleCards.length > 0 ? "none" : "block";
   }
 
-  updateBookingTypeUI();
+  syncSelectedConfigurationId();
 }
 
 document.querySelectorAll(".layout-card").forEach(function(card) {
   card.addEventListener("click", function() {
+    if (this.classList.contains("layout-card--hidden")) {
+      return;
+    }
+
     document.querySelectorAll(".layout-card").forEach(function(other) {
       other.classList.remove("selected");
     });
 
     this.classList.add("selected");
-    applyConfigurationRules();
+    syncSelectedConfigurationId();
   });
 });
 
 document.querySelectorAll('input[name="bookingType"]').forEach(function(radio) {
-  radio.addEventListener("change", updateBookingTypeUI);
+  radio.addEventListener("change", function() {
+    updateBookingTypeUI();
+    applyConfigurationRules();
+  });
+});
+
+document.querySelectorAll('input[name="sessionType"]').forEach(function(radio) {
+  radio.addEventListener("change", applyConfigurationRules);
 });
 
 updateBookingTypeUI();
@@ -1953,10 +2057,16 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
   const email = (document.getElementById("email")?.value || "").trim();
   const mobile = (document.getElementById("mobile")?.value || "").trim();
   const organisation = (document.getElementById("organisationName")?.value || "").trim();
-  const role = (document.getElementById("contactRole")?.value || "").trim();
+  const schoolNfp = document.getElementById("schoolNfp")?.checked === true;
+
+  const roleSelect = document.getElementById("contactRole");
+  const roleValue = (roleSelect?.value || "").trim();
+  const roleLabel = roleSelect && roleSelect.selectedIndex >= 0
+    ? (roleSelect.options[roleSelect.selectedIndex].text || "").trim()
+    : roleValue;
 
   const bookingType = getCheckedValue("bookingType");
-  const selectedCard = document.querySelector(".layout-card.selected");
+  const selectedCard = document.querySelector(".layout-card.selected:not(.layout-card--hidden)");
   const layoutType = (selectedCard?.querySelector(".layout-card__title")?.textContent || "").trim();
   const description = (document.getElementById("notes")?.value || "").trim();
 
@@ -1965,8 +2075,13 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
     return;
   }
 
-  if (!firstName || !lastName || !email) {
-    showErr("First name, last name and email are required.");
+  if (!organisation || !roleValue || !firstName || !lastName || !email) {
+    showErr("Organisation name, role, first name, last name and email are required.");
+    return;
+  }
+
+  if (!selectedCard) {
+    showErr("No layout options are available for the selected booking type and session.");
     return;
   }
 
@@ -1986,11 +2101,12 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
     email: email,
     mobile: mobile,
     organisation: organisation,
-    role: role,
+    role: roleLabel,
     bookingtype: bookingType,
     dates: dateRanges,
     layouttype: layoutType,
-    description: description
+    description: description,
+    schoolnfp: schoolNfp
   };
 
   const payload = {
