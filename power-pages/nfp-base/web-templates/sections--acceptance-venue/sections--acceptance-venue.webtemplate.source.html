@@ -515,9 +515,77 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
 
     .calendar__day:hover { transform: translateY(-1px); border-color: #d7d7d7; background: #fafafa; }
 
-    .calendar__day--booked { background: #e9e9e9; cursor: not-allowed; color: #6b7280; }
-    .calendar__day--held { background: #ffe7cc; border-color: #ffd3a6; }
+    .calendar__day--booked,
+    .calendar__day--booked-full {
+      background: #5e95ab;
+      border-color: #5e95ab;
+      color: #ffffff;
+      cursor: not-allowed;
+    }
+
+    .calendar__day--held,
+    .calendar__day--booked-morning {
+      background: #f99829;
+      border-color: #f99829;
+      color: #ffffff;
+      cursor: not-allowed;
+    }
+
+    .calendar__day--booked-afternoon {
+      background: #dd503a;
+      border-color: #dd503a;
+      color: #ffffff;
+      cursor: not-allowed;
+    }
+
+    .calendar__day--blackout {
+      background: #1f3261;
+      border-color: #1f3261;
+      color: #ffffff;
+      cursor: not-allowed;
+    }
+
+    .calendar__day--booked:hover,
+    .calendar__day--booked-full:hover,
+    .calendar__day--held:hover,
+    .calendar__day--booked-morning:hover,
+    .calendar__day--booked-afternoon:hover,
+    .calendar__day--blackout:hover {
+      transform: none;
+      filter: brightness(0.98);
+    }
     .calendar__day--selected { outline: 3px solid #111827; outline-offset: 1px; }
+
+    .calendar-legend {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: center;
+    }
+
+    .calendar-legend__item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: #374151;
+      font-weight: 600;
+    }
+
+    .calendar-legend__swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      border: 1px solid rgba(17,24,39,0.12);
+      display: inline-block;
+      flex: 0 0 12px;
+    }
+
+    .calendar-legend__swatch--blackout { background: #1f3261; }
+    .calendar-legend__swatch--full { background: #5e95ab; }
+    .calendar-legend__swatch--morning { background: #f99829; }
+    .calendar-legend__swatch--afternoon { background: #dd503a; }
 
 /* Image gallery */
 /* Primary space image */
@@ -867,6 +935,13 @@ body.venue-lightbox-open {
               </div>
 
               <div class="calendar__grid" id="calendarDays"></div>
+
+              <div class="calendar-legend" aria-label="Availability legend">
+                <span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--blackout"></span>Blackout</span>
+                <span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--full"></span>Full Day</span>
+                <span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--morning"></span>AM Only</span>
+                <span class="calendar-legend__item"><span class="calendar-legend__swatch calendar-legend__swatch--afternoon"></span>PM Only</span>
+              </div>
             </div>
 
           </div>
@@ -1651,6 +1726,12 @@ function hasHold(d) {
   );
 }
 
+function hasBlackout(d) {
+  return blackouts.some(bl =>
+    datesMatch(d, bl.start, bl.end)
+  );
+}
+
 
 
 function renderCalendar() {
@@ -1677,7 +1758,8 @@ function renderCalendar() {
   console.log(
     d,
     hasBooking(dt),
-    hasHold(dt)
+    hasHold(dt),
+    hasBlackout(dt)
   );
 
 
@@ -1685,7 +1767,8 @@ function renderCalendar() {
     const str = dt.toISOString().split("T")[0];
 
     let cls="calendar__day";
-    if (hasBooking(dt)) cls+=" calendar__day--booked";
+    if (hasBlackout(dt)) cls+=" calendar__day--blackout";
+    else if (hasBooking(dt)) cls+=" calendar__day--booked";
     else if (hasHold(dt)) cls+=" calendar__day--held";
     if (selectedDate===str) cls+=" calendar__day--selected";
 
@@ -1694,7 +1777,7 @@ function renderCalendar() {
 
   document.querySelectorAll(".calendar__day").forEach(el=>{
     el.onclick = function(){
-      if (this.classList.contains("calendar__day--booked")) return;
+      if (this.classList.contains("calendar__day--booked") || this.classList.contains("calendar__day--blackout")) return;
 
       selectedDate = this.dataset.date;
 
@@ -1739,108 +1822,229 @@ function clearErr(){
   box.style.display="none";
 }
 
+function getCsrfToken() {
+  return new Promise(function(resolve) {
+    if (window.shell && typeof shell.getTokenDeferred === "function") {
+      shell.getTokenDeferred().done(function(token) {
+        resolve(token || "");
+      }).fail(function() {
+        resolve("");
+      });
+      return;
+    }
+    resolve("");
+  });
+}
+
+function toYmdFromDate(dateObj) {
+  if (!(dateObj instanceof Date) || isNaN(dateObj)) return "";
+  const y = dateObj.getFullYear();
+  const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const d = String(dateObj.getDate()).padStart(2, "0");
+  return y + "-" + m + "-" + d;
+}
+
+function parseDateTextToYmd(text) {
+  const raw = (text || "").trim();
+  if (!raw) return "";
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    return raw;
+  }
+
+  const parsed = new Date(raw);
+  if (isNaN(parsed)) return "";
+  return toYmdFromDate(parsed);
+}
+
+function parseChipRange(text) {
+  const raw = (text || "").replace(/\s+/g, " ").trim();
+  if (!raw) return null;
+
+  const delimiters = [" to ", " - ", " – ", " — "];
+
+  for (const delimiter of delimiters) {
+    if (raw.indexOf(delimiter) > -1) {
+      const parts = raw.split(delimiter);
+      if (parts.length !== 2) return null;
+      const start = parseDateTextToYmd(parts[0]);
+      const end = parseDateTextToYmd(parts[1]);
+      if (!start || !end || end < start) return null;
+      return { startdate: start, enddate: end };
+    }
+  }
+
+  const single = parseDateTextToYmd(raw);
+  if (!single) return null;
+  return { startdate: single, enddate: single };
+}
+
+function buildDateRanges(bookingType) {
+  if (bookingType === BOOKING_TYPE_SINGLE) {
+    const day = (document.getElementById("singleDate")?.value || "").trim();
+    if (!day) return { error: "Please select a booking date." };
+    return { value: [{ startdate: day, enddate: day }] };
+  }
+
+  if (bookingType === BOOKING_TYPE_RANGE) {
+    const start = (document.getElementById("rangeStartDate")?.value || "").trim();
+    const end = (document.getElementById("rangeEndDate")?.value || "").trim();
+
+    if (!start || !end) {
+      return { error: "Please select both start and end dates." };
+    }
+
+    if (end < start) {
+      return { error: "End date must be on or after the start date." };
+    }
+
+    return { value: [{ startdate: start, enddate: end }] };
+  }
+
+  if (bookingType === BOOKING_TYPE_MULTIPLE) {
+    const chips = document.querySelectorAll("#bookingTypeMultiple .selected-date-chips .date-chip");
+    const ranges = [];
+
+    chips.forEach(function(chip) {
+      const removeLabel = chip.querySelector(".date-chip__remove")?.textContent || "";
+      const rawText = (chip.textContent || "").replace(removeLabel, "").trim();
+      const parsed = parseChipRange(rawText);
+      if (parsed) {
+        ranges.push(parsed);
+      }
+    });
+
+    if (ranges.length === 0) {
+      return { error: "Please add at least one date or date range for Multiple Dates." };
+    }
+
+    return { value: ranges };
+  }
+
+  return { error: "Please select a booking type." };
+}
+
+async function parseApiError(response) {
+  try {
+    const data = await response.json();
+    if (data && data.error && data.error.message) {
+      return data.error.message;
+    }
+  } catch (e) {}
+
+  try {
+    const text = await response.text();
+    if (text) return text;
+  } catch (e) {}
+
+  return "Update failed. Please try again.";
+}
+
 /* ---------- SUBMIT ---------- */
-document.getElementById("venueBookingForm").addEventListener("submit", function(e){
+document.getElementById("venueBookingForm").addEventListener("submit", async function(e){
   e.preventDefault();
   clearErr();
 
-  const acceptanceId = _acceptanceId;
+  const acceptanceId = (_acceptanceId || "").trim();
   const submitBtn = document.getElementById("submitBtn");
 
+  const firstName = (document.getElementById("firstName")?.value || "").trim();
+  const lastName = (document.getElementById("lastName")?.value || "").trim();
+  const email = (document.getElementById("email")?.value || "").trim();
+  const mobile = (document.getElementById("mobile")?.value || "").trim();
+  const organisation = (document.getElementById("organisationName")?.value || "").trim();
+  const role = (document.getElementById("contactRole")?.value || "").trim();
+
   const bookingType = getCheckedValue("bookingType");
-  const sessionType = getCheckedValue("sessionType");
-  const configurationId = selectedConfigurationIdEl ? selectedConfigurationIdEl.value.trim() : "";
+  const selectedCard = document.querySelector(".layout-card.selected");
+  const layoutType = (selectedCard?.querySelector(".layout-card__title")?.textContent || "").trim();
+  const description = (document.getElementById("notes")?.value || "").trim();
 
-  let startDateValue = "";
-  let endDateValue = "";
-
-  if (bookingType === BOOKING_TYPE_SINGLE) {
-    startDateValue = (document.getElementById("singleDate")?.value || "").trim();
-    endDateValue = startDateValue;
-  } else if (bookingType === BOOKING_TYPE_RANGE) {
-    startDateValue = (document.getElementById("rangeStartDate")?.value || "").trim();
-    endDateValue = (document.getElementById("rangeEndDate")?.value || "").trim();
-  } else if (bookingType === BOOKING_TYPE_MULTIPLE) {
-    showErr("Multi-day booking is not enabled yet. Please select Single Date or Date Range.");
+  if (!acceptanceId) {
+    showErr("Missing acceptance id. Please refresh and try again.");
     return;
   }
 
-  if (!startDateValue || !endDateValue) {
-    showErr("Please select booking date details before submitting.");
+  if (!firstName || !lastName || !email) {
+    showErr("First name, last name and email are required.");
     return;
   }
 
-  if (endDateValue < startDateValue) {
-    showErr("End date must be on or after the start date.");
+  const dateRangesResult = buildDateRanges(bookingType);
+  if (dateRangesResult.error) {
+    showErr(dateRangesResult.error);
     return;
   }
 
-  const sessionWindow = SESSION_TYPE_TIMES[sessionType] || SESSION_TYPE_TIMES["815390000"];
-  const start = new Date(`${startDateValue}T${sessionWindow.start}`);
-  const end = new Date(`${endDateValue}T${sessionWindow.end}`);
+  const dateRanges = dateRangesResult.value;
 
-  if (isNaN(start) || isNaN(end)) {
-    showErr("Unable to resolve booking date and time.");
-    return;
-  }
+  const inputJsonModel = {
+    schemaVersion: 1,
+    offeringtype: "venue",
+    firstname: firstName,
+    lastname: lastName,
+    email: email,
+    mobile: mobile,
+    organisation: organisation,
+    role: role,
+    bookingtype: bookingType,
+    dates: dateRanges,
+    layouttype: layoutType,
+    description: description
+  };
 
-  const guests = parseInt((document.getElementById("guestCount")?.value || "1").trim(), 10);
-  const notesInput = (document.getElementById("notes")?.value || "").trim();
-  const structuredNotes = [
-    "BookingType=" + bookingType,
-    "SessionType=" + sessionType,
-    "ConfigurationId=" + configurationId,
-    notesInput
-  ].filter(Boolean).join(" | ");
+  const payload = {
+    hit_firstname: firstName,
+    hit_lastname: lastName,
+    hit_email: email,
+    hit_inputjson: JSON.stringify(inputJsonModel)
+  };
 
-  if (!Number.isFinite(guests) || guests <= 0) {
-    showErr("Please enter a valid guest count.");
-    return;
-  }
-
-  dbgLog("submit", { acceptanceId, start, end, bookingType, sessionType, configurationId });
+  dbgLog("submit", { acceptanceId, payload, inputJsonModel });
 
   if (submitBtn) {
     submitBtn.disabled = true;
   }
 
-  /* ---------- PATCH ACCEPTANCE ---------- */
- var payload = {
-    "hit_venuespace@odata.bind": "/hit_venuespaces(" + _vsId + ")",
-    "hit_offeringacceptance@odata.bind": "/hit_offeringacceptances(" + acceptanceId + ")",
-  "hit_startdatetime": start.toISOString(),
-  "hit_enddatetime": end.toISOString(),
-  "hit_guestcount": guests,
-  "hit_notes": structuredNotes
-};
+  try {
+    const token = await getCsrfToken();
 
-dbgLog("create payload", payload);
+    if (!token) {
+      showErr("Security token could not be loaded. Please refresh and try again.");
+      if (submitBtn) submitBtn.disabled = false;
+      return;
+    }
 
-shell.ajaxSafePost({
-  url: "/_api/hit_venuespacebookingrequests",
-  type: "POST",
-  contentType: "application/json",
-  data: JSON.stringify(payload)
-})
-.done(function(){
+    const response = await fetch("/_api/hit_offeringacceptances(" + acceptanceId + ")", {
+      method: "PATCH",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        "__RequestVerificationToken": token,
+        "If-Match": "*"
+      },
+      body: JSON.stringify(payload)
+    });
 
-  dbgLog("booking","✅ created");
-  const redirectUrl = new URL(window.location.pathname, window.location.origin);
-  redirectUrl.searchParams.set("page", "offering-acceptance");
-  redirectUrl.searchParams.set("acceptanceid", acceptanceId);
-  window.location.replace(redirectUrl.toString());
+    if (!response.ok) {
+      const errMsg = await parseApiError(response);
+      console.error("ACCEPTANCE PATCH FAILED", response.status, errMsg);
+      showErr(errMsg || "Could not save your booking details.");
+      if (submitBtn) submitBtn.disabled = false;
+      return;
+    }
 
-})
-.fail(function(xhr){
+    dbgLog("acceptance", "✅ updated");
+    const redirectUrl = new URL(window.location.pathname, window.location.origin);
+    redirectUrl.searchParams.set("page", "offering-acceptance");
+    redirectUrl.searchParams.set("acceptanceid", acceptanceId);
+    window.location.replace(redirectUrl.toString());
 
-  console.error("BOOKING FAILED", xhr.status, xhr.responseText);
-  showErr("Booking failed. Please try again.");
-
-  if (submitBtn) {
-    submitBtn.disabled = false;
+  } catch (err) {
+    console.error("ACCEPTANCE PATCH ERROR", err);
+    showErr("Could not save your booking details. Please try again.");
+    if (submitBtn) submitBtn.disabled = false;
   }
-
-});
 });
 
 });
