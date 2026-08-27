@@ -24,6 +24,14 @@ Requirements:
 7. Follow platform naming standards.
 8. Document all schema additions.
 
+Architecture guardrails:
+
+9. Use acceptance-first write pattern for venue form submission (`hit_offeringacceptance`).
+10. Mirror key contact fields directly (`hit_firstname`, `hit_lastname`, `hit_email`).
+11. Store complete form payload in `hit_inputjson` using the documented contract.
+12. Do not reintroduce direct page POST to `hit_venuespacebookingrequest` unless explicitly approved.
+13. Keep JSON key naming and shape consistent with `09-inputjson-contract.md`.
+
 UI REQUIREMENT
 
 Replicate the visual and interaction design contained within:
