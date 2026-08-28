@@ -130,7 +130,7 @@ Impact:
 ### D-006: School/NFP Toggle and Mandatory Field Rules
 
 - Date: 2026-08-28
-- Status: Approved (pending implementation)
+- Status: Implemented
 
 Decision:
 
@@ -156,7 +156,7 @@ Impact:
 ### D-007: Configuration-Driven Layout Filtering Matrix
 
 - Date: 2026-08-28
-- Status: Approved (pending implementation)
+- Status: Implemented
 
 Decision:
 
@@ -177,6 +177,50 @@ Rationale:
 Impact:
 
 - Layout selection logic and card rendering state need enhancement.
+
+---
+
+### D-008: Venue Pricing from VenueSpace Rates with Selection Summary
+
+- Date: 2026-08-28
+- Status: Implemented
+
+Decision:
+
+- Venue booking pricing is calculated client-side from `hit_venuespace` fields:
+- `hit_fulldayrate`
+- `hit_halfdayrate`
+- `hit_schoolnfpdiscountpercent`
+- `hit_weekendsurchargepercent`
+- `hit_holidaysurchargepercent`
+- Add a form-level Selection Summary showing:
+- Total Dates (unique selected dates)
+- Total Amount (calculated total)
+- Persist pricing into both:
+- `hit_inputjson` (`totalbasefee`, `dates[].billingType`, `dates[].baseFee`)
+- Acceptance amount columns (`hit_baseamount`, `hit_totalamount`, `hit_totalamounteffective`)
+
+Rules:
+
+1. Select base rate from session-derived billing type (`FullDay` or `HalfDay`).
+2. Apply School/NFP discount if selected.
+3. Apply weekend surcharge for Saturday/Sunday bookings.
+
+Explicit scope decision:
+
+- Public holiday surcharge is excluded in this release, even though `hit_holidaysurchargepercent` is loaded.
+
+Rationale:
+
+- Keeps pricing transparent and auditable at date level.
+- Reuses existing acceptance/payment amount consumption without new downstream plumbing.
+- Delivers requested total visibility to users before submit.
+
+Impact:
+
+- Venue template now owns deterministic date-level fee construction.
+- Contract documentation must remain synchronized with pricing metadata keys.
+- Future holiday support can be added as a separate decision once a holiday data source is defined.
 
 ---
 

@@ -70,6 +70,11 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
     <attribute name="hit_description" />
     <attribute name="hit_capacityseated" />
     <attribute name="hit_capacitystanding" />
+    <attribute name="hit_fulldayrate" />
+    <attribute name="hit_halfdayrate" />
+    <attribute name="hit_schoolnfpdiscountpercent" />
+    <attribute name="hit_weekendsurchargepercent" />
+    <attribute name="hit_holidaysurchargepercent" />
 
     <filter>
       <condition attribute="hit_venuespaceid" operator="eq" value="{{ vs_id }}" />
@@ -150,6 +155,11 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
   {% assign venuespace_desc = venuespace.hit_description | default: '' %}
   {% assign cap_seated = venuespace.hit_capacityseated | default: '' %}
   {% assign cap_standing = venuespace.hit_capacitystanding | default: '' %}
+  {% assign full_day_rate = venuespace.hit_fulldayrate | default: 0 %}
+  {% assign half_day_rate = venuespace.hit_halfdayrate | default: 0 %}
+  {% assign school_nfp_discount_percent = venuespace.hit_schoolnfpdiscountpercent | default: 0 %}
+  {% assign weekend_surcharge_percent = venuespace.hit_weekendsurchargepercent | default: 0 %}
+  {% assign holiday_surcharge_percent = venuespace.hit_holidaysurchargepercent | default: 0 %}
 
     {% if debugMode == '1' %}
       <div style="padding:10px 12px;margin:10px 0;border-radius:10px;background:#f0fdf4;border:1px solid #86efac;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace;font-size:12px;">
@@ -926,6 +936,44 @@ body.venue-lightbox-open {
   padding: 10px 12px;
   cursor: pointer;
 }
+
+.selection-summary {
+  margin-top: 6px;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background: #f8fbff;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.selection-summary__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #1e3a8a;
+  text-transform: uppercase;
+}
+
+.selection-summary__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.selection-summary__label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.selection-summary__value {
+  font-weight: 800;
+  color: #111827;
+}
   </style>
 
   <div class="container">
@@ -1438,6 +1486,20 @@ body.venue-lightbox-open {
 
   </div>
 
+  <div class="selection-summary" id="selectionSummary" aria-live="polite">
+    <p class="selection-summary__title">Selection Summary</p>
+
+    <div class="selection-summary__row">
+      <span class="selection-summary__label">Total Dates</span>
+      <span class="selection-summary__value" id="summaryTotalDates">0</span>
+    </div>
+
+    <div class="selection-summary__row">
+      <span class="selection-summary__label">Total Amount</span>
+      <span class="selection-summary__value" id="summaryTotalAmount">$0.00</span>
+    </div>
+  </div>
+
   <div id="errBox"
        class="hit-alert hit-alert-error"
        style="display:none;">
@@ -1508,7 +1570,39 @@ function dbgLog(label, obj) {
 var _acceptanceId = "{{ acceptanceId | default: '' | escape }}";
 var _vsId = "{{ vs_id | default: '' | escape }}";
 
+function cleanNumber(value) {
+  return String(value == null ? "" : value).replace(/[^\d.-]/g, "");
+}
+
+function toNumber(value) {
+  const parsed = parseFloat(cleanNumber(value));
+  return isNaN(parsed) ? 0 : parsed;
+}
+
+function roundCurrency(value) {
+  return Math.round((toNumber(value) + Number.EPSILON) * 100) / 100;
+}
+
+function formatCurrency(value) {
+  const amount = roundCurrency(value);
+  return amount.toLocaleString("en-AU", {
+    style: "currency",
+    currency: "AUD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+var pricingConfig = {
+  fullDayRate: toNumber("{{ full_day_rate | default: 0 | escape }}"),
+  halfDayRate: toNumber("{{ half_day_rate | default: 0 | escape }}"),
+  schoolNfpDiscountPercent: toNumber("{{ school_nfp_discount_percent | default: 0 | escape }}"),
+  weekendSurchargePercent: toNumber("{{ weekend_surcharge_percent | default: 0 | escape }}"),
+  holidaySurchargePercent: toNumber("{{ holiday_surcharge_percent | default: 0 | escape }}")
+};
+
 dbgLog("init", { acceptanceId: _acceptanceId, vsId: _vsId });
+dbgLog("pricing", pricingConfig);
 
 /* ---------- TABS ---------- */
 document.querySelectorAll(".tab-button").forEach(btn => {
@@ -1632,6 +1726,8 @@ const bookingTypeRange = document.getElementById("bookingTypeRange");
 const bookingTypeMultiple = document.getElementById("bookingTypeMultiple");
 const selectedConfigurationIdEl = document.getElementById("selectedConfigurationId");
 const layoutNoOptionsEl = document.getElementById("layoutNoOptions");
+const summaryTotalDatesEl = document.getElementById("summaryTotalDates");
+const summaryTotalAmountEl = document.getElementById("summaryTotalAmount");
 
 function getCheckedValue(name) {
   const checked = document.querySelector(`input[name="${name}"]:checked`);
@@ -1722,6 +1818,7 @@ document.querySelectorAll(".layout-card").forEach(function(card) {
 
     this.classList.add("selected");
     syncSelectedConfigurationId();
+    updateSelectionSummary();
   });
 });
 
@@ -1729,15 +1826,32 @@ document.querySelectorAll('input[name="bookingType"]').forEach(function(radio) {
   radio.addEventListener("change", function() {
     updateBookingTypeUI();
     applyConfigurationRules();
+    updateSelectionSummary();
   });
 });
 
 document.querySelectorAll('input[name="sessionType"]').forEach(function(radio) {
-  radio.addEventListener("change", applyConfigurationRules);
+  radio.addEventListener("change", function() {
+    applyConfigurationRules();
+    updateSelectionSummary();
+  });
 });
+
+["singleDate", "rangeStartDate", "rangeEndDate"].forEach(function(id) {
+  const input = document.getElementById(id);
+  if (input) {
+    input.addEventListener("change", updateSelectionSummary);
+  }
+});
+
+const schoolNfpEl = document.getElementById("schoolNfp");
+if (schoolNfpEl) {
+  schoolNfpEl.addEventListener("change", updateSelectionSummary);
+}
 
 updateBookingTypeUI();
 applyConfigurationRules();
+updateSelectionSummary();
 
 function datesMatch(date, start, end) {
 
@@ -1852,6 +1966,7 @@ function renderCalendar() {
       }
 
       renderCalendar();
+      updateSelectionSummary();
     };
   });
 }
@@ -1938,6 +2053,46 @@ function mapSessionTypeValueToKey(sessionTypeValue) {
   return "fullDay";
 }
 
+function mapSessionTypeToBillingType(sessionTypeKey) {
+  return sessionTypeKey === "fullDay" ? "FullDay" : "HalfDay";
+}
+
+function isWeekendDate(dateYmd) {
+  const date = new Date(dateYmd + "T12:00:00");
+  if (isNaN(date)) return false;
+  const day = date.getDay();
+  return day === 0 || day === 6;
+}
+
+function getRateForBillingType(billingType) {
+  return billingType === "FullDay" ? pricingConfig.fullDayRate : pricingConfig.halfDayRate;
+}
+
+function calculateDateFee(dateYmd, billingType, schoolNfpSelected) {
+  let fee = getRateForBillingType(billingType);
+
+  if (schoolNfpSelected && pricingConfig.schoolNfpDiscountPercent > 0) {
+    fee = fee * (1 - (pricingConfig.schoolNfpDiscountPercent / 100));
+  }
+
+  if (isWeekendDate(dateYmd) && pricingConfig.weekendSurchargePercent > 0) {
+    fee = fee * (1 + (pricingConfig.weekendSurchargePercent / 100));
+  }
+
+  /* Holiday surcharge is intentionally excluded in this release. */
+  return roundCurrency(fee);
+}
+
+function setSelectionSummary(totalDates, totalAmount) {
+  if (summaryTotalDatesEl) {
+    summaryTotalDatesEl.textContent = String(totalDates || 0);
+  }
+
+  if (summaryTotalAmountEl) {
+    summaryTotalAmountEl.textContent = formatCurrency(totalAmount || 0);
+  }
+}
+
 function expandRangeToDates(startYmd, endYmd) {
   const start = new Date(startYmd + "T00:00:00");
   const end = new Date(endYmd + "T00:00:00");
@@ -1956,7 +2111,9 @@ function expandRangeToDates(startYmd, endYmd) {
 
 function buildDateEntries(bookingType, sessionTypeValue, layoutType) {
   const sessionType = mapSessionTypeValueToKey(sessionTypeValue);
+  const billingType = mapSessionTypeToBillingType(sessionType);
   const layout = (layoutType || "").trim();
+  const schoolNfpSelected = document.getElementById("schoolNfp")?.checked === true;
   const entries = [];
 
   if (bookingType === BOOKING_TYPE_SINGLE) {
@@ -2021,7 +2178,48 @@ function buildDateEntries(bookingType, sessionTypeValue, layoutType) {
     return { error: "Please select at least one booking date." };
   }
 
-  return { value: uniqueEntries };
+  const pricedEntries = uniqueEntries.map(function(entry) {
+    const dateFee = calculateDateFee(entry.date, billingType, schoolNfpSelected);
+
+    return {
+      date: entry.date,
+      sessionType: entry.sessionType,
+      layoutType: entry.layoutType,
+      billingType: billingType,
+      baseFee: dateFee
+    };
+  });
+
+  return { value: pricedEntries };
+}
+
+function getCurrentDateEntriesForSummary() {
+  const bookingType = getCheckedValue("bookingType");
+  const sessionTypeValue = getCheckedValue("sessionType");
+  const selectedCard = document.querySelector(".layout-card.selected:not(.layout-card--hidden)");
+  const layoutType = (selectedCard?.querySelector(".layout-card__title")?.textContent || "").trim();
+
+  if (!selectedCard) {
+    return { value: [] };
+  }
+
+  return buildDateEntries(bookingType, sessionTypeValue, layoutType);
+}
+
+function updateSelectionSummary() {
+  const result = getCurrentDateEntriesForSummary();
+
+  if (!result || result.error || !Array.isArray(result.value)) {
+    setSelectionSummary(0, 0);
+    return;
+  }
+
+  const entries = result.value;
+  const totalAmount = roundCurrency(entries.reduce(function(sum, entry) {
+    return sum + toNumber(entry.baseFee);
+  }, 0));
+
+  setSelectionSummary(entries.length, totalAmount);
 }
 
 async function parseApiError(response) {
@@ -2089,6 +2287,9 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
   }
 
   const dateEntries = dateEntriesResult.value;
+  const totalBaseFee = roundCurrency(dateEntries.reduce(function(sum, entry) {
+    return sum + toNumber(entry.baseFee);
+  }, 0));
 
   const inputJsonModel = {
     schemaVersion: 1,
@@ -2101,6 +2302,7 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
     role: roleLabel,
     bookingtype: bookingType,
     dates: dateEntries,
+    totalbasefee: totalBaseFee,
     layouttype: layoutType,
     description: description,
     schoolnfp: schoolNfp
@@ -2110,6 +2312,9 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
     hit_firstname: firstName,
     hit_lastname: lastName,
     hit_email: email,
+    hit_baseamount: totalBaseFee,
+    hit_totalamount: totalBaseFee,
+    hit_totalamounteffective: totalBaseFee,
     hit_inputjson: JSON.stringify(inputJsonModel)
   };
 
