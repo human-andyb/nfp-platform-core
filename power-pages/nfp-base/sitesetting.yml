@@ -123,6 +123,14 @@
   adx_sitesettingid: 81769fa8-f311-f111-8342-000d3a7a0cab
   adx_source: 0
   adx_value: '*'
+- adx_name: Webapi/hit_venuespaceconfiguration/enabled
+  adx_sitesettingid: 33fa302a-e641-4f82-a95f-42d3a8e43ca2
+  adx_source: 0
+  adx_value: true
+- adx_name: Webapi/hit_venuespaceconfiguration/fields
+  adx_sitesettingid: 4fd4caf6-cf2a-445d-bfd6-a16ae5d83413
+  adx_source: 0
+  adx_value: hit_venuespaceconfigurationid,hit_name,hit_shortdescription,hit_maxcapacity,hit_mincapacity,hit_recommendedcapacity,hit_imageurl,hit_sortorder,hit_isdefault,hit_isactive,hit_singledateallowed,hit_daterangeallowed,hit_multidateallowed,hit_allowfullday,hit_allowmorning,hit_allowafternoon,hit_venuespace
 - adx_name: EnablePowerBIEmbedded
   adx_sitesettingid: 81f4e7b2-0f46-f111-bec6-6045bd3d0cb5
   adx_source: 0

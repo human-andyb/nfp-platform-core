@@ -70,6 +70,7 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
     <attribute name="hit_description" />
     <attribute name="hit_capacityseated" />
     <attribute name="hit_capacitystanding" />
+
     <filter>
       <condition attribute="hit_venuespaceid" operator="eq" value="{{ vs_id }}" />
     </filter>
@@ -84,8 +85,6 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
     <attribute name="hit_name" />
     <attribute name="hit_shortdescription" />
     <attribute name="hit_maxcapacity" />
-    <attribute name="hit_mincapacity" />
-    <attribute name="hit_recommendedcapacity" />
     <attribute name="hit_imageurl" />
     <attribute name="hit_sortorder" />
     <attribute name="hit_isdefault" />
@@ -96,11 +95,8 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
     <attribute name="hit_allowfullday" />
     <attribute name="hit_allowmorning" />
     <attribute name="hit_allowafternoon" />
-    <attribute name="hit_allowedbookingtypes" />
-    <attribute name="hit_allowedsessiontype" />
     <filter>
       <condition attribute="hit_venuespace" operator="eq" value="{{ vs_id }}" />
-      <condition attribute="hit_isactive" operator="eq" value="1" />
     </filter>
     <order attribute="hit_sortorder" descending="false" />
     <order attribute="hit_name" descending="false" />
@@ -155,21 +151,6 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
   {% assign cap_seated = venuespace.hit_capacityseated | default: '' %}
   {% assign cap_standing = venuespace.hit_capacitystanding | default: '' %}
 
-  {% fetchxml venuespaceinclusions %}
-    <fetch mapping="logical">
-      <entity name="hit_venuespaceinclusion">
-        <attribute name="hit_name" />
-        <attribute name="hit_defaultincluded" />
-        <attribute name="hit_venueinclusioncategory" />
-        <filter>
-          <condition attribute="hit_venuespace" operator="eq" value="{{ vs_id }}" />
-        </filter>
-        <order attribute="hit_venueinclusioncategory" descending="false" />
-        <order attribute="hit_name" descending="false" />
-      </entity>
-    </fetch>
-    {% endfetchxml %}
-
     {% if debugMode == '1' %}
       <div style="padding:10px 12px;margin:10px 0;border-radius:10px;background:#f0fdf4;border:1px solid #86efac;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace;font-size:12px;">
         DEBUG: vs_id={{ vs_id | escape }} |
@@ -183,22 +164,10 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
 
       {% fetchxml bookings %}
       <fetch mapping="logical">
-        <entity name="hit_venuespacebookingrequest">
-          <attribute name="hit_startdatetime" />
-          <attribute name="hit_enddatetime" />
-          <filter>
-            <condition attribute="hit_venuespace" operator="eq" value="{{ vs_id }}" />
-            <condition attribute="statecode" operator="eq" value="0" />
-          </filter>
-        </entity>
-      </fetch>
-      {% endfetchxml %}
-
-      {% fetchxml holds %}
-      <fetch mapping="logical">
-        <entity name="hit_venuespacehold">
-          <attribute name="hit_startdatetime" />
-          <attribute name="hit_enddatetime" />
+        <entity name="hit_venuespacebooking">
+          <attribute name="hit_bookingdate" />
+          <attribute name="hit_morningblocked" />
+          <attribute name="hit_afternoonblocked" />
           <filter>
             <condition attribute="hit_venuespace" operator="eq" value="{{ vs_id }}" />
             <condition attribute="statecode" operator="eq" value="0" />
@@ -247,7 +216,6 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
       {% if debugMode == '1' %}
         <div style="padding:10px 12px;margin:10px 0;border-radius:10px;background:#fff7ed;border:1px solid #fdba74;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace;font-size:12px;">
           DEBUG: bookings={{ bookings.results.entities.size }} |
-          holds={{ holds.results.entities.size }} |
           blackouts={{ blackouts.results.entities.size }} |
           images={{ venuespaceimages.results.entities.size }}
         </div>
@@ -521,7 +489,6 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
 
     .calendar__day:hover { transform: translateY(-1px); border-color: #d7d7d7; background: #fafafa; }
 
-    .calendar__day--booked,
     .calendar__day--booked-full {
       background: #5e95ab;
       border-color: #5e95ab;
@@ -529,7 +496,6 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
       cursor: not-allowed;
     }
 
-    .calendar__day--held,
     .calendar__day--booked-morning {
       background: #f99829;
       border-color: #f99829;
@@ -551,9 +517,7 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
       cursor: not-allowed;
     }
 
-    .calendar__day--booked:hover,
     .calendar__day--booked-full:hover,
-    .calendar__day--held:hover,
     .calendar__day--booked-morning:hover,
     .calendar__day--booked-afternoon:hover,
     .calendar__day--blackout:hover {
@@ -825,26 +789,36 @@ body.venue-lightbox-open {
 
 .checkbox-option {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  width: 100%;
   gap: 8px;
   font-size: 13px;
   color: #374151;
+  white-space: nowrap;
+  justify-content: flex-start;
 }
 
 .checkbox-option input {
-  margin-top: 2px;
+  margin-top: 0;
+  flex: 0 0 auto;
+}
+
+.checkbox-option span {
+  display: block;
+  min-width: 0;
 }
 
 .layout-selector {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 8px;
 }
 
 .layout-card {
   border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 12px;
+  border-radius: 8px;
+  padding: 10px;
   cursor: pointer;
   transition: all 0.15s ease;
   background: #fff;
@@ -863,8 +837,38 @@ body.venue-lightbox-open {
   display: none;
 }
 
+.layout-card__media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+}
+
+.layout-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.layout-card__media--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
 .layout-card__title {
+  margin-top: 8px;
   font-weight: 700;
+  font-size: 13px;
+  line-height: 1.3;
   color: #111827;
 }
 
@@ -872,6 +876,12 @@ body.venue-lightbox-open {
   margin-top: 4px;
   font-size: 12px;
   color: #6b7280;
+}
+
+@media (max-width: 767px) {
+  .layout-selector {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .layout-no-options {
@@ -982,71 +992,9 @@ body.venue-lightbox-open {
 
            <!-- ===== INCLUSIONS TAB ===== -->
 <div class="tab-content" id="tab-inclusions">
-
-  {% assign all_inclusions = venuespaceinclusions.results.entities %}
-
-  {% if all_inclusions == nil or all_inclusions.size == 0 %}
-    <div style="color:#6b7280;">No inclusions found.</div>
-  {% else %}
-    <div class="inclusions-groups">
-
-      {% assign currentCatKey = "" %}
-
-      {% for inc in all_inclusions %}
-
-        {% assign catRaw = inc.hit_venueinclusioncategory %}
-        {% assign catLabel = "" %}
-
-        {% if catRaw and catRaw.label %}
-          {% assign catLabel = catRaw.label %}
-        {% else %}
-          {% assign catLabel = inc['hit_venueinclusioncategory@OData.Community.Display.V1.FormattedValue'] | default: catRaw | default: "Other" %}
-        {% endif %}
-
-        {% assign catKey = catLabel | append: "" | strip %}
-        {% if catKey == "" %}
-          {% assign catKey = "Other" %}
-        {% endif %}
-
-        {% if catKey != currentCatKey %}
-
-          {% if currentCatKey != "" %}
-              </ul>
-            </div>
-          {% endif %}
-
-          {% assign currentCatKey = catKey %}
-
-          <div class="inclusions-group">
-            <h3 class="inclusions-group__title">{{ catKey }}</h3>
-            <ul class="inclusions-list">
-
-        {% endif %}
-
-        {% assign includedRaw = inc.hit_defaultincluded.value | default: inc.hit_defaultincluded | default: "" %}
-        {% assign includedStr = includedRaw | append: "" | downcase | strip %}
-        {% assign isIncluded = false %}
-        {% if includedRaw == true or includedRaw == 1 or includedStr == "1" or includedStr == "true" %}
-          {% assign isIncluded = true %}
-        {% endif %}
-
-        <li class="inclusions-list__item">
-          <span class="inclusions-list__icon {% if isIncluded %}is-yes{% else %}is-no{% endif %}">
-            {% if isIncluded %}✓{% else %}✕{% endif %}
-          </span>
-          <span class="inclusions-list__name">{{ inc.hit_name | default: "Unnamed inclusion" }}</span>
-        </li>
-
-      {% endfor %}
-
-      {% if currentCatKey != "" %}
-          </ul>
-        </div>
-      {% endif %}
-    </div>
-
-  {% endif %}
-
+  <div style="color:#6b7280;">
+    Inclusions for this venue are available on request. Please contact Centre for Strategic Education for the latest inclusion details.
+  </div>
 </div>
 
 <!-- ===== IMAGES TAB ===== -->
@@ -1131,7 +1079,7 @@ body.venue-lightbox-open {
   <div class="form__group">
     <label class="checkbox-option" for="schoolNfp">
       <input type="checkbox" id="schoolNfp" />
-      <span>School or not-for-profit organisation</span>
+      <span>We are a School or NFP</span>
     </label>
   </div>
 
@@ -1330,21 +1278,6 @@ body.venue-lightbox-open {
 
   <div class="form__group">
 
-    <label class="form__label" for="guestCount">
-      Number of Guests
-    </label>
-
-    <input
-      class="form__control"
-      type="number"
-      min="1"
-      id="guestCount"
-      placeholder="How many attendees?" />
-
-  </div>
-
-  <div class="form__group">
-
     <label class="form__label">
       Session Type
     </label>
@@ -1403,7 +1336,7 @@ body.venue-lightbox-open {
           {% assign cfgId = cfg.hit_venuespaceconfigurationid | default: '' %}
           {% assign cfgName = cfg.hit_name | default: 'Configuration' %}
           {% assign cfgMax = cfg.hit_maxcapacity | default: '' %}
-          {% assign cfgRec = cfg.hit_recommendedcapacity | default: '' %}
+          {% assign cfgImage = cfg.hit_imageurl | default: '' %}
           {% assign allowSingle = 'false' %}
           {% assign allowRange = 'false' %}
           {% assign allowMulti = 'false' %}
@@ -1448,14 +1381,21 @@ body.venue-lightbox-open {
             data-allow-full="{{ allowFull }}"
             data-allow-morning="{{ allowMorning }}"
             data-allow-afternoon="{{ allowAfternoon }}">
+            {% if cfgImage != '' %}
+              <div class="layout-card__media">
+                <img src="{{ cfgImage | escape }}" alt="{{ cfgName | escape }} layout" loading="lazy" />
+              </div>
+            {% else %}
+              <div class="layout-card__media layout-card__media--placeholder">
+                <span>Layout image</span>
+              </div>
+            {% endif %}
             <div class="layout-card__title">{{ cfgName | escape }}</div>
             <div class="layout-card__capacity">
-              {% if cfgRec != '' %}
-                Recommended up to {{ cfgRec }}
-              {% elsif cfgMax != '' %}
-                Up to {{ cfgMax }}
+              {% if cfgMax != '' %}
+                Max capacity {{ cfgMax }}
               {% else %}
-                Capacity configurable
+                Max capacity TBC
               {% endif %}
             </div>
           </div>
@@ -1469,8 +1409,11 @@ body.venue-lightbox-open {
              data-allow-full="true"
              data-allow-morning="true"
              data-allow-afternoon="true">
+          <div class="layout-card__media layout-card__media--placeholder">
+            <span>Layout image</span>
+          </div>
           <div class="layout-card__title">Standard Setup</div>
-          <div class="layout-card__capacity">Configuration details coming soon</div>
+          <div class="layout-card__capacity">Max capacity TBC</div>
         </div>
       {% endif %}
 
@@ -1583,17 +1526,19 @@ document.getElementById("singleDate")?.addEventListener("focus", () => {
 });
 
 /* ---------- ARRAYS (SAFE ISO STRINGS) ---------- */
-var bookings = [
-{% for b in bookings.results.entities %}
-{ start: "{{ b.hit_startdatetime }}", end: "{{ b.hit_enddatetime }}" }{% unless forloop.last %},{% endunless %}
-{% endfor %}
-];
+var bookingsByDate = {};
 
-var holds = [
-{% for h in holds.results.entities %}
-{ start: "{{ h.hit_startdatetime }}", end: "{{ h.hit_enddatetime }}" }{% unless forloop.last %},{% endunless %}
+{% for b in bookings.results.entities %}
+  var bDate = "{{ b.hit_bookingdate }}";
+  var bMorning = {% if b.hit_morningblocked == true or b.hit_morningblocked == 1 %}true{% else %}false{% endif %};
+  var bAfternoon = {% if b.hit_afternoonblocked == true or b.hit_afternoonblocked == 1 %}true{% else %}false{% endif %};
+
+  if (!bookingsByDate[bDate]) {
+    bookingsByDate[bDate] = { morning: false, afternoon: false };
+  }
+  if (bMorning) bookingsByDate[bDate].morning = true;
+  if (bAfternoon) bookingsByDate[bDate].afternoon = true;
 {% endfor %}
-];
 
 var blackouts = [
 {% for bl in blackouts.results.entities %}
@@ -1601,10 +1546,9 @@ var blackouts = [
 {% endfor %}
 ];
 
-dbgLog("arrays", { bookings, holds, blackouts });
+dbgLog("arrays", { bookingsByDate, blackouts });
 
-console.log("Bookings", bookings);
-console.log("Holds", holds);
+console.log("Bookings by date", bookingsByDate);
 console.log("Blackouts", blackouts);
 
 /* ---------- IMAGE LIGHTBOX ---------- */
@@ -1818,16 +1762,23 @@ function datesMatch(date, start, end) {
          testDate <= endDate;
 }
 
-function hasBooking(d) {
-  return bookings.some(b =>
-    datesMatch(d, b.start, b.end)
-  );
-}
+function getBookingStatus(d) {
+  const dateStr = toYmdFromDate(d);
+  const booking = bookingsByDate[dateStr];
 
-function hasHold(d) {
-  return holds.some(h =>
-    datesMatch(d, h.start, h.end)
-  );
+  if (!booking) {
+    return { full: false, morning: false, afternoon: false };
+  }
+
+  if (booking.morning && booking.afternoon) {
+    return { full: true, morning: true, afternoon: true };
+  }
+
+  return {
+    full: false,
+    morning: booking.morning === true,
+    afternoon: booking.afternoon === true
+  };
 }
 
 function hasBlackout(d) {
@@ -1857,23 +1808,15 @@ function renderCalendar() {
   for (let d=1; d<=last.getDate(); d++) {
     const dt = new Date(y,m,d);
 
-
-
-  console.log(
-    d,
-    hasBooking(dt),
-    hasHold(dt),
-    hasBlackout(dt)
-  );
-
-
-    
-    const str = dt.toISOString().split("T")[0];
+    const str = toYmdFromDate(dt);
+    const bookingStatus = getBookingStatus(dt);
+    const isBlackout = hasBlackout(dt);
 
     let cls="calendar__day";
-    if (hasBlackout(dt)) cls+=" calendar__day--blackout";
-    else if (hasBooking(dt)) cls+=" calendar__day--booked";
-    else if (hasHold(dt)) cls+=" calendar__day--held";
+    if (isBlackout) cls+=" calendar__day--blackout";
+    else if (bookingStatus.full) cls+=" calendar__day--booked-full";
+    else if (bookingStatus.morning) cls+=" calendar__day--booked-morning";
+    else if (bookingStatus.afternoon) cls+=" calendar__day--booked-afternoon";
     if (selectedDate===str) cls+=" calendar__day--selected";
 
     calendarEl.innerHTML += `<div class="${cls}" data-date="${str}">${d}</div>`;
@@ -1881,7 +1824,12 @@ function renderCalendar() {
 
   document.querySelectorAll(".calendar__day").forEach(el=>{
     el.onclick = function(){
-      if (this.classList.contains("calendar__day--booked") || this.classList.contains("calendar__day--blackout")) return;
+      if (
+        this.classList.contains("calendar__day--booked-full") ||
+        this.classList.contains("calendar__day--booked-morning") ||
+        this.classList.contains("calendar__day--booked-afternoon") ||
+        this.classList.contains("calendar__day--blackout")
+      ) return;
 
       selectedDate = this.dataset.date;
 
@@ -1983,14 +1931,41 @@ function parseChipRange(text) {
   return { startdate: single, enddate: single };
 }
 
-function buildDateRanges(bookingType) {
+function mapSessionTypeValueToKey(sessionTypeValue) {
+  if (sessionTypeValue === "815390000") return "fullDay";
+  if (sessionTypeValue === "815390001") return "morning";
+  if (sessionTypeValue === "815390002") return "afternoon";
+  return "fullDay";
+}
+
+function expandRangeToDates(startYmd, endYmd) {
+  const start = new Date(startYmd + "T00:00:00");
+  const end = new Date(endYmd + "T00:00:00");
+  if (isNaN(start) || isNaN(end) || end < start) return [];
+
+  const dates = [];
+  const cursor = new Date(start.getTime());
+
+  while (cursor <= end) {
+    dates.push(toYmdFromDate(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return dates;
+}
+
+function buildDateEntries(bookingType, sessionTypeValue, layoutType) {
+  const sessionType = mapSessionTypeValueToKey(sessionTypeValue);
+  const layout = (layoutType || "").trim();
+  const entries = [];
+
   if (bookingType === BOOKING_TYPE_SINGLE) {
     const day = (document.getElementById("singleDate")?.value || "").trim();
     if (!day) return { error: "Please select a booking date." };
-    return { value: [{ startdate: day, enddate: day }] };
+    entries.push({ date: day, sessionType: sessionType, layoutType: layout });
   }
 
-  if (bookingType === BOOKING_TYPE_RANGE) {
+  else if (bookingType === BOOKING_TYPE_RANGE) {
     const start = (document.getElementById("rangeStartDate")?.value || "").trim();
     const end = (document.getElementById("rangeEndDate")?.value || "").trim();
 
@@ -2002,30 +1977,51 @@ function buildDateRanges(bookingType) {
       return { error: "End date must be on or after the start date." };
     }
 
-    return { value: [{ startdate: start, enddate: end }] };
+    const expanded = expandRangeToDates(start, end);
+    expanded.forEach(function(day) {
+      entries.push({ date: day, sessionType: sessionType, layoutType: layout });
+    });
   }
 
-  if (bookingType === BOOKING_TYPE_MULTIPLE) {
+  else if (bookingType === BOOKING_TYPE_MULTIPLE) {
     const chips = document.querySelectorAll("#bookingTypeMultiple .selected-date-chips .date-chip");
-    const ranges = [];
 
     chips.forEach(function(chip) {
       const removeLabel = chip.querySelector(".date-chip__remove")?.textContent || "";
       const rawText = (chip.textContent || "").replace(removeLabel, "").trim();
       const parsed = parseChipRange(rawText);
       if (parsed) {
-        ranges.push(parsed);
+        const expanded = expandRangeToDates(parsed.startdate, parsed.enddate);
+        expanded.forEach(function(day) {
+          entries.push({ date: day, sessionType: sessionType, layoutType: layout });
+        });
       }
     });
 
-    if (ranges.length === 0) {
+    if (entries.length === 0) {
       return { error: "Please add at least one date or date range for Multiple Dates." };
     }
-
-    return { value: ranges };
   }
 
-  return { error: "Please select a booking type." };
+  else {
+    return { error: "Please select a booking type." };
+  }
+
+  const dedupe = new Set();
+  const uniqueEntries = [];
+  entries.forEach(function(entry) {
+    const key = entry.date + "|" + entry.sessionType + "|" + entry.layoutType;
+    if (!dedupe.has(key)) {
+      dedupe.add(key);
+      uniqueEntries.push(entry);
+    }
+  });
+
+  if (uniqueEntries.length === 0) {
+    return { error: "Please select at least one booking date." };
+  }
+
+  return { value: uniqueEntries };
 }
 
 async function parseApiError(response) {
@@ -2066,6 +2062,7 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
     : roleValue;
 
   const bookingType = getCheckedValue("bookingType");
+  const sessionTypeValue = getCheckedValue("sessionType");
   const selectedCard = document.querySelector(".layout-card.selected:not(.layout-card--hidden)");
   const layoutType = (selectedCard?.querySelector(".layout-card__title")?.textContent || "").trim();
   const description = (document.getElementById("notes")?.value || "").trim();
@@ -2085,13 +2082,13 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
     return;
   }
 
-  const dateRangesResult = buildDateRanges(bookingType);
-  if (dateRangesResult.error) {
-    showErr(dateRangesResult.error);
+  const dateEntriesResult = buildDateEntries(bookingType, sessionTypeValue, layoutType);
+  if (dateEntriesResult.error) {
+    showErr(dateEntriesResult.error);
     return;
   }
 
-  const dateRanges = dateRangesResult.value;
+  const dateEntries = dateEntriesResult.value;
 
   const inputJsonModel = {
     schemaVersion: 1,
@@ -2103,7 +2100,7 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
     organisation: organisation,
     role: roleLabel,
     bookingtype: bookingType,
-    dates: dateRanges,
+    dates: dateEntries,
     layouttype: layoutType,
     description: description,
     schoolnfp: schoolNfp

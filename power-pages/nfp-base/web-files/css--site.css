@@ -372,7 +372,7 @@ body {
   line-height: 1.2;
 }
 .primary-nav a,
-.dsr-home-nav a {
+.cse-home-nav a {
     color: var(--hit-text-default) !important;
     text-decoration: none;
     font-weight: 600;

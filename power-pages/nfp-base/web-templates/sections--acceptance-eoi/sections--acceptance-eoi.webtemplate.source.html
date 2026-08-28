@@ -36,7 +36,7 @@
       <attribute name="hit_lastname" />
       <attribute name="hit_email" />
       <attribute name="hit_mobilephone" />
-      <attribute name="hit_dsreoirole" />
+
       <attribute name="hit_organisationinput" />
       <attribute name="hit_contactroleinput" />
 
@@ -61,7 +61,6 @@
 {% assign lastName  = acc.hit_lastname | default: '' %}
 {% assign email     = acc.hit_email | default: '' %}
 {% assign mobile    = acc.hit_mobilephone | default: '' %}
-{% assign dsrEoiRole = acc.hit_dsreoirole.value | default: acc.hit_dsreoirole | default: '' | string %}
 {% assign organisationInput = acc.hit_organisationinput | default: '' %}
 {% assign contactRoleInput = acc.hit_contactroleinput | default: '' %}
 
@@ -126,40 +125,6 @@
               <p class="hit-form-subtitle">
                 {{ formSubtitle | escape }}
               </p>
-
-<div class="hit-field hit-field--role">
-
-
-  <label for="hitDsrEoiRole">
-    I am a... <span class="hit-required">*</span>
-  </label>
-
-  <select id="hitDsrEoiRole"
-          name="hitDsrEoiRole"
-          required>
-    <option value="">Please select</option>
-
-    <option value="815390000" {% if dsrEoiRole == '815390000' %}selected{% endif %}>
-      I'm a person with a disability
-    </option>
-
-    <option value="815390001" {% if dsrEoiRole == '815390001' %}selected{% endif %}>
-      I'm a carer or support person for a person with disability
-    </option>
-
-    <option value="815390002" {% if dsrEoiRole == '815390002' %}selected{% endif %}>
-      I'm a team member in the sport and active recreation sector
-    </option>
-
-    <option value="815390003" {% if dsrEoiRole == '815390003' %}selected{% endif %}>
-      I'm a manager or leader in the sport and active recreation sector
-    </option>
-
-    <option value="815390004" {% if dsrEoiRole == '815390004' %}selected{% endif %}>
-      I work in the disability support or employment sector
-    </option>
-  </select>
-</div>
 
               <input type="hidden"
                      id="hitAcceptanceId"
@@ -301,7 +266,6 @@
         const orgSection = document.getElementById("hitOrgSection");
 
 const fieldIds = [
-  "hitDsrEoiRole",
   "hitFirstName",
   "hitLastName",
   "hitEmail",
@@ -435,13 +399,6 @@ const fieldIds = [
         }
 
         function validatePayload(payload){
-          if(!payload.hit_dsreoirole){
-            return {
-              message: "Please select the option that best describes you.",
-              fieldId: "hitDsrEoiRole"
-            };
-          }
-
           if(!payload.hit_firstname){
             return {
               message: "Please enter your first name.",
@@ -568,7 +525,6 @@ const fieldIds = [
             }
 
             const payload = {
-              hit_dsreoirole: Number(getValue("hitDsrEoiRole")),
               hit_firstname: getValue("hitFirstName"),
               hit_lastname: getValue("hitLastName"),
               hit_email: getValue("hitEmail"),

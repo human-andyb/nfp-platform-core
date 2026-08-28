@@ -1,7 +1,7 @@
 /* ==========================================================================
    css--theme-client.css
 
-   Client: Disability Sports Recreation (DSR)
+    Client: Centre for Strategic Education (CSE)
 
    PURPOSE
    - Client-specific presentation
@@ -186,10 +186,10 @@
 
 
 /* ==========================================================================
-   DSR FOOTER
+    CSE FOOTER
    ========================================================================== */
 
-.dsr-footer {
+.cse-footer {
 
     background-color: var(--hit-accent-primary);
 
@@ -200,33 +200,33 @@
     color: var(--hit-text-on-accent);
 }
 
-.dsr-footer a {
+.cse-footer a {
     color: var(--hit-text-on-accent);
     text-decoration: none;
 }
 
-.dsr-footer a:hover {
+.cse-footer a:hover {
     text-decoration: underline;
 }
 
-.dsr-footer-main {
+.cse-footer-main {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 30px;
 }
 
-.dsr-footer-col {
+.cse-footer-col {
     width: 22%;
     min-width: 220px;
 }
 
-.dsr-footer-logo {
+.cse-footer-logo {
     max-width: 160px;
     margin-bottom: 15px;
 }
 
-.dsr-footer-heading {
+.cse-footer-heading {
     font-weight: 600;
     margin-bottom: 6px;
 }
@@ -235,7 +235,7 @@
    FOOTER MIDDLE
    ========================================================================== */
 
-.dsr-footer-middle {
+.cse-footer-middle {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -246,7 +246,7 @@
     gap: 20px;
 }
 
-.dsr-footer-charity {
+.cse-footer-charity {
     display: flex;
     align-items: center;
     gap: 15px;
@@ -254,15 +254,15 @@
     max-width: 70%;
 }
 
-.dsr-footer-badge {
+.cse-footer-badge {
     width: 60px;
 }
 
-.dsr-footer-donate {
+.cse-footer-donate {
     text-align: right;
 }
 
-.dsr-donate-button {
+.cse-donate-button {
 
     background-color: var(--hit-accent-secondary);
 
@@ -280,7 +280,7 @@
    FOOTER ACKNOWLEDGEMENT
    ========================================================================== */
 
-.dsr-footer-ack {
+.cse-footer-ack {
     margin-top: 25px;
     font-size: .9em;
     opacity: .9;
@@ -291,7 +291,7 @@
    FOOTER BOTTOM
    ========================================================================== */
 
-.dsr-footer-bottom {
+.cse-footer-bottom {
 
     margin-top: 20px;
 
