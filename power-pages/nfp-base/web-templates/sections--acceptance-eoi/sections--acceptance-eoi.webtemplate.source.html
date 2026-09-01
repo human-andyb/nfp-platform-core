@@ -524,21 +524,48 @@ const fieldIds = [
               return;
             }
 
+            const firstName = getValue("hitFirstName");
+            const lastName = getValue("hitLastName");
+            const email = getValue("hitEmail");
+            const mobile = getValue("hitMobile");
+            const isOrgContext = orgToggle && orgToggle.checked;
+            const organisation = isOrgContext ? getValue("hitOrganisation") : "";
+            const role = isOrgContext ? getValue("hitContactRole") : "";
+
+            const inputJsonModel = {
+              schemaVersion: 2,
+              offeringtype: "eoi",
+              firstname: firstName,
+              lastname: lastName,
+              email: email,
+              mobile: mobile || null,
+              organisation: organisation || null,
+              role: role || null,
+              totalbaseamount: null,
+              offering: {
+                type: "eoi",
+                actingonbehalfoforganisation: !!isOrgContext
+              }
+            };
+
             const payload = {
-              hit_firstname: getValue("hitFirstName"),
-              hit_lastname: getValue("hitLastName"),
-              hit_email: getValue("hitEmail"),
-              hit_mobilephone: getValue("hitMobile"),
+              hit_firstname: firstName,
+              hit_lastname: lastName,
+              hit_email: email,
+              hit_mobilephone: mobile || null,
 
               hit_organisationinput:
-                orgToggle && orgToggle.checked
-                  ? getValue("hitOrganisation")
+                isOrgContext
+                  ? organisation
                   : null,
 
               hit_contactroleinput:
-                orgToggle && orgToggle.checked
-                  ? getValue("hitContactRole")
-                  : null
+                isOrgContext
+                  ? role
+                  : null,
+
+              hit_inputjson:
+                JSON.stringify(inputJsonModel)
             };
 
             const validation = validatePayload(payload);

@@ -921,34 +921,65 @@ Temporary:
             );
           }
 
+          const firstName = getValue("firstName");
+          const lastName = getValue("lastName");
+          const email = getValue("email");
+          const mobile = getValue("mobile");
+          const isOrgContext = orgToggle && orgToggle.checked;
+          const organisation = isOrgContext
+            ? getValue("organisation")
+            : "";
+          const role = isOrgContext
+            ? getValue("role")
+            : "";
+          const amountValue = {{ totalAmount | json }};
+
+          const inputJsonModel = {
+            schemaVersion: 2,
+            offeringtype: "donation",
+            firstname: firstName,
+            lastname: lastName,
+            email: email,
+            mobile: mobile || null,
+            organisation: organisation || null,
+            role: role || null,
+            totalbaseamount: amountValue,
+            offering: {
+              type: "donation"
+            }
+          };
+
           const payload = {
             hit_firstname:
-              getValue("firstName"),
+              firstName,
 
             hit_lastname:
-              getValue("lastName"),
+              lastName,
 
             hit_email:
-              getValue("email"),
+              email,
 
             hit_mobilephone:
-              getValue("mobile"),
+              mobile || null,
 
             hit_totalamounteffective:
-              {{ totalAmount | json }},
+              amountValue,
 
             hit_baseamount:
-              {{ totalAmount | json }},
+              amountValue,
 
             hit_organisationinput:
-              orgToggle && orgToggle.checked
-                ? getValue("organisation")
+              isOrgContext
+                ? organisation
                 : null,
 
             hit_contactroleinput:
-              orgToggle && orgToggle.checked
-                ? getValue("role")
-                : null
+              isOrgContext
+                ? role
+                : null,
+
+            hit_inputjson:
+              JSON.stringify(inputJsonModel)
           };
 
           const token =

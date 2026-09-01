@@ -256,7 +256,7 @@
 - adx_name: Webapi/hit_offeringacceptance/fields
   adx_sitesettingid: d994f1f5-e20a-f111-8342-000d3a7a0cab
   adx_source: 0
-  adx_value: hit_offeringacceptanceid, hit_firstname, hit_lastname, hit_email, hit_mobilephone, hit_dsreoirole, hit_organisationinput, hit_contactroleinput, hit_acceptancestatus, hit_paymentrequired, hit_stripeclientsecret, hit_stripepaymentintentid, hit_pricinglabel, hit_baseamount, hit_totalamount, hit_totalamounteffective, hit_postcode, hit_redemptioncode, hit_courseaccessaudience, hit_courseaccessplan, hit_inputjson, hit_clienttoken, hit_stripechargeid, hit_accepteddatetime, hit_Offering
+  adx_value: hit_offeringacceptanceid, hit_firstname, hit_lastname, hit_email, hit_mobilephone, hit_dsreoirole, hit_organisationinput, hit_contactroleinput, hit_acceptancestatus, hit_paymentrequired, hit_stripeclientsecret, hit_stripepaymentintentid, hit_pricinglabel, hit_PriceOption, hit_baseamount, hit_totalamount, hit_totalamounteffective, hit_postcode, hit_redemptioncode, hit_courseaccessaudience, hit_courseaccessplan, hit_inputjson, hit_clienttoken, hit_stripechargeid, hit_accepteddatetime, hit_Offering
 - adx_name: Authentication/OpenIdConnect/AzureAD/Caption
   adx_sitesettingid: dbe3c0f1-5509-f111-8407-000d3a7a0cab
   adx_value: Microsoft Entra ID
