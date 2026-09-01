@@ -276,7 +276,7 @@
 - adx_name: Stripe/PublishableKey
   adx_sitesettingid: e67c4447-7535-f111-88b4-000d3a7a0cab
   adx_source: 0
-  adx_value: pk_test_51TgIZSATsrPcl80UEbdM8KuI7l8HFQPpsFGaO3bxJPvPug5TeWHnvmfObFWNeWwyJVXQalgfnXZUTXDGmxAG9y0L004FCWZaV2
+  adx_value: pk_test_51U6kXEBXOQXZsoJbPWpcE4XvZBZ6zLwKJ4IizkF6nwiOCh7shCbYsZ8uJ0gAsBanVG5h4rJaynE1mYlKNahGW9DB00lYJ0ft3s
 - adx_description: 'The amount of time the Authentication/LoginThrottling/MaxInvaildAttemptsFromIPAddress are to be within before the IP address has to wait Authentication/LoginThrottling/IpAddressTimeoutTimeSpan. Default: 00:05:00 (5 mins)'
   adx_name: Authentication/LoginThrottling/MaxAttemptsTimeLimitTimeSpan
   adx_sitesettingid: ed324a1d-5076-4ce1-9819-f5f083312e7a

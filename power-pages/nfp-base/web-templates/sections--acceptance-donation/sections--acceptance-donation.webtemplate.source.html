@@ -6,7 +6,7 @@ Supports:
 - Individual and organisation donations
 - Accessible client-side validation
 - Offering Acceptance PATCH update
-- Redirect back through the Offering Acceptance router
+- Redirect to dedicated payment page with router fallback
 
 Temporary:
 - Styles remain embedded for testing.
@@ -39,6 +39,7 @@ Temporary:
       <attribute name="hit_baseamount" />
       <attribute name="hit_totalamounteffective" />
       <attribute name="hit_acceptancestatus" />
+      <attribute name="hit_clienttoken" />
       <attribute name="hit_stripeclientsecret" />
       <attribute name="hit_stripepaymentintentid" />
 
@@ -160,7 +161,7 @@ Temporary:
 
             <div class="hit-status-pill" aria-label="Current step">
               <span class="hit-status-pill__indicator" aria-hidden="true"></span>
-              <span>Enter your details to continue</span>
+              <span id="currentStepText">Enter your details to continue</span>
             </div>
 
             <input type="hidden"
@@ -400,6 +401,13 @@ Temporary:
                   Your details will be saved before continuing to secure payment.
                 </p>
 
+                <p id="redirectStatus"
+                   class="hit-help"
+                   role="status"
+                   aria-live="polite"
+                   aria-atomic="true"
+                   hidden></p>
+
               </div>
 
             </form>
@@ -427,26 +435,23 @@ Temporary:
         const orgToggle = root.querySelector("#orgToggle");
         const orgSection = root.querySelector("#orgSection");
         const continueButton = root.querySelector("#continueBtn");
+        const currentStepText = root.querySelector("#currentStepText");
+        const redirectStatus = root.querySelector("#redirectStatus");
 
         const errorSummary = root.querySelector("#errSummary");
         const errorSummaryList = root.querySelector("#errSummaryList");
 
         /*
-         * The Offering Acceptance router selects the next section based on
-         * the Acceptance Status.
+         * Primary handoff is now the dedicated payment page.
          *
-         * After this form PATCHes the acceptance, Power Automate updates the
-         * status asynchronously to Pending Payment.
-         *
-         * The first router request can therefore occur before Pending Payment
-         * has been set. If the router returns this donation-details section
-         * again with waitforpayment=1, this script waits briefly and requests
-         * the router again using a unique URL.
-         *
-         * When the status reaches Pending Payment, the router returns the
-         * payment section. Because this script is not rendered in that section,
-         * the retry process ends automatically.
+         * Router retry mode is retained as a compatibility fallback when the
+         * acceptance token is unavailable in this render context.
          */
+
+        const paymentPagePath = "/Payment/";
+        const initialAcceptanceToken = "{{ acc.hit_clienttoken | default: '' | escape }}";
+        const maxTokenPollAttempts = 20;
+        const tokenPollDelayMilliseconds = 1250;
 
         const currentUrl = new URL(window.location.href);
 
@@ -596,6 +601,36 @@ Temporary:
           if (loadingText && loadingMessage) {
             loadingText.textContent = loadingMessage;
           }
+
+          if (!isLoading) {
+            setProgressMessage("");
+            setStepText("Enter your details to continue");
+          }
+        }
+
+        function setStepText(message){
+          if (!currentStepText) {
+            return;
+          }
+
+          currentStepText.textContent = message || "";
+        }
+
+        function setProgressMessage(message){
+          if (!redirectStatus) {
+            return;
+          }
+
+          const cleanMessage = String(message || "").trim();
+
+          if (!cleanMessage) {
+            redirectStatus.hidden = true;
+            redirectStatus.textContent = "";
+            return;
+          }
+
+          redirectStatus.hidden = false;
+          redirectStatus.textContent = cleanMessage;
         }
 
         function disableFormWhileRouting(){
@@ -644,16 +679,195 @@ Temporary:
           return targetUrl.toString();
         }
 
+        function buildPaymentPageUrl(acceptanceIdValue, acceptanceTokenValue){
+          const targetUrl = new URL(
+            paymentPagePath,
+            window.location.origin
+          );
+
+          targetUrl.searchParams.set(
+            "acceptanceid",
+            acceptanceIdValue
+          );
+
+          targetUrl.searchParams.set(
+            "token",
+            acceptanceTokenValue
+          );
+
+          targetUrl.searchParams.set(
+            "_ts",
+            String(Date.now())
+          );
+
+          return targetUrl.toString();
+        }
+
+        async function getLatestAcceptanceSnapshot(acceptanceIdValue){
+          const response = await fetch(
+            "/_api/hit_offeringacceptances(" +
+              encodeURIComponent(acceptanceIdValue) +
+              ")?$select=hit_clienttoken,hit_stripeclientsecret,hit_stripepaymentintentid",
+            {
+              method: "GET",
+              credentials: "same-origin",
+              cache: "no-store",
+              headers: {
+                "Accept": "application/json",
+                "OData-MaxVersion": "4.0",
+                "OData-Version": "4.0"
+              }
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              "Could not load latest acceptance data."
+            );
+          }
+
+          const snapshot = await response.json();
+
+          return {
+            token: String(
+              snapshot.hit_clienttoken || ""
+            ).trim(),
+            clientSecret: String(
+              snapshot.hit_stripeclientsecret || ""
+            ).trim(),
+            paymentIntentId: String(
+              snapshot.hit_stripepaymentintentid || ""
+            ).trim()
+          };
+        }
+
+        function delay(milliseconds){
+          return new Promise(function(resolve){
+            window.setTimeout(resolve, milliseconds);
+          });
+        }
+
+        async function waitForAcceptanceToken(acceptanceIdValue){
+          let lastKnownToken = String(
+            initialAcceptanceToken || ""
+          ).trim();
+
+          if (lastKnownToken) {
+            return lastKnownToken;
+          }
+
+          setStepText(
+            "Preparing secure payment"
+          );
+
+          setProgressMessage(
+            "Your details are saved. We are preparing your secure payment. This usually takes around 10 to 30 seconds."
+          );
+
+          for (let attempt = 0; attempt < maxTokenPollAttempts; attempt++) {
+            try {
+              const snapshot =
+                await getLatestAcceptanceSnapshot(
+                  acceptanceIdValue
+                );
+
+              if (snapshot.token) {
+                setProgressMessage(
+                  "Payment is ready. Redirecting now..."
+                );
+                return snapshot.token;
+              }
+
+            } catch (error) {
+              // Keep polling on transient API failures.
+            }
+
+            if ((attempt + 1) % 4 === 0) {
+              const elapsedSeconds = Math.round(
+                ((attempt + 1) * tokenPollDelayMilliseconds) / 1000
+              );
+
+              setProgressMessage(
+                "Still preparing your payment " +
+                  "(" +
+                  elapsedSeconds +
+                  "s). You will be redirected automatically."
+              );
+            }
+
+            await delay(
+              tokenPollDelayMilliseconds
+            );
+          }
+
+          setProgressMessage(
+            "Payment setup is taking longer than expected. We are trying another route now."
+          );
+
+          return "";
+        }
+
         function redirectToRouter(){
           setLoading(
             true,
             "Preparing payment..."
           );
 
+          setStepText(
+            "Preparing secure payment"
+          );
+
+          setProgressMessage(
+            "We are still preparing your payment and will redirect you automatically."
+          );
+
           disableFormWhileRouting();
 
           window.location.replace(
             buildRouterUrl(0)
+          );
+        }
+
+        async function redirectToPaymentPage(acceptanceIdValue){
+          const cleanAcceptanceId = String(
+            acceptanceIdValue || ""
+          ).trim();
+
+          if (!cleanAcceptanceId) {
+            redirectToRouter();
+            return;
+          }
+
+          const resolvedToken =
+            await waitForAcceptanceToken(
+              cleanAcceptanceId
+            );
+
+          if (!resolvedToken) {
+            redirectToRouter();
+            return;
+          }
+
+          setLoading(
+            true,
+            "Preparing secure payment..."
+          );
+
+          setStepText(
+            "Redirecting to secure payment"
+          );
+
+          setProgressMessage(
+            "Payment is ready. Taking you to secure payment now..."
+          );
+
+          disableFormWhileRouting();
+
+          window.location.replace(
+            buildPaymentPageUrl(
+              cleanAcceptanceId,
+              resolvedToken
+            )
           );
         }
 
@@ -700,6 +914,14 @@ Temporary:
           setLoading(
             true,
             "Preparing payment..."
+          );
+
+          setStepText(
+            "Preparing secure payment"
+          );
+
+          setProgressMessage(
+            "We are still preparing your payment and will retry automatically."
           );
 
           disableFormWhileRouting();
@@ -1045,16 +1267,25 @@ Temporary:
             "Saving..."
           );
 
+          setStepText(
+            "Saving your details"
+          );
+
+          setProgressMessage(
+            "Saving your details now..."
+          );
+
           try {
-            await updateAcceptance();
+            const savedAcceptanceId =
+              await updateAcceptance();
 
             /*
-             * The PATCH is complete, but the orchestration flow may still be
-             * changing the status to Pending Payment. Navigate through the
-             * acceptance router and allow the retry mode above to wait for
-             * the payment section.
+             * Primary path: go directly to dedicated payment page.
+             * Fallback: use router retry mode when token is unavailable.
              */
-            redirectToRouter();
+            await redirectToPaymentPage(
+              savedAcceptanceId
+            );
 
           } catch (error) {
             console.error(error);
