@@ -199,7 +199,7 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
             <h2 class="hit-heading">{{ formTitle | escape }}</h2>
             <p style="margin: 6px 0 0; color: #666; font-size: 0.95em;">{{ formSubtitle | escape }}</p>
 
-            <div style="margin: 16px 0; padding: 10px 0; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 12px; font-size: 13px; color: #6b7280; text-align: center;">
+            <div id="caCurrentStepText" style="margin: 16px 0; padding: 10px 0; border: 1px solid #e5e7eb; border-radius: 6px; padding: 8px 12px; font-size: 13px; color: #6b7280; text-align: center;">
               {{ progressText | escape }}
             </div>
 
@@ -359,6 +359,13 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
               {{ submitButtonText | escape }}
             </button>
 
+            <p id="caRedirectStatus"
+              class="hit-help"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              hidden></p>
+
           </div>
         </main>
 
@@ -396,6 +403,35 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
       var _audienceValue = _cfg ? _cfg.dataset.audienceValue : '';
       var _planValue     = _cfg ? _cfg.dataset.planValue     : '';
       var _rawPrice      = _cfg ? _cfg.dataset.price         : '0';
+      var _currentStepText = document.getElementById('caCurrentStepText');
+      var _redirectStatus = document.getElementById('caRedirectStatus');
+
+      var _currentUrl = new URL(window.location.href);
+      var _waitingForPayment =
+        _currentUrl.searchParams.get('waitforpayment') === '1';
+      var _parsedRouteAttempt =
+        parseInt(_currentUrl.searchParams.get('routeattempt') || '0', 10);
+      var _currentRouteAttempt =
+        Number.isFinite(_parsedRouteAttempt) ? _parsedRouteAttempt : 0;
+      var _maximumRouteAttempts = 20;
+      var _routeRetryDelayMilliseconds = 1250;
+
+      function setStepText(message) {
+        if (!_currentStepText) return;
+        _currentStepText.textContent = (message || '').toString();
+      }
+
+      function setProgressMessage(message) {
+        if (!_redirectStatus) return;
+        var clean = (message || '').toString().trim();
+        if (!clean) {
+          _redirectStatus.hidden = true;
+          _redirectStatus.textContent = '';
+          return;
+        }
+        _redirectStatus.hidden = false;
+        _redirectStatus.textContent = clean;
+      }
 
       dbg('init', { acceptanceId: _acceptanceId, audience: _audience, plan: _plan });
 
@@ -498,6 +534,11 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
         btn.disabled = busy;
         btn.textContent = busy ? '{{ submittingButtonText | escape }}' : '{{ submitButtonText | escape }}';
         btn.classList.toggle('is-loading', busy);
+
+        if (!busy) {
+          setStepText('{{ progressText | escape }}');
+          setProgressMessage('');
+        }
       }
 
       /* -------------------------------------------------------
@@ -618,8 +659,50 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
          router retry loop detects the status change.
          ------------------------------------------------------- */
       function redirectToRouter() {
-        window.location.href = '/accept/?acceptanceid=' + encodeURIComponent(_acceptanceId)
-          + '&waitforpayment=1&routeattempt=0&_ts=' + Date.now();
+        window.location.href = buildRouterUrl(0);
+      }
+
+      function buildRouterUrl(attempt) {
+        return '/accept/?acceptanceid=' + encodeURIComponent(_acceptanceId)
+          + '&waitforpayment=1&routeattempt=' + encodeURIComponent(attempt)
+          + '&_ts=' + Date.now();
+      }
+
+      function handleWaitingForPayment() {
+        if (!_waitingForPayment) return false;
+
+        setSubmitting(true);
+        setStepText('Preparing secure payment');
+
+        if (_currentRouteAttempt >= _maximumRouteAttempts) {
+          setSubmitting(false);
+          setProgressMessage('Your details were saved, but payment is taking longer than expected. Please refresh to continue.');
+          if (_errList) {
+            _errList.innerHTML = '';
+            var longWait = document.createElement('li');
+            longWait.textContent = 'Your details were saved, but payment is taking longer than expected. Please refresh to continue.';
+            _errList.appendChild(longWait);
+          }
+          if (_errSummary) {
+            _errSummary.hidden = false;
+            _errSummary.setAttribute('tabindex', '-1');
+            _errSummary.focus();
+          }
+          return true;
+        }
+
+        if (_currentRouteAttempt >= 4) {
+          var elapsedSeconds = Math.round(((_currentRouteAttempt + 1) * _routeRetryDelayMilliseconds) / 1000);
+          setProgressMessage('Still preparing your payment (' + elapsedSeconds + 's). You will be redirected automatically.');
+        } else {
+          setProgressMessage('Your details are saved. We are preparing your secure payment. You will be redirected automatically.');
+        }
+
+        window.setTimeout(function() {
+          window.location.replace(buildRouterUrl(_currentRouteAttempt + 1));
+        }, _routeRetryDelayMilliseconds);
+
+        return true;
       }
 
       /* -------------------------------------------------------
@@ -627,12 +710,18 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
          ------------------------------------------------------- */
       var _submitBtn = document.getElementById('caSubmitBtn');
 
+      if (handleWaitingForPayment()) {
+        return;
+      }
+
       if (_submitBtn) {
         _submitBtn.addEventListener('click', async function() {
 
           if (!validate()) return;
 
           setSubmitting(true);
+          setStepText('Saving your details');
+          setProgressMessage('Saving your details now...');
 
           try {
             var token = await getCsrfToken();
@@ -698,6 +787,8 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
             onAcceptanceSaved(_acceptanceId, _audience, _plan);
 
             /* Redirect through router — Power Automate handles status */
+            setStepText('Preparing secure payment');
+            setProgressMessage('Your details are saved. We are preparing your secure payment. You will be redirected automatically.');
             redirectToRouter();
 
           } catch(err) {

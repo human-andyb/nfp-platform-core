@@ -1752,9 +1752,16 @@ body.venue-lightbox-open {
        style="display:none;">
   </div>
 
+    <div id="progressBox"
+      class="hit-alert"
+      role="status"
+      aria-live="polite"
+      style="display:none;">
+    </div>
+
   <button
     class="btn-primary"
-    type="submit"
+    type="button"
     id="submitBtn"
     style="display:none;">
     Request Booking
@@ -2469,6 +2476,20 @@ function clearErr(){
   box.style.display="none";
 }
 
+function showProgress(msg){
+  const box=document.getElementById("progressBox");
+  if(!box) return;
+  box.style.display="block";
+  box.textContent=msg;
+}
+
+function clearProgress(){
+  const box=document.getElementById("progressBox");
+  if(!box) return;
+  box.style.display="none";
+  box.textContent="";
+}
+
 function getCsrfToken() {
   return new Promise(function(resolve) {
     if (window.shell && typeof shell.getTokenDeferred === "function") {
@@ -2728,10 +2749,18 @@ async function parseApiError(response) {
   return "Update failed. Please try again.";
 }
 
+function buildVenueSubmittedUrl(acceptanceId) {
+  var url = new URL("/venue-booking-submitted/", window.location.origin);
+  url.searchParams.set("acceptanceid", acceptanceId);
+  url.searchParams.set("_ts", String(Date.now()));
+  return url.toString();
+}
+
 /* ---------- SUBMIT ---------- */
-document.getElementById("venueBookingForm").addEventListener("submit", async function(e){
+async function handleVenueBookingSubmit(e) {
   e.preventDefault();
   clearErr();
+  clearProgress();
 
   if (activeBookingStep !== 2) {
     moveToStepTwo();
@@ -2745,6 +2774,7 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
 
   const acceptanceId = (_acceptanceId || "").trim();
   const submitBtn = document.getElementById("submitBtn");
+  const submitButtonText = submitBtn ? submitBtn.textContent : "Request Booking";
 
   const firstName = (document.getElementById("firstName")?.value || "").trim();
   const lastName = (document.getElementById("lastName")?.value || "").trim();
@@ -2827,14 +2857,21 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
 
   if (submitBtn) {
     submitBtn.disabled = true;
+    submitBtn.textContent = "Saving...";
   }
+
+  showProgress("Saving your details...");
 
   try {
     const token = await getCsrfToken();
 
     if (!token) {
       showErr("Security token could not be loaded. Please refresh and try again.");
-      if (submitBtn) submitBtn.disabled = false;
+      clearProgress();
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = submitButtonText;
+      }
       return;
     }
 
@@ -2914,22 +2951,39 @@ document.getElementById("venueBookingForm").addEventListener("submit", async fun
         userErr += " Ref: " + lastRequestId;
       }
       showErr(userErr);
-      if (submitBtn) submitBtn.disabled = false;
+      clearProgress();
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = submitButtonText;
+      }
       return;
     }
 
     dbgLog("acceptance", "✅ updated");
-    const redirectUrl = new URL(window.location.pathname, window.location.origin);
-    redirectUrl.searchParams.set("page", "offering-acceptance");
-    redirectUrl.searchParams.set("acceptanceid", acceptanceId);
-    window.location.replace(redirectUrl.toString());
+    showProgress("Details saved. Redirecting...");
+    window.location.replace(buildVenueSubmittedUrl(acceptanceId));
 
   } catch (err) {
     console.error("ACCEPTANCE PATCH ERROR", err);
     showErr("Could not save your booking details. Please try again.");
-    if (submitBtn) submitBtn.disabled = false;
+    clearProgress();
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = submitButtonText;
+    }
   }
-});
+}
+
+var venueBookingFormEl = document.getElementById("venueBookingForm");
+var venueBookingSubmitBtnEl = document.getElementById("submitBtn");
+
+if (venueBookingFormEl) {
+  venueBookingFormEl.addEventListener("submit", handleVenueBookingSubmit);
+}
+
+if (venueBookingSubmitBtnEl) {
+  venueBookingSubmitBtnEl.addEventListener("click", handleVenueBookingSubmit);
+}
 
 });
 </script>

@@ -1,0 +1,325 @@
+{% comment %}
+sections--confirmation-venue
+
+- Venue-specific submitted confirmation page
+- Shows review-pending message immediately after submit
+- Uses hit_inputsummary rich text when available
+- Falls back to a simple parsed view of hit_inputjson
+{% endcomment %}
+
+{% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
+
+{% if acceptanceId == '' %}
+  <div class="alert alert-warning">Missing acceptance id.</div>
+{% else %}
+
+{% fetchxml acc_q %}
+<fetch top="1" mapping="logical">
+  <entity name="hit_offeringacceptance">
+    <attribute name="hit_offeringacceptanceid" />
+    <attribute name="hit_email" />
+    <attribute name="hit_inputsummary" />
+    <attribute name="hit_inputjson" />
+    <attribute name="hit_acceptancestatus" />
+    <attribute name="hit_accepteddatetime" />
+    <attribute name="hit_totalamounteffective" />
+
+    <link-entity
+      name="hit_offering"
+      from="hit_offeringid"
+      to="hit_offering"
+      alias="off"
+      link-type="outer">
+      <attribute name="hit_offeringname" />
+    </link-entity>
+
+    <filter>
+      <condition
+        attribute="hit_offeringacceptanceid"
+        operator="eq"
+        value="{{ acceptanceId | escape }}" />
+    </filter>
+  </entity>
+</fetch>
+{% endfetchxml %}
+
+{% assign acc = acc_q.results.entities | first %}
+
+{% if acc %}
+
+{% assign offeringName = acc['off.hit_offeringname'] | default: 'Venue Booking' %}
+{% assign summaryHtml = acc.hit_inputsummary | default: '' %}
+{% assign summaryText = summaryHtml | strip_html | strip %}
+{% assign totalAmount = acc.hit_totalamounteffective %}
+{% if totalAmount.value %}{% assign totalAmount = totalAmount.value %}{% endif %}
+
+<style>
+  .hit-venue-confirm-wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 28px 16px 64px;
+  }
+
+  .hit-venue-confirm-card {
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  }
+
+  .hit-venue-confirm-head {
+    padding: 24px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+    background: linear-gradient(180deg, rgba(0, 127, 137, 0.12) 0%, rgba(255, 255, 255, 1) 100%);
+  }
+
+  .hit-venue-confirm-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: #e6f5f6;
+    color: #0f172a;
+    margin-bottom: 10px;
+  }
+
+  .hit-venue-confirm-title {
+    margin: 0;
+    font-size: clamp(26px, 3vw, 36px);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+  }
+
+  .hit-venue-confirm-subtitle {
+    margin: 12px 0 0;
+    color: rgba(15, 23, 42, 0.78);
+    line-height: 1.6;
+    max-width: 68ch;
+  }
+
+  .hit-venue-confirm-body {
+    padding: 24px;
+    display: grid;
+    gap: 18px;
+  }
+
+  .hit-venue-panel {
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    border-radius: 14px;
+    padding: 16px;
+    background: #ffffff;
+  }
+
+  .hit-venue-panel h2 {
+    margin: 0 0 12px;
+    font-size: 18px;
+    line-height: 1.3;
+  }
+
+  .hit-venue-meta {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .hit-venue-meta dt {
+    color: rgba(15, 23, 42, 0.7);
+    font-size: 13px;
+  }
+
+  .hit-venue-meta dd {
+    margin: 0;
+    font-weight: 700;
+    color: #0f172a;
+    word-break: break-word;
+  }
+
+  .hit-venue-summary-fallback ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  .hit-venue-summary-fallback li {
+    margin: 8px 0;
+    line-height: 1.55;
+  }
+
+  .hit-venue-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 4px;
+  }
+
+  .hit-venue-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 11px 16px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid rgba(15, 23, 42, 0.18);
+  }
+
+  .hit-venue-button--primary {
+    background: #007f89;
+    border-color: #007f89;
+    color: #ffffff;
+  }
+
+  .hit-venue-button--secondary {
+    background: #ffffff;
+    color: #0f172a;
+  }
+
+  @media (max-width: 720px) {
+    .hit-venue-confirm-head,
+    .hit-venue-confirm-body {
+      padding: 18px;
+    }
+
+    .hit-venue-meta {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>
+
+<div class="hit-venue-confirm-wrap">
+  <div class="hit-venue-confirm-card">
+
+    <section class="hit-venue-confirm-head">
+      <span class="hit-venue-confirm-badge">Booking Submitted</span>
+      <h1 class="hit-venue-confirm-title">Your venue booking request has been received</h1>
+      <p class="hit-venue-confirm-subtitle">
+        Thanks for your submission. Our team will now review your request and contact you with the outcome.
+      </p>
+    </section>
+
+    <section class="hit-venue-confirm-body">
+
+      <article class="hit-venue-panel">
+        <h2>Submission Details</h2>
+        <dl class="hit-venue-meta">
+          <dt>Offering</dt>
+          <dd>{{ offeringName | escape }}</dd>
+
+          <dt>Contact Email</dt>
+          <dd>{{ acc.hit_email | default: '-' | escape }}</dd>
+
+          <dt>Acceptance ID</dt>
+          <dd>{{ acc.hit_offeringacceptanceid | escape }}</dd>
+
+          {% if totalAmount and totalAmount != 0 %}
+            <dt>Total Amount</dt>
+            <dd>${{ totalAmount }}</dd>
+          {% endif %}
+        </dl>
+      </article>
+
+      <article class="hit-venue-panel">
+        <h2>Booking Summary</h2>
+
+        {% if summaryText != '' %}
+          <div class="hit-venue-summary-rich">
+            {{ summaryHtml }}
+          </div>
+        {% else %}
+          <div id="venueSummaryFallback" class="hit-venue-summary-fallback">
+            Preparing booking summary...
+          </div>
+        {% endif %}
+      </article>
+
+      <article class="hit-venue-panel">
+        <h2>What Happens Next</h2>
+        <ul>
+          <li>Your request is queued for review.</li>
+          <li>We may contact you if we need more details.</li>
+          <li>You will receive confirmation once availability is confirmed.</li>
+        </ul>
+
+        <div class="hit-venue-actions">
+          <a class="hit-venue-button hit-venue-button--primary" href="/">Return Home</a>
+          <a class="hit-venue-button hit-venue-button--secondary" href="/venue/?fresh=1">Start Another Booking</a>
+        </div>
+      </article>
+
+    </section>
+  </div>
+</div>
+
+{% if summaryText == '' %}
+<script>
+  (function(){
+    var target = document.getElementById("venueSummaryFallback");
+    if (!target) {
+      return;
+    }
+
+    var raw = {{ acc.hit_inputjson | default: '' | json }};
+    if (!raw) {
+      target.textContent = "Summary will appear once processing completes.";
+      return;
+    }
+
+    var model;
+    try {
+      model = JSON.parse(raw);
+    } catch (e) {
+      target.textContent = "Summary is not available yet.";
+      return;
+    }
+
+    var lines = [];
+    var offering = model && model.offering ? model.offering : {};
+
+    if (offering.bookingtype) {
+      lines.push("Booking type: " + offering.bookingtype);
+    }
+
+    if (offering.layouttype) {
+      lines.push("Layout: " + offering.layouttype);
+    }
+
+    if (Array.isArray(offering.dates) && offering.dates.length > 0) {
+      lines.push("Dates selected: " + offering.dates.length);
+    }
+
+    if (offering.description) {
+      lines.push("Notes: " + offering.description);
+    }
+
+    if (typeof model.totalbaseamount !== "undefined" && model.totalbaseamount !== null) {
+      lines.push("Estimated total: $" + model.totalbaseamount);
+    }
+
+    if (lines.length === 0) {
+      target.textContent = "Summary will appear once processing completes.";
+      return;
+    }
+
+    var list = document.createElement("ul");
+
+    lines.forEach(function(line){
+      var item = document.createElement("li");
+      item.textContent = line;
+      list.appendChild(item);
+    });
+
+    target.innerHTML = "";
+    target.appendChild(list);
+  })();
+</script>
+{% endif %}
+
+{% else %}
+  <div class="alert alert-warning">Acceptance not found.</div>
+{% endif %}
+
+{% endif %}

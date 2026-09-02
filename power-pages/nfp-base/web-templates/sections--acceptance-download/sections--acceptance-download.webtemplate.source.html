@@ -616,6 +616,11 @@
                    role="status"
                    aria-live="polite"></div>
 
+                  <div id="hitProgressMessage"
+                    class="hit-message hit-message--success"
+                    role="status"
+                    aria-live="polite"></div>
+
             </div>
           </main>
 
@@ -631,6 +636,7 @@
         const submitBtn = document.getElementById("hitSubmitAcceptance");
         const errBox = document.getElementById("hitErrorMessage");
         const successBox = document.getElementById("hitSuccessMessage");
+        const progressBox = document.getElementById("hitProgressMessage");
 
         const fieldIds = [
           "hitFirstName",
@@ -693,6 +699,7 @@
 
         function showError(message, fieldId){
           hideMessage(successBox);
+          hideMessage(progressBox);
           showMessage(errBox, message);
 
           if(fieldId){
@@ -708,6 +715,7 @@
         function clearMessages(){
           hideMessage(errBox);
           hideMessage(successBox);
+          hideMessage(progressBox);
           clearFieldErrors();
         }
 
@@ -832,6 +840,7 @@
         submitBtn.addEventListener("click", async function(){
           clearMessages();
           setButtonBusy(true);
+          showMessage(progressBox, "Saving your details...");
 
           try{
             const acceptanceId = normaliseGuid(acceptanceIdEl ? acceptanceIdEl.value : "");
@@ -894,10 +903,12 @@
             const redirectUrl = getRedirectUrl();
 
             if(redirectUrl){
+              showMessage(progressBox, "Details saved. Redirecting...");
               window.location.href = redirectUrl;
               return;
             }
 
+            hideMessage(progressBox);
             submitBtn.textContent = "Saved";
             submitBtn.disabled = true;
 

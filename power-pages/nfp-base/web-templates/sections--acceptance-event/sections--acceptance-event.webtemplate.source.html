@@ -547,11 +547,14 @@ fixedPrice={{ fixedPrice }}
   // ---------------------------
   var btn = document.getElementById('hitSubmitBtn');
   if (!btn) return;
+  var defaultSubmitText = btn.textContent || 'Confirm Registration';
 
   btn.addEventListener('click', async function () {
     clearAlert();
     if (DEBUG && dbgEl) { dbgEl.style.display = 'none'; dbgEl.textContent = ''; }
     btn.disabled = true;
+    btn.textContent = 'Saving...';
+    showAlert('Saving your details...', 'info');
 
     try{
       var offeringId = document.getElementById('hit_offeringid')?.value?.trim();
@@ -572,6 +575,7 @@ fixedPrice={{ fixedPrice }}
       if(!acceptanceId) throw new Error("Acceptance created but acceptanceId could not be resolved.");
 
       // Redirect with token (Donate pattern)
+      showAlert('Payment is ready. Redirecting now...', 'info');
       window.location.href = PAYMENT_URL_BASE + encodeURIComponent(acceptanceId) + "&token=" + encodeURIComponent(built.clientToken);
 
     } catch(e){
@@ -579,6 +583,7 @@ fixedPrice={{ fixedPrice }}
       dbg("ERROR", { message: e.message, stack: e.stack });
     } finally {
       btn.disabled = false;
+      btn.textContent = defaultSubmitText;
     }
   });
 

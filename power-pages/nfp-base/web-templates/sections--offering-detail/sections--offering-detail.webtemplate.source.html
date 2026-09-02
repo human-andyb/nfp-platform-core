@@ -60,6 +60,9 @@ Priority:
       <attribute name="hit_offeringname" />
       <attribute name="hit_description" />
       <attribute name="hit_imageurl" />
+      <attribute name="hit_typelabel" />
+      <attribute name="hit_summary" />
+      <attribute name="hit_ctalabel" />
       <attribute name="hit_isactive" />
       <attribute name="hit_autoloadtemplate" />
 
@@ -121,6 +124,21 @@ Priority:
     {% assign shouldAutoCreate = false %}
     {% if autoLoadTemplate and hasPricing == false %}
       {% assign shouldAutoCreate = true %}
+    {% endif %}
+
+    {% assign nonPricingTitle = offering.hit_typelabel | default: '' | append: '' | strip %}
+    {% if nonPricingTitle == '' %}
+      {% assign nonPricingTitle = 'Register your interest' %}
+    {% endif %}
+
+    {% assign nonPricingSummary = offering.hit_summary | default: '' | append: '' | strip %}
+    {% if nonPricingSummary == '' %}
+      {% assign nonPricingSummary = 'Register your interest and we’ll keep you updated as more details become available.' %}
+    {% endif %}
+
+    {% assign nonPricingCtaLabel = offering.hit_ctalabel | default: '' | append: '' | strip %}
+    {% if nonPricingCtaLabel == '' %}
+      {% assign nonPricingCtaLabel = 'Continue' %}
     {% endif %}
 
     {% if DEBUG %}
@@ -271,11 +289,11 @@ Priority:
                   <div class="hit-form-card">
 
                     <h2 class="hit-form-card__title">
-                      Register your interest
+                      {{ nonPricingTitle | escape }}
                     </h2>
 
                     <p class="hit-form-subtitle hit-eoi-msg">
-                      Register your interest and we’ll keep you updated as more details become available.
+                      {{ nonPricingSummary | escape }}
                     </p>
 
                   </div>
@@ -283,7 +301,7 @@ Priority:
                   <div class="hit-actions">
                     <button type="button"
                             class="hit-button hit-button--primary eoi-btn">
-                      <span class="btn-text">Continue</span>
+                      <span class="btn-text">{{ nonPricingCtaLabel | escape }}</span>
                       <span class="btn-loading">
                         <span class="hit-spinner" aria-hidden="true"></span>
                         Creating...

@@ -160,7 +160,7 @@ to support the Centre for Strategic Education community.
 
             <div class="hit-status-pill" aria-label="Current step">
               <span class="hit-status-pill__indicator" aria-hidden="true"></span>
-              <span>Enter your details to continue</span>
+              <span id="currentStepText">Enter your details to continue</span>
             </div>
 
             <input type="hidden"
@@ -400,6 +400,13 @@ to support the Centre for Strategic Education community.
                   Your details will be saved before continuing to secure payment.
                 </p>
 
+                <p id="redirectStatus"
+                   class="hit-help"
+                   role="status"
+                   aria-live="polite"
+                   aria-atomic="true"
+                   hidden></p>
+
               </div>
 
             </form>
@@ -427,6 +434,8 @@ to support the Centre for Strategic Education community.
         const orgToggle = root.querySelector("#orgToggle");
         const orgSection = root.querySelector("#orgSection");
         const continueButton = root.querySelector("#continueBtn");
+        const currentStepText = root.querySelector("#currentStepText");
+        const redirectStatus = root.querySelector("#redirectStatus");
 
         const errorSummary = root.querySelector("#errSummary");
         const errorSummaryList = root.querySelector("#errSummaryList");
@@ -596,6 +605,36 @@ to support the Centre for Strategic Education community.
           if (loadingText && loadingMessage) {
             loadingText.textContent = loadingMessage;
           }
+
+          if (!isLoading) {
+            setProgressMessage("");
+            setStepText("Enter your details to continue");
+          }
+        }
+
+        function setStepText(message){
+          if (!currentStepText) {
+            return;
+          }
+
+          currentStepText.textContent = message || "";
+        }
+
+        function setProgressMessage(message){
+          if (!redirectStatus) {
+            return;
+          }
+
+          const cleanMessage = String(message || "").trim();
+
+          if (!cleanMessage) {
+            redirectStatus.hidden = true;
+            redirectStatus.textContent = "";
+            return;
+          }
+
+          redirectStatus.hidden = false;
+          redirectStatus.textContent = cleanMessage;
         }
 
         function disableFormWhileRouting(){
@@ -650,6 +689,14 @@ to support the Centre for Strategic Education community.
             "Preparing payment..."
           );
 
+          setStepText(
+            "Preparing secure payment"
+          );
+
+          setProgressMessage(
+            "Your details are saved. We are preparing your secure payment. You will be redirected automatically."
+          );
+
           disableFormWhileRouting();
 
           window.location.replace(
@@ -701,6 +748,27 @@ to support the Centre for Strategic Education community.
             true,
             "Preparing payment..."
           );
+
+          setStepText(
+            "Preparing secure payment"
+          );
+
+          if (currentRouteAttempt >= 4) {
+            const elapsedSeconds =
+              Math.round(
+                ((currentRouteAttempt + 1) * routeRetryDelayMilliseconds) / 1000
+              );
+
+            setProgressMessage(
+              "Still preparing your payment (" +
+                elapsedSeconds +
+                "s). You will be redirected automatically."
+            );
+          } else {
+            setProgressMessage(
+              "Your details are saved. We are preparing your secure payment. You will be redirected automatically."
+            );
+          }
 
           disableFormWhileRouting();
 
@@ -1012,6 +1080,14 @@ to support the Centre for Strategic Education community.
           setLoading(
             true,
             "Saving..."
+          );
+
+          setStepText(
+            "Saving your details"
+          );
+
+          setProgressMessage(
+            "Saving your details now..."
           );
 
           try {
