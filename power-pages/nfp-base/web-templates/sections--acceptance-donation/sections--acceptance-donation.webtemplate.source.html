@@ -694,6 +694,99 @@ Temporary:
           );
         }
 
+        function updateSubmissionNote(message){
+          const footnote = root.querySelector(".hit-form-footnote");
+
+          if (footnote) {
+            footnote.textContent = message || "";
+          }
+        }
+
+        function setSubmitProgressState(message){
+          if (!continueButton) {
+            return;
+          }
+
+          continueButton.disabled = true;
+          continueButton.classList.add("is-loading");
+
+          const buttonText = continueButton.querySelector(".hit-button__text");
+          const buttonLoading = continueButton.querySelector(".hit-button__loading");
+          const loadingText = buttonLoading
+            ? buttonLoading.querySelector("span:last-child")
+            : null;
+
+          if (buttonText) {
+            buttonText.style.display = "none";
+          }
+
+          if (buttonLoading) {
+            buttonLoading.style.display = "inline-flex";
+          }
+
+          if (loadingText && message) {
+            loadingText.textContent = message;
+          }
+
+          updateSubmissionNote(
+            "Your details have been saved. We’re preparing your secure payment. This usually takes 10–25 seconds and we’ll redirect you automatically when it’s ready."
+          );
+        }
+
+        async function waitForPendingPayment(){
+          const maxAttempts = 6;
+          let attempt = 0;
+
+          async function poll(){
+            attempt++;
+
+            try {
+              const response = await fetch(
+                "/_api/hit_offeringacceptances(" + acceptanceId + ")?$select=hit_acceptancestatus",
+                {
+                  method: "GET",
+                  credentials: "same-origin",
+                  cache: "no-store",
+                  headers: {
+                    "Accept": "application/json",
+                    "OData-MaxVersion": "4.0",
+                    "OData-Version": "4.0"
+                  }
+                }
+              );
+
+              if (response.ok) {
+                const data = await response.json();
+                const rawStatus = data.hit_acceptancestatus;
+                const statusValue = Number(
+                  rawStatus && typeof rawStatus === "object"
+                    ? (Object.prototype.hasOwnProperty.call(rawStatus, "value") ? rawStatus.value : rawStatus)
+                    : rawStatus
+                );
+
+                if (statusValue === STATUS_PENDING_PAYMENT) {
+                  window.location.replace(buildDirectPaymentUrl());
+                  return;
+                }
+              }
+            } catch (error) {
+              console.warn("Payment status poll failed:", error);
+            }
+
+            if (attempt >= maxAttempts) {
+              updateSubmissionNote(
+                "Your details have been saved and we’re still preparing your payment. Please wait a moment or refresh this page to continue."
+              );
+              return;
+            }
+
+            window.setTimeout(poll, 5000);
+          }
+
+          setSubmitProgressState("Processing...");
+          poll();
+        }
+
         function stopRouterRetry(){
           const cleanUrl = new URL(window.location.href);
 
@@ -1056,11 +1149,11 @@ Temporary:
 
             /*
              * The PATCH is complete, but the orchestration flow may still be
-             * changing the status to Pending Payment. Navigate through the
-             * acceptance router and allow the retry mode above to wait for
-             * the payment section.
+             * changing the status to Pending Payment. Keep the user on the
+             * submitted form while we wait, then redirect once the backend is
+             * ready for the payment flow.
              */
-            redirectToRouter();
+            await waitForPendingPayment();
 
           } catch (error) {
             console.error(error);

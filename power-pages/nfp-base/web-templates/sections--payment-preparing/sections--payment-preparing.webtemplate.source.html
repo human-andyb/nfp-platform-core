@@ -132,36 +132,58 @@
     if (statusEl) statusEl.textContent = msg;
   }
 
-  function navigateToPayment(cycleCount) {
-    var nextCycle = Number.isFinite(cycleCount) ? cycleCount : _autoRecheckCount;
-
+  function getCurrentClientSecret() {
     var secret = "";
+
     try {
       secret = new URL(window.location.href).searchParams.get('clientsecret') || "";
     } catch (_ignored) {
       secret = "";
     }
 
-    window.location.href =
-      window.location.pathname +
-      '?page=offering-acceptance' +
-      '&acceptanceid=' + encodeURIComponent(_acceptanceId) +
-      '&paymentmode=direct' +
-      '&ppcycle=' + encodeURIComponent(String(nextCycle)) +
-      (secret ? '&clientsecret=' + encodeURIComponent(secret) : '') +
-      '&_ts=' + Date.now();
+    if (!secret && seedSecretInput && seedSecretInput.value) {
+      secret = seedSecretInput.value.trim();
+    }
+
+    return secret;
+  }
+
+  function navigateToPayment(cycleCount) {
+    var nextCycle = Number.isFinite(cycleCount) ? cycleCount : _autoRecheckCount;
+    var secret = getCurrentClientSecret();
+
+    var targetUrl = new URL(window.location.pathname, window.location.origin);
+    targetUrl.searchParams.set('page', 'offering-acceptance');
+    targetUrl.searchParams.set('acceptanceid', _acceptanceId);
+    targetUrl.searchParams.set('paymentmode', 'direct');
+    targetUrl.searchParams.set('ppcycle', String(nextCycle));
+    targetUrl.searchParams.delete('waitforpayment');
+    targetUrl.searchParams.delete('routeattempt');
+    if (secret) {
+      targetUrl.searchParams.set('clientsecret', secret);
+    }
+    targetUrl.searchParams.set('_ts', String(Date.now()));
+
+    window.location.replace(targetUrl.toString());
   }
 
   function refreshPreparing(cycleCount) {
     var nextCycle = Number.isFinite(cycleCount) ? cycleCount : _autoRecheckCount;
+    var secret = getCurrentClientSecret();
 
-    window.location.href =
-      window.location.pathname +
-      '?page=offering-acceptance' +
-      '&acceptanceid=' + encodeURIComponent(_acceptanceId) +
-      '&paymentmode=direct' +
-      '&ppcycle=' + encodeURIComponent(String(nextCycle)) +
-      '&_ts=' + Date.now();
+    var targetUrl = new URL(window.location.pathname, window.location.origin);
+    targetUrl.searchParams.set('page', 'offering-acceptance');
+    targetUrl.searchParams.set('acceptanceid', _acceptanceId);
+    targetUrl.searchParams.set('paymentmode', 'direct');
+    targetUrl.searchParams.set('ppcycle', String(nextCycle));
+    targetUrl.searchParams.delete('waitforpayment');
+    targetUrl.searchParams.delete('routeattempt');
+    if (secret) {
+      targetUrl.searchParams.set('clientsecret', secret);
+    }
+    targetUrl.searchParams.set('_ts', String(Date.now()));
+
+    window.location.replace(targetUrl.toString());
   }
 
   function showTimeout() {
@@ -186,9 +208,13 @@
       try {
         var seededUrl = new URL(window.location.href);
         seededUrl.searchParams.set('clientsecret', seedSecret);
+        seededUrl.searchParams.delete('waitforpayment');
+        seededUrl.searchParams.delete('routeattempt');
         window.history.replaceState({}, document.title, seededUrl.toString());
       } catch (_ignored) {}
-      setTimeout(navigateToPayment, 300);
+      setTimeout(function () {
+        navigateToPayment(_autoRecheckCount);
+      }, 300);
       return;
     }
 
