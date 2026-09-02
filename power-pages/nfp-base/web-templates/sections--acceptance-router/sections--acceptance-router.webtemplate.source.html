@@ -202,20 +202,11 @@ sections--acceptance-router (DEBUG HARDENED)
       </div>
     {% endif %}
 
-    {% if directPaymentMode and isPaymentRequired and clientSecret == '' and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
+    {% if directPaymentMode and isPaymentRequired and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED and clientSecret != '' %}
 
       {% if DEBUG %}
         <div class="hit-debug-panel hit-debug-panel--include-payment">
-          Include: sections--payment-preparing (paymentmode direct missing secret)
-        </div>
-      {% endif %}
-      {% include 'sections--payment-preparing' %}
-
-    {% elsif directPaymentMode and isPaymentRequired and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
-
-      {% if DEBUG %}
-        <div class="hit-debug-panel hit-debug-panel--include-payment">
-          Include: sections--payment (paymentmode direct)
+          Include: sections--payment (paymentmode direct with secret)
         </div>
       {% endif %}
       {% include 'sections--payment' %}
@@ -228,15 +219,6 @@ sections--acceptance-router (DEBUG HARDENED)
         </div>
       {% endif %}
       {% include 'sections--confirmation-nonpayment' %}
-
-    {% elsif waitingForStatus and isPaymentRequired and status != STATUS_PENDING_PAYMENT and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
-
-      {% if DEBUG %}
-        <div class="hit-debug-panel hit-debug-panel--include-payment">
-          Include: sections--payment-preparing (waitforpayment fast-path)
-        </div>
-      {% endif %}
-      {% include 'sections--payment-preparing' %}
 
     {% elsif status == STATUS_COMPLETED %}
 
