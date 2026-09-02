@@ -651,7 +651,7 @@ Temporary:
           disableFormWhileRouting();
 
           window.location.replace(
-            buildRouterUrl(0)
+            buildDirectPaymentUrl()
           );
         }
 
@@ -855,14 +855,7 @@ Temporary:
          * router once so it can coordinate the next state.
          */
         if (waitingForPayment) {
-          setLoading(
-            true,
-            "Preparing payment..."
-          );
-
-          disableFormWhileRouting();
-
-          window.location.replace(buildDirectPaymentUrl());
+          startPaymentReadinessPolling();
           return;
         }
 

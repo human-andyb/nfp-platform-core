@@ -754,14 +754,7 @@ Temporary:
          * again once so the router can choose the next state.
          */
         if (waitingForPayment) {
-          setLoading(
-            true,
-            "Preparing payment..."
-          );
-
-          disableFormWhileRouting();
-
-          window.location.replace(buildDirectPaymentUrl());
+          startPaymentReadinessPolling();
           return;
         }
 

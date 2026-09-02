@@ -661,7 +661,7 @@ to support the disability sport and recreation community.
           disableFormWhileRouting();
 
           window.location.replace(
-            buildRouterUrl(0)
+            buildDirectPaymentUrl()
           );
         }
 
@@ -865,14 +865,7 @@ to support the disability sport and recreation community.
          * router once so it can coordinate the next state.
          */
         if (waitingForPayment) {
-          setLoading(
-            true,
-            "Preparing payment..."
-          );
-
-          disableFormWhileRouting();
-
-          window.location.replace(buildDirectPaymentUrl());
+          startPaymentReadinessPolling();
           return;
         }
 
