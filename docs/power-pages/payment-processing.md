@@ -2,11 +2,11 @@
 
 ## Purpose
 
-This document defines the acceptance-to-payment processing path for Power Pages and records the timeout remediation implemented for asynchronous transition delays.
+This document defines the router-centric acceptance-to-payment processing path for Power Pages and records the timeout remediation implemented for asynchronous transition delays.
 
 Use this document when working on:
 
-- donation and acceptance payment transitions
+- payment-required offering transitions
 - acceptance router behavior
 - payment session readiness polling
 - timeout and retry UX for backend orchestration latency
@@ -77,7 +77,7 @@ When backend status propagation exceeded this window, UI exited retry mode and d
 
 ### 1) Replace short router-only waiting with status-based readiness polling
 
-Implemented in acceptance templates for donation, membership, sponsorship, and volunteer.
+Implemented in payment-capable acceptance templates.
 
 Design:
 
@@ -162,7 +162,7 @@ flowchart TD
 
 ### Planned implementation steps
 
-1. Donation-first refactor:
+1. Router-first refactor:
 - after PATCH success in acceptance details, navigate directly to payment-preparing route state.
 
 2. Router waiting simplification:
@@ -175,7 +175,7 @@ flowchart TD
 - keep timeout, retry messaging, and resumable recovery path if backend is delayed.
 
 5. Cross-template alignment:
-- apply equivalent behavior to membership, sponsorship, and volunteer acceptance templates.
+- apply equivalent behavior to every payment-capable acceptance template, not donation only.
 
 ### Performance targets
 
@@ -257,14 +257,22 @@ Fallback behavior while not ready:
 ### Included
 
 - acceptance-to-payment transition resilience
-- consistency across acceptance templates sharing the same wait-for-payment pattern
+- consistency across all payment-capable acceptance templates sharing the same wait-for-payment pattern
 - payment-preparing cache-safe polling and timeout expansion
+- router-centric branch ownership for payment-required flows
 
 ### Not changed in this pass
 
 - course acceptance flow internals
 - orchestration flow architecture
 - Stripe webhook architecture
+
+## Current Ownership Model
+
+1. The acceptance router decides whether a payment-required record should render preparing or payment.
+2. Payment-preparing owns the only active wait/retry loop.
+3. Payment owns Stripe rendering only when a secret is already available in server-rendered data.
+4. Acceptance templates only submit, PATCH, and hand off once.
 
 ## Verification Checklist
 
@@ -283,6 +291,12 @@ Fallback behavior while not ready:
 2. Track elapsed time from Pending Payment to payment intent id population.
 3. Alert if 95th percentile of readiness exceeds 120 seconds.
 4. Validate [Flow/PaymentIntentUrl](../../power-pages/nfp-base/sitesetting.yml) per environment during release checks.
+
+## Rollout Notes
+
+1. The router contract applies to all payment-capable offerings.
+2. Donation, membership, sponsorship, and volunteer should all follow the same direct handoff behavior.
+3. Any additional payment-capable acceptance template should be aligned to the same ownership model before rollout.
 
 ## Follow-up Enhancements
 
