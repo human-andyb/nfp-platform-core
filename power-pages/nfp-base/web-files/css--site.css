@@ -129,7 +129,7 @@
   /* Shared vertical rhythm controls for section wrappers */
   --hit-section-space-block: 1.25rem;
   --hit-section-space-block-mobile: 1rem;
-  --hit-section-header-gap: 1.5rem;
+  --hit-section-header-gap: 1.25rem;
   /* ==========================================================
      Radius
      ========================================================== */
@@ -688,6 +688,26 @@ body {
 .layout-4-col__slot,
 .layout-5-col__slot {
     min-width: 0;
+}
+
+/*
+  Quick rhythm fix for renderer-composed pages:
+  when a section template (like gallery) emits its own section wrapper inside a layout slot,
+  avoid doubling vertical and horizontal padding from nested .hit-section__inner wrappers.
+*/
+.layout > .hit-section.hit-section--gallery {
+  margin: 0;
+}
+
+.layout > .hit-section.hit-section--gallery > .hit-section__inner {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.layout > .hit-section.hit-section--gallery .hit-gallery__items {
+  gap: 1.25rem;
 }
 
 /* ==========================================================
