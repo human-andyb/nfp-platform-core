@@ -334,13 +334,13 @@ sections--acceptance-router (DEBUG HARDENED)
           {% endif %}
           {% include 'sections--acceptance-sponsorship' %}
 
-{% when 815390007 %}
-  {% if DEBUG %}
-    <div class="hit-debug-panel hit-debug-panel--include-form">
-      Include: sections--acceptance-eoi
-    </div>
-  {% endif %}
-  {% include 'sections--acceptance-eoi' acceptanceId: acceptanceId  offeringName: offeringName  debug: DEBUG %}
+        {% when 815390007 %}
+          {% if DEBUG %}
+            <div class="hit-debug-panel hit-debug-panel--include-form">
+              Include: sections--acceptance-eoi
+            </div>
+          {% endif %}
+          {% include 'sections--acceptance-eoi' acceptanceId: acceptanceId offeringName: offeringName debug: DEBUG %}
 
         {% when 815390008 %}
           {% if DEBUG %}
