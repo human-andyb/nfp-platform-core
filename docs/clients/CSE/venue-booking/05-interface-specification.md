@@ -56,10 +56,14 @@ Blackout behavior:
 Required fields (approved for immediate implementation):
 
 - Organisation Name
-- Role
 - First Name
 - Last Name
 - Email
+
+Optional fields:
+
+- Role
+- Mobile
 
 Additional approved control:
 
@@ -108,7 +112,7 @@ Reference:
 
 /assets/prototype/
 
-The Venue Booking capability uses a persistent booking sidebar pattern.
+The Venue Booking capability uses a persistent booking sidebar with a guided 2-step form pattern.
 
 Layout:
 
@@ -117,19 +121,27 @@ Layout:
 | Venue Content        | Booking Panel        |
 |                      |                      |
 | Tabs                 | Organisation         |
-| Gallery              | Contact              |
-| Availability         | Booking Details      |
-| Inclusions           | Submit Booking       |
+| Gallery              | Step 1: Contact      |
+| Availability         | Step 2: Booking      |
+| Inclusions           | Request Booking      |
 |                      |                      |
 +----------------------+----------------------+
 
 Principles
 
-- Single page experience
+- Single page, guided 2-step experience
 - Persistent booking panel
 - Tab-based venue exploration
 - Mobile responsive
 - Component based
+
+### Booking Panel Interaction Pattern
+
+- Step headers: Contact Details and Booking Details.
+- Navigation: Next and Back controls with tab-style step indicators.
+- Step 1 validation gates Step 2 access.
+- Final submission is available only on Booking Details.
+- Final CTA label is `Request Booking`.
 
 ### Preferred Venue Layout Behavior
 

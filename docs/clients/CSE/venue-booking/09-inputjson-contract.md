@@ -24,12 +24,12 @@ Define the canonical `hit_inputjson` structure for venue submissions captured vi
 ## Versioning
 
 - `schemaVersion` is required.
-- Current version: `1`.
-- This change is a backward-compatible shape extension to `dates[]` plus `totalbasefee`.
+- Current version: `2`.
+- Venue now follows the shared cross-offering contract with common top-level keys and a venue-specific `offering` object.
 
 ---
 
-## Venue Payload Shape (v1)
+## Venue Payload Shape (v2)
 
 Required keys:
 
@@ -38,18 +38,23 @@ Required keys:
 - `firstname` (string)
 - `lastname` (string)
 - `email` (string)
-- `organisation` (string)
-- `role` (string, label value)
+- `mobile` (string or null)
+- `organisation` (string or null)
+- `role` (string or null, label value)
+- `totalbaseamount` (number)
+- `offering` (object)
+
+Required venue offering keys:
+
+- `type` (string, value: `venue`)
 - `bookingtype` (string)
 - `dates` (array of unique date entries)
-- `totalbasefee` (number)
 - `schoolnfp` (boolean)
 
-Optional keys:
+Optional venue offering keys:
 
-- `mobile` (string)
-- `layouttype` (string)
-- `description` (string)
+- `layouttype` (string or null)
+- `description` (string or null)
 
 ### Dates Structure
 
@@ -90,7 +95,7 @@ Rules:
 - Public holiday surcharge is not applied in this release, even though the field is loaded.
 
 - Total amount:
-- `totalbasefee` is the rounded sum of all `dates[].baseFee` values.
+- `totalbaseamount` is the rounded sum of all `offering.dates[].baseFee` values.
 
 ---
 
@@ -98,7 +103,7 @@ Rules:
 
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "offeringtype": "venue",
   "firstname": "Andy",
   "lastname": "Barker",
@@ -106,27 +111,30 @@ Rules:
   "mobile": "0408123456",
   "organisation": "Example School",
   "role": "Coordinator",
-  "bookingtype": "815390001",
-  "dates": [
-    {
-      "date": "2026-09-14",
-      "sessionType": "fullDay",
-      "layoutType": "Boardroom",
-      "billingType": "FullDay",
-      "baseFee": 425
-    },
-    {
-      "date": "2026-09-15",
-      "sessionType": "fullDay",
-      "layoutType": "Boardroom",
-      "billingType": "FullDay",
-      "baseFee": 425
-    }
-  ],
-  "totalbasefee": 850,
-  "layouttype": "Boardroom",
-  "description": "Annual planning workshop.",
-  "schoolnfp": true
+  "totalbaseamount": 850,
+  "offering": {
+    "type": "venue",
+    "bookingtype": "815390001",
+    "dates": [
+      {
+        "date": "2026-09-14",
+        "sessionType": "fullDay",
+        "layoutType": "Boardroom",
+        "billingType": "FullDay",
+        "baseFee": 425
+      },
+      {
+        "date": "2026-09-15",
+        "sessionType": "fullDay",
+        "layoutType": "Boardroom",
+        "billingType": "FullDay",
+        "baseFee": 425
+      }
+    ],
+    "layouttype": "Boardroom",
+    "description": "Annual planning workshop.",
+    "schoolnfp": true
+  }
 }
 ```
 
@@ -136,7 +144,7 @@ Rules:
 
 - Trim all user-entered strings.
 - Persist `role` as label text, not integer code.
-- Always emit `schoolnfp` explicitly as `true` or `false`.
+- Always emit `offering.schoolnfp` explicitly as `true` or `false`.
 - Preserve key names exactly as documented.
 - Round currency outputs at 2 decimal places before summing totals.
 
@@ -146,7 +154,25 @@ Rules:
 
 When expanding to other offering types:
 
-- Keep envelope keys (`schemaVersion`, `offeringtype`) consistent.
-- Reuse core identity keys where relevant.
-- Add offering-specific keys without removing existing keys unless version changes require it.
+- Keep the shared top-level keys identical across offerings.
+- Place only genuinely offering-specific fields inside `offering`.
+- For Donation, keep the amount only in top-level `totalbaseamount` and keep `offering` limited to `type`.
 - Update `08-architecture-decisions.md` when contract behavior changes.
+
+---
+
+## Confirmation Rendering Usage
+
+Venue confirmation route:
+
+- `/venue-booking-submitted?acceptanceid=<guid>`
+
+Rendering precedence:
+
+- Use `hit_inputsummary` when present.
+- Fall back to `hit_inputjson` when summary content is not yet available.
+
+Operational note:
+
+- `hit_inputsummary` may be populated asynchronously by downstream automation after submission.
+- Maintaining stable `hit_inputjson` keys is required to keep fallback rendering deterministic.

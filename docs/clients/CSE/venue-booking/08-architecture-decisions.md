@@ -130,7 +130,7 @@ Impact:
 ### D-006: School/NFP Toggle and Mandatory Field Rules
 
 - Date: 2026-08-28
-- Status: Implemented
+- Status: Superseded
 
 Decision:
 
@@ -138,10 +138,10 @@ Decision:
 - Persist as `schoolnfp` boolean in `hit_inputjson`, default `false`.
 - Make mandatory:
 - Organisation Name
-- Role
 - First Name
 - Last Name
 - Email
+- Role is optional.
 
 Rationale:
 
@@ -150,6 +150,10 @@ Rationale:
 Impact:
 
 - Validation and JSON construction updates required in venue form.
+
+Superseded by:
+
+- D-009 for guided two-step interaction and step-gated validation behavior.
 
 ---
 
@@ -228,3 +232,173 @@ Impact:
 
 - If any decision changes status from Approved to Implemented, update this file and related docs in the same change.
 - Keep `09-inputjson-contract.md` synchronized with any payload shape updates.
+
+---
+
+### D-009: Guided Two-Step Booking Form in Persistent Panel
+
+- Date: 2026-08-31
+- Status: Approved
+
+Decision:
+
+- Replace the always-expanded booking form with a guided 2-step in-panel flow:
+- Step 1: `Contact Details`
+- Step 2: `Booking Details`
+- Use tab-style step headers for orientation and `Next`/`Back` controls for progression.
+- Gate Step 2 access on successful Step 1 validation.
+- Keep final submission on Step 2 only.
+
+Rationale:
+
+- Reduces form length and perceived complexity.
+- Keeps booking controls visually aligned with availability and layout choices.
+- Preserves user orientation while improving completion flow.
+
+Impact:
+
+- Template markup requires step panels and navigation controls.
+- Client-side validation must split into step-scoped checks.
+- Existing acceptance PATCH behavior remains single-submit on final action.
+
+---
+
+### D-010: Final CTA Label Standardization for Venue Booking
+
+- Date: 2026-08-31
+- Status: Approved
+
+Decision:
+
+- Rename final submission button from `Reserve Booking` to `Request Booking`.
+
+Rationale:
+
+- Better matches current workflow semantics (request captured, downstream processing follows).
+- Aligns wording with approval-oriented booking journey.
+
+Impact:
+
+- UI copy update in venue template and references in design/spec docs.
+
+---
+
+### D-011: Unified Offering inputJSON Contract (SchemaVersion 2)
+
+- Date: 2026-08-31
+- Status: Approved
+
+Decision:
+
+- Standardize `hit_inputjson` across Venue, EOI, and Donation using `schemaVersion: 2`.
+- Keep shared top-level keys identical across all offering types:
+- `schemaVersion`, `offeringtype`, `firstname`, `lastname`, `email`, `mobile`, `organisation`, `role`, `totalbaseamount`, `offering`.
+- Move only genuinely offering-specific fields into `offering` object by type.
+- For Donation, store the monetary value only in top-level `totalbaseamount` and keep `offering` limited to `type`.
+
+Rationale:
+
+- Enables a single orchestration parse model across all offering types.
+- Reduces conditional logic and schema drift in downstream flows.
+- Preserves compatibility by allowing orchestrator fallback handling for historical `schemaVersion: 1` records.
+
+Impact:
+
+- Acceptance templates for Venue, EOI, and Donation must emit `schemaVersion: 2` payloads.
+- Existing direct acceptance column writes remain in place during migration.
+- Orchestrator must support dual-read behavior during transition window.
+- Power Automate Parse JSON schemas must allow nullable shared contact fields and must not require removed Donation nested fields.
+
+---
+
+### D-012: Venue Submission Redirect to Physical Confirmation Route
+
+- Date: 2026-09-02
+- Status: Implemented
+
+Decision:
+
+- After successful venue submission, redirect to the physical page route `/venue-booking-submitted` with `acceptanceid`.
+- Do not depend on the platform renderer `?page=` slug resolution for this venue confirmation path.
+
+Rationale:
+
+- Improves reliability for post-submit navigation when platform page slug configuration is incomplete.
+- Allows venue-specific confirmation messaging and structure without widening acceptance router complexity.
+
+Impact:
+
+- Venue confirmation flow now resolves through a dedicated page endpoint.
+- Acceptance continuity remains key-based through `acceptanceid`.
+
+---
+
+### D-013: Confirmation Rendering Source Precedence
+
+- Date: 2026-09-02
+- Status: Implemented
+
+Decision:
+
+- Venue confirmation renders `hit_inputsummary` first when present.
+- If `hit_inputsummary` is absent, venue confirmation falls back to parsing `hit_inputjson`.
+- Web API field allowlist includes `hit_inputsummary` for acceptance reads.
+
+Rationale:
+
+- Supports asynchronous enrichment while still showing immediate user-facing confirmation details.
+- Preserves compatibility for submissions where summary generation has not completed yet.
+
+Impact:
+
+- Confirmation templates must preserve deterministic fallback behavior.
+- Payload contract stability for `hit_inputjson` remains required.
+
+---
+
+### D-014: Non-Pricing Offering CTA Field Binding
+
+- Date: 2026-09-02
+- Status: Implemented
+
+Decision:
+
+- In offering detail non-pricing mode:
+- CTA title binds from `hit_typelabel` with safe fallback copy.
+- CTA description binds from `hit_summary` with safe fallback copy.
+- CTA button label binds from `hit_ctalabel` with safe fallback copy.
+- Pricing option flows remain unchanged.
+
+Rationale:
+
+- Moves non-pricing call-to-action content into Dataverse-configurable fields.
+- Preserves behavior for priced offerings and avoids regression in payment-linked journeys.
+
+Impact:
+
+- Offering detail fetch and rendering now depend on these additional content fields.
+- Existing pricing acceptance behavior remains stable.
+
+---
+
+### D-015: Scoped CSS Spacing and Sticky Polish for Offering Detail
+
+- Date: 2026-09-02
+- Status: Implemented
+
+Decision:
+
+- Apply CSS-only refinements for offering detail vertical rhythm and right-column behavior.
+- Keep sticky behavior on `.hit-offering__capture` for tablet and desktop (`>= 768px`) with header-aware top offset.
+- Normalize rich-text list spacing and marker alignment under `.hit-offering__description`.
+- Keep mobile layout in normal flow (`< 768px`).
+
+Rationale:
+
+- Resolves visible professionalism issues without changing template architecture.
+- Uses scoped selectors to minimize cross-page regression risk.
+
+Impact:
+
+- Offering detail readability and CTA persistence improve on longer pages.
+- No Liquid, router, or data-contract changes were required for this polish pass.

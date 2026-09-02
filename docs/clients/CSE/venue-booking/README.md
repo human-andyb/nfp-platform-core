@@ -24,13 +24,22 @@ Implemented now:
 - Full user submission payload is stored in `hit_inputjson`.
 - Availability calendar blackout ranges are rendered and blackout dates are non-selectable.
 - Availability legend is in place with agreed state colors.
+- Successful submit redirects to `/venue-booking-submitted?acceptanceid=<guid>`.
+- Venue confirmation renders `hit_inputsummary` first with `hit_inputjson` fallback.
+- `hit_inputsummary` is exposed for portal reads via site setting allowlist.
+- Dynamic venue layout card filtering is applied from booking/session configuration booleans.
 
-Approved and planned next:
+In progress or planned next:
 
 - School/NFP toggle in Organisation Details (`schoolnfp` in `hit_inputjson`).
-- Mandatory validation expansion (organisation, role, first name, last name, email).
-- Dynamic venue layout card filtering based on configuration booleans and selected booking/session type.
+- Mandatory validation alignment (organisation, first name, last name, email; role optional).
+- Guided 2-step booking panel (`Contact Details` then `Booking Details`) with step-gated progression.
+- Final submit CTA standardization to `Request Booking`.
 - Booked state split logic for full day, morning, and afternoon rendering.
+
+Status note:
+
+- Decision log is the authoritative status source for these items (see `08-architecture-decisions.md`).
 
 ## Key Stakeholders
 
@@ -57,4 +66,5 @@ Approved and planned next:
 - 07-ui-reference.md
 - 08-architecture-decisions.md
 - 09-inputjson-contract.md
+- 10-two-step-implementation-plan.md
 - 99-future-backlog.md

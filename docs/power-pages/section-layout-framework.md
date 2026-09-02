@@ -136,6 +136,22 @@ Documentation target:
 
 If implementation later introduces layout metadata for responsive behavior, this document should become the contract reference for that model.
 
+## Spacing and Sticky Behavior Notes
+
+Recent implementation work intentionally kept vertical rhythm and sticky improvements in scoped CSS rather than in layout-template architecture.
+
+Current approach:
+
+1. normalize section-level vertical spacing through shared wrapper CSS and token-driven values where possible
+2. avoid per-section spacing property expansion unless a documented exception is needed
+3. keep offering-detail sticky CTA behavior scoped to `.hit-offering__capture` at tablet and desktop breakpoints
+4. keep mobile behavior in normal flow for the same component
+5. keep rich-text list alignment fixes scoped to `.hit-offering__description`
+
+Design intent:
+
+- improve professionalism and consistency without altering slot contracts or layout cardinality semantics
+
 ## Guidance For Future Implementation
 
 When strengthening the section-layout system, prioritize the owning contract rather than patching individual layouts in isolation.

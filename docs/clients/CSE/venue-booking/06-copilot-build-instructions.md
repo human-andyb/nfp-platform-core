@@ -41,11 +41,17 @@ docs/clients/CSE/venue-booking/assets/prototype/
 Specifically:
 
 - Two-column layout
-- Persistent booking sidebar
+- Persistent booking sidebar with guided 2-step form (`Contact Details` then `Booking Details`)
 - Space, Availability, Inclusions and Images tabs
 - Gallery modal interaction
 - Card-based layout selection
-- Booking submission panel
+- Booking submission panel with final CTA label `Request Booking`
+
+Interaction guardrails:
+
+- Use tab-style step headers for orientation.
+- Use `Next`/`Back` progression to gate access to Booking Details until Contact Details is valid.
+- Keep acceptance PATCH on final submit only (no intermediate write).
 
 The implementation may differ technically but should preserve the customer experience.
 

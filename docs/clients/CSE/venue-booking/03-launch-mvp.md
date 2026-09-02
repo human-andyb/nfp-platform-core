@@ -41,6 +41,12 @@ Persistence approach for current MVP:
 - Full captured form input is serialized to `hit_inputjson`.
 - Direct create to `hit_venuespacebookingrequest` from the venue page is not part of the current MVP flow.
 
+Post-submission behavior for current MVP:
+
+- Successful submit redirects to `/venue-booking-submitted?acceptanceid=<guid>`.
+- Confirmation page presents submitted-and-under-review messaging.
+- Confirmation rendering uses `hit_inputsummary` when present, with `hit_inputjson` fallback.
+
 ---
 
 ## Payment

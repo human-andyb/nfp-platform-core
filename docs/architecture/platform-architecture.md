@@ -27,6 +27,18 @@ Canonical route contract:
 
 - `?page=offering-acceptance&acceptanceid=<guid>`
 
+### Venue Confirmation Route Extension
+
+Venue booking now uses a supported post-submit physical confirmation endpoint:
+
+- `/venue-booking-submitted?acceptanceid=<guid>`
+
+This does not replace the canonical acceptance-router model. It is a bounded reliability and UX extension for venue confirmation so submitted state and summary content can render without dependency on platform page slug composition.
+
+Contract continuity rule:
+
+- `acceptanceid` remains the continuity key across router-based and physical-route confirmation flows.
+
 ## Offering Autoload Extension
 
 The `hit_offering.hit_autoloadtemplate` flag enables a controlled extension of the existing acceptance-first model.
