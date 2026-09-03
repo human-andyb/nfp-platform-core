@@ -47,6 +47,7 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
     {% fetchxml off_q %}
     <fetch top="1">
     <entity name="hit_offering">
+      <attribute name="hit_displaytitle" />
         <attribute name="hit_offeringname" />
         <attribute name="hit_venuespace" />
         <filter>
@@ -151,6 +152,8 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
   
    {% assign venuespace = vs_q.results.entities | first %}
   {% assign venuespace_name = venuespace.hit_displaytitle | default: venuespace.hit_name | default: 'Venue Space' %}
+  {% assign offering_title = off.hit_displaytitle | default: off.hit_offeringname | default: '' %}
+  {% assign booking_title = offering_title | default: venuespace_name | default: 'Venue Space' %}
 
   {% assign venuespace_desc = venuespace.hit_description | default: '' %}
   {% assign cap_seated = venuespace.hit_capacityseated | default: '' %}
@@ -275,7 +278,7 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
     .section--acceptance-venue .container {
       max-width: 1600px;
       margin: 0 auto;
-      padding: 32px 24px;
+      padding: 20px 24px 32px;
     }
 
     .section--acceptance-venue h2 {
@@ -292,11 +295,14 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
   align-items: start;
 }
 
+.section--acceptance-venue .venue-booking__capture {
+  min-width: 0;
+}
+
     .section--acceptance-venue .layout--2col > div { min-width: 0; }
 
     @media (max-width: 980px) {
       .section--acceptance-venue .layout--2col { grid-template-columns: 1fr; }
-      .section--acceptance-venue .card--sticky { position: static; top: auto; }
     }
 
     /* Tabs */
@@ -395,13 +401,29 @@ sections--acceptance-venue (CONSOLIDATED - ACCEPTANCE DRIVEN + DEBUG)
       overflow: hidden;
     }
 
-    .card--sticky { 
-      position: sticky; 
-      top: 100px; 
-      align-self: start; 
+    .card--sticky {
       width: 100%;
       max-width: none;
+    }
 
+    @media (min-width: 768px) {
+      .section--acceptance-venue .venue-booking__capture {
+        position: sticky;
+        top: calc(var(--hit-header-height, 124px) + 16px);
+        align-self: start;
+      }
+
+      .section--acceptance-venue .card--sticky {
+        position: relative;
+        top: auto;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .section--acceptance-venue .venue-booking__capture {
+        position: static;
+        top: auto;
+      }
     }
 
     .card__header {
@@ -1119,12 +1141,12 @@ body.venue-lightbox-open {
 
   <div class="container">
 
-    <h2>Book {{ venuespace_name }}</h2>
+    <h2>Book {{ booking_title }}</h2>
 
     <div class="layout layout--2col">
 
       <!-- ================= LEFT ================= -->
-      <div>
+      <div class="venue-booking__capture">
 
         <div class="tabs">
 
@@ -1723,6 +1745,16 @@ body.venue-lightbox-open {
     </div>
 
     <div class="selection-summary__row">
+      <span class="selection-summary__label">Base Amount</span>
+      <span class="selection-summary__value" id="summaryBaseAmount">$0.00</span>
+    </div>
+
+    <div class="selection-summary__row">
+      <span class="selection-summary__label">GST</span>
+      <span class="selection-summary__value" id="summaryGstAmount">$0.00</span>
+    </div>
+
+    <div class="selection-summary__row">
       <span class="selection-summary__label">Total Amount</span>
       <span class="selection-summary__value" id="summaryTotalAmount">$0.00</span>
     </div>
@@ -1982,6 +2014,8 @@ const bookingTypeMultiple = document.getElementById("bookingTypeMultiple");
 const selectedConfigurationIdEl = document.getElementById("selectedConfigurationId");
 const layoutNoOptionsEl = document.getElementById("layoutNoOptions");
 const summaryTotalDatesEl = document.getElementById("summaryTotalDates");
+const summaryBaseAmountEl = document.getElementById("summaryBaseAmount");
+const summaryGstAmountEl = document.getElementById("summaryGstAmount");
 const summaryTotalAmountEl = document.getElementById("summaryTotalAmount");
 const stepTabContactEl = document.getElementById("stepTabContact");
 const stepTabBookingEl = document.getElementById("stepTabBooking");
@@ -2572,8 +2606,9 @@ function getRateForBillingType(billingType) {
 function calculateDateFee(dateYmd, billingType, schoolNfpSelected) {
   let fee = getRateForBillingType(billingType);
 
+  /* School/NFP pricing uses divisor model: gross / (1 + schoolNfp%). */
   if (schoolNfpSelected && pricingConfig.schoolNfpDiscountPercent > 0) {
-    fee = fee * (1 - (pricingConfig.schoolNfpDiscountPercent / 100));
+    fee = fee / (1 + (pricingConfig.schoolNfpDiscountPercent / 100));
   }
 
   if (isWeekendDate(dateYmd) && pricingConfig.weekendSurchargePercent > 0) {
@@ -2584,9 +2619,30 @@ function calculateDateFee(dateYmd, billingType, schoolNfpSelected) {
   return roundCurrency(fee);
 }
 
-function setSelectionSummary(totalDates, totalAmount) {
+function calculateTotalsFromBase(baseAmount, schoolNfpSelected) {
+  const roundedBase = roundCurrency(baseAmount || 0);
+  const gstAmount = roundCurrency(roundedBase * 0.10);
+
+  const totalAmount = roundCurrency(roundedBase + gstAmount);
+
+  return {
+    baseAmount: roundedBase,
+    gstAmount: gstAmount,
+    totalAmount: totalAmount
+  };
+}
+
+function setSelectionSummary(totalDates, baseAmount, gstAmount, totalAmount) {
   if (summaryTotalDatesEl) {
     summaryTotalDatesEl.textContent = String(totalDates || 0);
+  }
+
+  if (summaryBaseAmountEl) {
+    summaryBaseAmountEl.textContent = formatCurrency(baseAmount || 0);
+  }
+
+  if (summaryGstAmountEl) {
+    summaryGstAmountEl.textContent = formatCurrency(gstAmount || 0);
   }
 
   if (summaryTotalAmountEl) {
@@ -2709,18 +2765,20 @@ function getCurrentDateEntriesForSummary() {
 
 function updateSelectionSummary() {
   const result = getCurrentDateEntriesForSummary();
+  const schoolNfpSelected = document.getElementById("schoolNfp")?.checked === true;
 
   if (!result || result.error || !Array.isArray(result.value)) {
-    setSelectionSummary(0, 0);
+    setSelectionSummary(0, 0, 0, 0);
     return;
   }
 
   const entries = result.value;
-  const totalAmount = roundCurrency(entries.reduce(function(sum, entry) {
+  const baseAmount = roundCurrency(entries.reduce(function(sum, entry) {
     return sum + toNumber(entry.baseFee);
   }, 0));
+  const totals = calculateTotalsFromBase(baseAmount, schoolNfpSelected);
 
-  setSelectionSummary(entries.length, totalAmount);
+  setSelectionSummary(entries.length, totals.baseAmount, totals.gstAmount, totals.totalAmount);
 }
 
 async function parseApiError(response) {
@@ -2820,6 +2878,7 @@ async function handleVenueBookingSubmit(e) {
   const totalBaseFee = roundCurrency(dateEntries.reduce(function(sum, entry) {
     return sum + toNumber(entry.baseFee);
   }, 0));
+  const totals = calculateTotalsFromBase(totalBaseFee, schoolNfp);
 
   const inputJsonModel = {
     schemaVersion: 2,
@@ -2830,7 +2889,7 @@ async function handleVenueBookingSubmit(e) {
     mobile: mobile || null,
     organisation: organisation || null,
     role: roleLabel || null,
-    totalbaseamount: totalBaseFee,
+    totalbaseamount: totals.baseAmount,
     offering: {
       type: "venue",
       bookingtype: bookingType,
@@ -2848,8 +2907,9 @@ async function handleVenueBookingSubmit(e) {
     hit_mobilephone: mobile || null,
     hit_organisationinput: organisation || null,
     hit_contactroleinput: roleLabel || null,
-    hit_baseamount: totalBaseFee,
-    hit_totalamounteffective: totalBaseFee,
+    hit_baseamount: totals.baseAmount,
+    hit_gstamount: totals.gstAmount,
+    hit_totalamounteffective: totals.totalAmount,
     hit_inputjson: JSON.stringify(inputJsonModel)
   };
 
@@ -2887,8 +2947,9 @@ async function handleVenueBookingSubmit(e) {
           hit_firstname: firstName,
           hit_lastname: lastName,
           hit_email: email,
-          hit_baseamount: totalBaseFee,
-          hit_totalamounteffective: totalBaseFee,
+          hit_baseamount: totals.baseAmount,
+          hit_gstamount: totals.gstAmount,
+          hit_totalamounteffective: totals.totalAmount,
           hit_inputjson: JSON.stringify(inputJsonModel)
         }
       },
