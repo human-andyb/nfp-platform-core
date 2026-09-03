@@ -27,6 +27,23 @@ Behavior:
   {%- assign sectionTypeName = resolvedSlot['stype.hit_name'] | default: '' | append: '' | downcase | strip -%}
   {%- assign templateName = templateNameRaw | downcase -%}
   {%- assign appliedFallback = '' -%}
+  {%- assign slotHeightValue = resolvedSlot.hit_contentheight.value | default: resolvedSlot.hit_contentheight | default: '' | append: '' | strip -%}
+  {%- assign slotHeightLabel = resolvedSlot.hit_contentheight.label | default: '' | append: '' | downcase | strip -%}
+  {%- assign slotHeightClass = 'hit-slot-height--auto' -%}
+
+  {%- if slotHeightLabel contains 'full' or slotHeightValue == '9999' -%}
+    {%- assign slotHeightClass = 'hit-slot-height--full' -%}
+  {%- elsif slotHeightLabel == 'extra large' or slotHeightLabel == 'x large' or slotHeightLabel == 'x-large' -%}
+    {%- assign slotHeightClass = 'hit-slot-height--xlarge' -%}
+  {%- elsif slotHeightLabel == 'large' -%}
+    {%- assign slotHeightClass = 'hit-slot-height--large' -%}
+  {%- elsif slotHeightLabel == 'medium' -%}
+    {%- assign slotHeightClass = 'hit-slot-height--medium' -%}
+  {%- elsif slotHeightLabel == 'small' -%}
+    {%- assign slotHeightClass = 'hit-slot-height--small' -%}
+  {%- elsif slotHeightLabel == 'auto' or slotHeightLabel == '' -%}
+    {%- assign slotHeightClass = 'hit-slot-height--auto' -%}
+  {%- endif -%}
 
   {%- if templateName == '' and sectionTypeName contains 'hero' -%}
     {%- assign templateName = 'sections--hero' -%}
@@ -37,6 +54,9 @@ Behavior:
     <div class="hit-debug">
       Slot {{ resolvedSlotIndex }} template: {{ templateName }}
     </div>
+    <div class="hit-debug">
+      Slot {{ resolvedSlotIndex }} heightClass: {{ slotHeightClass }} (value={{ slotHeightValue }}, label={{ slotHeightLabel }})
+    </div>
     {%- if appliedFallback != '' -%}
       <div class="hit-debug">
         Slot {{ resolvedSlotIndex }} fallback: {{ appliedFallback }} (sectionType={{ sectionTypeName }})
@@ -46,7 +66,9 @@ Behavior:
 
   {%- if templateName != '' -%}
 
-    {% include templateName slot: resolvedSlot section: section debug: debugMode galleryParam: galleryParam galleryOverride: galleryOverride %}
+    <div class="hit-slot-frame {{ slotHeightClass }}">
+      {% include templateName slot: resolvedSlot section: section debug: debugMode galleryParam: galleryParam galleryOverride: galleryOverride %}
+    </div>
 
   {%- elsif debugMode -%}
 

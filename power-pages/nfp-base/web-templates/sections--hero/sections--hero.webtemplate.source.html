@@ -45,9 +45,11 @@ MEDIA
 
 {%- assign heroType = context.hit_mediatype.value | default: 0 -%}
 
-{%- assign heroImageUrl = context.hit_mediaurl | default:'' | strip -%}
-{%- assign heroVideoUrl = context.hit_mediaurl | default:'' | strip -%}
-{%- assign heroPosterUrl = context.hit_fallbackimageurl | default:'' | strip -%}
+{%- assign heroMediaUrlRaw = context.hit_mediaurl.url | default: context.hit_mediaurl.value | default: context.hit_mediaurl | default:'' | append:'' | strip -%}
+{%- assign heroFallbackUrlRaw = context.hit_fallbackimageurl.url | default: context.hit_fallbackimageurl.value | default: context.hit_fallbackimageurl | default:'' | append:'' | strip -%}
+{%- assign heroImageUrl = heroMediaUrlRaw -%}
+{%- assign heroVideoUrl = heroMediaUrlRaw -%}
+{%- assign heroPosterUrl = heroFallbackUrlRaw -%}
 {%- assign heroItemClickUrl = context.hit_itemclickurl.url | default: context.hit_itemclickurl.value | default: context.hit_itemclickurl | default:'' | append:'' | strip -%}
 
 
@@ -75,8 +77,29 @@ LAYOUT
 {%- assign contentHAlign = context.hit_contenthalign.label | default:'Left' | downcase | strip -%}
 {%- assign contentVAlign = context.hit_contentvalign.label | default:'Middle' | downcase | strip -%}
 {%- assign contentWidth = context.hit_contentwidth.label | default:'Medium' | downcase | strip -%}
-{%- assign contentHeight = context.hit_contentheight.value | default:0 -%}
+{%- assign contentHeightRaw = context.hit_contentheight.value | default: context.hit_contentheight | default:'' | append:'' | strip -%}
+{%- assign contentHeightLabel = context.hit_contentheight.label | default:'' | append:'' | downcase | strip -%}
+{%- assign contentHeight = contentHeightRaw | plus: 0 -%}
 {%- assign mediaFit = context.hit_mediafit.label | default:'Fill' | downcase | strip -%}
+{%- assign heroMinHeightStyle = '' -%}
+
+{%- if contentHeightLabel contains 'full' or contentHeight == 9999 -%}
+    {%- assign heroMinHeightStyle = 'min-height:100vh;' -%}
+{%- elsif contentHeightLabel == 'x large' or contentHeightLabel == 'x-large' or contentHeightLabel == 'extra large' -%}
+    {%- assign heroMinHeightStyle = 'min-height:620px;' -%}
+{%- elsif contentHeightLabel == 'large' -%}
+    {%- assign heroMinHeightStyle = 'min-height:460px;' -%}
+{%- elsif contentHeightLabel == 'medium' -%}
+    {%- assign heroMinHeightStyle = 'min-height:320px;' -%}
+{%- elsif contentHeightLabel == 'small' -%}
+    {%- assign heroMinHeightStyle = 'min-height:220px;' -%}
+{%- elsif contentHeightLabel == 'auto' or contentHeight == 0 -%}
+    {%- assign heroMinHeightStyle = 'min-height:100px;' -%}
+{%- elsif contentHeight > 0 and contentHeight < 9000 -%}
+    {%- assign heroMinHeightStyle = 'min-height:' | append: contentHeight | append: 'px;' -%}
+{%- else -%}
+    {%- assign heroMinHeightStyle = 'min-height:100px;' -%}
+{%- endif -%}
 
 {%- comment -%}
 STYLING
@@ -91,11 +114,7 @@ STYLING
     hero-valign-{{ contentVAlign }}
     mediafit-{{ mediaFit | replace:' ','-' }}
 "
-{% if contentHeight == 9999 %}
-    style="min-height:100vh;"
-{% elsif contentHeight > 0 %}
-    style="min-height:{{ contentHeight }}px;"
-{% endif %}
+    style="{{ heroMinHeightStyle }}"
 >
 
     <!-- MEDIA -->
@@ -117,19 +136,21 @@ STYLING
                 <source src="{{ heroVideoUrl | escape }}">
             </video>
 
-        {% elsif heroImageUrl != '' %}
+        {% elsif heroImageUrl != '' or heroPosterUrl != '' %}
+
+        {% assign resolvedHeroImageUrl = heroImageUrl | default: heroPosterUrl %}
 
         {% if heroItemClickUrl != '' %}
         <a href="{{ heroItemClickUrl | escape }}" class="hit-hero__media-link" aria-label="Open hero image link">
             <div
                 class="hit-hero__image mediafit-{{ mediaFit | replace:' ','-' }}"
-                style="background-image:url('{{ heroImageUrl | escape }}');">
+                style="background-image:url('{{ resolvedHeroImageUrl | escape }}');">
             </div>
         </a>
         {% else %}
         <div
             class="hit-hero__image mediafit-{{ mediaFit | replace:' ','-' }}"
-            style="background-image:url('{{ heroImageUrl | escape }}');">
+            style="background-image:url('{{ resolvedHeroImageUrl | escape }}');">
         </div>
         {% endif %}
 
@@ -207,6 +228,9 @@ CTA URL={{ heroCtaUrl }}
 Item Click URL={{ heroItemClickUrl }}
 
 Content Height={{ contentHeight }}
+Content Height Raw={{ contentHeightRaw }}
+Content Height Label={{ contentHeightLabel }}
+Hero Min Height Style={{ heroMinHeightStyle }}
 Media Fit={{ mediaFit }}
 
 H Align={{ contentHAlign }}

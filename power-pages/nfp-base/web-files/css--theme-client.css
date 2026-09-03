@@ -352,3 +352,138 @@ footer.footer,
 #accessibilityLinkContainer {
     display: none !important;
 }
+
+/* ==========================================================================
+   RENDERER DENSE MODE OVERRIDES
+   --------------------------------------------------------------------------
+   Force compact spacing on renderer pages even when older/later CSS blocks
+   compete in css--site.css.
+   ========================================================================== */
+
+.hit-page .hit-section__inner {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Re-introduce a small rhythm gap between adjacent rendered sections. */
+.hit-page .hit-page__content > .hit-section + .hit-section {
+    margin-top: 1em !important;
+}
+
+.hit-page .hit-section__header {
+    margin-bottom: 0.25rem !important;
+}
+
+/* Make section headings less dominant on dense renderer pages. */
+.hit-page .hit-section__title {
+    font-size: clamp(1.35rem, 2.2vw, 2rem) !important;
+    line-height: 1.2 !important;
+}
+
+.hit-page .hit-section__intro {
+    margin-top: 0 !important;
+}
+
+.hit-page .hit-gallery__header {
+    margin: 0 0 0.5rem 0 !important;
+}
+
+.hit-page .hit-gallery__items {
+    gap: 0.75rem !important;
+}
+
+.hit-page .layout > .hit-section.hit-section--gallery > .hit-section__inner {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Collapse default Power Pages block-layout spacing inside renderer content. */
+.hit-page .hit-page__content .row.sectionBlockLayout {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    min-height: auto !important;
+}
+
+.hit-page .hit-page__content .sectionBlockLayout .columnBlockLayout {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    min-height: auto !important;
+}
+
+.hit-page .hit-page__content .sectionBlockLayout > .container,
+.hit-page .hit-page__content .sectionBlockLayout > .container-fluid,
+.hit-page .hit-page__content .sectionBlockLayout > .container-sm,
+.hit-page .hit-page__content .sectionBlockLayout > .container-md,
+.hit-page .hit-page__content .sectionBlockLayout > .container-lg,
+.hit-page .hit-page__content .sectionBlockLayout > .container-xl,
+.hit-page .hit-page__content .sectionBlockLayout > .container-xxl {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Slot height mapping from Platform Slot hit_contentheight. */
+.hit-page .hit-slot-frame {
+    min-height: auto;
+}
+
+.hit-page .hit-slot-frame.hit-slot-height--auto {
+    min-height: auto;
+}
+
+/* Ensure hero renders against slot-level min-height mapping. */
+.hit-page .hit-slot-frame > .hit-hero,
+.hit-slot-frame > .hit-hero {
+    min-height: inherit;
+}
+
+/* Auto hero slots can collapse when media is absolute-positioned and text is empty. */
+.hit-page .hit-slot-frame.hit-slot-height--auto .hit-hero,
+.hit-slot-frame.hit-slot-height--auto > .hit-hero {
+    min-height: clamp(220px, 28vw, 420px);
+}
+
+.hit-page .hit-slot-frame.hit-slot-height--small {
+    min-height: 220px;
+}
+
+.hit-page .hit-slot-frame.hit-slot-height--medium {
+    min-height: 320px;
+}
+
+.hit-page .hit-slot-frame.hit-slot-height--large {
+    min-height: 460px;
+}
+
+.hit-page .hit-slot-frame.hit-slot-height--xlarge {
+    min-height: 620px;
+}
+
+.hit-page .hit-slot-frame.hit-slot-height--full {
+    min-height: calc(100vh - var(--hit-header-height));
+}
+
+/* Final header/slot gap collapse for renderer content mode. */
+.hit-page .layout .hit-section__header {
+    margin-bottom: 0 !important;
+}
+
+.hit-page .layout .hit-section__header > h1,
+.hit-page .layout .hit-section__header > h2,
+.hit-page .layout .hit-section__header > h3,
+.hit-page .layout .hit-section__header > p,
+.hit-page .layout .hit-section__header > div {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.hit-page .layout .hit-slot-frame > *:first-child {
+    margin-top: 0 !important;
+}
+
+.hit-page .layout .hit-slot-frame > *:last-child {
+    margin-bottom: 0 !important;
+}
