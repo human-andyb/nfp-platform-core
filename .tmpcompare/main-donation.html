@@ -94,24 +94,23 @@ Temporary:
 
         <aside class="hit-acceptance__left">
 
-          <div class="hit-card hit-donation-summary hit-payment-summary">
+          <div class="hit-card hit-donation-summary">
 
-            <div class="hit-donation-summary__eyebrow hit-payment-summary__eyebrow">
+            <div class="hit-donation-summary__eyebrow">
               Your donation
             </div>
 
-            <h1 class="hit-donation-summary__title hit-payment-summary__title">
+            <h1 class="hit-donation-summary__title">
               {{ offeringName | escape }}
             </h1>
 
             {% if pricingLabel != blank %}
-              <div class="hit-donation-summary__option hit-payment-summary__frequency">
+              <div class="hit-donation-summary__option">
                 {{ pricingLabel | escape }}
               </div>
             {% endif %}
 
-            <div class="hit-donation-summary__amount hit-payment-summary__amount"
-                 aria-label="Donation amount">
+            <div class="hit-donation-summary__amount">
               ${{ totalAmount }}
             </div>
 
@@ -123,17 +122,17 @@ Temporary:
             <ul class="hit-benefit-list">
 
               <li class="hit-benefit-list__item">
-                <span class="hit-benefit-list__icon" aria-hidden="true">✓</span>
+                <span class="hit-benefit-list__icon" aria-hidden="true">G��</span>
                 <span>Tax-deductible donation</span>
               </li>
 
               <li class="hit-benefit-list__item">
-                <span class="hit-benefit-list__icon" aria-hidden="true">✓</span>
+                <span class="hit-benefit-list__icon" aria-hidden="true">G��</span>
                 <span>Secure online payment</span>
               </li>
 
               <li class="hit-benefit-list__item">
-                <span class="hit-benefit-list__icon" aria-hidden="true">✓</span>
+                <span class="hit-benefit-list__icon" aria-hidden="true">G��</span>
                 <span>Your receipt will be sent by email</span>
               </li>
 
@@ -156,7 +155,7 @@ Temporary:
             </h2>
 
             <p class="hit-subtitle">
-              We’ll use these details to issue your receipt and keep you updated.
+              WeG��ll use these details to issue your receipt and keep you updated.
             </p>
 
             <div class="hit-status-pill" aria-label="Current step">
@@ -177,7 +176,7 @@ Temporary:
                  hidden>
 
               <h3 class="hit-error-summary__title">
-                There’s a problem
+                ThereG��s a problem
               </h3>
 
               <ul id="errSummaryList"
@@ -341,7 +340,7 @@ Temporary:
                          aria-describedby="mobileHelp">
 
                   <p class="hit-help" id="mobileHelp">
-                    Optional. Include a mobile number if you’d like SMS updates.
+                    Optional. Include a mobile number if youG��d like SMS updates.
                   </p>
 
                 </div>
@@ -454,11 +453,6 @@ Temporary:
         const waitingForPayment =
           currentUrl.searchParams.get("waitforpayment") === "1";
 
-        const acceptanceId =
-          "{{ acc.hit_offeringacceptanceid }}";
-
-        const STATUS_PENDING_PAYMENT = 815390001;
-
         const parsedRouteAttempt =
           parseInt(currentUrl.searchParams.get("routeattempt") || "0", 10);
 
@@ -467,11 +461,8 @@ Temporary:
             ? parsedRouteAttempt
             : 0;
 
-        const maximumRouteAttempts = 24;
-        const routeRetryDelayMilliseconds = 1500;
-        const paymentReadinessPollIntervalMilliseconds = 1500;
-        const maximumPaymentReadinessPolls = 90;
-        const routeRefreshEveryPolls = 4;
+        const maximumRouteAttempts = 20;
+        const routeRetryDelayMilliseconds = 1250;
 
         function getElement(id){
           return root.querySelector("#" + id);
@@ -641,9 +632,6 @@ Temporary:
             String(attempt)
           );
 
-          targetUrl.searchParams.delete("paymentmode");
-          targetUrl.searchParams.delete("clientsecret");
-
           /*
            * Ensure that every request has a unique URL so the browser performs
            * a new navigation rather than treating it as the current location.
@@ -651,42 +639,6 @@ Temporary:
           targetUrl.searchParams.set(
             "_ts",
             String(Date.now())
-          );
-
-          return targetUrl.toString();
-        }
-
-        function buildDirectPaymentUrl(){
-          const targetUrl = new URL(
-            window.location.pathname,
-            window.location.origin
-          );
-
-          targetUrl.searchParams.set(
-            "page",
-            "offering-acceptance"
-          );
-
-          targetUrl.searchParams.set(
-            "acceptanceid",
-            acceptanceId
-          );
-
-          targetUrl.searchParams.set(
-            "paymentmode",
-            "direct"
-          );
-
-          targetUrl.searchParams.delete("waitforpayment");
-          targetUrl.searchParams.delete("routeattempt");
-          targetUrl.searchParams.delete("clientsecret");
-          targetUrl.searchParams.delete("token");
-          targetUrl.searchParams.delete("forcepaymentreload");
-
-          const freshTs = String(Date.now());
-          targetUrl.searchParams.set(
-            "_ts",
-            freshTs
           );
 
           return targetUrl.toString();
@@ -700,123 +652,9 @@ Temporary:
 
           disableFormWhileRouting();
 
-          const targetUrl = buildRouterUrl(0);
-          const freshUrl = new URL(targetUrl);
-          freshUrl.searchParams.set("_ts", String(Date.now()));
-
-          if (window.location.href !== freshUrl.toString()) {
-            window.location.assign(freshUrl.toString());
-          }
-        }
-
-        function updateSubmissionNote(message){
-          const footnote = root.querySelector(".hit-form-footnote");
-
-          if (footnote) {
-            footnote.textContent = message || "";
-          }
-        }
-
-        function setSubmitProgressState(message){
-          if (!continueButton) {
-            return;
-          }
-
-          continueButton.disabled = true;
-          continueButton.classList.add("is-loading");
-
-          const buttonText = continueButton.querySelector(".hit-button__text");
-          const buttonLoading = continueButton.querySelector(".hit-button__loading");
-          const loadingText = buttonLoading
-            ? buttonLoading.querySelector("span:last-child")
-            : null;
-
-          if (buttonText) {
-            buttonText.style.display = "none";
-          }
-
-          if (buttonLoading) {
-            buttonLoading.style.display = "inline-flex";
-          }
-
-          if (loadingText && message) {
-            loadingText.textContent = message;
-          }
-
-          updateSubmissionNote(
-            "Your details have been saved. We’re preparing your secure payment. This usually takes 10–25 seconds and we’ll redirect you automatically when it’s ready."
+          window.location.replace(
+            buildRouterUrl(0)
           );
-        }
-
-        async function waitForPendingPayment(){
-          const maxAttempts = 6;
-          let attempt = 0;
-
-          async function poll(){
-            attempt++;
-
-            try {
-              const response = await fetch(
-                "/_api/hit_offeringacceptances(" + acceptanceId + ")?$select=hit_acceptancestatus,hit_stripeclientsecret,hit_stripepaymentintentid",
-                {
-                  method: "GET",
-                  credentials: "same-origin",
-                  cache: "no-store",
-                  headers: {
-                    "Accept": "application/json",
-                    "OData-MaxVersion": "4.0",
-                    "OData-Version": "4.0"
-                  }
-                }
-              );
-
-              if (response.ok) {
-                const data = await response.json();
-                const rawStatus = data.hit_acceptancestatus;
-                const statusValue = Number(
-                  rawStatus && typeof rawStatus === "object"
-                    ? (Object.prototype.hasOwnProperty.call(rawStatus, "value") ? rawStatus.value : rawStatus)
-                    : rawStatus
-                );
-                const clientSecret = normalizeClientSecret(data.hit_stripeclientsecret);
-                const paymentIntentId = normalizePaymentIntentId(data.hit_stripepaymentintentid);
-
-                const paymentReady = statusValue === STATUS_PENDING_PAYMENT && clientSecret !== "";
-
-                console.log("waitForPendingPayment poll:", {
-                  attempt,
-                  statusValue,
-                  clientSecretPresent: clientSecret !== "",
-                  paymentIntentPresent: paymentIntentId !== "",
-                  ready: paymentReady
-                });
-
-                if (paymentReady) {
-                  console.log("waitForPendingPayment: redirecting to ready payment route");
-                  window.location.replace(buildDirectPaymentUrl());
-                  return;
-                }
-              }
-            } catch (error) {
-              console.warn("Payment status poll failed:", error);
-            }
-
-            if (attempt >= maxAttempts) {
-              updateSubmissionNote(
-                "Your details have been saved and we’re still preparing your payment. Please wait a moment or refresh this page to continue."
-              );
-              return;
-            }
-
-            updateSubmissionNote(
-              "We’re still preparing your secure payment. This usually takes 10–25 seconds and we’ll redirect you automatically when it’s ready."
-            );
-
-            window.setTimeout(poll, 5000);
-          }
-
-          setSubmitProgressState("Processing...");
-          poll();
         }
 
         function stopRouterRetry(){
@@ -867,228 +705,19 @@ Temporary:
           disableFormWhileRouting();
 
           window.setTimeout(function(){
-            const targetUrl = buildRouterUrl(currentRouteAttempt + 1);
-            if (window.location.href !== targetUrl) {
-              window.location.assign(targetUrl);
-            }
-          }, routeRetryDelayMilliseconds);
-        }
-
-        function buildPaymentReadinessApiUrl(){
-          return "/_api/hit_offeringacceptances(" + acceptanceId + ")";
-        }
-
-        function normalizeStatusValue(rawStatus){
-          if (rawStatus && typeof rawStatus === "object") {
-            if (Object.prototype.hasOwnProperty.call(rawStatus, "value")) {
-              return Number(rawStatus.value);
-            }
-          }
-
-          return Number(rawStatus);
-        }
-
-        function normalizeClientSecret(rawSecret){
-          if (!rawSecret) {
-            return "";
-          }
-
-          if (typeof rawSecret === "string") {
-            return rawSecret.trim();
-          }
-
-          if (typeof rawSecret === "object") {
-            if (typeof rawSecret.value === "string") {
-              return rawSecret.value.trim();
-            }
-
-            if (rawSecret.value) {
-              return String(rawSecret.value).trim();
-            }
-          }
-
-          return String(rawSecret).trim();
-        }
-
-        function normalizePaymentIntentId(rawIntentId){
-          if (!rawIntentId) {
-            return "";
-          }
-
-          if (typeof rawIntentId === "string") {
-            return rawIntentId.trim();
-          }
-
-          if (typeof rawIntentId === "object") {
-            if (typeof rawIntentId.value === "string") {
-              return rawIntentId.value.trim();
-            }
-
-            if (rawIntentId.value) {
-              return String(rawIntentId.value).trim();
-            }
-          }
-
-          return String(rawIntentId).trim();
-        }
-
-        function debugPaymentReadinessState(label, data){
-          const status = normalizeStatusValue(data.hit_acceptancestatus);
-          const clientSecret = normalizeClientSecret(data.hit_stripeclientsecret);
-          const paymentIntentId = normalizePaymentIntentId(data.hit_stripepaymentintentid);
-          const ready = status === STATUS_PENDING_PAYMENT && clientSecret !== "";
-          console.log(label + ":", {
-            status,
-            clientSecretPresent: clientSecret !== "",
-            paymentIntentPresent: paymentIntentId !== "",
-            ready,
-            rawStatus: data.hit_acceptancestatus,
-            rawClientSecret: data.hit_stripeclientsecret,
-            rawPaymentIntentId: data.hit_stripepaymentintentid
-          });
-        }
-
-        async function isPaymentReady(){
-          const response = await fetch(
-            buildPaymentReadinessApiUrl(),
-            {
-              method: "GET",
-              credentials: "same-origin",
-              cache: "no-store",
-              headers: {
-                "Accept": "application/json",
-                "OData-MaxVersion": "4.0",
-                "OData-Version": "4.0"
-              }
-            }
-          );
-
-          if (!response.ok) {
-            throw new Error("Unable to read payment readiness.");
-          }
-
-          const data = await response.json();
-          const status = normalizeStatusValue(data.hit_acceptancestatus);
-          const clientSecret = normalizeClientSecret(data.hit_stripeclientsecret);
-          const paymentIntentId = normalizePaymentIntentId(data.hit_stripepaymentintentid);
-          debugPaymentReadinessState("paymentReadinessPoll", data);
-
-          console.log("paymentReadinessPoll: status=" + status + ", clientSecretPresent=" + (clientSecret !== "") + ", paymentIntentPresent=" + (paymentIntentId !== ""));
-
-          return status === STATUS_PENDING_PAYMENT && clientSecret !== "";
-        }
-
-        function navigateToPayment(){
-          const targetUrl = new URL(buildDirectPaymentUrl());
-          targetUrl.searchParams.set("_ts", String(Date.now()));
-
-          if (window.location.href !== targetUrl.toString()) {
-            window.location.replace(targetUrl.toString());
-          }
-        }
-
-        function startPaymentReadinessPolling(){
-          let pollCount = 0;
-          const startedAt = Date.now();
-
-          setLoading(true, "Preparing payment...");
-          disableFormWhileRouting();
-
-          function updateWaitMessage(){
-            const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
-            const nextCheckSeconds = 5;
-            const waitMinutesText = Math.max(5, Math.ceil((elapsedSeconds + nextCheckSeconds) / 5) * 5);
-
-            const debugState = window.__hitPaymentDebugState || {
-              status: "unknown",
-              clientSecretPresent: false,
-              paymentIntentPresent: false,
-              clientSecret: "",
-              paymentIntentId: ""
-            };
-
-            const statusValue = debugState.status || "unknown";
-            const clientSecretPresent = debugState.clientSecretPresent ? "true" : "false";
-            const paymentIntentPresent = debugState.paymentIntentPresent ? "true" : "false";
-
-            updateSubmissionNote(
-              "Your details have been saved. We’re still preparing your secure payment. This usually takes 10–25 seconds and we’ll redirect automatically when it’s ready. Check again in " + nextCheckSeconds + " seconds (elapsed " + elapsedSeconds + "s, status=" + statusValue + ", clientSecret=" + clientSecretPresent + ", paymentIntent=" + paymentIntentPresent + ")."
+            window.location.replace(
+              buildRouterUrl(currentRouteAttempt + 1)
             );
-          }
-
-          async function poll(){
-            pollCount++;
-
-            if (pollCount > maximumPaymentReadinessPolls) {
-              stopRouterRetry();
-              return;
-            }
-
-            try {
-              const response = await fetch(
-                buildPaymentReadinessApiUrl(),
-                {
-                  method: "GET",
-                  credentials: "same-origin",
-                  cache: "no-store",
-                  headers: {
-                    "Accept": "application/json",
-                    "OData-MaxVersion": "4.0",
-                    "OData-Version": "4.0"
-                  }
-                }
-              );
-
-              if (response.ok) {
-                const data = await response.json();
-                const status = normalizeStatusValue(data.hit_acceptancestatus);
-                const clientSecret = normalizeClientSecret(data.hit_stripeclientsecret);
-                const paymentIntentId = normalizePaymentIntentId(data.hit_stripepaymentintentid);
-                const paymentReady = status === STATUS_PENDING_PAYMENT && clientSecret !== "";
-
-                window.__hitPaymentDebugState = {
-                  status: status,
-                  clientSecretPresent: clientSecret !== "",
-                  paymentIntentPresent: paymentIntentId !== "",
-                  clientSecret: clientSecret,
-                  paymentIntentId: paymentIntentId
-                };
-
-                console.log("paymentReadinessPoll: status=" + status + ", clientSecretPresent=" + (clientSecret !== "") + ", paymentIntentPresent=" + (paymentIntentId !== "") + ", ready=" + paymentReady);
-
-                if (paymentReady) {
-                  updateSubmissionNote(
-                    "Your details have been saved. We’re preparing your secure payment. This usually takes 10–25 seconds and we’ll redirect you automatically when it’s ready."
-                  );
-                  console.log("paymentReadinessPoll: redirecting to direct payment");
-                  navigateToPayment();
-                  return;
-                }
-              }
-            } catch (error) {
-              console.warn("Payment readiness check failed:", error);
-            }
-
-            updateWaitMessage();
-            console.log("paymentReadinessPoll: still waiting; pollCount=" + pollCount);
-
-            window.setTimeout(poll, paymentReadinessPollIntervalMilliseconds);
-          }
-
-          updateWaitMessage();
-          poll();
+          }, routeRetryDelayMilliseconds);
         }
 
         /*
          * If this section has been returned by the router while waiting for
-         * Pending Payment, keep the user on the same page and poll directly.
-         * This avoids the flashing refresh loop while still updating feedback.
+         * Pending Payment, do not submit the form again. Request the router
+         * again after a short delay.
          */
         if (waitingForPayment) {
-          updateSubmissionNote(
-            "Your details have been saved. We’re preparing your secure payment. This usually takes 10–25 seconds and we’ll redirect you automatically when it’s ready."
-          );
-          startPaymentReadinessPolling();
+          retryRouter();
           return;
         }
 
@@ -1389,12 +1018,12 @@ Temporary:
             await updateAcceptance();
 
             /*
-             * Use a fresh client-side readiness poll instead of routing the user
-             * back through the server-side retry loop while the backend is still
-             * catching up. This avoids stale values and keeps the user on a clean
-             * payment handoff path once the record is truly ready.
+             * The PATCH is complete, but the orchestration flow may still be
+             * changing the status to Pending Payment. Navigate through the
+             * acceptance router and allow the retry mode above to wait for
+             * the payment section.
              */
-            startPaymentReadinessPolling();
+            redirectToRouter();
 
           } catch (error) {
             console.error(error);

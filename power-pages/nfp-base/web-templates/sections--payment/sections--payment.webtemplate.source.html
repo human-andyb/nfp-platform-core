@@ -1,4 +1,4 @@
-{% comment %}
+﻿{% comment %}
 sections--payment
 
 Supports:
@@ -11,10 +11,8 @@ Supports:
 
 {% assign DEBUG = request.params.debug == '1' %}
 {% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
-{% assign clientSecretFromRequest = request.params.clientsecret | default: '' | strip %}
 {% assign stripe_pk = settings['Stripe/PublishableKey'] | default: '' | strip %}
 {% assign setupintent_url = settings['Stripe/CreateCustomerSetupIntentUrl'] | default: '' | strip %}
-{% assign paymentintent_url = settings['Flow/PaymentIntentUrl'] | default: '' | strip %}
 
 {% if acceptanceId == '' %}
   <div class="alert alert-warning">Missing acceptance id.</div>
@@ -68,12 +66,10 @@ Supports:
 
 {% assign status_val = acc.hit_acceptancestatus.value | default: acc.hit_acceptancestatus %}
 {% assign status_label = acc.hit_acceptancestatus.label | default: acc['hit_acceptancestatus@OData.Community.Display.V1.FormattedValue'] | default: '' %}
-{% assign clientSecret = clientSecretFromRequest | default: acc.hit_stripeclientsecret | default: '' | strip %}
+{% assign clientSecret = acc.hit_stripeclientsecret | default: '' | strip %}
 {% assign total = acc.hit_totalamounteffective | default: '' %}
 {% if total.value %}{% assign total = total.value %}{% endif %}
 {% assign offering_name = acc['o.hit_offeringname'] | default: 'Donation' %}
-{% assign payment_currency = 'AUD' %}
-{% assign payment_description = offering_name | append: ' donation' %}
 
 {% assign allow_recurring_raw = acc['o.hit_allowrecurring'] | default: false %}
 {% assign allow_recurring = false %}
@@ -89,38 +85,216 @@ Supports:
 {% if clientSecret == '' %}
   <div class="hit-alert">
     <strong>Payment is still being prepared.</strong>
-    <div>Please wait while we complete your payment setup.</div>
-    <div>We will return you to the payment loading screen if the session is not yet ready.</div>
+    <div>Please wait a moment and refresh the page.</div>
 
-    {% if DEBUG %}
-      <div class="hit-debug">
-        status={{ status_label }} ({{ status_val }})<br>
-        clientSecret missing<br>
-        allowRecurring={{ allow_recurring }}<br>
-        setupIntentUrlPresent={{ setupintent_url != '' }}<br>
-        paymentIntentUrlPresent={{ paymentintent_url != '' }}
-      </div>
-    {% endif %}
+    <div id="payment-wait-debug" class="hit-debug" style="margin-top:12px;padding:12px;background:#f8fafc;border:1px solid #d1d5db;border-radius:8px;color:#1f2937;font-size:12px;line-height:1.6;">
+      <div><strong>Debug state</strong></div>
+      <div>acceptanceId={{ acceptanceId }}</div>
+      <div>status={{ status_label }} ({{ status_val }})</div>
+      <div>clientSecretPresent=false</div>
+      <div>allowRecurring={{ allow_recurring }}</div>
+      <div>setupIntentUrlPresent={{ setupintent_url != '' }}</div>
+      <div>pollCount=0</div>
+      <div>lastPollResult=waiting</div>
+      <div>currentUrl={{ request.url }}</div>
+      <div>timestamp={{ "now" | date: "yyyy-MM-dd HH:mm:ss" }}</div>
+    </div>
   </div>
-  <script>
-  (function () {
-    var acceptanceId = "{{ acceptanceId | escape }}";
-    var redirectDelayMilliseconds = 1500;
 
-    function goToPreparing() {
-      var targetUrl = new URL(window.location.pathname, window.location.origin);
-      targetUrl.searchParams.set("page", "offering-acceptance");
-      targetUrl.searchParams.set("acceptanceid", acceptanceId);
-      targetUrl.searchParams.set("paymentmode", "direct");
-      targetUrl.searchParams.set("_ts", String(Date.now()));
-      window.location.replace(targetUrl.toString());
+  <script>
+  (function(){
+    var acceptanceId = "{{ acceptanceId | escape_javascript }}";
+    var pollCount = 0;
+    var maxPolls = 60;
+    var routeAttempt = 0;
+    var debugNode = document.getElementById("payment-wait-debug");
+
+    function updateDebugState(labels){
+      if (!debugNode) return;
+      var rows = debugNode.querySelectorAll("div");
+      var setValue = function(key, value){
+        for (var i = 0; i < rows.length; i++) {
+          var text = rows[i].textContent || "";
+          if (text.indexOf(key + "=") === 0) {
+            rows[i].textContent = key + "=" + value;
+            return;
+          }
+        }
+      };
+
+      for (var key in labels) {
+        if (Object.prototype.hasOwnProperty.call(labels, key)) {
+          setValue(key, labels[key]);
+        }
+      }
     }
 
-    window.setTimeout(goToPreparing, redirectDelayMilliseconds);
+    function buildCleanRouterUrl(){
+      var url = new URL(window.location.pathname, window.location.origin);
+      url.searchParams.set("page", "offering-acceptance");
+      url.searchParams.set("acceptanceid", acceptanceId);
+      url.searchParams.delete("waitforpayment");
+      url.searchParams.delete("routeattempt");
+      url.searchParams.delete("paymentmode");
+      url.searchParams.delete("clientsecret");
+      url.searchParams.delete("token");
+      url.searchParams.delete("forcepaymentreload");
+      url.searchParams.set("_ts", String(Date.now()));
+      return url.toString();
+    }
+
+    function buildRetryRouterUrl(attempt){
+      var url = new URL(window.location.pathname, window.location.origin);
+      url.searchParams.set("page", "offering-acceptance");
+      url.searchParams.set("acceptanceid", acceptanceId);
+      url.searchParams.set("waitforpayment", "1");
+      url.searchParams.set("routeattempt", String(attempt));
+      url.searchParams.delete("paymentmode");
+      url.searchParams.delete("clientsecret");
+      url.searchParams.delete("token");
+      url.searchParams.delete("forcepaymentreload");
+      url.searchParams.set("_ts", String(Date.now()));
+      return url.toString();
+    }
+
+    function getStatusValue(raw) {
+      if (raw === null || raw === undefined || raw === "") {
+        return 0;
+      }
+      if (typeof raw === "object") {
+        if (raw.value !== undefined && raw.value !== null) {
+          return Number(raw.value) || 0;
+        }
+      }
+      return Number(raw) || 0;
+    }
+
+    function getStringValue(raw) {
+      if (!raw) return "";
+      if (typeof raw === "string") return raw.trim();
+      if (typeof raw === "object") {
+        if (typeof raw.value === "string") return raw.value.trim();
+        if (raw.value) return String(raw.value).trim();
+      }
+      return String(raw).trim();
+    }
+
+    function redirectToReadyPayment(){
+      var readyUrl = buildCleanRouterUrl();
+      var forcedUrl = readyUrl + "&forcepaymentreload=" + Date.now();
+
+      console.log("waitingPaymentPoll: redirecting to ready payment route", forcedUrl);
+
+      window.location.replace(forcedUrl);
+
+      setTimeout(function(){
+        if (window.location.href.indexOf("forcepaymentreload=") !== -1) {
+          window.location.reload(true);
+        }
+      }, 250);
+    }
+
+    function retryRouter(){
+      routeAttempt += 1;
+      var retryUrl = buildRetryRouterUrl(routeAttempt);
+      console.log("waitingPaymentPoll: retry router", retryUrl);
+      window.location.replace(retryUrl);
+    }
+
+    function checkForReadyPayment(){
+      pollCount += 1;
+
+      fetch(
+        "/_api/hit_offeringacceptances(" + encodeURIComponent(acceptanceId) + ")",
+        {
+          method: "GET",
+          credentials: "same-origin",
+          cache: "no-store",
+          headers: {
+            "Accept": "application/json",
+            "OData-MaxVersion": "4.0",
+            "OData-Version": "4.0"
+          }
+        }
+      )
+      .then(function(response){
+        if (!response.ok) {
+          throw new Error("Readiness check failed: " + response.status);
+        }
+        return response.json();
+      })
+      .then(function(data){
+        var status = getStatusValue(data.hit_acceptancestatus);
+        var clientSecret = getStringValue(data.hit_stripeclientsecret);
+        var paymentIntentId = getStringValue(data.hit_stripepaymentintentid);
+        var isReady = status === 815390001 && clientSecret !== "";
+
+        console.log("waitingPaymentPoll", {
+          pollCount: pollCount,
+          status: status,
+          clientSecretPresent: clientSecret !== "",
+          paymentIntentPresent: paymentIntentId !== "",
+          ready: isReady,
+          routeAttempt: routeAttempt
+        });
+
+        updateDebugState({
+          pollCount: String(pollCount),
+          lastPollResult: isReady ? "ready" : "not-ready",
+          currentUrl: window.location.href,
+          status: status + " (" + status + ")"
+        });
+
+        if (isReady) {
+          redirectToReadyPayment();
+          return;
+        }
+
+        if (pollCount >= maxPolls) {
+          retryRouter();
+          return;
+        }
+
+        window.setTimeout(checkForReadyPayment, 2000);
+      })
+      .catch(function(error){
+        console.warn("Payment readiness poll failed:", error);
+
+        if (pollCount >= maxPolls) {
+          retryRouter();
+          return;
+        }
+
+        window.setTimeout(checkForReadyPayment, 2000);
+      });
+    }
+
+    checkForReadyPayment();
   })();
   </script>
-  {% endif %}
 {% else %}
+
+<script>
+(function(){
+  var currentUrl = new URL(window.location.href);
+  var hasWaitState = currentUrl.searchParams.get("waitforpayment") === "1" || currentUrl.searchParams.get("routeattempt") !== null || currentUrl.searchParams.get("forcepaymentreload") !== null;
+  var directMode = currentUrl.searchParams.get("paymentmode") === "direct";
+
+  if (!directMode && hasWaitState) {
+    var cleanUrl = new URL(window.location.pathname, window.location.origin);
+    cleanUrl.searchParams.set("page", "offering-acceptance");
+    cleanUrl.searchParams.set("acceptanceid", "{{ acceptanceId | escape_javascript }}");
+    cleanUrl.searchParams.delete("waitforpayment");
+    cleanUrl.searchParams.delete("routeattempt");
+    cleanUrl.searchParams.delete("paymentmode");
+    cleanUrl.searchParams.delete("clientsecret");
+    cleanUrl.searchParams.delete("token");
+    cleanUrl.searchParams.delete("forcepaymentreload");
+    cleanUrl.searchParams.set("_ts", String(Date.now()));
+    window.location.replace(cleanUrl.toString());
+  }
+})();
+</script>
 
 <div class="hit-payment__grid">
 
@@ -134,7 +308,7 @@ Supports:
 
       <div class="hit-payment-summary__amount"
            id="amountDisplay"
-           aria-label="Donation amount">—</div>
+           aria-label="Donation amount">ΓÇö</div>
 
       <div class="hit-payment-summary__frequency"
            id="frequencyDisplay">
@@ -152,15 +326,15 @@ Supports:
 
       <ul class="hit-payment-benefits">
         <li class="hit-payment-benefits__item">
-          <span class="hit-payment-benefits__icon" aria-hidden="true">✓</span>
+          <span class="hit-payment-benefits__icon" aria-hidden="true">Γ£ô</span>
           <span>Secure payment through Stripe</span>
         </li>
         <li class="hit-payment-benefits__item">
-          <span class="hit-payment-benefits__icon" aria-hidden="true">✓</span>
+          <span class="hit-payment-benefits__icon" aria-hidden="true">Γ£ô</span>
           <span>Payment details are not stored on this site</span>
         </li>
         <li class="hit-payment-benefits__item">
-          <span class="hit-payment-benefits__icon" aria-hidden="true">✓</span>
+          <span class="hit-payment-benefits__icon" aria-hidden="true">Γ£ô</span>
           <span>Your receipt will be sent by email</span>
         </li>
       </ul>
@@ -170,6 +344,7 @@ Supports:
           acceptanceId={{ acceptanceId | escape }}<br>
           status={{ status_label | escape }} ({{ status_val }})<br>
           clientSecretPresent={{ clientSecret != '' }}<br>
+          paymentIntentPresent={{ acc.hit_stripepaymentintentid | default: '' != '' }}<br>
           allowRecurring={{ allow_recurring }}<br>
           setupIntentUrlPresent={{ setupintent_url != '' }}
         </div>
@@ -224,7 +399,7 @@ Supports:
         <span id="statusDot"
               class="hit-status-pill__indicator is-busy"
               aria-hidden="true"></span>
-        <span id="statusText">Loading secure payment…</span>
+        <span id="statusText">Loading secure paymentΓÇª</span>
       </div>
 
       <div id="errBox"
@@ -245,7 +420,7 @@ Supports:
           <span class="hit-button__text">Pay now</span>
           <span class="hit-button__loading">
             <span class="hit-spinner" aria-hidden="true"></span>
-            <span class="hit-button__loading-text">Processing…</span>
+            <span class="hit-button__loading-text">ProcessingΓÇª</span>
           </span>
         </button>
       </div>
@@ -259,9 +434,6 @@ Supports:
       <input type="hidden" id="clientSecret" value="{{ clientSecret | escape }}">
       <input type="hidden" id="stripePk" value="{{ stripe_pk | escape }}">
       <input type="hidden" id="totalAmount" value="{{ total | escape }}">
-      <input type="hidden" id="paymentCurrency" value="{{ payment_currency | escape }}">
-      <input type="hidden" id="paymentDescription" value="{{ payment_description | escape }}">
-      <input type="hidden" id="paymentEmail" value="{{ acc.hit_email | default: '' | escape }}">
       <input type="hidden" id="allowRecurring" value="{{ allow_recurring }}">
       <input type="hidden" id="setupIntentUrl" value="{{ setupintent_url | escape }}">
       <input type="hidden" id="email" value="{{ acc.hit_email | default: '' | escape }}">
@@ -320,7 +492,7 @@ Supports:
   let setupIntentRequestInProgress = false;
   let paymentElementComplete = false;
   let paymentInProgress = false;
-  let formattedAmount = "—";
+  let formattedAmount = "ΓÇö";
 
   const appearance = {
     theme: "stripe",
@@ -425,7 +597,7 @@ Supports:
   }
 
   function formatCurrency(value){
-    if (value === null || value === undefined || Number.isNaN(value)) return "—";
+    if (value === null || value === undefined || Number.isNaN(value)) return "ΓÇö";
 
     const rounded = Math.round(value * 100) / 100;
     return rounded.toLocaleString("en-AU", {
@@ -439,7 +611,7 @@ Supports:
   function initialiseAmount(){
     const numericAmount = parseFloat(cleanNumber(totalAmount));
     formattedAmount = Number.isNaN(numericAmount)
-      ? "—"
+      ? "ΓÇö"
       : formatCurrency(numericAmount);
 
     if (amountDisplay) amountDisplay.textContent = formattedAmount;
@@ -485,7 +657,7 @@ Supports:
     if (buttonText) {
       if (isRecurring) {
         buttonText.textContent = "Set up " + frequencyLabel.toLowerCase();
-      } else if (formattedAmount !== "—") {
+      } else if (formattedAmount !== "ΓÇö") {
         buttonText.textContent = "Pay " + formattedAmount;
       } else {
         buttonText.textContent = "Pay now";
@@ -673,7 +845,7 @@ Supports:
     if (!paymentElement) return;
 
     paymentElement.on("loaderstart", function(){
-      setStatus("Loading secure payment…", "busy");
+      setStatus("Loading secure paymentΓÇª", "busy");
     });
 
     paymentElement.on("ready", function(){
@@ -709,8 +881,8 @@ Supports:
 
   async function mountStripeElement(mode){
     clearError();
-    setButtonLoading(true, "Loading…");
-    setStatus("Loading secure payment…", "busy");
+    setButtonLoading(true, "LoadingΓÇª");
+    setStatus("Loading secure paymentΓÇª", "busy");
 
     try {
       destroyPaymentElement();
@@ -754,8 +926,8 @@ Supports:
   }
 
   async function completeSuccessfulPayment(paymentIntent){
-    setButtonLoading(true, "Finalising…");
-    setStatus("Finalising your payment…", "busy");
+    setButtonLoading(true, "FinalisingΓÇª");
+    setStatus("Finalising your paymentΓÇª", "busy");
 
     const payload = { hit_acceptancestatus: 815390003 };
     if (paymentIntent.latest_charge) {
@@ -768,8 +940,8 @@ Supports:
   }
 
   async function completeSuccessfulSetup(setupIntent){
-    setButtonLoading(true, "Finalising…");
-    setStatus("Recurring donation setup complete. Finalising…", "busy");
+    setButtonLoading(true, "FinalisingΓÇª");
+    setStatus("Recurring donation setup complete. FinalisingΓÇª", "busy");
 
     /*
       Do not mark the Acceptance as Paid here.
@@ -792,8 +964,8 @@ Supports:
     if (!redirectStatus) return false;
 
     clearError();
-    setButtonLoading(true, "Finalising…");
-    setStatus("Finalising your payment…", "busy");
+    setButtonLoading(true, "FinalisingΓÇª");
+    setStatus("Finalising your paymentΓÇª", "busy");
 
     if (paymentMode === "recurring") {
       const setupSecretFromQuery = query.get("setup_intent_client_secret") || "";
@@ -1020,11 +1192,11 @@ Supports:
         if (paymentInProgress) return;
 
         clearError();
-        setButtonLoading(true, activeMode === "recurring" ? "Setting up…" : "Processing…");
+        setButtonLoading(true, activeMode === "recurring" ? "Setting upΓÇª" : "ProcessingΓÇª");
         setStatus(
           activeMode === "recurring"
-            ? "Setting up your recurring donation…"
-            : "Processing your payment…",
+            ? "Setting up your recurring donationΓÇª"
+            : "Processing your paymentΓÇª",
           "busy"
         );
 

@@ -1,0 +1,84 @@
+{% comment %}
+sections--payment-debug
+
+Purpose:
+- Standalone platform-page debug page for payment readiness and live Dataverse state.
+- Used to prove whether the page is rendering the correct template and whether the row is ready.
+{% endcomment %}
+
+{% assign DEBUG = request.params.debug == '1' %}
+{% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
+{% assign currentUrl = request.url | default: '' | strip %}
+
+<div class="hit-payment-debug" style="max-width:1100px;margin:32px auto;padding:0 16px;font-family:Segoe UI, Arial, sans-serif;">
+  {% if DEBUG %}
+    <div style="background:#111;color:#ff0;padding:8px 10px;font-size:12px;border:1px solid #ff0;margin-bottom:12px;">
+      DEBUG_TEMPLATE_CHECK | template=sections--payment-debug.webtemplate.source.html | acceptanceId={{ acceptanceId }} | url={{ currentUrl }}
+    </div>
+  {% endif %}
+
+  <h1 style="margin-bottom:12px;">Payment Debug</h1>
+
+  <div style="background:#f8fafc;border:1px solid #d1d5db;border-radius:10px;padding:16px;margin-bottom:18px;">
+    <strong>Acceptance ID:</strong> {{ acceptanceId | default: 'not supplied' | escape }}
+  </div>
+
+  <div style="background:#0b1f2b;color:#dfeaf6;border-radius:12px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,0.08);font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;">
+    <div><strong>Template loaded:</strong> sections--payment-debug</div>
+    <div><strong>Current URL:</strong> {{ currentUrl | escape }}</div>
+    <div><strong>Timestamp:</strong> {{ 'now' | date: 'yyyy-MM-dd HH:mm:ss' }}</div>
+
+    {% if acceptanceId == '' %}
+      <div style="margin-top:12px;color:#fca5a5;">No acceptanceid supplied. Add ?acceptanceid=&lt;id&gt; to inspect a record.</div>
+    {% else %}
+      {% fetchxml payment_debug_q %}
+      <fetch top="1" mapping="logical">
+        <entity name="hit_offeringacceptance">
+          <attribute name="hit_offeringacceptanceid" />
+          <attribute name="hit_acceptancestatus" />
+          <attribute name="hit_paymentrequired" />
+          <attribute name="hit_stripeclientsecret" />
+          <attribute name="hit_stripepaymentintentid" />
+          <attribute name="hit_email" />
+          <attribute name="hit_firstname" />
+          <attribute name="hit_lastname" />
+          <attribute name="hit_totalamounteffective" />
+          <filter>
+            <condition attribute="hit_offeringacceptanceid" operator="eq" value="{{ acceptanceId | escape }}" />
+          </filter>
+        </entity>
+      </fetch>
+      {% endfetchxml %}
+
+      {% assign debug_record = payment_debug_q.results.entities | first %}
+      {% if debug_record == nil %}
+        <div style="margin-top:12px;color:#fca5a5;">Record not found for this acceptanceid.</div>
+      {% else %}
+        {% assign status_val = debug_record.hit_acceptancestatus.value | default: debug_record.hit_acceptancestatus %}
+        {% assign status_label = debug_record.hit_acceptancestatus.label | default: debug_record['hit_acceptancestatus@OData.Community.Display.V1.FormattedValue'] | default: 'n/a' %}
+        {% assign client_secret = debug_record.hit_stripeclientsecret | default: '' | strip %}
+        {% assign payment_intent = debug_record.hit_stripepaymentintentid | default: '' | strip %}
+        {% assign payment_required = debug_record.hit_paymentrequired | default: false %}
+        {% assign total_value = debug_record.hit_totalamounteffective | default: '' %}
+        {% if total_value.value %}{% assign total_value = total_value.value %}{% endif %}
+
+        <div style="margin-top:14px;">
+          <div>statusValue={{ status_val }}</div>
+          <div>statusLabel={{ status_label }}</div>
+          <div>paymentRequired={{ payment_required }}</div>
+          <div>clientSecretPresent={% if client_secret != '' %}true{% else %}false{% endif %}</div>
+          <div>clientSecretLength={{ client_secret | size }}</div>
+          <div>paymentIntentPresent={% if payment_intent != '' %}true{% else %}false{% endif %}</div>
+          <div>totalAmount={{ total_value }}</div>
+          <div>email={{ debug_record.hit_email | default: 'n/a' | escape }}</div>
+          <div>firstName={{ debug_record.hit_firstname | default: 'n/a' | escape }}</div>
+          <div>lastName={{ debug_record.hit_lastname | default: 'n/a' | escape }}</div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .hit-payment-debug * { box-sizing: border-box; }
+</style>

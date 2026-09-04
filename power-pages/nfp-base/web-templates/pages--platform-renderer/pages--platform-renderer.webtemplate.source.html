@@ -29,8 +29,8 @@ Platform Renderer — CLEAN APP + CONTENT MODE
 <div class="hit-page">
 
 {% if DEBUG %}
-  <div style="background:#000;color:#0f0;padding:6px;font-size:11px;">
-    DEBUG → slug={{ resolvedSlug }}
+  <div style="background:#111;color:#ff0;padding:8px 10px;font-size:12px;border:1px solid #ff0;margin-bottom:8px;">
+    DEBUG_TEMPLATE_CHECK | renderer=pages--platform-renderer.webtemplate.source.html | resolvedSlug={{ resolvedSlug }} | requestedPage={{ request.params.page | default: 'n/a' }} | url={{ request.url | default: 'n/a' }}
   </div>
 {% endif %}
 
@@ -180,8 +180,8 @@ Platform Renderer — CLEAN APP + CONTENT MODE
             {% assign templateName = slot['stype.hit_templatename'] | downcase %}
 
             {% if DEBUG %}
-              <div style="background:#222;color:#0ff;padding:4px;font-size:11px;">
-                APP slot={{ slot.hit_name }} → {{ templateName }}
+              <div style="background:#222;color:#0ff;padding:6px 8px;font-size:12px;border:1px solid #0ff;margin:6px 0;">
+                APP_SLOT_INCLUDE | slot={{ slot.hit_name }} | templateName={{ templateName }} | sourceFile=sections--acceptance-router.webtemplate.source.html | acceptanceId={{ request.params.acceptanceid | default: 'n/a' }}
               </div>
             {% endif %}
 

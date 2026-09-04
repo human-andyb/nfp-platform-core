@@ -24,9 +24,8 @@ sections--acceptance-router (DEBUG HARDENED)
 <div class="hit-app-shell">
 
 {% if DEBUG %}
-  <div class="hit-debug-panel hit-debug-panel--router-start">
-    <div>ROUTER DEBUG START</div>
-    <div>acceptanceId={{ acceptanceId }}</div>
+  <div style="background:#111;color:#ff0;padding:8px 10px;font-size:12px;border:1px solid #ff0;margin-bottom:8px;">
+    DEBUG_TEMPLATE_CHECK | router=sections--acceptance-router.webtemplate.source.html | signature=acceptance-router-v1 | acceptanceId={{ acceptanceId }} | waitforpayment={{ waitingForStatus }} | paymentmode={{ request.params.paymentmode | default: 'n/a' }} | url={{ request.url | default: 'n/a' }}
   </div>
 {% endif %}
 
@@ -209,6 +208,31 @@ sections--acceptance-router (DEBUG HARDENED)
           Include: sections--payment (paymentmode direct with secret)
         </div>
       {% endif %}
+      {% include 'sections--payment' %}
+
+    {% elsif status == STATUS_PENDING_PAYMENT and clientSecret != '' %}
+
+      <script>
+      (function(){
+        var currentUrl = new URL(window.location.href);
+        var targetUrl = new URL(window.location.pathname, window.location.origin);
+        targetUrl.searchParams.set("page", "offering-acceptance");
+        targetUrl.searchParams.set("acceptanceid", "{{ acceptanceId | escape_javascript }}");
+        targetUrl.searchParams.set("paymentmode", "direct");
+        targetUrl.searchParams.delete("waitforpayment");
+        targetUrl.searchParams.delete("routeattempt");
+        targetUrl.searchParams.delete("clientsecret");
+        targetUrl.searchParams.delete("token");
+        targetUrl.searchParams.delete("forcepaymentreload");
+        targetUrl.searchParams.set("_ts", String(Date.now()));
+        var isDirectMode = currentUrl.searchParams.get("paymentmode") === "direct";
+        var hasWaitState = currentUrl.searchParams.get("waitforpayment") === "1" || currentUrl.searchParams.get("routeattempt") !== null;
+        if (!isDirectMode || hasWaitState) {
+          window.location.replace(targetUrl.toString());
+        }
+      })();
+      </script>
+
       {% include 'sections--payment' %}
 
     {% elsif waitingForStatus and isPaymentRequired == false and (status == STATUS_COMPLETED or status == STATUS_PENDING_APPROVAL) %}
