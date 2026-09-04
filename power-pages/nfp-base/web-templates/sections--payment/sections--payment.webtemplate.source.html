@@ -279,19 +279,23 @@ Supports:
   var currentUrl = new URL(window.location.href);
   var hasWaitState = currentUrl.searchParams.get("waitforpayment") === "1" || currentUrl.searchParams.get("routeattempt") !== null || currentUrl.searchParams.get("forcepaymentreload") !== null;
   var directMode = currentUrl.searchParams.get("paymentmode") === "direct";
+  var statusValue = "{{ status_val | escape_javascript }}";
+  var clientSecret = "{{ clientSecret | escape_javascript }}";
+  var paymentReady = statusValue === "815390001" && clientSecret !== "";
 
-  if (!directMode && hasWaitState) {
+  if (paymentReady && (!directMode || hasWaitState)) {
     var cleanUrl = new URL(window.location.pathname, window.location.origin);
     cleanUrl.searchParams.set("page", "offering-acceptance");
     cleanUrl.searchParams.set("acceptanceid", "{{ acceptanceId | escape_javascript }}");
+    cleanUrl.searchParams.set("paymentmode", "direct");
     cleanUrl.searchParams.delete("waitforpayment");
     cleanUrl.searchParams.delete("routeattempt");
-    cleanUrl.searchParams.delete("paymentmode");
     cleanUrl.searchParams.delete("clientsecret");
     cleanUrl.searchParams.delete("token");
     cleanUrl.searchParams.delete("forcepaymentreload");
     cleanUrl.searchParams.set("_ts", String(Date.now()));
     window.location.replace(cleanUrl.toString());
+    return;
   }
 })();
 </script>
@@ -344,9 +348,9 @@ Supports:
           acceptanceId={{ acceptanceId | escape }}<br>
           status={{ status_label | escape }} ({{ status_val }})<br>
           clientSecretPresent={{ clientSecret != '' }}<br>
-          paymentIntentPresent={{ acc.hit_stripepaymentintentid | default: '' != '' }}<br>
+          paymentIntentPresent={% if acc.hit_stripepaymentintentid != blank %}true{% else %}false{% endif %}<br>
           allowRecurring={{ allow_recurring }}<br>
-          setupIntentUrlPresent={{ setupintent_url != '' }}
+          setupIntentUrlPresent={% if setupintent_url != blank %}true{% else %}false{% endif %}
         </div>
       {% endif %}
     </div>
