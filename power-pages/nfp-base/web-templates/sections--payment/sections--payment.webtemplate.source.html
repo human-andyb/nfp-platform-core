@@ -279,23 +279,29 @@ Supports:
   var currentUrl = new URL(window.location.href);
   var hasWaitState = currentUrl.searchParams.get("waitforpayment") === "1" || currentUrl.searchParams.get("routeattempt") !== null || currentUrl.searchParams.get("forcepaymentreload") !== null;
   var directMode = currentUrl.searchParams.get("paymentmode") === "direct";
+  var hasFreshTimestamp = currentUrl.searchParams.get("_ts") !== null;
   var statusValue = "{{ status_val | escape_javascript }}";
   var clientSecret = "{{ clientSecret | escape_javascript }}";
   var paymentReady = statusValue === "815390001" && clientSecret !== "";
 
-  if (paymentReady && (!directMode || hasWaitState)) {
-    var cleanUrl = new URL(window.location.pathname, window.location.origin);
-    cleanUrl.searchParams.set("page", "offering-acceptance");
-    cleanUrl.searchParams.set("acceptanceid", "{{ acceptanceId | escape_javascript }}");
-    cleanUrl.searchParams.set("paymentmode", "direct");
-    cleanUrl.searchParams.delete("waitforpayment");
-    cleanUrl.searchParams.delete("routeattempt");
-    cleanUrl.searchParams.delete("clientsecret");
-    cleanUrl.searchParams.delete("token");
-    cleanUrl.searchParams.delete("forcepaymentreload");
-    cleanUrl.searchParams.set("_ts", String(Date.now()));
-    window.location.replace(cleanUrl.toString());
-    return;
+  if (paymentReady) {
+    var shouldRedirectToDirectMode = !directMode || hasWaitState || !hasFreshTimestamp;
+
+    if (shouldRedirectToDirectMode) {
+      var cleanUrl = new URL(window.location.pathname, window.location.origin);
+      cleanUrl.searchParams.set("page", "offering-acceptance");
+      cleanUrl.searchParams.set("acceptanceid", "{{ acceptanceId | escape_javascript }}");
+      cleanUrl.searchParams.set("paymentmode", "direct");
+      cleanUrl.searchParams.delete("waitforpayment");
+      cleanUrl.searchParams.delete("routeattempt");
+      cleanUrl.searchParams.delete("clientsecret");
+      cleanUrl.searchParams.delete("token");
+      cleanUrl.searchParams.delete("forcepaymentreload");
+      cleanUrl.searchParams.set("_ts", String(Date.now()));
+
+      window.location.replace(cleanUrl.toString());
+      return;
+    }
   }
 })();
 </script>

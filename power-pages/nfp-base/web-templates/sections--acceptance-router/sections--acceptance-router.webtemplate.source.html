@@ -225,10 +225,18 @@ sections--acceptance-router (DEBUG HARDENED)
         targetUrl.searchParams.delete("token");
         targetUrl.searchParams.delete("forcepaymentreload");
         targetUrl.searchParams.set("_ts", String(Date.now()));
-        var isDirectMode = currentUrl.searchParams.get("paymentmode") === "direct";
-        var hasWaitState = currentUrl.searchParams.get("waitforpayment") === "1" || currentUrl.searchParams.get("routeattempt") !== null;
-        if (!isDirectMode || hasWaitState) {
+
+        var currentPaymentMode = currentUrl.searchParams.get("paymentmode");
+        var hasUncleanRouteState = currentUrl.searchParams.get("waitforpayment") === "1" || currentUrl.searchParams.get("routeattempt") !== null || currentUrl.searchParams.get("forcepaymentreload") !== null;
+        var needsFreshRoute = currentPaymentMode !== "direct" || hasUncleanRouteState || currentUrl.searchParams.get("_ts") === null;
+
+        if (needsFreshRoute) {
           window.location.replace(targetUrl.toString());
+          return;
+        }
+
+        if (currentUrl.toString() !== targetUrl.toString()) {
+          window.location.href = targetUrl.toString();
         }
       })();
       </script>
