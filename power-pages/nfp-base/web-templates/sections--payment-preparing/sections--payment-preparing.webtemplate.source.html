@@ -148,7 +148,7 @@
     return secret;
   }
 
-  function navigateToPayment(cycleCount) {
+  function buildFreshDirectPaymentUrl(cycleCount) {
     var nextCycle = Number.isFinite(cycleCount) ? cycleCount : _autoRecheckCount;
     var secret = getCurrentClientSecret();
 
@@ -159,31 +159,24 @@
     targetUrl.searchParams.set('ppcycle', String(nextCycle));
     targetUrl.searchParams.delete('waitforpayment');
     targetUrl.searchParams.delete('routeattempt');
+    targetUrl.searchParams.delete('forcepaymentreload');
+    targetUrl.searchParams.delete('token');
     if (secret) {
       targetUrl.searchParams.set('clientsecret', secret);
+    } else {
+      targetUrl.searchParams.delete('clientsecret');
     }
     targetUrl.searchParams.set('_ts', String(Date.now()));
 
-    window.location.replace(targetUrl.toString());
+    return targetUrl.toString();
+  }
+
+  function navigateToPayment(cycleCount) {
+    window.location.replace(buildFreshDirectPaymentUrl(cycleCount));
   }
 
   function refreshPreparing(cycleCount) {
-    var nextCycle = Number.isFinite(cycleCount) ? cycleCount : _autoRecheckCount;
-    var secret = getCurrentClientSecret();
-
-    var targetUrl = new URL(window.location.pathname, window.location.origin);
-    targetUrl.searchParams.set('page', 'offering-acceptance');
-    targetUrl.searchParams.set('acceptanceid', _acceptanceId);
-    targetUrl.searchParams.set('paymentmode', 'direct');
-    targetUrl.searchParams.set('ppcycle', String(nextCycle));
-    targetUrl.searchParams.delete('waitforpayment');
-    targetUrl.searchParams.delete('routeattempt');
-    if (secret) {
-      targetUrl.searchParams.set('clientsecret', secret);
-    }
-    targetUrl.searchParams.set('_ts', String(Date.now()));
-
-    window.location.replace(targetUrl.toString());
+    window.location.replace(buildFreshDirectPaymentUrl(cycleCount));
   }
 
   function showTimeout() {

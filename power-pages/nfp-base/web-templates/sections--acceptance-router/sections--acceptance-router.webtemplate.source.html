@@ -10,22 +10,21 @@ sections--acceptance-router (DEBUG HARDENED)
 
 {% assign DEBUG = request.params.debug == '1' %}
 {% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
-{% assign waitingForStatus = request.params.waitforpayment == '1' %}
-{% assign directPaymentMode = request.params.paymentmode == 'direct' %}
 
-{% assign STATUS_DRAFT = '0' %}
-{% assign STATUS_PENDING_INFORMATION = '815390000' %}
-{% assign STATUS_PENDING_PAYMENT = '815390001' %}
-{% assign STATUS_PENDING_APPROVAL = '815390002' %}
-{% assign STATUS_COMPLETED = '815390003' %}
-{% assign STATUS_FAILED = '815390004' %}
-{% assign STATUS_CANCELLED = '815390005' %}
+{% assign STATUS_DRAFT = 0 %}
+{% assign STATUS_PENDING_INFORMATION = 815390000 %}
+{% assign STATUS_PENDING_PAYMENT = 815390001 %}
+{% assign STATUS_PENDING_APPROVAL = 815390002 %}
+{% assign STATUS_COMPLETED = 815390003 %}
+{% assign STATUS_FAILED = 815390004 %}
+{% assign STATUS_CANCELLED = 815390005 %}
 
 <div class="hit-app-shell">
 
 {% if DEBUG %}
-  <div style="background:#111;color:#ff0;padding:8px 10px;font-size:12px;border:1px solid #ff0;margin-bottom:8px;">
-    DEBUG_TEMPLATE_CHECK | router=sections--acceptance-router.webtemplate.source.html | signature=acceptance-router-v1 | acceptanceId={{ acceptanceId }} | waitforpayment={{ waitingForStatus }} | paymentmode={{ request.params.paymentmode | default: 'n/a' }} | url={{ request.url | default: 'n/a' }}
+  <div class="hit-debug-panel hit-debug-panel--router-start">
+    <div>ROUTER DEBUG START</div>
+    <div>acceptanceId={{ acceptanceId }}</div>
   </div>
 {% endif %}
 
@@ -108,16 +107,10 @@ sections--acceptance-router (DEBUG HARDENED)
       {% endif %}
     {% endif %}
 
-    {% assign status = status | append: '' | strip %}
-
     {%- comment -%}
     SAFE: payment flags
     {%- endcomment -%}
     {% assign requiresPayment = acceptance.hit_paymentrequired | default: false %}
-    {% assign isPaymentRequired = false %}
-    {% if requiresPayment == true or requiresPayment == 'true' or requiresPayment == 1 or requiresPayment == '1' %}
-      {% assign isPaymentRequired = true %}
-    {% endif %}
     {% assign clientSecret = acceptance.hit_stripeclientsecret | default: '' | strip %}
     {% assign paymentIntentId = acceptance.hit_stripepaymentintentid | default: '' | strip %}
 
@@ -139,17 +132,6 @@ sections--acceptance-router (DEBUG HARDENED)
       {% endif %}
     {% endif %}
 
-    {% assign offeringType = offeringType | append: '' | strip %}
-
-    {%- comment -%}
-    Donation payment flows can transiently present hit_paymentrequired as false
-    during waitforpayment transitions. Treat donation offering type as payment-required
-    unless already terminal, to avoid premature non-payment completion routing.
-    {%- endcomment -%}
-    {% if offeringType == '815390000' and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED %}
-      {% assign isPaymentRequired = true %}
-    {% endif %}
-
     {% if acceptance['off.hit_offeringname'] %}
       {% assign offeringNameExists = true %}
       {% assign offeringName = acceptance['off.hit_offeringname'] %}
@@ -162,8 +144,6 @@ sections--acceptance-router (DEBUG HARDENED)
         <div>status = {{ status }}</div>
         <div>statusLabel = {{ statusLabel }}</div>
         <div>requiresPayment = {{ requiresPayment }}</div>
-        <div>isPaymentRequired = {{ isPaymentRequired }}</div>
-        <div>waitingForStatus = {{ waitingForStatus }}</div>
         <div>clientSecret length = {{ clientSecret | size }}</div>
         <div>paymentIntentId = {{ paymentIntentId }}</div>
         <div>offeringType exists = {{ offeringTypeExists }}</div>
@@ -201,58 +181,7 @@ sections--acceptance-router (DEBUG HARDENED)
       </div>
     {% endif %}
 
-    {% if directPaymentMode and isPaymentRequired and status != STATUS_COMPLETED and status != STATUS_FAILED and status != STATUS_CANCELLED and clientSecret != '' %}
-
-      {% if DEBUG %}
-        <div class="hit-debug-panel hit-debug-panel--include-payment">
-          Include: sections--payment (paymentmode direct with secret)
-        </div>
-      {% endif %}
-      {% include 'sections--payment' %}
-
-    {% elsif status == STATUS_PENDING_PAYMENT and clientSecret != '' %}
-
-      <script>
-      (function(){
-        var currentUrl = new URL(window.location.href);
-        var targetUrl = new URL(window.location.pathname, window.location.origin);
-        targetUrl.searchParams.set("page", "offering-acceptance");
-        targetUrl.searchParams.set("acceptanceid", "{{ acceptanceId | escape_javascript }}");
-        targetUrl.searchParams.set("paymentmode", "direct");
-        targetUrl.searchParams.delete("waitforpayment");
-        targetUrl.searchParams.delete("routeattempt");
-        targetUrl.searchParams.delete("clientsecret");
-        targetUrl.searchParams.delete("token");
-        targetUrl.searchParams.delete("forcepaymentreload");
-        targetUrl.searchParams.set("_ts", String(Date.now()));
-
-        var currentPaymentMode = currentUrl.searchParams.get("paymentmode");
-        var hasUncleanRouteState = currentUrl.searchParams.get("waitforpayment") === "1" || currentUrl.searchParams.get("routeattempt") !== null || currentUrl.searchParams.get("forcepaymentreload") !== null;
-        var needsFreshRoute = currentPaymentMode !== "direct" || hasUncleanRouteState || currentUrl.searchParams.get("_ts") === null;
-
-        if (needsFreshRoute) {
-          window.location.replace(targetUrl.toString());
-          return;
-        }
-
-        if (currentUrl.toString() !== targetUrl.toString()) {
-          window.location.href = targetUrl.toString();
-        }
-      })();
-      </script>
-
-      {% include 'sections--payment' %}
-
-    {% elsif waitingForStatus and isPaymentRequired == false and (status == STATUS_COMPLETED or status == STATUS_PENDING_APPROVAL) %}
-
-      {% if DEBUG %}
-        <div class="hit-debug-panel hit-debug-panel--include-success">
-          Include: sections--confirmation-nonpayment
-        </div>
-      {% endif %}
-      {% include 'sections--confirmation-nonpayment' %}
-
-    {% elsif status == STATUS_COMPLETED %}
+    {% if status == STATUS_COMPLETED %}
 
       {% if DEBUG %}
         <div class="hit-debug-panel hit-debug-panel--include-success">
@@ -263,12 +192,25 @@ sections--acceptance-router (DEBUG HARDENED)
 
     {% elsif status == STATUS_PENDING_PAYMENT %}
 
-      {% if DEBUG %}
-        <div class="hit-debug-panel hit-debug-panel--include-payment">
-          Include: sections--payment (status pending payment)
-        </div>
+      {% if requiresPayment and paymentIntentId == '' %}
+
+        {% if DEBUG %}
+          <div class="hit-debug-panel hit-debug-panel--include-payment">
+            Include: sections--payment-preparing
+          </div>
+        {% endif %}
+        {% include 'sections--payment-preparing' %}
+
+      {% else %}
+
+        {% if DEBUG %}
+          <div class="hit-debug-panel hit-debug-panel--include-payment">
+            Include: sections--payment
+          </div>
+        {% endif %}
+        {% include 'sections--payment' %}
+
       {% endif %}
-      {% include 'sections--payment' %}
 
     {% elsif status == STATUS_FAILED %}
 
@@ -348,13 +290,13 @@ sections--acceptance-router (DEBUG HARDENED)
           {% endif %}
           {% include 'sections--acceptance-sponsorship' %}
 
-        {% when 815390007 %}
-          {% if DEBUG %}
-            <div class="hit-debug-panel hit-debug-panel--include-form">
-              Include: sections--acceptance-eoi
-            </div>
-          {% endif %}
-          {% include 'sections--acceptance-eoi' acceptanceId: acceptanceId offeringName: offeringName debug: DEBUG %}
+{% when 815390007 %}
+  {% if DEBUG %}
+    <div class="hit-debug-panel hit-debug-panel--include-form">
+      Include: sections--acceptance-eoi
+    </div>
+  {% endif %}
+  {% include 'sections--acceptance-eoi' acceptanceId: acceptanceId  offeringName: offeringName  debug: DEBUG %}
 
         {% when 815390008 %}
           {% if DEBUG %}
