@@ -219,13 +219,14 @@ Supports:
         var status = getStatusValue(data.hit_acceptancestatus);
         var clientSecret = getStringValue(data.hit_stripeclientsecret);
         var paymentIntentId = getStringValue(data.hit_stripepaymentintentid);
-        var isReady = status === 815390001 && clientSecret !== "";
+        var paymentIntentPresent = paymentIntentId !== "";
+        var isReady = status === 815390001 && (clientSecret !== "" || paymentIntentPresent);
 
         console.log("waitingPaymentPoll", {
           pollCount: pollCount,
           status: status,
           clientSecretPresent: clientSecret !== "",
-          paymentIntentPresent: paymentIntentId !== "",
+          paymentIntentPresent: paymentIntentPresent,
           ready: isReady,
           routeAttempt: routeAttempt
         });

@@ -25,10 +25,6 @@
   adx_sitesettingid: 1471d746-32c2-4224-891e-3b7cadca90dd
 - adx_name: Authentication/Registration/LoginButtonAuthenticationType
   adx_sitesettingid: 15d1ae9a-ce95-4a2a-9426-1eeef64562d3
-- adx_name: Webapi/hit_venuespace/fields
-  adx_sitesettingid: 18a59151-0753-f111-a825-000d3a7a0cab
-  adx_source: 0
-  adx_value: '*'
 - adx_description: A true or false value. If set to true, the Last Successful Login field on the portal user’s contact will be updated with the date and time when they successfully signed in.
   adx_name: Authentication/LoginTrackingEnabled
   adx_sitesettingid: 199a42f4-f7a5-4980-8832-7c5e617e8615
@@ -122,7 +118,7 @@
 - adx_name: Webapi/hit_offering/fields
   adx_sitesettingid: 81769fa8-f311-f111-8342-000d3a7a0cab
   adx_source: 0
-  adx_value: '*'
+  adx_value: 'hit_offeringid,hit_offeringname,hit_description,hit_slug,hit_summary,hit_imageurl,hit_imageurldetail,hit_imageurlcardgallery,hit_offeringtype,hit_pricingmodel,hit_subscriptionfrequency,hit_fixedprice,hit_isactive,hit_webvisible,hit_allowrecurring,hit_cievent,hit_ctalabel'
 - adx_name: EnablePowerBIEmbedded
   adx_sitesettingid: 81f4e7b2-0f46-f111-bec6-6045bd3d0cb5
   adx_source: 0
@@ -151,10 +147,6 @@
   adx_sitesettingid: 89bd56fb-7138-f111-88b4-000d3a7a0323
   adx_source: 0
   adx_value: https://assets-oce.mkt.dynamics.com/0b4d862a-c606-f111-8c77-002248e18acf/digitalassets/videos/22d97e5b-6f38-f111-88b4-000d3a7a0323?ts=639118154390000000
-- adx_name: Webapi/hit_venuespace/enabled
-  adx_sitesettingid: 8a77d244-0753-f111-a825-000d3a7a0cab
-  adx_source: 0
-  adx_value: true
 - adx_name: ThemeFeature
   adx_sitesettingid: 8e2c9916-b908-42a5-ab73-937d8e11942c
 - adx_name: Authentication/Registration/Enabled
@@ -214,20 +206,12 @@
   adx_name: MultiLanguage/MaximumDepthToClone
   adx_sitesettingid: c524db7b-cf98-4069-b78f-351ead02b482
   adx_value: 3
-- adx_name: Webapi/hit_venuespacebookingrequest/enabled
-  adx_sitesettingid: c8a75adb-0553-f111-a825-000d3a7a0cab
-  adx_source: 0
-  adx_value: true
 - adx_name: Profile/ForceSignUp
   adx_sitesettingid: c8b0c2fd-ef85-40a6-b937-afb3f669aca8
   adx_value: False
 - adx_name: HTTP/Content-Security-Policy
   adx_sitesettingid: c8ec9984-6735-f111-88b4-000d3a7a0cab
   adx_source: 0
-- adx_name: Webapi/hit_venuespacebookingrequest/fields
-  adx_sitesettingid: cad46c04-0653-f111-a825-000d3a7a0cab
-  adx_source: 0
-  adx_value: '*'
 - adx_description: A date/time value in GMT format to represent the effective date of the current published terms and conditions. If the terms agreement is enabled, portal users that have not accepted the terms after this date will be asked to accept them the next time they sign in. If the date is not provided, and the terms agreement is enabled, the terms will be presented every time portal users sign in.
   adx_name: Authentication/Registration/TermsPublicationDate
   adx_sitesettingid: d2ac91ee-215a-446f-bdb9-a0c00a886828
@@ -248,7 +232,7 @@
 - adx_name: Webapi/hit_offeringacceptance/fields
   adx_sitesettingid: d994f1f5-e20a-f111-8342-000d3a7a0cab
   adx_source: 0
-  adx_value: '*'
+  adx_value: 'hit_name,hit_email,hit_totalamount,hit_baseamount,hit_donationaddonamount,hit_acceptancestatus,hit_clienttoken,hit_stripepaymentintentid,hit_stripeclientsecret,hit_offeringacceptanceid'
 - adx_name: Authentication/OpenIdConnect/AzureAD/Caption
   adx_sitesettingid: dbe3c0f1-5509-f111-8407-000d3a7a0cab
   adx_value: Microsoft Entra ID

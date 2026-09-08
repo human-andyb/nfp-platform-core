@@ -464,6 +464,20 @@ Temporary:
         const acceptanceId =
           "{{ acc.hit_offeringacceptanceid }}";
 
+        function clearStaleWaitState(){
+          const cleanUrl = new URL(window.location.href);
+
+          cleanUrl.searchParams.delete("waitforpayment");
+          cleanUrl.searchParams.delete("routeattempt");
+          cleanUrl.searchParams.delete("forcepaymentreload");
+          cleanUrl.searchParams.delete("token");
+          cleanUrl.searchParams.delete("clientsecret");
+
+          if (cleanUrl.toString() !== window.location.href) {
+            window.history.replaceState({}, document.title, cleanUrl.toString());
+          }
+        }
+
         function buildPaymentPageUrl(acceptanceIdValue, acceptanceTokenValue){
           const targetUrl = new URL(
             window.location.pathname,
@@ -553,15 +567,6 @@ Temporary:
 
         async function waitForAcceptanceToken(acceptanceIdValue){
           const currentToken = String(initialAcceptanceToken || "").trim();
-
-          if (currentToken) {
-            return {
-              clientToken: currentToken,
-              paymentIntentId: "",
-              clientSecret: ""
-            };
-          }
-
           const startedAt = Date.now();
 
           updateSubmissionNote(
@@ -571,14 +576,16 @@ Temporary:
           for (let attempt = 0; attempt < maxTokenPollAttempts; attempt++) {
             try {
               const latestSnapshot = await getLatestAcceptanceSnapshot(acceptanceIdValue);
-              const latestToken = latestSnapshot.clientToken;
               const normalizedStatus = latestSnapshot.acceptanceStatus;
               const hasPaymentIntent = !!latestSnapshot.paymentIntentId;
               const hasClientSecret = !!latestSnapshot.clientSecret;
               const isReady = (normalizedStatus === pendingPaymentStatusValue || normalizedStatus === String(pendingPaymentStatusValue)) && (hasPaymentIntent || hasClientSecret);
 
-              if (isReady && latestToken) {
-                return latestSnapshot;
+              if (isReady) {
+                return {
+                  ...latestSnapshot,
+                  clientToken: latestSnapshot.clientToken || currentToken
+                };
               }
             } catch (error) {
               // Ignore transient API failures while the backend is still processing.
@@ -596,11 +603,17 @@ Temporary:
             "Your payment is still being prepared. Please wait a moment or refresh the page to continue."
           );
 
-          return { clientToken: "", paymentIntentId: "pending", clientSecret: "" };
+          return {
+            clientToken: currentToken,
+            paymentIntentId: "pending",
+            clientSecret: ""
+          };
         }
 
         async function redirectToPaymentPage(acceptanceIdValue){
           const cleanAcceptanceId = String(acceptanceIdValue || "").trim();
+
+          clearStaleWaitState();
 
           if (!cleanAcceptanceId) {
             updateSubmissionNote("Your payment session could not be loaded. Please refresh the page and try again.");
@@ -609,9 +622,12 @@ Temporary:
           }
 
           const resolvedSnapshot = await waitForAcceptanceToken(cleanAcceptanceId);
-          const resolvedToken = resolvedSnapshot.clientToken;
+          const normalizedStatus = String(resolvedSnapshot.acceptanceStatus || "").trim();
+          const hasPaymentIntent = !!resolvedSnapshot.paymentIntentId;
+          const hasClientSecret = !!resolvedSnapshot.clientSecret;
+          const isReadyForRedirect = (normalizedStatus === pendingPaymentStatusValue || normalizedStatus === String(pendingPaymentStatusValue)) && (hasPaymentIntent || hasClientSecret);
 
-          if (!resolvedToken) {
+          if (!isReadyForRedirect) {
             updateSubmissionNote("Your payment session is taking longer than expected. Please refresh the page to continue.");
             setLoading(false);
             return;
