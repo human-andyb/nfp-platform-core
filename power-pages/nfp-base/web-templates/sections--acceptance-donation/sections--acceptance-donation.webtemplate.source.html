@@ -499,6 +499,21 @@ Temporary:
           return targetUrl.toString();
         }
 
+        function normalizeDataverseString(rawValue){
+          if (rawValue === null || rawValue === undefined || rawValue === "") {
+            return "";
+          }
+
+          if (typeof rawValue === "object") {
+            const objectValue = rawValue.value !== undefined ? rawValue.value : rawValue.Value;
+            if (objectValue !== undefined && objectValue !== null) {
+              return String(objectValue).trim();
+            }
+          }
+
+          return String(rawValue).trim();
+        }
+
         async function getLatestAcceptanceSnapshot(acceptanceIdValue){
           const response = await fetch(
             "/_api/hit_offeringacceptances(" +
@@ -522,10 +537,10 @@ Temporary:
 
           const snapshot = await response.json();
           return {
-            clientToken: String(snapshot.hit_clienttoken || "").trim(),
-            paymentIntentId: String(snapshot.hit_stripepaymentintentid || "").trim(),
-            acceptanceStatus: String(snapshot.hit_acceptancestatus || "").trim(),
-            clientSecret: String(snapshot.hit_stripeclientsecret || "").trim(),
+            clientToken: normalizeDataverseString(snapshot.hit_clienttoken),
+            paymentIntentId: normalizeDataverseString(snapshot.hit_stripepaymentintentid),
+            acceptanceStatus: normalizeDataverseString(snapshot.hit_acceptancestatus),
+            clientSecret: normalizeDataverseString(snapshot.hit_stripeclientsecret),
             refreshedAt: new Date().toISOString()
           };
         }
@@ -557,7 +572,10 @@ Temporary:
             try {
               const latestSnapshot = await getLatestAcceptanceSnapshot(acceptanceIdValue);
               const latestToken = latestSnapshot.clientToken;
-              const isReady = latestSnapshot.acceptanceStatus === pendingPaymentStatusValue && latestSnapshot.clientSecret;
+              const normalizedStatus = latestSnapshot.acceptanceStatus;
+              const hasPaymentIntent = !!latestSnapshot.paymentIntentId;
+              const hasClientSecret = !!latestSnapshot.clientSecret;
+              const isReady = (normalizedStatus === pendingPaymentStatusValue || normalizedStatus === String(pendingPaymentStatusValue)) && (hasPaymentIntent || hasClientSecret);
 
               if (isReady && latestToken) {
                 return latestSnapshot;

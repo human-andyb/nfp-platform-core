@@ -187,6 +187,21 @@
     setStatus('Payment session is taking longer than expected.');
   }
 
+  function normalizeOptionSetValue(rawValue) {
+    if (rawValue === null || rawValue === undefined || rawValue === '') {
+      return '';
+    }
+
+    if (typeof rawValue === 'object') {
+      var objectValue = rawValue.value !== undefined ? rawValue.value : rawValue.Value;
+      if (objectValue !== undefined && objectValue !== null) {
+        return String(objectValue).trim();
+      }
+    }
+
+    return String(rawValue).trim();
+  }
+
   async function fetchLatestAcceptance() {
     if (!_acceptanceId) {
       return null;
@@ -212,9 +227,9 @@
 
     var data = await response.json();
     return {
-      paymentIntentId: (data.hit_stripepaymentintentid || '').trim(),
-      clientSecret: (data.hit_stripeclientsecret || '').trim(),
-      acceptanceStatus: String(data.hit_acceptancestatus || '').trim()
+      paymentIntentId: normalizeOptionSetValue(data.hit_stripepaymentintentid),
+      clientSecret: normalizeOptionSetValue(data.hit_stripeclientsecret),
+      acceptanceStatus: normalizeOptionSetValue(data.hit_acceptancestatus)
     };
   }
 
@@ -234,8 +249,10 @@
       var clientSecret = latest.clientSecret || '';
       var statusValue = latest.acceptanceStatus || '';
       var elapsedSeconds = _attempt * 2;
+      var hasPaymentIntent = !!latest.paymentIntentId;
+      var isReadyForPayment = (statusValue === '815390001' || statusValue === 815390001) && (hasPaymentIntent || !!clientSecret);
 
-      if (statusValue === '815390001' && clientSecret) {
+      if (isReadyForPayment) {
         setStatus('Payment session ready. Taking you to checkout\u2026');
         window.location.replace(buildFreshDirectPaymentUrl());
         return;

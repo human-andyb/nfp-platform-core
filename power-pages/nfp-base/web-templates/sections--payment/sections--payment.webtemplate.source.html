@@ -274,7 +274,8 @@ Supports:
   var hasFreshTimestamp = currentUrl.searchParams.get("_ts") !== null;
   var statusValue = "{{ status_val | escape_javascript }}";
   var clientSecret = "{{ clientSecret | escape_javascript }}";
-  var paymentReady = statusValue === "815390001" && clientSecret !== "";
+  var paymentIntentPresent = "{{ acc.hit_stripepaymentintentid | default: '' | escape_javascript }}" !== "";
+  var paymentReady = statusValue === "815390001" && (clientSecret !== "" || paymentIntentPresent);
 
   if (paymentReady) {
     var shouldRedirectToDirectMode = !directMode || hasWaitState || !hasFreshTimestamp;
