@@ -181,17 +181,9 @@ Supports:
 
     function redirectToReadyPayment(){
       var readyUrl = buildCleanRouterUrl();
-      var forcedUrl = readyUrl + "&forcepaymentreload=" + Date.now();
 
-      console.log("waitingPaymentPoll: redirecting to ready payment route", forcedUrl);
-
-      window.location.replace(forcedUrl);
-
-      setTimeout(function(){
-        if (window.location.href.indexOf("forcepaymentreload=") !== -1) {
-          window.location.reload(true);
-        }
-      }, 250);
+      console.log("waitingPaymentPoll: redirecting to ready payment route", readyUrl);
+      window.location.replace(readyUrl);
     }
 
     function retryRouter(){

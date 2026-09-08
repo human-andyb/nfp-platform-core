@@ -454,6 +454,7 @@ Temporary:
         const initialAcceptanceToken = "{{ acc.hit_clienttoken | default: '' | escape }}";
         const maxTokenPollAttempts = 20;
         const tokenPollDelayMilliseconds = 1250;
+        const pendingPaymentStatusValue = "815390001";
 
         const currentUrl = new URL(window.location.href);
 
@@ -465,8 +466,13 @@ Temporary:
 
         function buildPaymentPageUrl(acceptanceIdValue, acceptanceTokenValue){
           const targetUrl = new URL(
-            paymentPagePath,
+            window.location.pathname,
             window.location.origin
+          );
+
+          targetUrl.searchParams.set(
+            "page",
+            "offering-acceptance"
           );
 
           targetUrl.searchParams.set(
@@ -475,9 +481,15 @@ Temporary:
           );
 
           targetUrl.searchParams.set(
-            "token",
-            acceptanceTokenValue
+            "paymentmode",
+            "direct"
           );
+
+          targetUrl.searchParams.delete("waitforpayment");
+          targetUrl.searchParams.delete("routeattempt");
+          targetUrl.searchParams.delete("clientsecret");
+          targetUrl.searchParams.delete("token");
+          targetUrl.searchParams.delete("forcepaymentreload");
 
           targetUrl.searchParams.set(
             "_ts",
@@ -491,7 +503,7 @@ Temporary:
           const response = await fetch(
             "/_api/hit_offeringacceptances(" +
               encodeURIComponent(acceptanceIdValue) +
-              ")?$select=hit_clienttoken",
+              ")?$select=hit_clienttoken,hit_stripepaymentintentid,hit_acceptancestatus,hit_stripeclientsecret,hit_offeringacceptanceid",
             {
               method: "GET",
               credentials: "same-origin",
@@ -509,7 +521,13 @@ Temporary:
           }
 
           const snapshot = await response.json();
-          return String(snapshot.hit_clienttoken || "").trim();
+          return {
+            clientToken: String(snapshot.hit_clienttoken || "").trim(),
+            paymentIntentId: String(snapshot.hit_stripepaymentintentid || "").trim(),
+            acceptanceStatus: String(snapshot.hit_acceptancestatus || "").trim(),
+            clientSecret: String(snapshot.hit_stripeclientsecret || "").trim(),
+            refreshedAt: new Date().toISOString()
+          };
         }
 
         function delay(milliseconds){
@@ -522,7 +540,11 @@ Temporary:
           const currentToken = String(initialAcceptanceToken || "").trim();
 
           if (currentToken) {
-            return currentToken;
+            return {
+              clientToken: currentToken,
+              paymentIntentId: "",
+              clientSecret: ""
+            };
           }
 
           const startedAt = Date.now();
@@ -533,10 +555,12 @@ Temporary:
 
           for (let attempt = 0; attempt < maxTokenPollAttempts; attempt++) {
             try {
-              const latestToken = await getLatestAcceptanceSnapshot(acceptanceIdValue);
+              const latestSnapshot = await getLatestAcceptanceSnapshot(acceptanceIdValue);
+              const latestToken = latestSnapshot.clientToken;
+              const isReady = latestSnapshot.acceptanceStatus === pendingPaymentStatusValue && latestSnapshot.clientSecret;
 
-              if (latestToken) {
-                return latestToken;
+              if (isReady && latestToken) {
+                return latestSnapshot;
               }
             } catch (error) {
               // Ignore transient API failures while the backend is still processing.
@@ -554,7 +578,7 @@ Temporary:
             "Your payment is still being prepared. Please wait a moment or refresh the page to continue."
           );
 
-          return "";
+          return { clientToken: "", paymentIntentId: "pending", clientSecret: "" };
         }
 
         async function redirectToPaymentPage(acceptanceIdValue){
@@ -566,7 +590,8 @@ Temporary:
             return;
           }
 
-          const resolvedToken = await waitForAcceptanceToken(cleanAcceptanceId);
+          const resolvedSnapshot = await waitForAcceptanceToken(cleanAcceptanceId);
+          const resolvedToken = resolvedSnapshot.clientToken;
 
           if (!resolvedToken) {
             updateSubmissionNote("Your payment session is taking longer than expected. Please refresh the page to continue.");
@@ -579,7 +604,7 @@ Temporary:
           disableFormWhileRouting();
 
           window.location.replace(
-            buildPaymentPageUrl(cleanAcceptanceId, resolvedToken)
+            buildPaymentPageUrl(cleanAcceptanceId)
           );
         }
 

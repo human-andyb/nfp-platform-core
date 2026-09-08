@@ -187,41 +187,63 @@
     setStatus('Payment session is taking longer than expected.');
   }
 
-  function poll() {
+  async function fetchLatestAcceptance() {
+    if (!_acceptanceId) {
+      return null;
+    }
+
+    var response = await fetch(
+      '/_api/hit_offeringacceptances(' + encodeURIComponent(_acceptanceId) + ')?$select=hit_stripepaymentintentid,hit_stripeclientsecret,hit_acceptancestatus',
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: {
+          'Accept': 'application/json',
+          'OData-MaxVersion': '4.0',
+          'OData-Version': '4.0'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Could not load latest acceptance record.');
+    }
+
+    var data = await response.json();
+    return {
+      paymentIntentId: (data.hit_stripepaymentintentid || '').trim(),
+      clientSecret: (data.hit_stripeclientsecret || '').trim(),
+      acceptanceStatus: String(data.hit_acceptancestatus || '').trim()
+    };
+  }
+
+  async function poll() {
     if (!_acceptanceId) { showTimeout(); return; }
 
     _attempt++;
     if (_attempt > MAX_POLLS) { showTimeout(); return; }
 
-    var seedIntent = (seedIntentInput && seedIntentInput.value ? seedIntentInput.value : '').trim();
-    var seedSecret = (seedSecretInput && seedSecretInput.value ? seedSecretInput.value : '').trim();
+    try {
+      var latest = await fetchLatestAcceptance();
+      if (!latest) {
+        throw new Error('No acceptance record returned.');
+      }
 
-    if (seedSecret) {
-      setStatus('Payment session ready. Taking you to checkout\u2026');
-      try {
-        var seededUrl = new URL(window.location.href);
-        seededUrl.searchParams.set('clientsecret', seedSecret);
-        seededUrl.searchParams.delete('waitforpayment');
-        seededUrl.searchParams.delete('routeattempt');
-        window.history.replaceState({}, document.title, seededUrl.toString());
-      } catch (_ignored) {}
-      setTimeout(function () {
-        navigateToPayment(_autoRecheckCount);
-      }, 300);
-      return;
-    }
+      var paymentIntentId = latest.paymentIntentId || 'pending';
+      var clientSecret = latest.clientSecret || '';
+      var statusValue = latest.acceptanceStatus || '';
+      var elapsedSeconds = _attempt * 2;
 
-    if (seedIntent) {
-      setStatus('Payment session ready. Finalizing secure checkout…');
-    }
+      if (statusValue === '815390001' && clientSecret) {
+        setStatus('Payment session ready. Taking you to checkout\u2026');
+        window.location.replace(buildFreshDirectPaymentUrl());
+        return;
+      }
 
-    if (_attempt % SERVER_REFRESH_EVERY_POLLS === 0) {
-      _autoRecheckCount++;
-      setStatus('Refreshing payment state…');
-      setTimeout(function () {
-        refreshPreparing(_autoRecheckCount);
-      }, 250);
-      return;
+      setStatus('Session setup in process, ' + elapsedSeconds + ' seconds elapsed. Stripe Payment Intent Id: ' + paymentIntentId);
+    } catch (_error) {
+      setStatus('Session setup in process, ' + (_attempt * 2) + ' seconds elapsed. Stripe Payment Intent Id: pending');
     }
 
     _timer = setTimeout(poll, POLL_MS);
