@@ -86,6 +86,8 @@ Temporary:
       {% assign fixedPrice = fixedPrice.value %}
     {% endif %}
 
+    {% assign fixedPriceDisplay = fixedPrice | plus: 0 | round: 0 %}
+
     <div class="hit-acceptance hit-acceptance--membership"
          data-context="membership"
          data-acceptance-id="{{ acc.hit_offeringacceptanceid }}"
@@ -109,12 +111,14 @@ Temporary:
               {{ offeringName | escape }}
             </h1>
 
-            <div class="hit-membership-summary__amount">
-              ${{ fixedPrice }}
+            <div class="hit-membership-summary__amount"
+                 style="color: var(--hit-accent-secondary, #0f766e);"
+                 data-amount="{{ fixedPriceDisplay }}">
+              ${{ fixedPriceDisplay }}
             </div>
 
             <div class="hit-membership-summary__description">
-              {{ offeringDescription | escape }}
+              {{ offeringDescription }}
             </div>
 
             <ul class="hit-benefit-list">
@@ -420,6 +424,36 @@ Temporary:
           console.error("Donation acceptance root element was not found.");
           return;
         }
+
+        function formatWholeCurrency(value){
+          const numericValue = Number(value);
+
+          if (!Number.isFinite(numericValue)) {
+            return "$0";
+          }
+
+          return "$" + Math.round(numericValue).toLocaleString("en-AU", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+          });
+        }
+
+        function formatMembershipPrice(){
+          const amountElement =
+            root.querySelector(".hit-membership-summary__amount");
+
+          if (!amountElement) {
+            return;
+          }
+
+          const rawAmount =
+            amountElement.getAttribute("data-amount") ||
+            amountElement.textContent;
+
+          amountElement.textContent = formatWholeCurrency(rawAmount);
+        }
+
+        formatMembershipPrice();
 
         const orgToggle = root.querySelector("#orgToggle");
         const orgSection = root.querySelector("#orgSection");

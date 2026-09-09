@@ -20,7 +20,6 @@
 
 {% assign summaryIntro = summaryIntro | default: 'Register your interest and a member of our team will contact you with more information about this opportunity and the next steps.' %}
 {% assign nextSectionTitle = nextSectionTitle | default: 'What happens next' %}
-{% assign whySectionTitle = whySectionTitle | default: 'Why register?' %}
 
 {% if acceptanceId == '' %}
 
@@ -45,6 +44,18 @@
                    operator="eq"
                    value="{{ acceptanceId }}" />
       </filter>
+
+      <link-entity
+        name="hit_offering"
+        from="hit_offeringid"
+        to="hit_offering"
+        alias="off">
+
+        <attribute name="hit_displaytitle" />
+        <attribute name="hit_offeringname" />
+        <attribute name="hit_description" />
+
+      </link-entity>
     </entity>
   </fetch>
   {% endfetchxml %}
@@ -63,11 +74,9 @@
 {% assign mobile    = acc.hit_mobilephone | default: '' %}
 {% assign organisationInput = acc.hit_organisationinput | default: '' %}
 {% assign contactRoleInput = acc.hit_contactroleinput | default: '' %}
+{% assign offeringName = acc['off.hit_displaytitle'] | default: acc['off.hit_offeringname'] | default: acceptanceTypeLabel %}
+{% assign offeringDescription = acc['off.hit_description'] | default: '' %}
 
-
-    {% if offeringName == '' %}
-      {% assign offeringName = acceptanceTypeLabel %}
-    {% endif %}
 
     {% if DEBUG %}
       <div class="hit-debug-panel hit-debug-panel--router-start">
@@ -78,7 +87,8 @@
       </div>
     {% endif %}
 
-    <div class="hit-acceptance hit-acceptance--basic hit-acceptance--eoi">
+        <div class="hit-acceptance hit-acceptance--basic hit-acceptance--eoi"
+          style="--hit-brand-primary: var(--hit-accent-primary, #072053); --hit-brand-primary-hover: var(--hit-accent-primary, #072053); --hit-brand-primary-soft: color-mix(in srgb, var(--hit-accent-primary, #072053) 7%, white); --hit-brand-primary-soft-border: color-mix(in srgb, var(--hit-accent-primary, #072053) 20%, white); --hit-brand-primary-ring: color-mix(in srgb, var(--hit-accent-primary, #072053) 16%, transparent);">
 
 <div class="hit-acceptance__shell">
         <div class="hit-acceptance__grid">
@@ -95,22 +105,8 @@
               </h1>
 
               <p class="hit-acceptance__lead">
-                {{ summaryIntro | escape }}
+                {{ offeringDescription }}
               </p>
-
-              <div class="hit-acceptance__divider"></div>
-
-              <div class="hit-acceptance__section">
-                <h3 class="hit-acceptance__section-title">
-                  {{ whySectionTitle | escape }}
-                </h3>
-
-                <ul class="hit-list">
-                  <li>Be the 1st to hear when The Hub launches</li>
-                  <li>Learn about the benefits of The Hub</li>
-                  <li>Stay informed about next steps</li>
-                </ul>
-              </div>
 
             </div>
           </aside>
@@ -229,7 +225,7 @@
 
               <div class="hit-actions">
                 <button id="hitSubmitAcceptance"
-                        class="hit-button"
+                  class="hit-button hit-button--primary"
                         type="button"
                         data-default-text="{{ submitButtonText | escape }}"
                         data-busy-text="{{ submittingButtonText | escape }}">
