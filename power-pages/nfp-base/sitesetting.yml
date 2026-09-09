@@ -55,7 +55,7 @@
 - adx_name: Stripe/PendingPaymentValidationUrl
   adx_sitesettingid: 8d88ef3e-9f7a-4c0d-9f19-1f8f7d8c80d1
   adx_source: 0
-  adx_value: https://8bd5a9108df6ebe2a0b9a948eeb9fd.cd.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/28/workflows/504dd1a07de1438e97e2bf3ad906ec1e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iLXoXQ8cm492jk3y5KuZzW_3n7sOGgFnmpw30blahXY
+  adx_value: https://c767551e0076ed96815606468fc034.c3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/03/workflows/42cdee334b0d4838821b78b394578a92/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=39fjlBPsRjBdU228s9r7DEEAS8UDrY1XulYHDR8_Xhg
 - adx_name: PowerBI.Enabled
   adx_sitesettingid: 2afd33bc-1046-f111-bec6-6045bd3d0cb5
   adx_source: 0

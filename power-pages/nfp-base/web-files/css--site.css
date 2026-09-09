@@ -355,6 +355,11 @@ body {
   display: inline-block;
   text-decoration: none;
   padding: 0.75rem 0;
+  white-space: nowrap;
+}
+
+.hit-nav__item {
+  white-space: nowrap;
 }
 
 .hit-nav__submenu {
