@@ -123,12 +123,45 @@ Completed → confirmation
 
     <script>
     (function(){
+      const pendingPaymentValidationUrl = "{{ settings['Stripe/PendingPaymentValidationUrl'] | default: '' }}";
 
       async function getToken(){
         const r = await fetch("/_layout/tokenhtml",{credentials:"same-origin"});
         const t = await r.text();
         return new DOMParser().parseFromString(t,"text/html")
           .querySelector("input[name='__RequestVerificationToken']").value;
+      }
+
+      async function triggerPendingPaymentValidation(id){
+        if (!pendingPaymentValidationUrl) {
+          return null;
+        }
+
+        const response = await fetch(pendingPaymentValidationUrl, {
+          method: "POST",
+          credentials: "same-origin",
+          cache: "no-store",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "0"
+          },
+          body: JSON.stringify({
+            acceptanceId: id
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("Pending payment validation flow failed.");
+        }
+
+        try {
+          return await response.json();
+        } catch (_ignore) {
+          return null;
+        }
       }
 
       document.getElementById("continueBtn").addEventListener("click", async function(){
@@ -156,7 +189,15 @@ Completed → confirmation
         });
 
         if(res.ok){
-          window.location.reload(); // ✅ state-driven refresh
+          try {
+            await triggerPendingPaymentValidation(id);
+          } catch (flowError) {
+            console.warn("Pending payment validation flow call failed after PATCH. Continuing refresh so router can retry.", flowError);
+          }
+
+          const nextUrl = new URL(window.location.href);
+          nextUrl.searchParams.set("_ts", String(Date.now()));
+          window.location.replace(nextUrl.toString());
         } else {
           document.getElementById("errBox").innerText = "Error saving";
         }

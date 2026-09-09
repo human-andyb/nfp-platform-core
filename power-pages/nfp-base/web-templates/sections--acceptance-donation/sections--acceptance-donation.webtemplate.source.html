@@ -341,9 +341,7 @@ Temporary:
                          value="{{ acc.hit_mobilephone | escape }}"
                          aria-describedby="mobileHelp">
 
-                  <p class="hit-help" id="mobileHelp">
-                    Optional. Include a mobile number if you’d like SMS updates.
-                  </p>
+
 
                 </div>
 
@@ -399,7 +397,7 @@ Temporary:
                 </button>
 
                 <p class="hit-form-footnote">
-                  Your details will be saved before continuing to secure payment.
+                  Your details will be saved before continuing to secure payment. This may take 10-20 seconds.
                 </p>
 
               </div>
@@ -455,6 +453,7 @@ Temporary:
         const maxTokenPollAttempts = 20;
         const tokenPollDelayMilliseconds = 1250;
         const pendingPaymentStatusValue = "815390001";
+        const pendingPaymentValidationUrl = "{{ settings['Stripe/PendingPaymentValidationUrl'] | default: '' }}";
 
         const currentUrl = new URL(window.location.href);
 
@@ -528,7 +527,45 @@ Temporary:
           return String(rawValue).trim();
         }
 
+        async function triggerPendingPaymentValidation(acceptanceIdValue){
+          if (!pendingPaymentValidationUrl) {
+            console.warn("Pending payment validation flow URL is missing for donation form.");
+            return null;
+          }
+
+          console.log("Triggering pending payment validation flow", {
+            acceptanceId: acceptanceIdValue,
+            url: pendingPaymentValidationUrl
+          });
+
+          const response = await fetch(pendingPaymentValidationUrl, {
+            method: "POST",
+            credentials: "omit",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              acceptanceId: acceptanceIdValue
+            })
+          });
+
+          if (!response.ok) {
+            const responseText = await response.text();
+            console.error("Pending payment validation flow call failed.", response.status, responseText);
+            throw new Error("Pending payment validation flow failed.");
+          }
+
+          try {
+            return await response.json();
+          } catch (_ignore) {
+            return null;
+          }
+        }
+
         async function getLatestAcceptanceSnapshot(acceptanceIdValue){
+          const freshnessToken = Date.now();
+          const requestToken = ++latestSnapshotRequestToken;
           const response = await fetch(
             "/_api/hit_offeringacceptances(" +
               encodeURIComponent(acceptanceIdValue) +
@@ -539,6 +576,10 @@ Temporary:
               cache: "no-store",
               headers: {
                 "Accept": "application/json",
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache",
+                "Expires": "0",
+                "X-Cache-Bust": String(freshnessToken),
                 "OData-MaxVersion": "4.0",
                 "OData-Version": "4.0"
               }
@@ -550,6 +591,11 @@ Temporary:
           }
 
           const snapshot = await response.json();
+
+          if (requestToken !== latestSnapshotRequestToken) {
+            return null;
+          }
+
           return {
             clientToken: normalizeDataverseString(snapshot.hit_clienttoken),
             paymentIntentId: normalizeDataverseString(snapshot.hit_stripepaymentintentid),
@@ -558,6 +604,8 @@ Temporary:
             refreshedAt: new Date().toISOString()
           };
         }
+
+        let latestSnapshotRequestToken = 0;
 
         function delay(milliseconds){
           return new Promise(function(resolve){
@@ -621,20 +669,8 @@ Temporary:
             return;
           }
 
-          const resolvedSnapshot = await waitForAcceptanceToken(cleanAcceptanceId);
-          const normalizedStatus = String(resolvedSnapshot.acceptanceStatus || "").trim();
-          const hasPaymentIntent = !!resolvedSnapshot.paymentIntentId;
-          const hasClientSecret = !!resolvedSnapshot.clientSecret;
-          const isReadyForRedirect = (normalizedStatus === pendingPaymentStatusValue || normalizedStatus === String(pendingPaymentStatusValue)) && (hasPaymentIntent || hasClientSecret);
-
-          if (!isReadyForRedirect) {
-            updateSubmissionNote("Your payment session is taking longer than expected. Please refresh the page to continue.");
-            setLoading(false);
-            return;
-          }
-
           setLoading(true, "Redirecting...");
-          updateSubmissionNote("Your payment is ready. Taking you to secure checkout now.");
+          updateSubmissionNote("Your payment is being prepared. Taking you to secure checkout now.");
           disableFormWhileRouting();
 
           window.location.replace(
@@ -1125,6 +1161,11 @@ Temporary:
 
           try {
             const savedAcceptanceId = await updateAcceptance();
+            try {
+              await triggerPendingPaymentValidation(savedAcceptanceId);
+            } catch (flowError) {
+              console.warn("Flow trigger failed after PATCH; continuing to payment redirect and backend polling.", flowError);
+            }
             await redirectToPaymentPage(savedAcceptanceId);
 
           } catch (error) {

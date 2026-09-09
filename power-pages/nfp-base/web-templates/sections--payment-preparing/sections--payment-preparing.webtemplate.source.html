@@ -104,6 +104,7 @@
 (function () {
 
   var _acceptanceId = "{{ request.params.acceptanceid | default: '' | escape }}";
+  var pendingPaymentValidationUrl = "{{ settings['Stripe/PendingPaymentValidationUrl'] | default: '' }}";
 
   var MAX_POLLS = 120;  /* 120 × 2 s = 240 s max wait */
   var POLL_MS   = 2000; /* 2 seconds between background polls */
@@ -111,6 +112,7 @@
   var _attempt  = 0;
   var _timer    = null;
   var _autoRecheckCount = 0;
+  var latestFetchRequestId = 0;
 
   var statusEl  = document.getElementById('ppStatus');
   var timeoutEl = document.getElementById('ppTimeout');
@@ -166,7 +168,7 @@
     } else {
       targetUrl.searchParams.delete('clientsecret');
     }
-    targetUrl.searchParams.set('_ts', String(Date.now()));
+    targetUrl.searchParams.set('cachebust', String(Date.now()));
 
     return targetUrl.toString();
   }
@@ -207,25 +209,38 @@
       return null;
     }
 
-    var response = await fetch(
-      '/_api/hit_offeringacceptances(' + encodeURIComponent(_acceptanceId) + ')?$select=hit_stripepaymentintentid,hit_stripeclientsecret,hit_acceptancestatus',
-      {
-        method: 'GET',
-        credentials: 'same-origin',
-        cache: 'no-store',
-        headers: {
-          'Accept': 'application/json',
-          'OData-MaxVersion': '4.0',
-          'OData-Version': '4.0'
-        }
-      }
-    );
+    if (!pendingPaymentValidationUrl) {
+      throw new Error('Pending payment validation flow URL is missing.');
+    }
+
+    var requestId = ++latestFetchRequestId;
+    var response = await fetch(pendingPaymentValidationUrl, {
+      method: 'POST',
+      credentials: 'same-origin',
+      cache: 'no-store',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'X-Request-Timestamp': String(Date.now())
+      },
+      body: JSON.stringify({
+        acceptanceId: _acceptanceId
+      })
+    });
 
     if (!response.ok) {
-      throw new Error('Could not load latest acceptance record.');
+      throw new Error('Could not load latest acceptance record from validation flow.');
     }
 
     var data = await response.json();
+
+    if (requestId !== latestFetchRequestId) {
+      return null;
+    }
+
     return {
       paymentIntentId: normalizeOptionSetValue(data.hit_stripepaymentintentid),
       clientSecret: normalizeOptionSetValue(data.hit_stripeclientsecret),
