@@ -83,12 +83,21 @@ Represents the active per-user transaction envelope for venue booking capture.
 - `hit_firstname`
 - `hit_lastname`
 - `hit_email`
+- `hit_baseamount`
+- `hit_gstamount`
+- `hit_totalamounteffective`
 
 ### JSON Snapshot Field
 
 - `hit_inputjson`
 
 `hit_inputjson` stores the canonical form submission payload for venue and is versioned via schema metadata inside the JSON object.
+
+Amount semantics for venue submit path:
+
+- `hit_baseamount`: total calculated base amount
+- `hit_gstamount`: fixed 10% GST on total base amount
+- `hit_totalamounteffective`: `hit_baseamount + hit_gstamount`
 
 ---
 

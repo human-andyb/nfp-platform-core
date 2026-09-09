@@ -86,6 +86,11 @@ Donation amount is stored only in top-level totalbaseamount.
 - Orchestrator parses hit_inputjson first.
 - For schemaVersion 1 or missing hit_inputjson records, orchestrator falls back to legacy parsing/direct columns.
 
+For venue amount persistence in current release:
+
+- `hit_baseamount`, `hit_gstamount`, and `hit_totalamounteffective` are written as direct acceptance columns.
+- This does not change the schemaVersion 2 inputJSON shape.
+
 ## Confirmation Rendering Precedence
 
 For venue confirmation rendering:

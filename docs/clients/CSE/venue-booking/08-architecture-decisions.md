@@ -200,14 +200,12 @@ Decision:
 - Add a form-level Selection Summary showing:
 - Total Dates (unique selected dates)
 - Total Amount (calculated total)
-- Persist pricing into both:
-- `hit_inputjson` (`totalbasefee`, `dates[].billingType`, `dates[].baseFee`)
-- Acceptance amount columns (`hit_baseamount`, `hit_totalamount`, `hit_totalamounteffective`)
+- Persist pricing metadata into `hit_inputjson` and acceptance amount columns (initial baseline).
 
 Rules:
 
 1. Select base rate from session-derived billing type (`FullDay` or `HalfDay`).
-2. Apply School/NFP discount if selected.
+2. Apply School/NFP adjustment if selected.
 3. Apply weekend surcharge for Saturday/Sunday bookings.
 
 Explicit scope decision:
@@ -225,6 +223,12 @@ Impact:
 - Venue template now owns deterministic date-level fee construction.
 - Contract documentation must remain synchronized with pricing metadata keys.
 - Future holiday support can be added as a separate decision once a holiday data source is defined.
+
+Superseded by:
+
+- D-016 for School/NFP divisor pricing model.
+- D-017 for fixed GST calculation and expanded summary lines.
+- D-018 for acceptance amount field mapping updates.
 
 ---
 
@@ -402,3 +406,118 @@ Impact:
 
 - Offering detail readability and CTA persistence improve on longer pages.
 - No Liquid, router, or data-contract changes were required for this polish pass.
+
+---
+
+### D-016: School/NFP Pricing Uses Divisor Model
+
+- Date: 2026-09-03
+- Status: Implemented
+
+Decision:
+
+- When School/NFP is selected, convert GST-inclusive rate to base amount using divisor logic:
+- `base = gross / (1 + schoolNfpPercent/100)`
+- Daily fee then continues through existing weekend surcharge rule where applicable.
+
+Rationale:
+
+- Prevents under/over-discount outcomes caused by flat percent subtraction on GST-inclusive rates.
+- Aligns calculation behavior with agreed financial interpretation.
+
+Impact:
+
+- Venue pricing logic now derives base fee from configured GST-inclusive inputs.
+- Pricing documentation must describe divisor behavior explicitly.
+
+---
+
+### D-017: Fixed GST Rate and Expanded Selection Summary
+
+- Date: 2026-09-03
+- Status: Implemented
+
+Decision:
+
+- GST is calculated as a fixed 10% of total base amount.
+- Selection Summary displays:
+- Total Dates
+- Base Amount
+- GST
+- Total Amount
+
+Rationale:
+
+- Makes tax treatment explicit and user-verifiable before submission.
+- Decouples GST from School/NFP percentage configuration.
+
+Impact:
+
+- Venue summary UI and calculation pipeline now separate base, GST, and total effective values.
+- Downstream persistence needs explicit GST field mapping.
+
+---
+
+### D-018: Acceptance Amount Mapping with Input JSON Contract Preservation
+
+- Date: 2026-09-03
+- Status: Implemented
+
+Decision:
+
+- On venue submit, write these acceptance columns directly:
+- `hit_baseamount`
+- `hit_gstamount`
+- `hit_totalamounteffective`
+- Keep `hit_inputjson` structure unchanged (no new top-level GST or total-effective keys added for this change).
+
+Rationale:
+
+- Preserves contract stability for existing parsers and workflows.
+- Supports reporting/payment consumers through direct amount columns.
+
+Impact:
+
+- Amount persistence now has explicit tax column support.
+- Contract docs must distinguish JSON envelope from direct column mirrors.
+
+---
+
+### D-019: Web API Field Allowlist Must Include GST Column
+
+- Date: 2026-09-03
+- Status: Implemented
+
+Decision:
+
+- Add `hit_gstamount` to site setting `Webapi/hit_offeringacceptance/fields`.
+
+Rationale:
+
+- Portal Web API PATCH requests can only update allowlisted columns.
+- Prevents submit-time failure when writing GST amount.
+
+Impact:
+
+- Operational governance for allowlist updates becomes part of acceptance field change process.
+
+---
+
+### D-020: Venue Confirmation Action Simplification
+
+- Date: 2026-09-03
+- Status: Implemented
+
+Decision:
+
+- Remove `Start Another Booking` from venue submitted confirmation actions.
+- Keep `Return Home` as the single primary action.
+
+Rationale:
+
+- Reduces post-submit decision friction.
+- Matches intended completion-state UX for review-queued requests.
+
+Impact:
+
+- Venue confirmation UI reference and interface docs must reflect single-action state.

@@ -13,7 +13,7 @@ Define the canonical `hit_inputjson` structure for venue submissions captured vi
 - `hit_lastname`
 - `hit_email`
 - `hit_baseamount`
-- `hit_totalamount`
+- `hit_gstamount`
 - `hit_totalamounteffective`
 
 - Canonical payload column:
@@ -86,16 +86,22 @@ Rules:
 - `hit_weekendsurchargepercent`
 - `hit_holidaysurchargepercent`
 
-- Daily calculation order:
-1. Select base rate from `billingType`.
-2. If `schoolnfp == true`, apply School/NFP discount percent.
-3. If date is Saturday or Sunday, apply weekend surcharge percent.
+- Daily base-fee calculation order:
+1. Select configured gross rate from `billingType`.
+2. If `schoolnfp == true`, convert gross to base using divisor model: `gross / (1 + schoolNfpPercent/100)`.
+3. If date is Saturday or Sunday, apply weekend surcharge percent to the calculated base fee.
+
+- GST and totals:
+1. `totalbaseamount` is the rounded sum of all `offering.dates[].baseFee` values.
+2. GST is calculated as fixed 10% of `totalbaseamount`.
+3. Total effective amount is `totalbaseamount + gst`.
+4. GST and total-effective values persist to direct acceptance fields, not into new `hit_inputjson` keys for this release.
 
 - Explicit exclusion:
 - Public holiday surcharge is not applied in this release, even though the field is loaded.
 
-- Total amount:
-- `totalbaseamount` is the rounded sum of all `offering.dates[].baseFee` values.
+- Persistence note:
+- `hit_totalamount` may remain populated by legacy or downstream flows; venue submit path in this release writes `hit_baseamount`, `hit_gstamount`, and `hit_totalamounteffective`.
 
 ---
 

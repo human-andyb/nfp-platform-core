@@ -89,3 +89,11 @@ The confirmation page must:
 - clearly state that the request has been submitted and will be reviewed
 - render summary content from `hit_inputsummary` when available
 - fall back to `hit_inputjson` to ensure immediate confirmation details are shown
+- show a single post-submit action: `Return Home`
+
+Current summary presentation in Booking Details:
+
+- Total Dates
+- Base Amount
+- GST
+- Total Amount

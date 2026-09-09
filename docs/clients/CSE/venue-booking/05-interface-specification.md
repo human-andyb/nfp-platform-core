@@ -143,6 +143,21 @@ Principles
 - Final submission is available only on Booking Details.
 - Final CTA label is `Request Booking`.
 
+### Selection Summary (Current Behavior)
+
+The Booking Details step displays a live selection summary containing:
+
+- Total Dates
+- Base Amount
+- GST
+- Total Amount
+
+Calculation behavior:
+
+- Base Amount is calculated from selected dates/session/layout pricing rules.
+- GST is fixed at 10% of Base Amount.
+- Total Amount equals Base Amount plus GST.
+
 ### Preferred Venue Layout Behavior
 
 Preferred Venue Layout is rendered as selectable cards using `hit_venuespaceconfiguration`.
@@ -163,3 +178,9 @@ Session-type filter flags:
 - `hit_allowfullday`
 - `hit_allowmorning`
 - `hit_allowafternoon`
+
+### Venue Success Action State
+
+Current venue submitted-page action set:
+
+- Return Home

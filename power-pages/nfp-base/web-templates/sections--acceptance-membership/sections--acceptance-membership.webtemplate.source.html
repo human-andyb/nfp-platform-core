@@ -55,7 +55,11 @@ Temporary:
         to="hit_offering"
         alias="off">
 
+        <attribute name="hit_displaytitle" />
         <attribute name="hit_offeringname" />
+        <attribute name="hit_fixedprice" />
+        <attribute name="hit_description" />
+        <attribute name="hit_summary" />
 
       </link-entity>
 
@@ -73,18 +77,19 @@ Temporary:
 
   {% else %}
 
-    {% assign offeringName = acc['off.hit_offeringname'] | default: 'Membership' %}
-    {% assign pricingLabel = acc.hit_pricinglabel | default: '' %}
+    {% assign offeringName = acc['off.hit_displaytitle'] | default: acc['off.hit_offeringname'] | default: 'Membership' %}
+    {% assign offeringDescription = acc['off.hit_description'] | default: '' %}
+    {% assign offeringSummary = acc['off.hit_summary'] | default: '' %}
+    {% assign fixedPrice = acc['off.hit_fixedprice'] | default: 0 %}
 
-    {% assign totalAmount = acc.hit_totalamounteffective | default: acc.hit_baseamount | default: 0 %}
-
-    {% if totalAmount.value %}
-      {% assign totalAmount = totalAmount.value %}
+    {% if fixedPrice.value %}
+      {% assign fixedPrice = fixedPrice.value %}
     {% endif %}
 
     <div class="hit-acceptance hit-acceptance--membership"
-         data-context="donation"
-         data-acceptance-id="{{ acc.hit_offeringacceptanceid }}">
+         data-context="membership"
+         data-acceptance-id="{{ acc.hit_offeringacceptanceid }}"
+         style="--hit-brand-primary: var(--hit-accent-primary, #072053); --hit-brand-primary-hover: var(--hit-accent-primary, #072053); --hit-brand-primary-soft: color-mix(in srgb, var(--hit-accent-primary, #072053) 7%, white); --hit-brand-primary-soft-border: color-mix(in srgb, var(--hit-accent-primary, #072053) 20%, white); --hit-brand-primary-ring: color-mix(in srgb, var(--hit-accent-primary, #072053) 16%, transparent);">
 
 <div class="hit-acceptance__grid">
 
@@ -104,19 +109,12 @@ Temporary:
               {{ offeringName | escape }}
             </h1>
 
-            {% if pricingLabel != blank %}
-              <div class="hit-membership-summary__option">
-                {{ pricingLabel | escape }}
-              </div>
-            {% endif %}
-
             <div class="hit-membership-summary__amount">
-              ${{ totalAmount }}
+              ${{ fixedPrice }}
             </div>
 
             <div class="hit-membership-summary__description">
-              Membership gives you access to programs, benefits and opportunities
-to support the Centre for Strategic Education community.
+              {{ offeringDescription | escape }}
             </div>
 
             <ul class="hit-benefit-list">
@@ -151,11 +149,11 @@ to support the Centre for Strategic Education community.
           <div class="hit-card hit-form-card">
 
             <h2 class="hit-heading">
-              Tell us about yourself
+              Express your interest.
             </h2>
 
             <p class="hit-subtitle">
-              We’ll use these details to issue your receipt and keep you updated.
+              {{ offeringSummary | escape }}
             </p>
 
             <div class="hit-status-pill" aria-label="Current step">
@@ -337,11 +335,7 @@ to support the Centre for Strategic Education community.
                          type="tel"
                          autocomplete="tel"
                          value="{{ acc.hit_mobilephone | escape }}"
-                         aria-describedby="mobileHelp">
-
-                  <p class="hit-help" id="mobileHelp">
-                    Optional. Include a mobile number if you’d like SMS updates.
-                  </p>
+                         >
 
                 </div>
 
@@ -395,10 +389,6 @@ to support the Centre for Strategic Education community.
                   </span>
 
                 </button>
-
-                <p class="hit-form-footnote">
-                  Your details will be saved before continuing to secure payment.
-                </p>
 
                 <p id="redirectStatus"
                    class="hit-help"

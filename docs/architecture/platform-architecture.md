@@ -39,6 +39,14 @@ Contract continuity rule:
 
 - `acceptanceid` remains the continuity key across router-based and physical-route confirmation flows.
 
+### Web API Field Allowlist Governance
+
+Acceptance templates that update Dataverse through portal Web API must keep table field allowlists synchronized with payload writes.
+
+Operational guidance and change process are documented in:
+
+- `web-api-field-allowlist.md`
+
 ## Offering Autoload Extension
 
 The `hit_offering.hit_autoloadtemplate` flag enables a controlled extension of the existing acceptance-first model.
@@ -63,3 +71,4 @@ This keeps router and acceptance-template contracts stable while enabling reduce
 - [../power-pages/page-builder.md](../power-pages/page-builder.md)
 - [../power-pages/section-layout-framework.md](../power-pages/section-layout-framework.md)
 - [../power-pages/gallery-framework.md](../power-pages/gallery-framework.md)
+- [web-api-field-allowlist.md](web-api-field-allowlist.md)

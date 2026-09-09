@@ -27,14 +27,15 @@ Implemented now:
 - Successful submit redirects to `/venue-booking-submitted?acceptanceid=<guid>`.
 - Venue confirmation renders `hit_inputsummary` first with `hit_inputjson` fallback.
 - `hit_inputsummary` is exposed for portal reads via site setting allowlist.
+- `hit_gstamount` is exposed for acceptance PATCH via site setting allowlist.
 - Dynamic venue layout card filtering is applied from booking/session configuration booleans.
+- School/NFP is captured and used in venue pricing calculation.
+- Guided 2-step booking panel is live with step-gated progression.
+- Final submit CTA uses `Request Booking`.
+- Venue pricing summary displays Base Amount, GST, and Total Amount before submit.
 
 In progress or planned next:
 
-- School/NFP toggle in Organisation Details (`schoolnfp` in `hit_inputjson`).
-- Mandatory validation alignment (organisation, first name, last name, email; role optional).
-- Guided 2-step booking panel (`Contact Details` then `Booking Details`) with step-gated progression.
-- Final submit CTA standardization to `Request Booking`.
 - Booked state split logic for full day, morning, and afternoon rendering.
 
 Status note:
