@@ -369,6 +369,31 @@ const fieldIds = [
           return (value || "").replace(/[{}]/g, "").trim();
         }
 
+        async function readFreshAcceptanceState(id){
+          try {
+            const response = await fetch(
+              "/_api/hit_offeringacceptances(" +
+                encodeURIComponent(id) +
+              ")?$select=hit_acceptancestatus,hit_stripepaymentintentid,hit_stripeclientsecret",
+              {
+                credentials: "same-origin",
+                headers: {
+                  "Accept": "application/json"
+                }
+              }
+            );
+
+            if (!response.ok) {
+              return null;
+            }
+
+            return await response.json();
+          } catch (error) {
+            console.warn("Fresh acceptance state read failed:", error);
+            return null;
+          }
+        }
+
         function buildRouterUrl(attempt){
           const targetUrl = new URL(window.location.pathname, window.location.origin);
 
@@ -579,6 +604,7 @@ const fieldIds = [
               template: "sections--acceptance-eoi"
             });
 
+            await readFreshAcceptanceState(acceptanceId);
             redirectToRouter();
             return;
 

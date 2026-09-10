@@ -912,6 +912,31 @@ to support the disability sport and recreation community.
           return isValid;
         }
 
+        async function readFreshAcceptanceState(id){
+          try {
+            const response = await fetch(
+              "/_api/hit_offeringacceptances(" +
+                encodeURIComponent(id) +
+              ")?$select=hit_acceptancestatus,hit_stripepaymentintentid,hit_stripeclientsecret",
+              {
+                credentials: "same-origin",
+                headers: {
+                  "Accept": "application/json"
+                }
+              }
+            );
+
+            if (!response.ok) {
+              return null;
+            }
+
+            return await response.json();
+          } catch (error) {
+            console.warn("Fresh acceptance state read failed:", error);
+            return null;
+          }
+        }
+
         async function updateAcceptance(){
           const id = getValue("acceptanceId");
 
@@ -988,6 +1013,8 @@ to support the disability sport and recreation community.
               "Acceptance update failed."
             );
           }
+
+          await readFreshAcceptanceState(id);
 
           return id;
         }

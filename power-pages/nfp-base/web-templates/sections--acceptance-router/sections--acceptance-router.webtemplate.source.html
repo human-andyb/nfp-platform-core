@@ -353,4 +353,123 @@ sections--acceptance-router (DEBUG HARDENED)
 
 </div>
 
+<script>
+(function () {
+  var acceptanceId = "{{ acceptanceId | default: '' | escape }}";
+  var currentUrl = new URL(window.location.href);
+  var waitingForStatus = currentUrl.searchParams.get('waitforpayment') === '1';
+  var parsedRouteAttempt = parseInt(currentUrl.searchParams.get('routeattempt') || '0', 10);
+  var currentRouteAttempt = Number.isFinite(parsedRouteAttempt) ? parsedRouteAttempt : 0;
+  var maximumRouteAttempts = 20;
+  var routeRetryDelayMilliseconds = 1250;
+  var debugEnabled = {{ DEBUG | json }};
+
+  var STATUS_COMPLETED = 815390003;
+
+  function normaliseStatus(value) {
+    if (value === null || value === undefined || value === '') {
+      return '';
+    }
+
+    if (typeof value === 'object') {
+      if (value.value !== undefined && value.value !== null && value.value !== '') {
+        return String(value.value);
+      }
+      if (value.code !== undefined && value.code !== null && value.code !== '') {
+        return String(value.code);
+      }
+      if (value.label !== undefined && value.label !== null && value.label !== '') {
+        return String(value.label);
+      }
+      return '';
+    }
+
+    return String(value);
+  }
+
+  function buildRouterUrl(attempt) {
+    var targetUrl = new URL(window.location.pathname, window.location.origin);
+    targetUrl.searchParams.set('page', 'offering-acceptance');
+    targetUrl.searchParams.set('acceptanceid', acceptanceId);
+    targetUrl.searchParams.set('waitforpayment', '1');
+    targetUrl.searchParams.set('routeattempt', String(attempt));
+    targetUrl.searchParams.set('_ts', String(Date.now()));
+    return targetUrl.toString();
+  }
+
+  function refreshRouterWithoutWait() {
+    var targetUrl = new URL(window.location.pathname, window.location.origin);
+    targetUrl.searchParams.set('page', 'offering-acceptance');
+    targetUrl.searchParams.set('acceptanceid', acceptanceId);
+    targetUrl.searchParams.set('_ts', String(Date.now()));
+    window.location.replace(targetUrl.toString());
+  }
+
+  function stopRouterRetry() {
+    var cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete('waitforpayment');
+    cleanUrl.searchParams.delete('routeattempt');
+    cleanUrl.searchParams.delete('_ts');
+    window.history.replaceState({}, document.title, cleanUrl.toString());
+  }
+
+  function pollForCompletion() {
+    if (!acceptanceId) {
+      return;
+    }
+
+    if (currentRouteAttempt >= maximumRouteAttempts) {
+      stopRouterRetry();
+      return;
+    }
+
+    fetch('/_api/hit_offeringacceptances(' + encodeURIComponent(acceptanceId) + ')?$select=hit_acceptancestatus,hit_stripepaymentintentid,hit_stripeclientsecret', {
+      credentials: 'same-origin',
+      headers: { 'Accept': 'application/json' }
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('status check failed: ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        var statusValue = normaliseStatus(data && data.hit_acceptancestatus);
+        var paymentIntentId = (data && data.hit_stripepaymentintentid) || '';
+        var clientSecret = (data && data.hit_stripeclientsecret) || '';
+
+        if (debugEnabled) {
+          console.log('[acceptance-router] reconcile', {
+            acceptanceId: acceptanceId,
+            statusValue: statusValue,
+            paymentIntentId: paymentIntentId,
+            clientSecretLength: String(clientSecret || '').length,
+            routeAttempt: currentRouteAttempt
+          });
+        }
+
+        if (String(statusValue) === String(STATUS_COMPLETED)) {
+          refreshRouterWithoutWait();
+          return;
+        }
+
+        setTimeout(function () {
+          window.location.replace(buildRouterUrl(currentRouteAttempt + 1));
+        }, routeRetryDelayMilliseconds);
+      })
+      .catch(function () {
+        if (debugEnabled) {
+          console.log('[acceptance-router] reconcile failed; retrying', { acceptanceId: acceptanceId, routeAttempt: currentRouteAttempt });
+        }
+
+        setTimeout(function () {
+          window.location.replace(buildRouterUrl(currentRouteAttempt + 1));
+        }, routeRetryDelayMilliseconds);
+      });
+  }
+
+  if (waitingForStatus) {
+    pollForCompletion();
+  }
+})();
+</script>
+
 
