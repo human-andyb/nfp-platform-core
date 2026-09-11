@@ -59,6 +59,9 @@ Priority:
       <attribute name="hit_offeringid" />
       <attribute name="hit_offeringname" />
       <attribute name="hit_description" />
+      <attribute name="hit_typelabel" />
+      <attribute name="hit_summary" />
+      <attribute name="hit_ctalabel" />
       <attribute name="hit_imageurl" />
       <attribute name="hit_isactive" />
         <attribute name="hit_offeringtype" />
@@ -101,6 +104,9 @@ Priority:
     {% assign offeringTypeLabel = '' %}
     {% assign freeTitle = 'Register your interest' %}
     {% assign freeSubtitle = 'Register your interest and we’ll keep you updated as more details become available.' %}
+    {% assign formTitle = offering.hit_typelabel | default: freeTitle | strip %}
+    {% assign formSummary = offering.hit_summary | default: freeSubtitle | strip %}
+    {% assign ctaLabel = offering.hit_ctalabel | default: 'Continue' | strip %}
 
     {% if offering.hit_offeringtype and offering.hit_offeringtype.label %}
       {% assign offeringTypeLabel = offering.hit_offeringtype.label %}
@@ -115,6 +121,19 @@ Priority:
     {% if offeringTypeLabelNormalized == 'course' %}
       {% assign freeTitle = 'Sign up for access' %}
       {% assign freeSubtitle = 'Click the continue button below to complete your information and access The Hub.' %}
+      {% if formTitle == '' %}
+        {% assign formTitle = freeTitle %}
+      {% endif %}
+      {% if formSummary == '' %}
+        {% assign formSummary = freeSubtitle %}
+      {% endif %}
+    {% endif %}
+
+    {% if formTitle == '' %}
+      {% assign formTitle = freeTitle %}
+    {% endif %}
+    {% if formSummary == '' %}
+      {% assign formSummary = freeSubtitle %}
     {% endif %}
 
     {% for r in rows %}
@@ -151,6 +170,18 @@ Priority:
               {% if hasPricing %}
 
                 <!-- PAID OFFERING -->
+                {% if formTitle != blank %}
+                  <h2 class="hit-form-card__title">
+                    {{ formTitle }}
+                  </h2>
+                {% endif %}
+
+                {% if formSummary != blank %}
+                  <p class="hit-form-subtitle hit-eoi-msg">
+                    {{ formSummary }}
+                  </p>
+                {% endif %}
+
                 <div class="hit-status-pill">
                   Select an option to continue
                 </div>
@@ -257,11 +288,11 @@ Priority:
                   <div class="hit-form-card">
 
                     <h2 class="hit-form-card__title">
-                      {{ freeTitle }}
+                      {{ formTitle }}
                     </h2>
 
                     <p class="hit-form-subtitle hit-eoi-msg">
-                      {{ freeSubtitle }}
+                      {{ formSummary }}
                     </p>
 
                   </div>
@@ -269,7 +300,7 @@ Priority:
                   <div class="hit-actions">
                     <button type="button"
                             class="hit-button hit-button--primary eoi-btn">
-                      <span class="btn-text">Continue</span>
+                      <span class="btn-text">{{ ctaLabel }}</span>
                       <span class="btn-loading">
                         <span class="hit-spinner" aria-hidden="true"></span>
                         Creating...

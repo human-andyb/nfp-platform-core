@@ -40,6 +40,17 @@
       <attribute name="hit_organisationinput" />
       <attribute name="hit_contactroleinput" />
 
+      <link-entity name="hit_offering"
+                   from="hit_offeringid"
+                   to="hit_offering"
+                   alias="off"
+                   link-type="outer">
+        <attribute name="hit_displaytitle" />
+        <attribute name="hit_formdescription" />
+        <attribute name="hit_formheadline" />
+        <attribute name="hit_formsummary" />
+      </link-entity>
+
       <filter>
         <condition attribute="hit_offeringacceptanceid"
                    operator="eq"
@@ -66,8 +77,13 @@
 {% assign contactRoleInput = acc.hit_contactroleinput | default: '' %}
 
 
+    {% assign leftTitle = acc['off.hit_displaytitle'] | default: acc['off.hit_offeringname'] | default: offeringName | default: acceptanceTypeLabel | strip %}
+    {% assign leftDescriptionHtml = acc['off.hit_formdescription'] | default: summaryIntro | strip %}
+    {% assign formTitle = acc['off.hit_formheadline'] | default: formTitle | strip %}
+    {% assign formSubtitle = acc['off.hit_formsummary'] | default: formSubtitle | strip %}
+
     {% if offeringName == '' %}
-      {% assign offeringName = acceptanceTypeLabel %}
+      {% assign offeringName = leftTitle %}
     {% endif %}
 
     {% if DEBUG %}
@@ -87,30 +103,12 @@
           <aside class="hit-acceptance__left" aria-label="{{ acceptanceTypeLabel | escape }} summary">
             <div class="hit-card hit-acceptance__summary-card">
 
-              <div class="hit-acceptance__eyebrow">
-                {{ acceptanceTypeLabel | escape }}
-              </div>
-
               <h1 class="hit-acceptance__title">
-                {{ offeringName | escape }}
+                {{ leftTitle | escape }}
               </h1>
 
-              <p class="hit-acceptance__lead">
-                {{ summaryIntro | escape }}
-              </p>
-
-              <div class="hit-acceptance__divider"></div>
-
-              <div class="hit-acceptance__section">
-                <h3 class="hit-acceptance__section-title">
-                  {{ whySectionTitle | escape }}
-                </h3>
-
-                <ul class="hit-list">
-                  <li>Be the 1st to hear when The Hub launches</li>
-                  <li>Learn about the benefits of The Hub</li>
-                  <li>Stay informed about next steps</li>
-                </ul>
+              <div class="hit-acceptance__lead">
+                {{ leftDescriptionHtml }}
               </div>
 
             </div>

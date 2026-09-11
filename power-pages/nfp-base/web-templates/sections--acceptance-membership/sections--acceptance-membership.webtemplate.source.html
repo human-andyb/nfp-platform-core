@@ -56,6 +56,10 @@ Temporary:
         alias="off">
 
         <attribute name="hit_offeringname" />
+        <attribute name="hit_displaytitle" />
+        <attribute name="hit_formdescription" />
+        <attribute name="hit_formheadline" />
+        <attribute name="hit_formsummary" />
 
       </link-entity>
 
@@ -74,6 +78,10 @@ Temporary:
   {% else %}
 
     {% assign offeringName = acc['off.hit_offeringname'] | default: 'Membership' %}
+    {% assign leftTitle = acc['off.hit_displaytitle'] | default: offeringName | default: 'Membership' | strip %}
+    {% assign leftDescriptionHtml = acc['off.hit_formdescription'] | default: '' | strip %}
+    {% assign formTitle = acc['off.hit_formheadline'] | default: 'Tell us about yourself' | strip %}
+    {% assign formSubtitle = acc['off.hit_formsummary'] | default: "We’ll use these details to issue your receipt and keep you updated." | strip %}
     {% assign pricingLabel = acc.hit_pricinglabel | default: '' %}
 
     {% assign totalAmount = acc.hit_totalamounteffective | default: acc.hit_baseamount | default: 0 %}
@@ -96,47 +104,15 @@ Temporary:
 
           <div class="hit-card hit-membership-summary">
 
-            <div class="hit-membership-summary__eyebrow">
-              Membership
-            </div>
-
             <h1 class="hit-membership-summary__title">
-              {{ offeringName | escape }}
+              {{ leftTitle | escape }}
             </h1>
 
-            {% if pricingLabel != blank %}
-              <div class="hit-membership-summary__option">
-                {{ pricingLabel | escape }}
+            {% if leftDescriptionHtml != blank %}
+              <div class="hit-membership-summary__description">
+                {{ leftDescriptionHtml }}
               </div>
             {% endif %}
-
-            <div class="hit-membership-summary__amount">
-              ${{ totalAmount }}
-            </div>
-
-            <div class="hit-membership-summary__description">
-              Membership gives you access to programs, benefits and opportunities
-to support the disability sport and recreation community.
-            </div>
-
-            <ul class="hit-benefit-list">
-
-              <li class="hit-benefit-list__item">
-                <span class="hit-benefit-list__icon" aria-hidden="true">✓</span>
-                <span>Membership Benefits</span>
-              </li>
-
-              <li class="hit-benefit-list__item">
-                <span class="hit-benefit-list__icon" aria-hidden="true">✓</span>
-                <span>Secure online payment</span>
-              </li>
-
-              <li class="hit-benefit-list__item">
-                <span class="hit-benefit-list__icon" aria-hidden="true">✓</span>
-                <span>Your receipt will be sent by email</span>
-              </li>
-
-            </ul>
 
           </div>
 
@@ -151,11 +127,11 @@ to support the disability sport and recreation community.
           <div class="hit-card hit-form-card">
 
             <h2 class="hit-heading">
-              Tell us about yourself
+              {{ formTitle | escape }}
             </h2>
 
             <p class="hit-subtitle">
-              We’ll use these details to issue your receipt and keep you updated.
+              {{ formSubtitle | escape }}
             </p>
 
             <div class="hit-status-pill" aria-label="Current step">
