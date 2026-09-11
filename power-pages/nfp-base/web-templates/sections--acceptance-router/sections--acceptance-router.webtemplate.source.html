@@ -375,6 +375,7 @@ sections--acceptance-router (DEBUG HARDENED)
   var pendingPaymentValidationUrl = "{{ settings['Flow/AcceptanceStatusValidation'] | default: '' }}";
 
   var STATUS_COMPLETED = 815390003;
+  var STATUS_PENDING_PAYMENT = 815390001;
 
   function normaliseStatus(value) {
     if (value === null || value === undefined || value === '') {
@@ -477,6 +478,19 @@ sections--acceptance-router (DEBUG HARDENED)
 
         if (String(statusValue) === String(STATUS_COMPLETED)) {
           refreshRouterWithoutWait();
+          return;
+        }
+
+        if (String(statusValue) === String(STATUS_PENDING_PAYMENT)) {
+          if (debugEnabled) {
+            console.log('[acceptance-router] pending payment confirmed; stopping retries', {
+              acceptanceId: acceptanceId,
+              routeAttempt: currentRouteAttempt,
+              statusValue: statusValue
+            });
+          }
+
+          stopRouterRetry();
           return;
         }
 

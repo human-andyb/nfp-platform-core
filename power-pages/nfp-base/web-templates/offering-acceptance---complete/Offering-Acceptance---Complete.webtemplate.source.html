@@ -83,7 +83,13 @@ Design goals:
 (function(){
   const acceptanceId = "{{ acceptanceid | escape }}";
   const token = "{{ token | escape }}";
+  const STATUS_COMPLETED = 815390003;
   const STATUS_PAID = 815390003;
+  let pollingStopped = false;
+
+  function stopPolling(){
+    pollingStopped = true;
+  }
 
   if(!acceptanceId){
     document.getElementById("pageTitle").textContent = "Invalid session";
@@ -138,7 +144,8 @@ Design goals:
 
     const status = Number(data.hit_acceptancestatus);
 
-    if(status === STATUS_PAID){
+    if(status === STATUS_COMPLETED || status === STATUS_PAID){
+      stopPolling();
       document.getElementById("pageTitle").textContent = "Thank you!";
       document.getElementById("pageSubtitle").textContent = "Your donation has been received.";
       document.getElementById("statusDot").classList.add("ok");
@@ -155,13 +162,19 @@ Design goals:
   }
 
   function poll(){
+    if (pollingStopped) {
+      return;
+    }
+
     fetch(apiUrl(), { headers:{Accept:"application/json"}, cache:"no-store" })
       .then(r => r.json())
       .then(d => {
         const done = render(d);
-        if(!done) setTimeout(poll, 2000);
+        if(!done && !pollingStopped) setTimeout(poll, 2000);
       })
-      .catch(() => setTimeout(poll, 3000));
+      .catch(() => {
+        if (!pollingStopped) setTimeout(poll, 3000);
+      });
   }
 
   poll();

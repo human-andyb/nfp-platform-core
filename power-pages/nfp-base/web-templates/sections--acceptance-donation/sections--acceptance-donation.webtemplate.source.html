@@ -56,6 +56,10 @@ Temporary:
         alias="off">
 
         <attribute name="hit_offeringname" />
+        <attribute name="hit_displaytitle" />
+        <attribute name="hit_formdescription" />
+        <attribute name="hit_formheadline" />
+        <attribute name="hit_formsummary" />
 
       </link-entity>
 
@@ -74,6 +78,10 @@ Temporary:
   {% else %}
 
     {% assign offeringName = acc['off.hit_offeringname'] | default: 'Donation' %}
+    {% assign leftTitle = acc['off.hit_displaytitle'] | default: offeringName | default: 'Donation' | strip %}
+    {% assign leftDescriptionHtml = acc['off.hit_formdescription'] | default: '' | strip %}
+    {% assign formTitle = acc['off.hit_formheadline'] | default: 'Tell us about yourself' | strip %}
+    {% assign formSubtitle = acc['off.hit_formsummary'] | default: "We’ll use these details to issue your receipt and keep you updated." | strip %}
     {% assign pricingLabel = acc.hit_pricinglabel | default: '' %}
 
     {% assign totalAmount = acc.hit_totalamounteffective | default: acc.hit_baseamount | default: 0 %}
@@ -96,28 +104,19 @@ Temporary:
 
           <div class="hit-card hit-donation-summary">
 
-            <div class="hit-donation-summary__eyebrow">
-              Your donation
-            </div>
-
             <h1 class="hit-donation-summary__title">
-              {{ offeringName | escape }}
+              {{ leftTitle | escape }}
             </h1>
-
-            {% if pricingLabel != blank %}
-              <div class="hit-donation-summary__option">
-                {{ pricingLabel | escape }}
-              </div>
-            {% endif %}
 
             <div class="hit-donation-summary__amount">
               ${{ totalAmount }}
             </div>
 
-            <div class="hit-donation-summary__description">
-              Your donation helps create opportunities for people with disability
-              to participate in sport and recreation.
-            </div>
+            {% if leftDescriptionHtml != blank %}
+              <div class="hit-donation-summary__description">
+                {{ leftDescriptionHtml }}
+              </div>
+            {% endif %}
 
             <ul class="hit-benefit-list">
 
@@ -151,11 +150,11 @@ Temporary:
           <div class="hit-card hit-form-card">
 
             <h2 class="hit-heading">
-              Tell us about yourself
+              {{ formTitle | escape }}
             </h2>
 
             <p class="hit-subtitle">
-              We’ll use these details to issue your receipt and keep you updated.
+              {{ formSubtitle | escape }}
             </p>
 
             <div class="hit-status-pill" aria-label="Current step">
@@ -336,12 +335,7 @@ Temporary:
                          class="hit-input"
                          type="tel"
                          autocomplete="tel"
-                         value="{{ acc.hit_mobilephone | escape }}"
-                         aria-describedby="mobileHelp">
-
-                  <p class="hit-help" id="mobileHelp">
-                    Optional. Include a mobile number if you’d like SMS updates.
-                  </p>
+                         value="{{ acc.hit_mobilephone | escape }}">
 
                 </div>
 
@@ -411,6 +405,74 @@ Temporary:
       </div>
 
     </div>
+
+    <style>
+      .hit-donation-summary__description,
+      .hit-donation-summary__description > * {
+        max-width: 100%;
+        width: 100%;
+        min-width: 0;
+      }
+
+      .hit-donation-summary__description {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .hit-donation-summary__description ul,
+      .hit-donation-summary__description ol,
+      .hit-donation-summary__description p,
+      .hit-donation-summary__description img,
+      .hit-donation-summary__description div {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .hit-donation-summary__description ul,
+      .hit-donation-summary__description ol {
+        margin: 0.75rem 0 0;
+        padding-left: 1.25rem;
+        list-style-position: outside;
+      }
+
+      .hit-donation-summary__description li {
+        margin: 0 0 0.4rem;
+        padding-left: 0.2rem;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .hit-benefit-list {
+        margin: 1.5rem 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .hit-benefit-list__item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        margin: 0 0 0.75rem;
+        line-height: 1.5;
+      }
+
+      .hit-benefit-list__item span:last-child {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .hit-benefit-list__icon {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.1rem;
+        height: 1.1rem;
+        margin-top: 0.1rem;
+      }
+    </style>
 
     <script>
       (function(){

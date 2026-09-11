@@ -2064,11 +2064,50 @@ body {
 }
 
 .hit-offering-detail .hit-offering__description{
+  width:100%;
   max-width:44rem;
+  min-width:0;
   margin:1.35rem 0 0;
   color:var(--hit-text-muted);
   font-size:1.05rem;
   line-height:1.65;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+.hit-offering-detail .hit-offering__description > *,
+.hit-offering-detail .hit-offering__description p,
+.hit-offering-detail .hit-offering__description ul,
+.hit-offering-detail .hit-offering__description ol,
+.hit-offering-detail .hit-offering__description img,
+.hit-offering-detail .hit-offering__description figure,
+.hit-offering-detail .hit-offering__description table {
+  max-width:100%;
+  min-width:0;
+}
+
+.hit-offering-detail .hit-offering__description img,
+.hit-offering-detail .hit-offering__description iframe,
+.hit-offering-detail .hit-offering__description video,
+.hit-offering-detail .hit-offering__description svg {
+  display:block;
+  width:100%;
+  max-width:100%;
+  height:auto;
+}
+
+.hit-offering-detail .hit-offering__description ul,
+.hit-offering-detail .hit-offering__description ol{
+  margin:1rem 0;
+  padding-left:1.25rem;
+  list-style-position:outside;
+}
+
+.hit-offering-detail .hit-offering__description li{
+  margin:0 0 .45rem;
+  padding-left:.2rem;
+  overflow-wrap:anywhere;
+  word-break:break-word;
 }
 
 .hit-offering-detail .hit-offering__description p:first-child{
