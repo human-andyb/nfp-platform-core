@@ -188,7 +188,25 @@ sections--acceptance-router (DEBUG HARDENED)
       </div>
     {% endif %}
 
-    {% if waitingForStatus and isPaymentRequired == false %}
+    {% if status == STATUS_COMPLETED %}
+
+      {% if isPaymentRequired %}
+        {% if DEBUG %}
+          <div class="hit-debug-panel hit-debug-panel--include-success">
+            Include: sections--confirmation
+          </div>
+        {% endif %}
+        {% include 'sections--confirmation' %}
+      {% else %}
+        {% if DEBUG %}
+          <div class="hit-debug-panel hit-debug-panel--include-success">
+            Include: sections--confirmation-nonpayment
+          </div>
+        {% endif %}
+        {% include 'sections--confirmation-nonpayment' %}
+      {% endif %}
+
+    {% elsif waitingForStatus and isPaymentRequired == false %}
 
       {% if DEBUG %}
         <div class="hit-debug-panel hit-debug-panel--include-success">
@@ -196,15 +214,6 @@ sections--acceptance-router (DEBUG HARDENED)
         </div>
       {% endif %}
       {% include 'sections--confirmation-nonpayment' %}
-
-    {% elsif status == STATUS_COMPLETED %}
-
-      {% if DEBUG %}
-        <div class="hit-debug-panel hit-debug-panel--include-success">
-          Include: sections--confirmation
-        </div>
-      {% endif %}
-      {% include 'sections--confirmation' %}
 
     {% elsif status == STATUS_PENDING_PAYMENT %}
 
@@ -363,6 +372,7 @@ sections--acceptance-router (DEBUG HARDENED)
   var maximumRouteAttempts = 20;
   var routeRetryDelayMilliseconds = 1250;
   var debugEnabled = {{ DEBUG | json }};
+  var pendingPaymentValidationUrl = "{{ settings['Flow/AcceptanceStatusValidation'] | default: '' }}";
 
   var STATUS_COMPLETED = 815390003;
 
@@ -423,25 +433,44 @@ sections--acceptance-router (DEBUG HARDENED)
       return;
     }
 
-    fetch('/_api/hit_offeringacceptances(' + encodeURIComponent(acceptanceId) + ')?$select=hit_acceptancestatus,hit_stripepaymentintentid,hit_stripeclientsecret', {
+    if (!pendingPaymentValidationUrl) {
+      if (debugEnabled) {
+        console.log('[acceptance-router] no validation URL configured; stopping retry', {
+          acceptanceId: acceptanceId,
+          routeAttempt: currentRouteAttempt
+        });
+      }
+
+      stopRouterRetry();
+      return;
+    }
+
+    fetch(pendingPaymentValidationUrl, {
+      method: 'POST',
       credentials: 'same-origin',
-      headers: { 'Accept': 'application/json' }
+      cache: 'no-store',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      },
+      body: JSON.stringify({
+        acceptanceId: acceptanceId
+      })
     })
       .then(function (res) {
-        if (!res.ok) throw new Error('status check failed: ' + res.status);
+        if (!res.ok) throw new Error('pending payment validation failed: ' + res.status);
         return res.json();
       })
       .then(function (data) {
         var statusValue = normaliseStatus(data && data.hit_acceptancestatus);
-        var paymentIntentId = (data && data.hit_stripepaymentintentid) || '';
-        var clientSecret = (data && data.hit_stripeclientsecret) || '';
 
         if (debugEnabled) {
-          console.log('[acceptance-router] reconcile', {
+          console.log('[acceptance-router] validation result', {
             acceptanceId: acceptanceId,
             statusValue: statusValue,
-            paymentIntentId: paymentIntentId,
-            clientSecretLength: String(clientSecret || '').length,
             routeAttempt: currentRouteAttempt
           });
         }
@@ -457,7 +486,7 @@ sections--acceptance-router (DEBUG HARDENED)
       })
       .catch(function () {
         if (debugEnabled) {
-          console.log('[acceptance-router] reconcile failed; retrying', { acceptanceId: acceptanceId, routeAttempt: currentRouteAttempt });
+          console.log('[acceptance-router] validation failed; retrying', { acceptanceId: acceptanceId, routeAttempt: currentRouteAttempt });
         }
 
         setTimeout(function () {

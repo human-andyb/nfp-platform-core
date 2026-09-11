@@ -430,6 +430,7 @@ to support the disability sport and recreation community.
 
         const errorSummary = root.querySelector("#errSummary");
         const errorSummaryList = root.querySelector("#errSummaryList");
+        const pendingPaymentValidationUrl = "{{ settings['Flow/AcceptanceStatusValidation'] | default: '' }}";
 
         /*
          * The Offering Acceptance router selects the next section based on
@@ -912,27 +913,34 @@ to support the disability sport and recreation community.
           return isValid;
         }
 
-        async function readFreshAcceptanceState(id){
+        async function triggerPendingPaymentValidation(id){
+          if (!pendingPaymentValidationUrl) {
+            return null;
+          }
+
+          const response = await fetch(pendingPaymentValidationUrl, {
+            method: "POST",
+            credentials: "same-origin",
+            cache: "no-store",
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+              "Pragma": "no-cache",
+              "Expires": "0"
+            },
+            body: JSON.stringify({
+              acceptanceId: id
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error("Pending payment validation flow failed.");
+          }
+
           try {
-            const response = await fetch(
-              "/_api/hit_offeringacceptances(" +
-                encodeURIComponent(id) +
-              ")?$select=hit_acceptancestatus,hit_stripepaymentintentid,hit_stripeclientsecret",
-              {
-                credentials: "same-origin",
-                headers: {
-                  "Accept": "application/json"
-                }
-              }
-            );
-
-            if (!response.ok) {
-              return null;
-            }
-
             return await response.json();
-          } catch (error) {
-            console.warn("Fresh acceptance state read failed:", error);
+          } catch (_ignore) {
             return null;
           }
         }
@@ -1014,10 +1022,10 @@ to support the disability sport and recreation community.
             );
           }
 
-          const freshState = await readFreshAcceptanceState(id);
-
-          if (freshState && freshState.hit_acceptancestatus) {
-            console.log("Fresh acceptance state loaded:", freshState);
+          try {
+            await triggerPendingPaymentValidation(id);
+          } catch (flowError) {
+            console.warn("Pending payment validation flow call failed after PATCH. Continuing router retry flow.", flowError);
           }
 
           return id;
