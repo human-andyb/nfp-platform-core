@@ -122,7 +122,7 @@
 - adx_name: Webapi/hit_offering/fields
   adx_sitesettingid: 81769fa8-f311-f111-8342-000d3a7a0cab
   adx_source: 0
-  adx_value: '*'
+  adx_value: hit_offeringid,hit_offeringname,hit_displaytitle,hit_summary,hit_slug,hit_imageurl,hit_imageurldetail,hit_imageurlcardgallery,hit_offeringtype,hit_isactive,hit_webvisible,hit_formheadline,hit_formsummary,hit_formdescription,hit_pricingmodel,hit_allowrecurring,hit_subscriptionfrequency,hit_courseaccessaudience,hit_courseaccessplan
 - adx_name: EnablePowerBIEmbedded
   adx_sitesettingid: 81f4e7b2-0f46-f111-bec6-6045bd3d0cb5
   adx_source: 0
@@ -248,7 +248,7 @@
 - adx_name: Webapi/hit_offeringacceptance/fields
   adx_sitesettingid: d994f1f5-e20a-f111-8342-000d3a7a0cab
   adx_source: 0
-  adx_value: '*'
+  adx_value: hit_offeringacceptanceid,hit_offering,hit_Offering,hit_priceoption,hit_name,hit_email,hit_firstname,hit_lastname,hit_mobilephone,hit_postcode,hit_dsreoirole,hit_organisationinput,hit_contactroleinput,hit_redemptioncode,hit_courseaccessaudience,hit_courseaccessplan,hit_pricinglabel,hit_quantity,hit_unitprice,hit_baseamount,hit_totalamount,hit_totalamounteffective,hit_donationaddonamount,hit_paymentrequired,hit_acceptancestatus,hit_clienttoken,hit_stripepaymentintentid,hit_stripechargeid
 - adx_name: Authentication/OpenIdConnect/AzureAD/Caption
   adx_sitesettingid: dbe3c0f1-5509-f111-8407-000d3a7a0cab
   adx_value: Microsoft Entra ID
