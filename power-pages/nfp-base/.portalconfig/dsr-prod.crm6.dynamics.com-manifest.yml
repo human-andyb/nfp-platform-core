@@ -487,10 +487,6 @@ adx_sitesetting:
   DisplayName: Home/HeroCtaUrl
   CheckSum: 32d6b1bf77be255c2c4b47620d269e4a6816570775ebd09da83b4cfc660b46e4
   IsDeleted: false
-- RecordId: 2916dd29-6e81-f111-ab0f-000d3aca977a
-  DisplayName: Stripe/CreateCustomerSetupIntentUrl
-  CheckSum: 24476f4c05b8d8ec0fbc4dd3cd4912006efa5544e1b529153367e126e937c175
-  IsDeleted: false
 - RecordId: 2afd33bc-1046-f111-bec6-6045bd3d0cb5
   DisplayName: PowerBI.Enabled
   CheckSum: 73624fa489edfacce2dfb6f9c176d1bc869258c443e64d6d34054e2f417d19b6
@@ -722,10 +718,6 @@ adx_sitesetting:
 - RecordId: e06d7395-7138-f111-88b4-000d3a7a0323
   DisplayName: Home/HeroType
   CheckSum: a274d59092029756bda398af2259f7fe5599fa7c2ee943b2859bd509ac6028e2
-  IsDeleted: false
-- RecordId: e67c4447-7535-f111-88b4-000d3a7a0cab
-  DisplayName: Stripe/PublishableKey
-  CheckSum: 82126dab7bfbb344e385e142f2dcf67bf9f9ea665239cdc8fe36a4e3a2482752
   IsDeleted: false
 - RecordId: ed324a1d-5076-4ce1-9819-f5f083312e7a
   DisplayName: Authentication/LoginThrottling/MaxAttemptsTimeLimitTimeSpan

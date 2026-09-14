@@ -52,10 +52,6 @@
   adx_sitesettingid: 23661ca0-7238-f111-88b4-000d3a7a0323
   adx_source: 0
   adx_value: /donations/
-- adx_name: Stripe/CreateCustomerSetupIntentUrl
-  adx_sitesettingid: 2916dd29-6e81-f111-ab0f-000d3aca977a
-  adx_source: 0
-  adx_value: https://c767551e0076ed96815606468fc034.c3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/28/workflows/6325f1b2153b4e4a839f8d2f1ab2bc77/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xbkhk8xIUeaMHVLnrtv3CCSjCc3QQwNZgvVrHV-lzs0
 - adx_name: PowerBI.Enabled
   adx_sitesettingid: 2afd33bc-1046-f111-bec6-6045bd3d0cb5
   adx_source: 0
@@ -265,10 +261,6 @@
   adx_sitesettingid: e06d7395-7138-f111-88b4-000d3a7a0323
   adx_source: 0
   adx_value: image
-- adx_name: Stripe/PublishableKey
-  adx_sitesettingid: e67c4447-7535-f111-88b4-000d3a7a0cab
-  adx_source: 0
-  adx_value: pk_test_51TgIZSATsrPcl80UEbdM8KuI7l8HFQPpsFGaO3bxJPvPug5TeWHnvmfObFWNeWwyJVXQalgfnXZUTXDGmxAG9y0L004FCWZaV2
 - adx_description: 'The amount of time the Authentication/LoginThrottling/MaxInvaildAttemptsFromIPAddress are to be within before the IP address has to wait Authentication/LoginThrottling/IpAddressTimeoutTimeSpan. Default: 00:05:00 (5 mins)'
   adx_name: Authentication/LoginThrottling/MaxAttemptsTimeLimitTimeSpan
   adx_sitesettingid: ed324a1d-5076-4ce1-9819-f5f083312e7a
