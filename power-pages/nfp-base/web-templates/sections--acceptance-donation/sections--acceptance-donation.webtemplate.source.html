@@ -390,7 +390,7 @@ Temporary:
 
                 </button>
 
-                <p class="hit-form-footnote">
+                <p id="saveFootnote" class="hit-form-footnote">
                   Your details will be saved before continuing to secure payment.
                 </p>
 
@@ -510,6 +510,7 @@ Temporary:
 
         const errorSummary = root.querySelector("#errSummary");
         const errorSummaryList = root.querySelector("#errSummaryList");
+        const saveFootnote = root.querySelector("#saveFootnote");
         const pendingPaymentValidationUrl = "{{ settings['Flow/AcceptanceStatusValidation'] | default: '' }}";
 
         /*
@@ -645,7 +646,7 @@ Temporary:
           }
         }
 
-        function setLoading(isLoading, loadingMessage){
+        function setLoading(isLoading, loadingMessage, footnoteMessage){
           if (!continueButton) {
             return;
           }
@@ -676,6 +677,13 @@ Temporary:
 
           if (loadingText && loadingMessage) {
             loadingText.textContent = loadingMessage;
+          }
+
+          if (saveFootnote) {
+            saveFootnote.textContent =
+              isLoading && footnoteMessage
+                ? footnoteMessage
+                : "Your details will be saved before continuing to secure payment.";
           }
         }
 
@@ -1130,7 +1138,8 @@ Temporary:
 
           setLoading(
             true,
-            "Saving..."
+            "Saving...",
+            "We are saving your details and establishing a secure payment session with Stripe. This usually takes 10 - 25 seconds. You will be redirected automatically."
           );
 
           try {
