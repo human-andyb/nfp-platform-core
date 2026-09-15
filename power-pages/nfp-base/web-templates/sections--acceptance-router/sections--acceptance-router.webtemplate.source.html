@@ -19,6 +19,10 @@ sections--acceptance-router (DEBUG HARDENED)
 {% assign STATUS_COMPLETED = 815390003 %}
 {% assign STATUS_FAILED = 815390004 %}
 {% assign STATUS_CANCELLED = 815390005 %}
+{% assign STATUS_PENDING_PAYMENT_STR = STATUS_PENDING_PAYMENT | append: '' %}
+{% assign STATUS_COMPLETED_STR = STATUS_COMPLETED | append: '' %}
+{% assign STATUS_FAILED_STR = STATUS_FAILED | append: '' %}
+{% assign STATUS_CANCELLED_STR = STATUS_CANCELLED | append: '' %}
 
 <div class="hit-app-shell">
 
@@ -97,15 +101,10 @@ sections--acceptance-router (DEBUG HARDENED)
     {% assign statusLabel = '' %}
 
     {% if statusRaw %}
-      {% if statusRaw.value %}
-        {% assign status = statusRaw.value %}
-      {% else %}
-        {% assign status = statusRaw %}
-      {% endif %}
+      {% assign status = statusRaw.value | default: statusRaw.Value | default: statusRaw.code | default: statusRaw.Code | default: statusRaw %}
+      {% assign status = status | append: '' | strip %}
 
-      {% if statusRaw.label %}
-        {% assign statusLabel = statusRaw.label %}
-      {% endif %}
+      {% assign statusLabel = statusRaw.label | default: statusRaw.Label | default: '' %}
     {% endif %}
 
     {%- comment -%}
@@ -174,12 +173,12 @@ sections--acceptance-router (DEBUG HARDENED)
     {% if DEBUG %}
       <div class="hit-debug-panel hit-debug-panel--decision">
         <div>Routing decision</div>
-        <div>status == COMPLETED ? {% if status == STATUS_COMPLETED %}true{% else %}false{% endif %}</div>
-        <div>status == PENDING_PAYMENT ? {% if status == STATUS_PENDING_PAYMENT %}true{% else %}false{% endif %}</div>
-        <div>status == FAILED ? {% if status == STATUS_FAILED %}true{% else %}false{% endif %}</div>
-        <div>status == CANCELLED ? {% if status == STATUS_CANCELLED %}true{% else %}false{% endif %}</div>
+        <div>status == COMPLETED ? {% if status == STATUS_COMPLETED_STR %}true{% else %}false{% endif %}</div>
+        <div>status == PENDING_PAYMENT ? {% if status == STATUS_PENDING_PAYMENT_STR %}true{% else %}false{% endif %}</div>
+        <div>status == FAILED ? {% if status == STATUS_FAILED_STR %}true{% else %}false{% endif %}</div>
+        <div>status == CANCELLED ? {% if status == STATUS_CANCELLED_STR %}true{% else %}false{% endif %}</div>
         <div>fallback to acceptance form branch ? 
-          {% if status != STATUS_COMPLETED and status != STATUS_PENDING_PAYMENT and status != STATUS_FAILED and status != STATUS_CANCELLED %}
+          {% if status != STATUS_COMPLETED_STR and status != STATUS_PENDING_PAYMENT_STR and status != STATUS_FAILED_STR and status != STATUS_CANCELLED_STR %}
             true
           {% else %}
             false
@@ -188,7 +187,7 @@ sections--acceptance-router (DEBUG HARDENED)
       </div>
     {% endif %}
 
-    {% if status == STATUS_COMPLETED %}
+    {% if status == STATUS_COMPLETED_STR %}
 
       {% if isPaymentRequired %}
         {% if DEBUG %}
@@ -206,7 +205,7 @@ sections--acceptance-router (DEBUG HARDENED)
         {% include 'sections--confirmation-nonpayment' %}
       {% endif %}
 
-    {% elsif status == STATUS_PENDING_PAYMENT %}
+    {% elsif status == STATUS_PENDING_PAYMENT_STR %}
 
       {% if requiresPayment and paymentIntentId == '' %}
 
@@ -228,13 +227,13 @@ sections--acceptance-router (DEBUG HARDENED)
 
       {% endif %}
 
-    {% elsif status == STATUS_FAILED %}
+    {% elsif status == STATUS_FAILED_STR %}
 
       <div class="alert alert-danger">
         Payment failed. Please try again.
       </div>
 
-    {% elsif status == STATUS_CANCELLED %}
+    {% elsif status == STATUS_CANCELLED_STR %}
 
       <div class="alert alert-warning">
         This transaction has been cancelled.
