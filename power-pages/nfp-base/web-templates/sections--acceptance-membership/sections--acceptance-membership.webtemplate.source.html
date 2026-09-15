@@ -109,7 +109,7 @@ Temporary:
             </h1>
 
             {% if leftDescriptionHtml != blank %}
-              <div class="hit-membership-summary__description">
+              <div class="hit-membership-summary__description hit-rich-text-description">
                 {{ leftDescriptionHtml }}
               </div>
             {% endif %}
@@ -409,19 +409,6 @@ Temporary:
         width: 100%;
       }
 
-      .hit-membership-summary__description ul,
-      .hit-membership-summary__description ol {
-        margin: 0.75rem 0 0;
-        padding-left: 1.25rem;
-        list-style-position: outside;
-      }
-
-      .hit-membership-summary__description li {
-        margin: 0 0 0.4rem;
-        padding-left: 0.2rem;
-        overflow-wrap: anywhere;
-        word-break: break-word;
-      }
     </style>
 
     <script>

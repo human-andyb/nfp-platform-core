@@ -107,7 +107,7 @@
                 {{ leftTitle | escape }}
               </h1>
 
-              <div class="hit-acceptance__lead">
+              <div class="hit-acceptance__lead hit-rich-text-description">
                 {{ leftDescriptionHtml }}
               </div>
 
@@ -272,6 +272,7 @@
         const successBox = document.getElementById("hitSuccessMessage");
 
         const currentUrl = new URL(window.location.href);
+        const isRouterPage = currentUrl.searchParams.get("page") === "offering-acceptance";
         const waitingForStatus = currentUrl.searchParams.get("waitforpayment") === "1";
         const parsedRouteAttempt = parseInt(currentUrl.searchParams.get("routeattempt") || "0", 10);
         const currentRouteAttempt = Number.isFinite(parsedRouteAttempt) ? parsedRouteAttempt : 0;
@@ -506,6 +507,11 @@ const fieldIds = [
         }
 
         if(waitingForStatus){
+          // When rendered through the acceptance router, let the router own polling/retry.
+          if(isRouterPage){
+            return;
+          }
+
           retryRouter();
           return;
         }
@@ -610,12 +616,6 @@ const fieldIds = [
               template: "sections--acceptance-eoi"
             });
 
-            try {
-              await triggerPendingPaymentValidation(acceptanceId);
-            } catch (flowError) {
-              console.warn("Pending payment validation flow call failed after PATCH. Continuing router retry flow.", flowError);
-            }
-
             redirectToRouter();
             return;
 
@@ -674,17 +674,4 @@ const fieldIds = [
   width: 100%;
 }
 
-.hit-acceptance__lead ul,
-.hit-acceptance__lead ol {
-  margin: 0.75rem 0 0;
-  padding-left: 1.25rem;
-  list-style-position: outside;
-}
-
-.hit-acceptance__lead li {
-  margin: 0 0 0.4rem;
-  padding-left: 0.2rem;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
 </style>

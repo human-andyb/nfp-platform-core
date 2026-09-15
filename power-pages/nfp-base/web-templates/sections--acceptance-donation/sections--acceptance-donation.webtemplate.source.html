@@ -113,7 +113,7 @@ Temporary:
             </div>
 
             {% if leftDescriptionHtml != blank %}
-              <div class="hit-donation-summary__description">
+              <div class="hit-donation-summary__description hit-rich-text-description">
                 {{ leftDescriptionHtml }}
               </div>
             {% endif %}
@@ -444,20 +444,6 @@ Temporary:
       .hit-donation-summary__description div {
         max-width: 100%;
         width: 100%;
-      }
-
-      .hit-donation-summary__description ul,
-      .hit-donation-summary__description ol {
-        margin: 0.75rem 0 0;
-        padding-left: 1.25rem;
-        list-style-position: outside;
-      }
-
-      .hit-donation-summary__description li {
-        margin: 0 0 0.4rem;
-        padding-left: 0.2rem;
-        overflow-wrap: anywhere;
-        word-break: break-word;
       }
 
       .hit-benefit-list {

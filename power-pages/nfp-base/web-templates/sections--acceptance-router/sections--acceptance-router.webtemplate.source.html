@@ -11,6 +11,11 @@ sections--acceptance-router (DEBUG HARDENED)
 {% assign DEBUG = request.params.debug == '1' %}
 {% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
 {% assign waitingForStatus = request.params.waitforpayment == '1' %}
+{% assign flowStatusHint = request.params.flowstatus | default: '' | downcase | strip %}
+{% assign forceCompletedFromFlow = false %}
+{% if flowStatusHint == 'completed' %}
+  {% assign forceCompletedFromFlow = true %}
+{% endif %}
 
 {% assign STATUS_DRAFT = 0 %}
 {% assign STATUS_PENDING_INFORMATION = 815390000 %}
@@ -107,6 +112,11 @@ sections--acceptance-router (DEBUG HARDENED)
       {% assign statusLabel = statusRaw.label | default: statusRaw.Label | default: '' %}
     {% endif %}
 
+    {% assign routeStatus = status %}
+    {% if forceCompletedFromFlow %}
+      {% assign routeStatus = STATUS_COMPLETED_STR %}
+    {% endif %}
+
     {%- comment -%}
     SAFE: payment flags
     {%- endcomment -%}
@@ -146,6 +156,8 @@ sections--acceptance-router (DEBUG HARDENED)
         <div><strong>Field resolution</strong></div>
         <div>statusRaw exists = {% if statusRaw %}true{% else %}false{% endif %}</div>
         <div>status = {{ status }}</div>
+        <div>routeStatus = {{ routeStatus }}</div>
+        <div>flowStatusHint = {{ flowStatusHint }}</div>
         <div>statusLabel = {{ statusLabel }}</div>
         <div>requiresPayment = {{ requiresPayment }}</div>
         <div>isPaymentRequired = {{ isPaymentRequired }}</div>
@@ -173,12 +185,12 @@ sections--acceptance-router (DEBUG HARDENED)
     {% if DEBUG %}
       <div class="hit-debug-panel hit-debug-panel--decision">
         <div>Routing decision</div>
-        <div>status == COMPLETED ? {% if status == STATUS_COMPLETED_STR %}true{% else %}false{% endif %}</div>
-        <div>status == PENDING_PAYMENT ? {% if status == STATUS_PENDING_PAYMENT_STR %}true{% else %}false{% endif %}</div>
-        <div>status == FAILED ? {% if status == STATUS_FAILED_STR %}true{% else %}false{% endif %}</div>
-        <div>status == CANCELLED ? {% if status == STATUS_CANCELLED_STR %}true{% else %}false{% endif %}</div>
+        <div>routeStatus == COMPLETED ? {% if routeStatus == STATUS_COMPLETED_STR %}true{% else %}false{% endif %}</div>
+        <div>routeStatus == PENDING_PAYMENT ? {% if routeStatus == STATUS_PENDING_PAYMENT_STR %}true{% else %}false{% endif %}</div>
+        <div>routeStatus == FAILED ? {% if routeStatus == STATUS_FAILED_STR %}true{% else %}false{% endif %}</div>
+        <div>routeStatus == CANCELLED ? {% if routeStatus == STATUS_CANCELLED_STR %}true{% else %}false{% endif %}</div>
         <div>fallback to acceptance form branch ? 
-          {% if status != STATUS_COMPLETED_STR and status != STATUS_PENDING_PAYMENT_STR and status != STATUS_FAILED_STR and status != STATUS_CANCELLED_STR %}
+          {% if routeStatus != STATUS_COMPLETED_STR and routeStatus != STATUS_PENDING_PAYMENT_STR and routeStatus != STATUS_FAILED_STR and routeStatus != STATUS_CANCELLED_STR %}
             true
           {% else %}
             false
@@ -187,7 +199,7 @@ sections--acceptance-router (DEBUG HARDENED)
       </div>
     {% endif %}
 
-    {% if status == STATUS_COMPLETED_STR %}
+    {% if routeStatus == STATUS_COMPLETED_STR %}
 
       {% if isPaymentRequired %}
         {% if DEBUG %}
@@ -205,7 +217,7 @@ sections--acceptance-router (DEBUG HARDENED)
         {% include 'sections--confirmation-nonpayment' %}
       {% endif %}
 
-    {% elsif status == STATUS_PENDING_PAYMENT_STR %}
+    {% elsif routeStatus == STATUS_PENDING_PAYMENT_STR %}
 
       {% if requiresPayment and paymentIntentId == '' %}
 
@@ -227,13 +239,13 @@ sections--acceptance-router (DEBUG HARDENED)
 
       {% endif %}
 
-    {% elsif status == STATUS_FAILED_STR %}
+    {% elsif routeStatus == STATUS_FAILED_STR %}
 
       <div class="alert alert-danger">
         Payment failed. Please try again.
       </div>
 
-    {% elsif status == STATUS_CANCELLED_STR %}
+    {% elsif routeStatus == STATUS_CANCELLED_STR %}
 
       <div class="alert alert-warning">
         This transaction has been cancelled.
@@ -356,12 +368,13 @@ sections--acceptance-router (DEBUG HARDENED)
 (function () {
   var acceptanceId = "{{ acceptanceId | default: '' | escape }}";
   var currentUrl = new URL(window.location.href);
+  var flowStatusHint = currentUrl.searchParams.get('flowstatus') || '';
   var waitingForStatus = currentUrl.searchParams.get('waitforpayment') === '1';
   var parsedRouteAttempt = parseInt(currentUrl.searchParams.get('routeattempt') || '0', 10);
   var currentRouteAttempt = Number.isFinite(parsedRouteAttempt) ? parsedRouteAttempt : 0;
   var maximumRouteAttempts = 20;
   var routeRetryDelayMilliseconds = 1250;
-  var debugEnabled = {{ DEBUG | json }};
+  var debugEnabled = "{{ DEBUG | json }}" === "true";
   var pendingPaymentValidationUrl = "{{ settings['Flow/AcceptanceStatusValidation'] | default: '' }}";
 
   var STATUS_COMPLETED = 815390003;
@@ -398,10 +411,13 @@ sections--acceptance-router (DEBUG HARDENED)
     return targetUrl.toString();
   }
 
-  function refreshRouterWithoutWait() {
+  function refreshRouterWithoutWait(flowStatus) {
     var targetUrl = new URL(window.location.pathname, window.location.origin);
     targetUrl.searchParams.set('page', 'offering-acceptance');
     targetUrl.searchParams.set('acceptanceid', acceptanceId);
+    if (flowStatus) {
+      targetUrl.searchParams.set('flowstatus', flowStatus);
+    }
     targetUrl.searchParams.set('_ts', String(Date.now()));
     window.location.replace(targetUrl.toString());
   }
@@ -410,7 +426,18 @@ sections--acceptance-router (DEBUG HARDENED)
     var cleanUrl = new URL(window.location.href);
     cleanUrl.searchParams.delete('waitforpayment');
     cleanUrl.searchParams.delete('routeattempt');
+    cleanUrl.searchParams.delete('flowstatus');
     cleanUrl.searchParams.delete('_ts');
+    window.history.replaceState({}, document.title, cleanUrl.toString());
+  }
+
+  function clearFlowStatusHintFromUrl() {
+    if (!flowStatusHint) {
+      return;
+    }
+
+    var cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete('flowstatus');
     window.history.replaceState({}, document.title, cleanUrl.toString());
   }
 
@@ -467,7 +494,7 @@ sections--acceptance-router (DEBUG HARDENED)
         }
 
         if (String(statusValue) === String(STATUS_COMPLETED)) {
-          refreshRouterWithoutWait();
+          refreshRouterWithoutWait('completed');
           return;
         }
 
@@ -501,7 +528,10 @@ sections--acceptance-router (DEBUG HARDENED)
 
   if (waitingForStatus) {
     pollForCompletion();
+    return;
   }
+
+  clearFlowStatusHintFromUrl();
 })();
 </script>
 

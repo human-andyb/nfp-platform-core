@@ -100,6 +100,25 @@ Priority:
 
   {% else %}
 
+    <style>
+      /* Fallback overrides: ensure sticky CTA and rich-text marker styling even when shared CSS is stale/cached. */
+      .hit-offering-detail .hit-rich-text-description li::marker {
+        color: var(--hit-brand-primary, #007f89) !important;
+        font-size: 1.9em !important;
+      }
+
+      @media (min-width: 992px) {
+        .hit-offering-detail .hit-capture-panel {
+          position: sticky !important;
+          top: calc(var(--hit-header-offset, 80px) + .5rem) !important;
+          max-height: calc(100vh - var(--hit-header-offset, 80px) - 1.5rem) !important;
+          overflow-y: auto !important;
+          overflow-x: hidden !important;
+          z-index: 950 !important;
+        }
+      }
+    </style>
+
     {% assign hasPricing = false %}
     {% assign offeringTypeLabel = '' %}
     {% assign freeTitle = 'Register your interest' %}
@@ -155,7 +174,7 @@ Priority:
 
 
             {% if offering.hit_description != blank %}
-              <div class="hit-offering__description">
+              <div class="hit-offering__description hit-rich-text-description">
                 {{ offering.hit_description }}
               </div>
             {% endif %}

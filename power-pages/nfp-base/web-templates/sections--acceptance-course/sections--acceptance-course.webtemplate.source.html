@@ -165,7 +165,7 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
             <h1 class="hit-acceptance__title">{{ leftTitle | escape }}</h1>
 
             {% if leftDescriptionHtml != '' %}
-              <div class="hit-acceptance__description">{{ leftDescriptionHtml }}</div>
+              <div class="hit-acceptance__description hit-rich-text-description">{{ leftDescriptionHtml }}</div>
             {% endif %}
 
           </div>
@@ -395,20 +395,6 @@ Adding a new audience: add one entry to AUDIENCE_CONFIG in the JS block only.
     .hit-acceptance__description ol {
       max-width: 100%;
       width: 100%;
-    }
-
-    .hit-acceptance__description ul,
-    .hit-acceptance__description ol {
-      margin: 0.75rem 0 0;
-      padding-left: 1.25rem;
-      list-style-position: outside;
-    }
-
-    .hit-acceptance__description li {
-      margin: 0 0 0.4rem;
-      padding-left: 0.2rem;
-      overflow-wrap: anywhere;
-      word-break: break-word;
     }
 
     .hit-acceptance__cost-section {
