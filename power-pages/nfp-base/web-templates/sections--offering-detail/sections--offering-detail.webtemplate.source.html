@@ -104,13 +104,18 @@ Priority:
       /* Fallback overrides: ensure sticky CTA and rich-text marker styling even when shared CSS is stale/cached. */
       .hit-offering-detail .hit-rich-text-description li::marker {
         color: var(--hit-brand-primary, #007f89) !important;
-        font-size: 1.9em !important;
+        font-size: 3em !important;
       }
 
       @media (min-width: 992px) {
-        .hit-offering-detail .hit-capture-panel {
+        .hit-offering-detail .hit-offering__capture {
           position: sticky !important;
           top: calc(var(--hit-header-offset, 80px) + .5rem) !important;
+          align-self: start !important;
+        }
+
+        .hit-offering-detail .hit-capture-panel {
+          position: static !important;
           max-height: calc(100vh - var(--hit-header-offset, 80px) - 1.5rem) !important;
           overflow-y: auto !important;
           overflow-x: hidden !important;
