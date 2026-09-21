@@ -17,6 +17,7 @@ Temporary:
 
 {% assign DEBUG = debug | default: request.params.debug == '1' %}
 {% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
+{% assign pendingPaymentValidationUrl = settings['Flow/AcceptanceStatusValidation'] | default: '' | strip %}
 
 {% if acceptanceId == '' %}
 
@@ -449,6 +450,9 @@ Temporary:
          */
 
         const paymentPagePath = "/Payment/";
+        const pendingPaymentValidationUrl =
+          String("{{ pendingPaymentValidationUrl | escape }}")
+            .replace(/&amp;/g, "&");
         const initialAcceptanceToken = "{{ acc.hit_clienttoken | default: '' | escape }}";
         const maxTokenPollAttempts = 20;
         const tokenPollDelayMilliseconds = 1250;
@@ -994,6 +998,59 @@ Temporary:
           return tokenInput.value;
         }
 
+        async function triggerPendingPaymentValidation(acceptanceIdValue){
+          const endpoint = String(
+            pendingPaymentValidationUrl || ""
+          ).trim();
+
+          if (!endpoint) {
+            throw new Error(
+              "Payment validation endpoint is not configured. Please contact support."
+            );
+          }
+
+          if (
+            endpoint.indexOf(
+              "powerplatform.com/powerautomate/automations/direct"
+            ) !== -1 && endpoint.indexOf("sig=") === -1
+          ) {
+            throw new Error(
+              "Payment validation endpoint is an authenticated runtime URL. Configure Flow/AcceptanceStatusValidation with a signed HTTP trigger URL before using this page."
+            );
+          }
+
+          const payload = JSON.stringify({
+            acceptanceId: acceptanceIdValue
+          });
+
+          if (navigator.sendBeacon) {
+            const beaconQueued = navigator.sendBeacon(
+              endpoint,
+              new Blob(
+                [payload],
+                { type: "application/json" }
+              )
+            );
+
+            if (beaconQueued) {
+              return;
+            }
+          }
+
+          await fetch(
+            endpoint,
+            {
+              method: "POST",
+              mode: "no-cors",
+              credentials: "omit",
+              headers: {
+                "Content-Type": "text/plain;charset=UTF-8"
+              },
+              body: payload
+            }
+          );
+        }
+
         function validate(){
           clearErrorSummary();
 
@@ -1154,7 +1211,11 @@ Temporary:
           const role = isOrgContext
             ? getValue("role")
             : "";
-          const amountValue = {{ totalAmount | json }};
+          const amountValue = Number(
+            "{{ totalAmount | default: 0 | escape }}"
+          );
+          const paymentRequired =
+            Number(amountValue || 0) > 0;
 
           const inputJsonModel = {
             schemaVersion: 2,
@@ -1242,7 +1303,10 @@ Temporary:
             );
           }
 
-          return id;
+          return {
+            acceptanceId: id,
+            paymentRequired: paymentRequired
+          };
         }
 
         async function handleContinue(){
@@ -1276,15 +1340,29 @@ Temporary:
           );
 
           try {
-            const savedAcceptanceId =
+            const saveResult =
               await updateAcceptance();
+
+            if (saveResult.paymentRequired) {
+              setStepText(
+                "Finalising payment setup"
+              );
+
+              setProgressMessage(
+                "Finalising payment setup before redirecting you to secure payment..."
+              );
+
+              await triggerPendingPaymentValidation(
+                saveResult.acceptanceId
+              );
+            }
 
             /*
              * Primary path: go directly to dedicated payment page.
              * Fallback: use router retry mode when token is unavailable.
              */
             await redirectToPaymentPage(
-              savedAcceptanceId
+              saveResult.acceptanceId
             );
 
           } catch (error) {

@@ -19,6 +19,7 @@ Behavior:
 {% assign DEBUG = debug | default: request.params.debug == '1' %}
 {% assign acceptanceId = request.params['acceptanceid'] | default: '' | strip %}
 {% assign explicitEventId = request.params['eventid'] | default: '' | strip %}
+{% assign pendingPaymentValidationUrl = settings['Flow/AcceptanceStatusValidation'] | default: '' | strip %}
 
 {% assign acceptanceCount = 0 %}
 {% assign eventCount = 0 %}
@@ -313,6 +314,8 @@ fixedPrice={{ fixedPrice }}
 <script>
 (function () {
   var DEBUG = (new URLSearchParams(window.location.search).get('debug') === '1');
+  var pendingPaymentValidationUrl = String("{{ pendingPaymentValidationUrl | escape }}")
+    .replace(/&amp;/g, '&');
   var dbgEl = document.getElementById('hitDebug');
 
   function dbg(msg, obj){
@@ -418,6 +421,36 @@ fixedPrice={{ fixedPrice }}
     })();
 
     return _csrfPromise;
+  }
+
+  async function triggerPendingPaymentValidation(acceptanceId){
+    var endpoint = (pendingPaymentValidationUrl || '').toString().trim();
+    if (!endpoint) {
+      throw new Error('Payment validation endpoint is not configured. Please contact support.');
+    }
+
+    if (endpoint.indexOf('powerplatform.com/powerautomate/automations/direct') !== -1 && endpoint.indexOf('sig=') === -1) {
+      throw new Error('Payment validation endpoint is an authenticated runtime URL. Configure Flow/AcceptanceStatusValidation with a signed HTTP trigger URL before using this page.');
+    }
+
+    var payload = JSON.stringify({ acceptanceId: acceptanceId });
+
+    if (navigator.sendBeacon) {
+      var beaconQueued = navigator.sendBeacon(endpoint, new Blob([payload], { type: 'application/json' }));
+      if (beaconQueued) {
+        return;
+      }
+    }
+
+    await fetch(endpoint, {
+      method: 'POST',
+      mode: 'no-cors',
+      credentials: 'omit',
+      headers: {
+        'Content-Type': 'text/plain;charset=UTF-8'
+      },
+      body: payload
+    });
   }
 
   var btn = document.getElementById('hitSubmitBtn');
@@ -581,7 +614,10 @@ fixedPrice={{ fixedPrice }}
       throw new Error(raw || ('HTTP ' + res.status));
     }
 
-    return acceptanceId;
+    return {
+      acceptanceId: acceptanceId,
+      paymentRequired: Number(base) > 0
+    };
   }
 
   btn.addEventListener('click', async function () {
@@ -595,7 +631,15 @@ fixedPrice={{ fixedPrice }}
     showAlert('Saving your details...', 'info');
 
     try {
-      var acceptanceId = await updateAcceptance();
+      var saveResult = await updateAcceptance();
+      var acceptanceId = saveResult.acceptanceId;
+      var paymentRequired = !!saveResult.paymentRequired;
+
+      if (paymentRequired) {
+        showAlert('Finalising payment setup...', 'info');
+        await triggerPendingPaymentValidation(acceptanceId);
+      }
+
       showAlert('Payment is ready. Redirecting now...', 'info');
       window.location.replace(buildRouterUrl(0, acceptanceId));
     } catch (e) {
