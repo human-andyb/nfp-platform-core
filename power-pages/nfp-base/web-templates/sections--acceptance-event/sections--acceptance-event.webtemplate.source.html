@@ -435,19 +435,12 @@ fixedPrice={{ fixedPrice }}
 
     var payload = JSON.stringify({ acceptanceId: acceptanceId });
 
-    if (navigator.sendBeacon) {
-      var beaconQueued = navigator.sendBeacon(endpoint, new Blob([payload], { type: 'application/json' }));
-      if (beaconQueued) {
-        return;
-      }
-    }
-
     await fetch(endpoint, {
       method: 'POST',
-      mode: 'no-cors',
+      mode: 'cors',
       credentials: 'omit',
       headers: {
-        'Content-Type': 'text/plain;charset=UTF-8'
+        'Content-Type': 'application/json'
       },
       body: payload
     });
