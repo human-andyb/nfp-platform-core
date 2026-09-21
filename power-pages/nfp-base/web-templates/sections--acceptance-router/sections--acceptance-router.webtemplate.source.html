@@ -11,13 +11,13 @@ sections--acceptance-router (DEBUG HARDENED)
 {% assign DEBUG = request.params.debug == '1' %}
 {% assign acceptanceId = request.params.acceptanceid | default: '' | strip %}
 
-{% assign STATUS_DRAFT = 0 %}
-{% assign STATUS_PENDING_INFORMATION = 815390000 %}
-{% assign STATUS_PENDING_PAYMENT = 815390001 %}
-{% assign STATUS_PENDING_APPROVAL = 815390002 %}
-{% assign STATUS_COMPLETED = 815390003 %}
-{% assign STATUS_FAILED = 815390004 %}
-{% assign STATUS_CANCELLED = 815390005 %}
+{% assign STATUS_DRAFT = '0' %}
+{% assign STATUS_PENDING_INFORMATION = '815390000' %}
+{% assign STATUS_PENDING_PAYMENT = '815390001' %}
+{% assign STATUS_PENDING_APPROVAL = '815390002' %}
+{% assign STATUS_COMPLETED = '815390003' %}
+{% assign STATUS_FAILED = '815390004' %}
+{% assign STATUS_CANCELLED = '815390005' %}
 
 <div class="hit-app-shell">
 
@@ -107,6 +107,30 @@ sections--acceptance-router (DEBUG HARDENED)
       {% endif %}
     {% endif %}
 
+    {% assign status = status | append: '' | strip %}
+    {% assign statusLabel = statusLabel | append: '' | strip %}
+    {% assign statusLabelDown = statusLabel | downcase %}
+    {% assign isCompletedStatus = false %}
+    {% assign isPendingPaymentStatus = false %}
+    {% assign isFailedStatus = false %}
+    {% assign isCancelledStatus = false %}
+
+    {% if status == STATUS_COMPLETED or statusLabelDown == 'completed' %}
+      {% assign isCompletedStatus = true %}
+    {% endif %}
+
+    {% if status == STATUS_PENDING_PAYMENT or statusLabelDown == 'pending payment' %}
+      {% assign isPendingPaymentStatus = true %}
+    {% endif %}
+
+    {% if status == STATUS_FAILED or statusLabelDown == 'failed' %}
+      {% assign isFailedStatus = true %}
+    {% endif %}
+
+    {% if status == STATUS_CANCELLED or statusLabelDown == 'cancelled' %}
+      {% assign isCancelledStatus = true %}
+    {% endif %}
+
     {%- comment -%}
     SAFE: payment flags
     {%- endcomment -%}
@@ -167,12 +191,12 @@ sections--acceptance-router (DEBUG HARDENED)
     {% if DEBUG %}
       <div class="hit-debug-panel hit-debug-panel--decision">
         <div>Routing decision</div>
-        <div>status == COMPLETED ? {% if status == STATUS_COMPLETED %}true{% else %}false{% endif %}</div>
-        <div>status == PENDING_PAYMENT ? {% if status == STATUS_PENDING_PAYMENT %}true{% else %}false{% endif %}</div>
-        <div>status == FAILED ? {% if status == STATUS_FAILED %}true{% else %}false{% endif %}</div>
-        <div>status == CANCELLED ? {% if status == STATUS_CANCELLED %}true{% else %}false{% endif %}</div>
+        <div>status == COMPLETED ? {% if isCompletedStatus %}true{% else %}false{% endif %}</div>
+        <div>status == PENDING_PAYMENT ? {% if isPendingPaymentStatus %}true{% else %}false{% endif %}</div>
+        <div>status == FAILED ? {% if isFailedStatus %}true{% else %}false{% endif %}</div>
+        <div>status == CANCELLED ? {% if isCancelledStatus %}true{% else %}false{% endif %}</div>
         <div>fallback to acceptance form branch ? 
-          {% if status != STATUS_COMPLETED and status != STATUS_PENDING_PAYMENT and status != STATUS_FAILED and status != STATUS_CANCELLED %}
+          {% if isCompletedStatus == false and isPendingPaymentStatus == false and isFailedStatus == false and isCancelledStatus == false %}
             true
           {% else %}
             false
@@ -181,7 +205,7 @@ sections--acceptance-router (DEBUG HARDENED)
       </div>
     {% endif %}
 
-    {% if status == STATUS_COMPLETED %}
+    {% if isCompletedStatus %}
 
       {% if DEBUG %}
         <div class="hit-debug-panel hit-debug-panel--include-success">
@@ -190,7 +214,7 @@ sections--acceptance-router (DEBUG HARDENED)
       {% endif %}
       {% include 'sections--confirmation' %}
 
-    {% elsif status == STATUS_PENDING_PAYMENT %}
+    {% elsif isPendingPaymentStatus %}
 
       {% if requiresPayment and paymentIntentId == '' %}
 
@@ -212,13 +236,13 @@ sections--acceptance-router (DEBUG HARDENED)
 
       {% endif %}
 
-    {% elsif status == STATUS_FAILED %}
+    {% elsif isFailedStatus %}
 
       <div class="alert alert-danger">
         Payment failed. Please try again.
       </div>
 
-    {% elsif status == STATUS_CANCELLED %}
+    {% elsif isCancelledStatus %}
 
       <div class="alert alert-warning">
         This transaction has been cancelled.

@@ -1,104 +1,105 @@
 {% comment %}
-Offering Event Registration
+sections--acceptance-event
+
+Acceptance-centric event registration.
 
 Expected URL:
-  /Events/Event-Registration?offeringid=<GUID>
+  /.../?acceptanceid=<GUID>
 
 Optional:
   &eventid=<GUID>   Override; otherwise resolved from hit_offering.hit_cievent
 
-Important:
-  This template is for creating a NEW hit_offeringacceptance.
-  It should not be used for an existing acceptanceid route.
+Behavior:
+- Loads existing hit_offeringacceptance
+- Resolves event via hit_offering lookup (off.hit_cievent)
+- PATCH updates hit_offeringacceptance with contact details and pricing context
+- Redirects via offering acceptance router; orchestration flow sets next status
 {% endcomment %}
 
-{% assign offeringId = request.params['offeringid'] | default: request.params['id'] | default: '' | strip %}
-{% assign explicitEventId = request.params['eventid'] | default: '' | strip %}
+{% assign DEBUG = debug | default: request.params.debug == '1' %}
 {% assign acceptanceId = request.params['acceptanceid'] | default: '' | strip %}
+{% assign explicitEventId = request.params['eventid'] | default: '' | strip %}
 
-{% assign offeringCount = 0 %}
+{% assign acceptanceCount = 0 %}
 {% assign eventCount = 0 %}
 {% assign resolvedEventId = '' %}
 
+{% assign offeringId = '' %}
 {% assign offeringName = '' %}
 {% assign offeringDesc = '' %}
+{% assign offeringImageUrl = '' %}
+{% assign eventName = '' %}
+{% assign eventDesc = '' %}
+{% assign eventImageUrl = '' %}
 {% assign heroImageUrl = '' %}
+
 {% assign fixedPrice = 0 %}
 {% assign allowQuantityBool = false %}
+{% assign acc = nil %}
 {% assign eventRow = nil %}
 
-{% comment %}
-Safety guard:
-If this template has been included from an acceptance router, do not let it create
-a second acceptance. The router should handle acceptanceid states separately.
-{% endcomment %}
-
-{% if offeringId == blank and acceptanceId != blank %}
-  <div class="alert alert-warning">
-    This event registration form was opened with an existing acceptance reference rather than an offering reference.
-    Please return to the event page and start the registration again.
-    <div class="hit-accept-meta-note">
-      acceptanceid: <code>{{ acceptanceId | escape }}</code>
-    </div>
-  </div>
-{% endif %}
-
-{% if offeringId != blank %}
-  {% fetchxml offering %}
+{% if acceptanceId != blank %}
+  {% fetchxml acc_q %}
     <fetch top="1" mapping="logical">
-      <entity name="hit_offering">
-        <attribute name="hit_offeringid" />
-        <attribute name="hit_offeringname" />
-        <attribute name="hit_description" />
-        <attribute name="hit_imageurl" />
-        <attribute name="hit_fixedprice" />
-        <attribute name="hit_allowquantity" />
-        <attribute name="hit_cievent" />
-        <attribute name="hit_offeringtype" />
-        <attribute name="hit_isactive" />
+      <entity name="hit_offeringacceptance">
+        <attribute name="hit_offeringacceptanceid" />
+        <attribute name="hit_firstname" />
+        <attribute name="hit_lastname" />
+        <attribute name="hit_email" />
+        <attribute name="hit_mobilephone" />
+        <attribute name="hit_baseamount" />
+        <attribute name="hit_totalamounteffective" />
+        <attribute name="hit_acceptancestatus" />
         <filter type="and">
-          <condition attribute="hit_offeringid" operator="eq" value="{{ offeringId | escape }}" />
+          <condition attribute="hit_offeringacceptanceid" operator="eq" value="{{ acceptanceId | escape }}" />
         </filter>
+        <link-entity name="hit_offering" from="hit_offeringid" to="hit_offering" alias="off">
+          <attribute name="hit_offeringid" />
+          <attribute name="hit_offeringname" />
+          <attribute name="hit_description" />
+          <attribute name="hit_imageurl" />
+          <attribute name="hit_fixedprice" />
+          <attribute name="hit_allowquantity" />
+          <attribute name="hit_cievent" />
+        </link-entity>
       </entity>
     </fetch>
   {% endfetchxml %}
 
-  {% if offering and offering.results and offering.results.entities %}
-    {% assign offeringCount = offering.results.entities | size %}
-  {% else %}
-    {% assign offeringCount = 0 %}
+  {% if acc_q and acc_q.results and acc_q.results.entities %}
+    {% assign acceptanceCount = acc_q.results.entities | size %}
+    {% if acceptanceCount > 0 %}
+      {% assign acc = acc_q.results.entities[0] %}
+    {% endif %}
   {% endif %}
 {% endif %}
 
-{% if offeringCount > 0 %}
-  {% assign offeringRow = offering.results.entities[0] %}
+{% if acc %}
+  {% assign offeringId = acc['off.hit_offeringid'] | default: '' | strip %}
+  {% assign offeringName = acc['off.hit_offeringname'] | default: '' %}
+  {% assign offeringDesc = acc['off.hit_description'] | default: '' %}
+  {% assign offeringImageUrl = acc['off.hit_imageurl'] | default: '' | strip %}
 
-  {% assign offeringName = offeringRow.hit_offeringname | default: '' %}
-  {% assign offeringDesc = offeringRow.hit_description | default: '' %}
-  {% assign heroImageUrl = offeringRow.hit_imageurl | default: '' | strip %}
-
-  {% assign fixedPrice = offeringRow.hit_fixedprice | default: 0 %}
+  {% assign fixedPrice = acc['off.hit_fixedprice'] | default: acc.hit_totalamounteffective | default: acc.hit_baseamount | default: 0 %}
   {% if fixedPrice.value %}
     {% assign fixedPrice = fixedPrice.value %}
   {% endif %}
 
-  {% assign allowQtyRaw = offeringRow.hit_allowquantity | default: '' %}
+  {% assign allowQtyRaw = acc['off.hit_allowquantity'] | default: '' %}
   {% if allowQtyRaw.value %}
     {% assign allowQtyRaw = allowQtyRaw.value %}
   {% endif %}
 
-  {% assign allowQtyLabel = offeringRow.hit_allowquantity.label | default: offeringRow.hit_allowquantity.Label  | default: offeringRow["hit_allowquantity@OData.Community.Display.V1.FormattedValue"]  | default: ''   %}
-
+  {% assign allowQtyLabel = acc['off.hit_allowquantity.label'] | default: acc['off.hit_allowquantity.Label'] | default: '' %}
   {% assign allowQtyText = '' | append: allowQtyRaw | downcase %}
   {% assign allowQtyLabelText = allowQtyLabel | downcase %}
-
   {% if allowQtyText == 'true' or allowQtyText == '1' or allowQtyLabelText == 'yes' %}
     {% assign allowQuantityBool = true %}
   {% endif %}
 
   {% assign resolvedEventId = explicitEventId %}
-  {% if resolvedEventId == blank and offeringRow.hit_cievent %}
-    {% assign resolvedEventId = offeringRow.hit_cievent.id | default: '' | strip %}
+  {% if resolvedEventId == blank and acc['off.hit_cievent'] %}
+    {% assign resolvedEventId = acc['off.hit_cievent'].id | default: '' | strip %}
   {% endif %}
 
   {% if resolvedEventId != blank %}
@@ -110,6 +111,7 @@ a second acceptance. The router should handle acceptanceid states separately.
           <attribute name="msevtmgt_eventstartdate" />
           <attribute name="msevtmgt_eventenddate" />
           <attribute name="msevtmgt_description" />
+          <attribute name="msevetmgt_eventimage" />
           <filter type="and">
             <condition attribute="msevtmgt_eventid" operator="eq" value="{{ resolvedEventId | escape }}" />
           </filter>
@@ -122,17 +124,26 @@ a second acceptance. The router should handle acceptanceid states separately.
       {% if eventCount > 0 %}
         {% assign eventRow = ev.results.entities[0] %}
       {% endif %}
-    {% else %}
-      {% assign eventCount = 0 %}
     {% endif %}
+  {% endif %}
+
+  {% if eventRow %}
+    {% assign eventName = eventRow.msevtmgt_name | default: '' %}
+    {% assign eventDesc = eventRow.msevtmgt_description | default: '' %}
+    {% assign eventImageUrl = eventRow.msevetmgt_eventimage | default: '' | strip %}
+  {% endif %}
+
+  {% assign heroImageUrl = eventImageUrl %}
+  {% if heroImageUrl == blank %}
+    {% assign heroImageUrl = offeringImageUrl %}
   {% endif %}
 {% endif %}
 
-{% if request.params['debug'] == '1' %}
+{% if DEBUG %}
   <pre class="hit-accept-debug-pre">
-offeringid={{ offeringId }}
 acceptanceid={{ acceptanceId }}
-offeringCount={{ offeringCount }}
+acceptanceCount={{ acceptanceCount }}
+offeringid={{ offeringId }}
 resolvedEventId={{ resolvedEventId }}
 eventCount={{ eventCount }}
 heroImageUrl={{ heroImageUrl }}
@@ -141,15 +152,29 @@ fixedPrice={{ fixedPrice }}
   </pre>
 {% endif %}
 
-{% if offeringId == blank %}
+{% if acceptanceId == blank %}
   <div class="alert alert-warning">
-    Missing <strong>offeringid</strong> in the URL. Please return to the Offering page and try again.
+    Missing <strong>acceptanceid</strong> in the URL. Please return to the event page and try again.
   </div>
-{% elsif offeringCount == 0 %}
+{% elsif acceptanceCount == 0 or acc == nil %}
   <div class="alert alert-warning">
-    We couldn't load this offering. This is usually because the record doesn't exist or the current portal user doesn't have permission to read <strong>hit_offering</strong>.
+    We could not load this registration. This can happen if the acceptance record does not exist or the portal user does not have access.
     <div class="hit-accept-meta-note">
-      offeringid: <code>{{ offeringId | escape }}</code>
+      acceptanceid: <code>{{ acceptanceId | escape }}</code>
+    </div>
+  </div>
+{% elsif offeringId == blank %}
+  <div class="alert alert-warning">
+    This registration is missing its linked offering and cannot continue.
+    <div class="hit-accept-meta-note">
+      acceptanceid: <code>{{ acceptanceId | escape }}</code>
+    </div>
+  </div>
+{% elsif resolvedEventId == blank %}
+  <div class="alert alert-warning">
+    This registration is missing its linked event and cannot continue.
+    <div class="hit-accept-meta-note">
+      acceptanceid: <code>{{ acceptanceId | escape }}</code>
     </div>
   </div>
 {% else %}
@@ -158,7 +183,7 @@ fixedPrice={{ fixedPrice }}
     <div class="hit-accept-hero">
       <img class="hit-accept-hero__img"
            src="{{ heroImageUrl | escape }}"
-           alt="{{ offeringName | escape }}">
+           alt="{{ eventName | default: offeringName | escape }}">
     </div>
   {% endif %}
 
@@ -173,20 +198,19 @@ fixedPrice={{ fixedPrice }}
 
     <div class="hit-accept-grid">
 
-      <!-- LEFT: Summary -->
       <div class="hit-panel hit-panel--summary">
         <div class="hit-panel__row">
-          <div class="hit-panel__label">Offering</div>
+          <div class="hit-panel__label">Event</div>
           <div class="hit-panel__value">
-            <div class="hit-offering__name">{{ offeringName | escape }}</div>
+            <div class="hit-offering__name">{{ eventName | default: offeringName | escape }}</div>
           </div>
         </div>
 
-        {% if eventRow and eventRow.msevtmgt_description %}
+        {% if eventDesc != blank %}
           <div class="hit-panel__row">
             <div class="hit-panel__label">Description</div>
             <div class="hit-panel__value">
-              <div class="hit-offering__desc">{{ eventRow.msevtmgt_description | newline_to_br }}</div>
+              <div class="hit-offering__desc">{{ eventDesc | newline_to_br }}</div>
             </div>
           </div>
         {% elsif offeringDesc != blank %}
@@ -214,7 +238,7 @@ fixedPrice={{ fixedPrice }}
             <div class="hit-panel__label">Price</div>
             <div class="hit-panel__value">
               <span id="hitOfferingPrice" data-price="{{ fixedPrice | escape }}"></span>
-              <div class="hit-accept-price-note">Per registration • AUD</div>
+              <div class="hit-accept-price-note">Per registration - AUD</div>
             </div>
           </div>
         {% else %}
@@ -225,34 +249,33 @@ fixedPrice={{ fixedPrice }}
         {% endif %}
       </div>
 
-      <!-- RIGHT: Details -->
       <div class="hit-panel hit-panel--details">
         <div class="hit-panel__title">Your details</div>
-        <div class="hit-panel__hint">We’ll use this information to confirm your registration.</div>
+        <div class="hit-panel__hint">We will use this information to confirm your registration.</div>
 
-        <form id="hitEventRegForm" class="hit-form">
+        <form id="hitEventRegForm" class="hit-form" novalidate>
           <div class="hit-form__row hit-form__row--2col">
             <div class="hit-form__field">
               <label class="form-label" for="hit_firstname">First name</label>
-              <input class="form-control" id="hit_firstname" name="hit_firstname" type="text" required>
+              <input class="form-control" id="hit_firstname" name="hit_firstname" type="text" value="{{ acc.hit_firstname | escape }}" required>
             </div>
             <div class="hit-form__field">
               <label class="form-label" for="hit_lastname">Last name</label>
-              <input class="form-control" id="hit_lastname" name="hit_lastname" type="text" required>
+              <input class="form-control" id="hit_lastname" name="hit_lastname" type="text" value="{{ acc.hit_lastname | escape }}" required>
             </div>
           </div>
 
           <div class="hit-form__row">
             <div class="hit-form__field">
               <label class="form-label" for="hit_email">Email</label>
-              <input class="form-control" id="hit_email" name="hit_email" type="email" required>
+              <input class="form-control" id="hit_email" name="hit_email" type="email" value="{{ acc.hit_email | escape }}" required>
             </div>
           </div>
 
           <div class="hit-form__row">
             <div class="hit-form__field">
               <label class="form-label" for="hit_mobilephone">Mobile</label>
-              <input class="form-control" id="hit_mobilephone" name="hit_mobilephone" type="tel">
+              <input class="form-control" id="hit_mobilephone" name="hit_mobilephone" type="tel" value="{{ acc.hit_mobilephone | escape }}">
             </div>
           </div>
 
@@ -268,14 +291,15 @@ fixedPrice={{ fixedPrice }}
             <input type="hidden" id="hit_quantity" value="1">
           {% endif %}
 
+          <input type="hidden" id="hit_acceptanceid" value="{{ acceptanceId | escape }}">
           <input type="hidden" id="hit_offeringid" value="{{ offeringId | escape }}">
+          <input type="hidden" id="hit_eventid" value="{{ resolvedEventId | escape }}">
+          <input type="hidden" id="hit_eventdescription" value="{{ eventDesc | default: offeringDesc | escape }}">
           <input type="hidden" id="hit_fixedprice" value="{{ fixedPrice | escape }}">
-          <input type="hidden" id="hit_csrf" value="{{ request.verificationToken }}">
 
         </form>
       </div>
 
-      <!-- CTA -->
       <div class="hit-cta-bar">
         <button id="hitSubmitBtn" class="btn btn-primary hit-cta-bar__primary" type="button">Confirm Registration</button>
         <a class="btn btn-outline-secondary hit-cta-bar__secondary" href="javascript:history.back()">Back</a>
@@ -288,9 +312,6 @@ fixedPrice={{ fixedPrice }}
 
 <script>
 (function () {
-  // ---------------------------
-  // Debug (single source of truth)
-  // ---------------------------
   var DEBUG = (new URLSearchParams(window.location.search).get('debug') === '1');
   var dbgEl = document.getElementById('hitDebug');
 
@@ -304,43 +325,42 @@ fixedPrice={{ fixedPrice }}
     try { console.log('[EventReg]', msg, obj || ''); } catch(e){}
   }
 
-  // ---------------------------
-  // UI helpers
-  // ---------------------------
   var alertEl = document.getElementById('hitFormAlert');
   function showAlert(message, type) {
     if (!alertEl) return;
-    alertEl.style.display = "block";
-    alertEl.className = "hit-alert hit-alert--" + (type || "info");
+    alertEl.style.display = 'block';
+    alertEl.className = 'hit-alert hit-alert--' + (type || 'info');
     alertEl.textContent = message;
   }
+
   function clearAlert() {
     if (!alertEl) return;
-    alertEl.style.display = "none";
-    alertEl.textContent = "";
+    alertEl.style.display = 'none';
+    alertEl.textContent = '';
   }
 
-  // ---------------------------
-  // Formatting (date range + price)
-  // ---------------------------
-  function formatAusDateTime(isoString) {
-    if (!isoString) return "";
-    var d = new Date(isoString);
-    if (isNaN(d)) return "";
-    var hasTime = !(d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0);
-    var datePart = new Intl.DateTimeFormat('en-AU',{day:'2-digit',month:'short',year:'numeric'}).format(d);
-    if (!hasTime) return datePart;
-    var timePart = new Intl.DateTimeFormat('en-AU',{hour:'numeric',minute:'2-digit',hour12:true}).format(d);
-    return datePart + " " + timePart;
+  function getInputValue(id){
+    var el = document.getElementById(id);
+    return el && el.value ? String(el.value).trim() : '';
   }
+
+  function formatAusDateTime(isoString) {
+    if (!isoString) return '';
+    var d = new Date(isoString);
+    if (isNaN(d)) return '';
+    var hasTime = !(d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0);
+    var datePart = new Intl.DateTimeFormat('en-AU', { day: '2-digit', month: 'short', year: 'numeric' }).format(d);
+    if (!hasTime) return datePart;
+    var timePart = new Intl.DateTimeFormat('en-AU', { hour: 'numeric', minute: '2-digit', hour12: true }).format(d);
+    return datePart + ' - ' + timePart;
+  }
+
   (function setRangeText(){
     var el = document.getElementById('hitEventRange');
     if (!el) return;
-    var startIso = el.getAttribute('data-start');
-    var endIso = el.getAttribute('data-end');
-    var startText = formatAusDateTime(startIso);
-    var endText = formatAusDateTime(endIso);
-    el.textContent = (startText && endText) ? (startText + " — " + endText) : (startText || endText || "");
+    var startText = formatAusDateTime(el.getAttribute('data-start'));
+    var endText = formatAusDateTime(el.getAttribute('data-end'));
+    el.textContent = (startText && endText) ? (startText + ' - ' + endText) : (startText || endText || '');
   })();
 
   function toNumber(v){
@@ -352,6 +372,7 @@ fixedPrice={{ fixedPrice }}
     var n = parseFloat(s);
     return isNaN(n) ? null : n;
   }
+
   function formatCurrencySmart(n){
     if (n === null || n === undefined) return '';
     var rounded2 = Math.round(n * 100) / 100;
@@ -359,233 +380,229 @@ fixedPrice={{ fixedPrice }}
     if (cents === 0) return '$' + Math.round(rounded2).toString();
     return '$' + rounded2.toFixed(2);
   }
+
   (function setPriceText(){
     var el = document.getElementById('hitOfferingPrice');
     if(!el) return;
-    var raw = el.getAttribute('data-price') || '';
-    var n = toNumber(raw);
+    var n = toNumber(el.getAttribute('data-price') || '');
     if(n === null || n <= 0) return;
     el.textContent = formatCurrencySmart(n);
   })();
 
-  // ---------------------------
-  // CSRF token (ONE getter, cached; prevents decrypt errors)
-  // Prefer shell.getTokenDeferred if available; otherwise tokenhtml.
-  // ---------------------------
   var _csrfPromise = null;
-
   function parseTokenHtml(html){
-    var doc = new DOMParser().parseFromString(html, "text/html");
+    var doc = new DOMParser().parseFromString(html, 'text/html');
     var input = doc.querySelector("input[name='__RequestVerificationToken']");
-    return input ? ((input.getAttribute("value") || input.value || "").trim()) : "";
+    return input ? ((input.getAttribute('value') || input.value || '').trim()) : '';
   }
 
   async function getCsrfToken(){
     if (_csrfPromise) return _csrfPromise;
 
     _csrfPromise = (async function(){
-      // A) shell token (Microsoft’s common pattern for Power Pages Web API) [2](https://teams.microsoft.com/l/entity/2e3a628d-6f54-4100-9e7a-f00bc3621a85/MyLearning?context=%7b%22subEntityId%22%3a%7b%22learningObjectId%22%3a%224a2fa62c-b3ba-4e76-937f-4132410b7588%22%7d%7d)
-      if (window.shell && typeof window.shell.getTokenDeferred === "function") {
-        dbg("CSRF source: shell.getTokenDeferred()");
+      if (window.shell && typeof window.shell.getTokenDeferred === 'function') {
+        dbg('CSRF source: shell.getTokenDeferred()');
         var t = await new Promise(function(resolve, reject){
-          window.shell.getTokenDeferred().done(resolve).fail(function(){ reject(new Error("shell.getTokenDeferred failed")); });
+          window.shell.getTokenDeferred().done(resolve).fail(function(){ reject(new Error('shell.getTokenDeferred failed')); });
         });
-        t = (t || "").toString().trim();
+        t = (t || '').toString().trim();
         if (t) return t;
       }
 
-      // B) tokenhtml fallback (common SPA/custom template technique) [1](https://humanit365.sharepoint.com/teams/humanIT2.0/_layouts/15/Doc.aspx?sourcedoc=%7B1142881C-B6E9-4B8E-B892-9F4C19FB4C7F%7D&file=humanIT%20-%20CHA%20Discovery%20Recommendations%20-%20V2%20April%202024.docx&action=default&mobileredirect=true&DefaultItemOpen=1)
-      dbg("CSRF source: /_layout/tokenhtml (fallback)");
-      var res = await fetch("/_layout/tokenhtml", { credentials: "same-origin" });
+      dbg('CSRF source: /_layout/tokenhtml (fallback)');
+      var res = await fetch('/_layout/tokenhtml', { credentials: 'same-origin' });
       var html = await res.text();
       var tok = parseTokenHtml(html);
-      if(!tok) throw new Error("CSRF token not found in /_layout/tokenhtml.");
+      if(!tok) throw new Error('CSRF token not found in /_layout/tokenhtml.');
       return tok;
     })();
 
-    var resolved = await _csrfPromise;
-    dbg("CSRF token resolved", { present: !!resolved, length: (resolved || "").length });
-    return resolved;
+    return _csrfPromise;
   }
 
-  // ---------------------------
-  // Locked-in constants + field names
-  // ---------------------------
-  var ENTITYSET_ACCEPTANCE = "hit_offeringacceptances";
-  var ENTITYSET_OFFERING   = "hit_offerings";
+  var btn = document.getElementById('hitSubmitBtn');
+  if (!btn) return;
 
-  // Donate template insight: use navigation/schema name for bind
-  var BIND_OFFERING = "hit_Offering@odata.bind";
+  var defaultSubmitText = btn.textContent || 'Confirm Registration';
 
-  var STATUS_DRAFT = 815390000;
-  var PAYMENT_URL_BASE = "/Payment/?acceptanceid=";
-
-  // Update ONLY these if your schema logical names differ
-  var F = {
-    firstname: "hit_firstname",
-    lastname: "hit_lastname",
-    email: "hit_email",
-    mobile: "hit_mobilephone",
-    quantity: "hit_quantity",
-    unitprice: "hit_unitprice",
-    baseamount: "hit_baseamount",
-    totalamount: "hit_totalamount",
-    acceptancestatus: "hit_acceptancestatus",
-    clienttoken: "hit_clienttoken"
-  };
+  function getQty(){
+    var el = document.getElementById('hit_quantity');
+    var n = parseInt((el && el.value ? el.value : '1'), 10);
+    if (isNaN(n) || n < 1) n = 1;
+    if (el) el.value = String(n);
+    return n;
+  }
 
   function makeGuid(){
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random()*16|0, v = c=='x' ? r : (r&0x3|0x8);
+      var r = Math.random() * 16 | 0;
+      var v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
   }
 
-  function getQty(){
-    var el = document.getElementById('hit_quantity');
-    var n = parseInt((el && el.value ? el.value : "1"), 10);
-    if(isNaN(n) || n < 1) n = 1;
-    if(el) el.value = n;
-    return n;
+  function isValidEmail(value){
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value || '');
   }
 
-  function buildPayload(offeringId, fixedPrice, qty, firstName, lastName, email, mobile){
+  function setLoading(isLoading, text){
+    btn.disabled = isLoading;
+    btn.textContent = isLoading ? (text || 'Saving...') : defaultSubmitText;
+  }
+
+  function buildRouterUrl(attempt, acceptanceId){
+    var targetUrl = new URL(window.location.pathname, window.location.origin);
+    targetUrl.searchParams.set('page', 'offering-acceptance');
+    targetUrl.searchParams.set('acceptanceid', acceptanceId);
+    targetUrl.searchParams.set('waitforpayment', '1');
+    targetUrl.searchParams.set('routeattempt', String(attempt));
+    targetUrl.searchParams.set('_ts', String(Date.now()));
+    return targetUrl.toString();
+  }
+
+  function stopRouterRetry(){
+    setLoading(false);
+    showAlert('Your details were saved, but the next step is taking longer than expected. Please refresh to continue.', 'error');
+  }
+
+  function retryRouterIfNeeded(){
+    var url = new URL(window.location.href);
+    var waitingForPayment = url.searchParams.get('waitforpayment') === '1';
+    if (!waitingForPayment) return false;
+
+    var attempt = parseInt(url.searchParams.get('routeattempt') || '0', 10);
+    if (!Number.isFinite(attempt)) attempt = 0;
+
+    var acceptanceId = getInputValue('hit_acceptanceid');
+    if (!acceptanceId) return false;
+
+    var maxAttempts = 20;
+    var retryDelayMs = 1250;
+
+    if (attempt >= maxAttempts) {
+      stopRouterRetry();
+      return true;
+    }
+
+    setLoading(true, 'Preparing payment...');
+    showAlert('Your details are saved. We are preparing your secure payment. You will be redirected automatically.', 'info');
+
+    window.setTimeout(function(){
+      window.location.replace(buildRouterUrl(attempt + 1, acceptanceId));
+    }, retryDelayMs);
+
+    return true;
+  }
+
+  if (retryRouterIfNeeded()) {
+    return;
+  }
+
+  async function updateAcceptance(){
+    var acceptanceId = getInputValue('hit_acceptanceid');
+    var offeringId = getInputValue('hit_offeringid');
+    var eventId = getInputValue('hit_eventid');
+    var eventDescription = getInputValue('hit_eventdescription');
+    var fixedPrice = getInputValue('hit_fixedprice');
+
+    var firstName = getInputValue('hit_firstname');
+    var lastName = getInputValue('hit_lastname');
+    var email = getInputValue('hit_email');
+    var mobile = getInputValue('hit_mobilephone');
+    var qty = getQty();
+
+    if (!acceptanceId) throw new Error('Missing acceptanceid.');
+    if (!offeringId) throw new Error('Missing offering link on acceptance.');
+    if (!firstName || !lastName || !email) throw new Error('Please complete First name, Last name, and Email.');
+    if (!isValidEmail(email)) throw new Error('Please enter a valid email address.');
+
     var unit = toNumber(fixedPrice);
     if (unit === null) unit = 0;
-
-    qty = parseInt(qty, 10);
-    if (isNaN(qty) || qty < 1) qty = 1;
-
     var base = Number(unit) * Number(qty);
-    var clientToken = makeGuid();
 
-    var p = {};
+    var inputJsonModel = {
+      schemaVersion: 2,
+      offeringtype: 'event',
+      firstname: firstName,
+      lastname: lastName,
+      email: email,
+      mobile: mobile || null,
+      organisation: null,
+      role: null,
+      totalbaseamount: base,
+      offering: {
+        type: 'event',
+        actingonbehalfoforganisation: false,
+        bookingtype: null,
+        dates: null,
+        layouttype: null,
+        description: eventDescription || null,
+        schoolnfp: null
+      }
+    };
 
-    // ✅ Offering lookup bind MUST use navigation/schema name (Donate pattern)
-    p["hit_Offering@odata.bind"] = "/hit_offerings(" + offeringId + ")";
+    var payload = {
+      hit_firstname: firstName,
+      hit_lastname: lastName,
+      hit_email: email,
+      hit_mobilephone: mobile || null,
+      hit_quantity: qty,
+      hit_unitprice: Number(unit),
+      hit_baseamount: Number(base),
+      hit_totalamounteffective: Number(base),
+      hit_totalamountcommitted: Number(base),
+      hit_inputjson: JSON.stringify(inputJsonModel),
+      hit_clienttoken: makeGuid(),
+      hit_paymentrequired: Number(base) > 0
+    };
 
-    // ✅ Staging identity fields (Flow resolves Contact)
-    p["hit_firstname"] = firstName;
-    p["hit_lastname"]  = lastName;
-    p["hit_email"]     = email;
-    if (mobile) p["hit_mobilephone"] = mobile;
+    dbg('PATCH payload', payload);
 
-    // ✅ Quantity + pricing (LOCKED IN)
-    p["hit_quantity"]    = qty;
-    p["hit_unitprice"]   = Number(unit);
-    p["hit_baseamount"]  = Number(base);
-    p["hit_totalamount"] = Number(base);
-
-    // ✅ Lifecycle + token (LOCKED IN)
-    p["hit_acceptancestatus"] = STATUS_DRAFT;
-    p["hit_clienttoken"]      = clientToken;
-
-    // Optional but helpful for downstream routing
-    p["hit_paymentrequired"] = (Number(base) > 0);
-
-    return { payload: p, clientToken: clientToken };
-  }
-
-  function extractGuidFromHeader(entityIdHeader){
-    if(!entityIdHeader) return "";
-    var m = entityIdHeader.match(/\(([0-9a-fA-F-]{36})\)/);
-    if(m) return m[1];
-    var m2 = entityIdHeader.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/);
-    return m2 ? m2[0] : "";
-  }
-
-  async function createAcceptance(payload){
     var token = await getCsrfToken();
 
-    var res = await fetch("/_api/" + ENTITYSET_ACCEPTANCE, {
-      method: "POST",
-      credentials: "same-origin",
+    var res = await fetch('/_api/hit_offeringacceptances(' + acceptanceId + ')', {
+      method: 'PATCH',
+      credentials: 'same-origin',
       headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "OData-Version": "4.0",
-        "OData-MaxVersion": "4.0",
-        "__RequestVerificationToken": token,
-        "Prefer": "return=representation"
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'OData-Version': '4.0',
+        'OData-MaxVersion': '4.0',
+        '__RequestVerificationToken': token,
+        'If-Match': '*'
       },
       body: JSON.stringify(payload)
     });
 
-    var raw = "";
-    try { raw = await res.text(); } catch(e){ raw = ""; }
-
-    var entityIdHeader =
-      res.headers.get("OData-EntityId") ||
-      res.headers.get("odata-entityid") ||
-      res.headers.get("Location") ||
-      res.headers.get("location") ||
-      "";
-
-    dbg("Create acceptance response", {
-      ok: res.ok,
-      status: res.status,
-      entityIdHeader: entityIdHeader || "(none)",
-      rawPreview: raw ? raw.substring(0, 350) : "(empty body)"
-    });
-
-    if(!res.ok){
-      throw new Error(raw || ("HTTP " + res.status));
+    if (!res.ok) {
+      var raw = '';
+      try { raw = await res.text(); } catch (e) { raw = ''; }
+      throw new Error(raw || ('HTTP ' + res.status));
     }
 
-    var obj = null;
-    if(raw && raw.trim()){
-      try { obj = JSON.parse(raw); } catch(e){ obj = null; }
-    }
-
-    var acceptanceId = (obj && (obj.hit_offeringacceptanceid || obj.id)) || extractGuidFromHeader(entityIdHeader);
     return acceptanceId;
   }
 
-  // ---------------------------
-  // Submit
-  // ---------------------------
-  var btn = document.getElementById('hitSubmitBtn');
-  if (!btn) return;
-  var defaultSubmitText = btn.textContent || 'Confirm Registration';
-
   btn.addEventListener('click', async function () {
     clearAlert();
-    if (DEBUG && dbgEl) { dbgEl.style.display = 'none'; dbgEl.textContent = ''; }
-    btn.disabled = true;
-    btn.textContent = 'Saving...';
+    if (DEBUG && dbgEl) {
+      dbgEl.style.display = 'none';
+      dbgEl.textContent = '';
+    }
+
+    setLoading(true, 'Saving...');
     showAlert('Saving your details...', 'info');
 
-    try{
-      var offeringId = document.getElementById('hit_offeringid')?.value?.trim();
-      var fixedPrice = document.getElementById('hit_fixedprice')?.value;
-      var firstName  = document.getElementById('hit_firstname')?.value?.trim();
-      var lastName   = document.getElementById('hit_lastname')?.value?.trim();
-      var email      = document.getElementById('hit_email')?.value?.trim();
-      var mobile     = document.getElementById('hit_mobilephone')?.value?.trim();
-      var qty        = getQty();
-
-      if(!offeringId) throw new Error("Missing offeringid.");
-      if(!firstName || !lastName || !email) throw new Error("Please complete First name, Last name, and Email.");
-
-      var built = buildPayload(offeringId, fixedPrice, qty, firstName, lastName, email, mobile);
-      dbg("POST payload", built.payload);
-
-      var acceptanceId = await createAcceptance(built.payload);
-      if(!acceptanceId) throw new Error("Acceptance created but acceptanceId could not be resolved.");
-
-      // Redirect with token (Donate pattern)
+    try {
+      var acceptanceId = await updateAcceptance();
       showAlert('Payment is ready. Redirecting now...', 'info');
-      window.location.href = PAYMENT_URL_BASE + encodeURIComponent(acceptanceId) + "&token=" + encodeURIComponent(built.clientToken);
-
-    } catch(e){
-      showAlert("Registration failed: " + (e.message || e), "error");
-      dbg("ERROR", { message: e.message, stack: e.stack });
-    } finally {
-      btn.disabled = false;
-      btn.textContent = defaultSubmitText;
+      window.location.replace(buildRouterUrl(0, acceptanceId));
+    } catch (e) {
+      showAlert('Registration failed: ' + (e.message || e), 'error');
+      dbg('ERROR', { message: e.message, stack: e.stack });
+      setLoading(false);
     }
   });
-
 })();
 </script>

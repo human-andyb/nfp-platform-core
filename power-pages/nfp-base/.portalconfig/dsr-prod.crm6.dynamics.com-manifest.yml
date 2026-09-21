@@ -707,10 +707,6 @@ adx_sitesetting:
   DisplayName: Authentication/Registration/AzureADLoginEnabled
   CheckSum: eae679b7d9f71e67e59e30cf5d2055026eb74738f5d92a2824dc8d9f0f3df564
   IsDeleted: false
-- RecordId: d994f1f5-e20a-f111-8342-000d3a7a0cab
-  DisplayName: Webapi/hit_offeringacceptance/fields
-  CheckSum: e31c0ce70e6d21389cbfd9749fa4d49225bfb0e859cd5745af11d44d0d3e6153
-  IsDeleted: false
 - RecordId: dbe3c0f1-5509-f111-8407-000d3a7a0cab
   DisplayName: Authentication/OpenIdConnect/AzureAD/Caption
   CheckSum: c1d26bfdf70dd662c05c3e173043286deadff484f25e858c3b5eed12d44d796c
