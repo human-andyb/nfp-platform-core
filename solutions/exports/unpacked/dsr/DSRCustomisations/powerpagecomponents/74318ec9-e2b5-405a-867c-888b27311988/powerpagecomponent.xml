@@ -1,0 +1,18 @@
+<powerpagecomponent powerpagecomponentid="74318ec9-e2b5-405a-867c-888b27311988">
+  <content>{
+  "display_name": "Footer",
+  "type": 756150001,
+  "value": "&lt;div class=\"dsr-footer\"&gt;\r\n\r\n    &lt;!-- TOP SECTION --&gt;\r\n    &lt;div class=\"dsr-footer-main\"&gt;\r\n\r\n        &lt;!-- About --&gt;\r\n        &lt;div class=\"dsr-footer-col\"&gt;\r\n\r\n            &lt;p class=\"smallText\"&gt;\r\n                &lt;strong&gt;ABN:&lt;/strong&gt; 90 355 468 664\r\n            &lt;/p&gt;\r\n\r\n            &lt;p class=\"smallText\"&gt;\r\n                &lt;strong&gt;Victorian Fundraising Permit:&lt;/strong&gt; 10566.15\r\n            &lt;/p&gt;\r\n\r\n        &lt;/div&gt;\r\n\r\n        &lt;!-- Address --&gt;\r\n        &lt;div class=\"dsr-footer-col\"&gt;\r\n            &lt;h4 class=\"smallText\"&gt;Address&lt;/h4&gt;\r\n\r\n            &lt;p class=\"smallText\"&gt;\r\n                Wurundjeri Woi Wurrung Land, Naarm&lt;br&gt;\r\n                102 / 341 George St&lt;br&gt;\r\n                Fitzroy VIC 3065\r\n            &lt;/p&gt;\r\n        &lt;/div&gt;\r\n\r\n        &lt;!-- Phone --&gt;\r\n        &lt;div class=\"dsr-footer-col\"&gt;\r\n            &lt;h4 class=\"smallText\"&gt;Phone&lt;/h4&gt;\r\n\r\n            &lt;p class=\"smallText\"&gt;\r\n                (03) 8652 9722\r\n            &lt;/p&gt;\r\n        &lt;/div&gt;\r\n\r\n        &lt;!-- Hours --&gt;\r\n        &lt;div class=\"dsr-footer-col\"&gt;\r\n            &lt;h4 class=\"smallText\"&gt;Hours&lt;/h4&gt;\r\n\r\n            &lt;p class=\"smallText\"&gt;\r\n                Monday - Friday&lt;br&gt;\r\n                9am - 5pm\r\n            &lt;/p&gt;\r\n        &lt;/div&gt;\r\n\r\n    &lt;/div&gt;\r\n\r\n\r\n    &lt;!-- COPYRIGHT --&gt;\r\n    &lt;div class=\"dsr-footer-bottom\"&gt;\r\n        &lt;p class=\"smallText\"&gt;\r\n            © 2026 Disability Sport &amp;amp; Recreation\r\n        &lt;/p&gt;\r\n    &lt;/div&gt;\r\n\r\n&lt;/div&gt;"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Footer</name>
+  <powerpagecomponenttype>7</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>65f59487-4eee-417b-bf5e-782336e9abfd</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

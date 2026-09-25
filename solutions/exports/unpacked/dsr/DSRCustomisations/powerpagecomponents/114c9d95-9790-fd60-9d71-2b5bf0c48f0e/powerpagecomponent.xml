@@ -1,0 +1,39 @@
+<powerpagecomponent powerpagecomponentid="114c9d95-9790-fd60-9d71-2b5bf0c48f0e">
+  <content>{
+  "copy": "&lt;div class=\"row sectionBlockLayout text-start\" style=\"min-height: auto; padding: 8px;\"&gt;\n    &lt;div class=\"container\" style=\"display: flex; flex-wrap: wrap;\"&gt;\n      &lt;div class=\"col-lg-12 columnBlockLayout\" style=\"padding: 16px; margin: 60px 0px; min-height: 200px;\"&gt;\n        {% include 'pages--program-detail' %}\n      &lt;/div&gt;\n    &lt;/div&gt;\n  &lt;/div&gt;\n  ",
+  "displayorder": 14,
+  "enablerating": false,
+  "enabletracking": false,
+  "excludefromsearch": false,
+  "feedbackpolicy": 756150000,
+  "hiddenfromsitemap": true,
+  "isroot": false,
+  "pagetemplateid": "665a986d-1a3a-f111-bec6-000d3a7a0cab",
+  "parentpageid": "cf511b88-4b23-4858-b49e-9bb013db9e1a",
+  "partialurl": "Program-deleted",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "rootwebpageid": "3d40fe9f-4afe-5e7f-1fb1-675f29c946e3",
+  "sharedpageconfiguration": false,
+  "summary": "&lt;p&gt;This is a sample landing page designed to be a starting point for your website&lt;/p&gt;",
+  "title": "Program"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Program-deleted</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>65f59487-4eee-417b-bf5e-782336e9abfd</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <searchcontent>Program&lt;div class="row sectionBlockLayout text-start" style="min-height: auto; padding: 8px;"&gt;
+    &lt;div class="container" style="display: flex; flex-wrap: wrap;"&gt;
+      &lt;div class="col-lg-12 columnBlockLayout" style="padding: 16px; margin: 60px 0px; min-height: 200px;"&gt;
+        {% include 'pages--program-detail' %}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  Program-deleted</searchcontent>
+  <statecode>1</statecode>
+  <statuscode>2</statuscode>
+</powerpagecomponent>

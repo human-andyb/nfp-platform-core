@@ -1,0 +1,20 @@
+<powerpagecomponent powerpagecomponentid="bca5300c-e552-dda1-8a82-e9a57104bbae">
+  <content>{
+  "displayimageonly": false,
+  "displayorder": 31,
+  "displaypagechildlinks": false,
+  "openinnewwindow": false,
+  "pageid": "a811b026-b105-4d2e-453f-25f8596e1bc4",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "robotsfollowlink": true,
+  "weblinksetid": "86aee643-0134-49dc-b168-405f3e024ed6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>What we do</name>
+  <powerpagecomponenttype>5</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,482 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{5f2a53b1-9213-f111-8342-000d3a7a0cab}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form showImage="true" shownavigationbar="false" maxWidth="1900" headerdensity="HighWithControls">
+      <tabs>
+        <tab name="SUMMARY_TAB" id="{15bb2d4b-71da-74ea-3c5b-e497d78a55a2}" IsUserDefined="0" showlabel="true" expanded="true" labelid="{3611ed1b-084a-4019-b05c-c7543f57444d}" ordinalvalue="0">
+          <columns>
+            <column width="60%" id="0" solutionaction="Modified">
+              <sections>
+                <section name="SUMMARY_TAB_section_8" id="991b9805-7a28-4116-a848-541e27295350" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Top" columns="11" labelwidth="115" labelid="{4eafac3f-e9fd-471c-8cdb-6a1624e89b98}" ordinalvalue="0">
+                  <rows>
+                    <row>
+                      <cell locklevel="0" id="{527b3ba8-5378-4e3d-93d7-0a14d93f0a1b}" labelid="{ca51a6a4-615d-490e-97cc-61300939f485}" ordinalvalue="20005" solutionaction="Removed" />
+                    </row>
+                    <row>
+                      <cell locklevel="0" id="{fd8493f1-ff00-4998-87a9-bc614b4702b7}" labelid="{1f03ab1d-8de1-442f-847a-fe72ac06dd16}" ordinalvalue="20007" solutionaction="Removed" />
+                    </row>
+                    <row>
+                      <cell id="{a3cdbdca-dcd2-479f-95ee-8bef9b6acc99}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20005" solutionaction="Added">
+                        <labels>
+                          <label description="Home Phone" languagecode="1033" />
+                        </labels>
+                        <control id="telephone2" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="telephone2" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ad9b6aa7-9933-4603-a70f-fe01a754b099}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20007" solutionaction="Added">
+                        <labels>
+                          <label description="Business Phone" languagecode="1033" />
+                        </labels>
+                        <control id="telephone1" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="telephone1" disabled="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+            <column width="40%" id="1" solutionaction="Modified">
+              <sections>
+                <section name="SUMMARY_TAB_section_7" id="e2fd2dd3-7142-4773-9377-b2c74b930850" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115" visible="false" ordinalvalue="0" solutionaction="Modified">
+                  <rows>
+                    <row>
+                      <cell id="{d3b607e4-9022-4cdd-a68c-5a353168d68c}" locklevel="0" colspan="1" rowspan="1" showlabel="false" ordinalvalue="10000">
+                        <labels>
+                          <label description="Segment Tags" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_7" id="92955613-8efc-4d3e-ade3-943815c26bf4" IsUserDefined="0" locklevel="0" showlabel="true" ordinalvalue="1">
+          <columns>
+            <column width="70%" id="0" solutionaction="Modified">
+              <sections>
+                <section name="tab_7_section_1" id="864db2d8-47be-4421-9a67-9bfe5702ce7a" IsUserDefined="0" locklevel="0" showlabel="false" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115" ordinalvalue="0" solutionaction="Removed" />
+                <section name="tab_7_section_3" id="c1822b39-d6b7-4e64-a043-fb98b6334ad7" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Top" columns="11" labelwidth="115" ordinalvalue="0" solutionaction="Added">
+                  <labels>
+                    <label description="Engagement Status" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell locklevel="0" id="{bea3ed4c-84e0-4652-942f-b597114cfead}" ordinalvalue="10000">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell id="{f490d82f-a2a5-4611-bdf6-46f7d1e532e4}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20001">
+                        <labels>
+                          <label description="Next Eligible Contact Date" languagecode="1033" />
+                        </labels>
+                        <control id="hit_nexteligiblecontactdate" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="hit_nexteligiblecontactdate" disabled="true" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a374c241-0e25-49b1-91e2-9526a1958cd9}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10002">
+                        <labels>
+                          <label description="Lifecycle Stage" languagecode="1033" />
+                        </labels>
+                        <control id="hit_lifecyclestage" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_lifecyclestage" disabled="true" />
+                      </cell>
+                      <cell id="{1a2661cd-1405-4db8-a4b8-cba77f25ae7a}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20003">
+                        <labels>
+                          <label description="Last Interaction Date" languagecode="1033" />
+                        </labels>
+                        <control id="hit_lastinteractiondate" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="hit_lastinteractiondate" disabled="true" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{2294b1ec-7903-4491-865b-653cefc4f287}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10004">
+                        <labels>
+                          <label description="Engagement Level" languagecode="1033" />
+                        </labels>
+                        <control id="hit_engagementlevel" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_engagementlevel" disabled="true" />
+                      </cell>
+                      <cell id="{f54f00ba-c2d2-45f4-b39d-1ae594edb8c1}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20005">
+                        <labels>
+                          <label description="First Gift Date" languagecode="1033" />
+                        </labels>
+                        <control id="hit_firstgiftdate" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="hit_firstgiftdate" disabled="true" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{7080f9ff-46de-4b9b-8d47-49701939f806}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10006">
+                        <labels>
+                          <label description="Donor Lifecycle Stage" languagecode="1033" />
+                        </labels>
+                        <control id="new_donorlifecyclestage" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="new_donorlifecyclestage" disabled="true" />
+                      </cell>
+                      <cell id="{4fe5048a-8448-4217-a152-b830f290cafb}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20007">
+                        <labels>
+                          <label description="Last Gift Date" languagecode="1033" />
+                        </labels>
+                        <control id="hit_lastgiftdate" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="hit_lastgiftdate" disabled="true" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{73d55e06-a1b5-4b22-a91b-73917aa2ec67}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10008">
+                        <labels>
+                          <label description="Value Tier" languagecode="1033" />
+                        </labels>
+                        <control id="hit_valuetier" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_valuetier" disabled="true" />
+                      </cell>
+                      <cell id="{f71c341d-ccea-4cda-a2cd-d836f7a3875c}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20009">
+                        <labels>
+                          <label description="Last Gift Value" languagecode="1033" />
+                        </labels>
+                        <control id="hit_lastgivevalue" classid="{533B9E00-756B-4312-95A0-DC888637AC78}" datafieldname="hit_lastgivevalue" disabled="true" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{54e817c3-de09-4d8e-a389-afac419341d0}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10010">
+                        <labels>
+                          <label description="Lifetime Value" languagecode="1033" />
+                        </labels>
+                        <control id="new_lifetimevalue" classid="{533B9E00-756B-4312-95A0-DC888637AC78}" datafieldname="new_lifetimevalue" disabled="true" />
+                      </cell>
+                      <cell locklevel="0" id="{a9bd99b0-2bc4-4260-bcc5-6e1174704e75}" ordinalvalue="20011">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="CONTACT_PREFERENCES" showlabel="true" showbar="false" id="{42aa148d-17fa-4c73-8213-bd22400b74ea}" IsUserDefined="0" columns="11" labelwidth="115" celllabelposition="Top" labelid="{1a6ea269-b3a5-4c60-bd80-a204cb95de3f}" ordinalvalue="1" solutionaction="Added">
+                  <labels>
+                    <label description="Contact Preferences" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{d4ec2d52-6658-cee9-4a2a-7a8029ad1862}" showlabel="true" locklevel="0" labelid="{7974e04e-f9fb-460d-a7f7-52b58d412f5d}" ordinalvalue="10000">
+                        <labels>
+                          <label description="Contact Method" languagecode="1033" />
+                        </labels>
+                        <control id="preferredcontactmethodcode" classid="{3EF39988-22BB-4f0b-BBBE-64B5A3748AEE}" datafieldname="preferredcontactmethodcode" disabled="false" />
+                      </cell>
+                      <cell id="{569cf3bd-3b14-46d8-a03a-22e6317d1d41}" labelid="{9f5f1bd9-7188-4d28-9da3-dc4b029dc6db}" colspan="1" rowspan="1" ordinalvalue="20001">
+                        <labels>
+                          <label description="Phone" languagecode="1033" />
+                        </labels>
+                        <control id="donotphone" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="donotphone" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{f0b4951b-b5ec-4103-b69d-7ac2ad176ee4}" labelid="{8543809b-3447-498c-a881-870082a69ca7}" ordinalvalue="10002">
+                        <labels>
+                          <label description="Email" languagecode="1033" />
+                        </labels>
+                        <control id="donotemail" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="donotemail" />
+                      </cell>
+                      <cell id="{dfe9aafd-1acc-488d-b31e-feef6f63a34d}" labelid="{b0b2a095-8771-477f-a7d1-c26bd89f1fa9}" colspan="1" rowspan="1" ordinalvalue="20003">
+                        <labels>
+                          <label description="Mail" languagecode="1033" />
+                        </labels>
+                        <control id="donotpostalmail" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="donotpostalmail" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{2344e926-ebe5-43a9-a634-98a98b1b9267}" labelid="{26da554e-fa81-4ca7-b862-c2435bdae8c8}" visible="false" ordinalvalue="10004">
+                        <labels>
+                          <label description="Follow Email" languagecode="1033" />
+                        </labels>
+                        <control id="followemail" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="followemail" />
+                      </cell>
+                      <cell locklevel="0" id="{970c9dbf-75a4-4167-bcb0-de464d53f8b5}" ordinalvalue="20005">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{041968bd-14fe-486a-baa0-719e7691e6ee}" labelid="{6ff33789-5387-4734-8c9e-ed54f4665878}" ordinalvalue="10006">
+                        <labels>
+                          <label description="Bulk Email" languagecode="1033" />
+                        </labels>
+                        <control id="donotbulkemail" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="donotbulkemail" />
+                      </cell>
+                      <cell locklevel="0" id="{5c7ddac6-75fb-4e3e-a0da-5161c79e9e6d}" ordinalvalue="20007">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{28d804f2-b314-42f6-92f8-982f4929bd6f}" labelid="{bdf474e2-3ca1-4171-b5f3-873480d5c38f}" visible="false" ordinalvalue="10008">
+                        <labels>
+                          <label description="Fax" languagecode="1033" />
+                        </labels>
+                        <control id="donotfax" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="donotfax" />
+                      </cell>
+                      <cell locklevel="0" id="{cb6f69cc-060c-4aaf-bcfa-497dcc1ac37f}" ordinalvalue="20009">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{828cbcdd-489a-463b-8131-e4d2d69bfe7e}" showlabel="true" locklevel="0" labelid="{19e35b55-1f33-42c7-9146-288f9c14589b}" visible="false" ordinalvalue="10010">
+                        <labels>
+                          <label description="Prefill marketing form" languagecode="1033" />
+                        </labels>
+                        <control id="msdyncrm_rememberme" classid="{67FAC785-CD58-4f9f-ABB3-4B7DDC6ED5ED}" datafieldname="msdyncrm_rememberme" disabled="false" uniqueid="{f5bc3612-7219-41ac-9885-b53a76901a29}" />
+                      </cell>
+                      <cell locklevel="0" id="{9cec18ec-6ab8-456c-8642-5a756356f2ce}" ordinalvalue="20011">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+            <column width="30%" id="1" solutionaction="Added">
+              <sections>
+                <section name="tab_7_section_7" id="82739fbd-c6e9-4d9a-973c-2becec8697d3" IsUserDefined="0" locklevel="0" showlabel="false" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Top" columns="11" labelwidth="115" ordinalvalue="0">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell locklevel="0" id="{4aaee01a-24cb-4b6c-b899-01d14765a1d7}" ordinalvalue="10000">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell locklevel="0" id="{85d25ad2-a39a-4c7d-8b62-6a20cab29480}" ordinalvalue="20001">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{b14f8917-69e1-4b21-bbb9-f87a17fc6a8b}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10002">
+                        <labels>
+                          <label description="Last Outcome" languagecode="1033" />
+                        </labels>
+                        <control id="hit_lastoutcome" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_lastoutcome" disabled="true" />
+                      </cell>
+                      <cell id="{64a1d876-6339-428e-b277-fa00b4f0fa7b}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20003">
+                        <labels>
+                          <label description="Last Outbound Date" languagecode="1033" />
+                        </labels>
+                        <control id="hit_lastoutboundcontactdate" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="hit_lastoutboundcontactdate" disabled="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="tab_7_section_4" id="8771280f-9826-45a0-a615-2133e1418007" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Top" columns="1" labelwidth="115" ordinalvalue="1">
+                  <labels>
+                    <label description="Outbound Engagement" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell id="{17fcbf4b-6453-46d7-8d4f-a182cd9029e6}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10000">
+                        <labels>
+                          <label description="Outbound Active" languagecode="1033" />
+                        </labels>
+                        <control id="hit_outboundactive" classid="{F9A8A302-114E-466A-B582-6771B2AE0D92}" datafieldname="hit_outboundactive" disabled="true" uniqueid="{a0d0b69b-042f-45a0-b035-5c13a6c544a3}" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{dafac713-c12e-4755-8d29-2c4bbf3f004f}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10001">
+                        <labels>
+                          <label description="Outbound Outcome" languagecode="1033" />
+                        </labels>
+                        <control id="hit_outboundoutcome" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_outboundoutcome" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{551b0347-3ce9-4e5c-851a-0acf1b51a480}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10002">
+                        <labels>
+                          <label description="Reschedule Next Date" languagecode="1033" />
+                        </labels>
+                        <control id="hit_reschedulenextdate" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="hit_reschedulenextdate" disabled="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="tab_7_section_6" id="7643035e-8eda-4084-b937-3b5a68d8cdca" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Top" columns="1" labelwidth="115" ordinalvalue="2">
+                  <labels>
+                    <label description="Outbound Preferences" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell id="{bd7508b3-71f3-4d75-b264-ec79599a703f}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10000">
+                        <labels>
+                          <label description="Allow Outbound" languagecode="1033" />
+                        </labels>
+                        <control id="hit_allowoutbound" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="hit_allowoutbound" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{e6e97f7c-bc86-43aa-92e7-bcbd4e9807c5}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10001">
+                        <labels>
+                          <label description="Outbound Frequency" languagecode="1033" />
+                        </labels>
+                        <control id="hit_contactfrequencyperyear" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_contactfrequencyperyear" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{32800cb3-20b4-46ad-9cd0-2e3dc07894bf}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10002">
+                        <labels>
+                          <label description="Preferred Month 1 (Annual)" languagecode="1033" />
+                        </labels>
+                        <control id="hit_contactmonth1" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_contactmonth1" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{b895dd0e-019d-421e-8d6f-5cc2cafd4dda}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10003">
+                        <labels>
+                          <label description="Preferred Month 2 (Semi-annual)" languagecode="1033" />
+                        </labels>
+                        <control id="hit_contactmonth2" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_contactmonth2" disabled="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="tab_7_section_5" id="10837633-0bf8-4d9b-acaf-ec5d1aea5ad0" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Top" columns="1" labelwidth="115" visible="false" ordinalvalue="3">
+                  <labels>
+                    <label description="Generate Invoice" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell locklevel="0" id="{27c20128-f4d0-4376-80f9-1f26474fb487}" ordinalvalue="10000">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0da62c43-1a9b-4dd6-b5e7-c6caaceefd14}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10001">
+                        <labels>
+                          <label description="Generate Invoice" languagecode="1033" />
+                        </labels>
+                        <control id="hit_generateinvoice" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_generateinvoice" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{9ddd32af-3cf7-4a1c-a88d-8cbaa6c261e4}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10002">
+                        <labels>
+                          <label description="Generate Invoice Amount" languagecode="1033" />
+                        </labels>
+                        <control id="hit_generateinvoiceamount" classid="{533B9E00-756B-4312-95A0-DC888637AC78}" datafieldname="hit_generateinvoiceamount" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{4f4f7420-2293-4a4e-81ea-bd1e12e507c3}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10003">
+                        <labels>
+                          <label description="Generate Invoice Date" languagecode="1033" />
+                        </labels>
+                        <control id="hit_generateinvoicedate" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="hit_generateinvoicedate" disabled="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="DETAILS_TAB" id="{fe1c5c3b-d556-4552-a444-4781214a6d63}" IsUserDefined="0" expanded="true" showlabel="true" labelid="{3538877b-ee8d-417b-864c-d8c12be6bc64}" ordinalvalue="2">
+          <columns>
+            <column width="50%" id="0">
+              <sections>
+                <section name="gdprsection" showlabel="true" showbar="true" locklevel="0" id="{20d7182a-cea3-600e-e636-789b6cbc684c}" IsUserDefined="0" layout="varwidth" columns="1" labelwidth="115" celllabelalignment="Left" celllabelposition="Left" labelid="{0ef58145-f81a-46cc-aea4-e43a50a011ee}" visible="false" ordinalvalue="2" solutionaction="Modified" />
+              </sections>
+            </column>
+            <column width="50%" id="1">
+              <sections>
+                <section name="marketing information" showlabel="true" showbar="false" locklevel="0" id="{a188d8ee-35d1-4f22-acf7-9588059a3f08}" IsUserDefined="0" layout="varheight" columns="11" labelwidth="115" celllabelposition="Top" visible="false" labelid="{13ebedef-03d5-4b1a-ba86-8b1efcf257ef}" ordinalvalue="1" solutionaction="Modified" />
+                <section name="EventInfoSection" showlabel="true" showbar="false" locklevel="0" id="{055d8d55-94ca-11dc-61a5-998be426523c}" IsUserDefined="0" layout="varwidth" columns="1" labelwidth="115" celllabelalignment="Left" celllabelposition="Left" visible="false" labelid="{1341c5da-5606-4393-b1d8-ccad3a13322b}" ordinalvalue="2" solutionaction="Modified" />
+                <section name="CONTACT_PREFERENCES" showlabel="true" showbar="false" id="{42aa148d-17fa-4c73-8213-bd22400b74ea}" IsUserDefined="0" columns="1" labelwidth="115" celllabelposition="Left" labelid="{1a6ea269-b3a5-4c60-bd80-a204cb95de3f}" ordinalvalue="2" solutionaction="Removed" />
+                <section name="DETAILS_TAB_section_8" id="94dea485-6ac4-4f99-b131-888701e4932c" IsUserDefined="0" locklevel="0" showlabel="false" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115" visible="false" ordinalvalue="0" solutionaction="Added">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{ca5c4587-cafb-4ea9-9848-8c6938511da4}" rowspan="4" colspan="1" auto="false" ordinalvalue="10000">
+                        <labels>
+                          <label description="Contact Tags" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_3" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_contactsegmenttag_Contact_contact</RelationshipName>
+                            <TargetEntityType>hit_contactsegmenttag</TargetEntityType>
+                            <ViewId>{3E3CE9BD-477F-F111-AB0F-6045BDC335B7}</ViewId>
+                            <ViewIds>{ED3D2D25-7E18-49AB-B89C-7114215C30FB},{3E3CE9BD-477F-F111-AB0F-6045BDC335B7}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="CONSENT_PREFERENCES_TAB" id="5476a3b1-0742-4ae6-b566-c7f4862866bf" IsUserDefined="0" locklevel="0" showlabel="true" contenttype="singleComponent" visible="false" labelid="{28af7236-6878-4942-9d90-a128878faf80}" ordinalvalue="4" solutionaction="Modified" />
+        <tab name="EVENTS_ATTENDED_TAB" id="{a4e4ceeb-2da2-e8b9-c58e-ba7b42e611a8}" IsUserDefined="0" locklevel="0" showlabel="true" expanded="true" labelid="{195aab50-cc0e-4044-bb39-134c58c6e236}" visible="false" ordinalvalue="6" solutionaction="Modified" />
+      </tabs>
+      <controlDescriptions>
+        <controlDescription forControl="{a0d0b69b-042f-45a0-b035-5c13a6c544a3}" solutionaction="Added">
+          <customControl id="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}">
+            <parameters>
+              <datafieldname>hit_outboundactive</datafieldname>
+            </parameters>
+          </customControl>
+          <customControl formFactor="0" name="MscrmControls.FieldControls.ToggleControl">
+            <parameters>
+              <value type="TwoOptions">hit_outboundactive</value>
+            </parameters>
+          </customControl>
+          <customControl formFactor="2" name="MscrmControls.FieldControls.ToggleControl">
+            <parameters>
+              <value type="TwoOptions">hit_outboundactive</value>
+            </parameters>
+          </customControl>
+          <customControl formFactor="1" name="MscrmControls.FieldControls.ToggleControl">
+            <parameters>
+              <value type="TwoOptions">hit_outboundactive</value>
+            </parameters>
+          </customControl>
+        </controlDescription>
+      </controlDescriptions>
+      <DisplayConditions FallbackForm="true" Order="1" solutionaction="Modified">
+        <Role Id="{627090ff-40a3-4053-8790-584edc5be201}" solutionaction="Removed" />
+        <Role Id="{119f245c-3cc8-4b62-b31c-d1a046ced15d}" solutionaction="Removed" />
+        <Everyone solutionaction="Added" />
+      </DisplayConditions>
+      <formLibraries>
+        <Library name="hit_paymentDialogForm" libraryUniqueId="{4ffc3a6f-f3a7-4900-b6d9-355837b7d61d}" solutionaction="Added" />
+      </formLibraries>
+    </form>
+    <LocalizedNames>
+      <LocalizedName description="Contact Main" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Updated default Contact form." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

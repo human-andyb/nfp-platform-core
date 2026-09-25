@@ -1,0 +1,37 @@
+<powerpagecomponent powerpagecomponentid="17109d4f-cad0-4a5b-9d56-1ad9d4c72b42">
+  <content>{
+  "copy": "&lt;div style=\"max-width:1100px;margin:32px auto;padding:0 16px;font-family:Segoe UI, Arial, sans-serif;\"&gt;\r\n  &lt;h1 style=\"margin-bottom:12px;\"&gt;Payment Debug&lt;/h1&gt;\r\n  &lt;div style=\"background:#f8fafc;border:1px solid #d1d5db;border-radius:10px;padding:16px;margin-bottom:18px;\"&gt;\r\n    &lt;strong&gt;Acceptance ID:&lt;/strong&gt; {{ request.params.acceptanceid | default: 'not supplied' | escape }}\r\n  &lt;/div&gt;\r\n  &lt;div style=\"background:#0b1f2b;color:#dfeaf6;border-radius:12px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,0.08);font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;\"&gt;\r\n    &lt;div&gt;Debug page is active.&lt;/div&gt;\r\n    &lt;div&gt;URL: {{ request.url | escape }}&lt;/div&gt;\r\n    &lt;div&gt;Timestamp: {{ 'now' | date: 'yyyy-MM-dd HH:mm:ss' }}&lt;/div&gt;\r\n  &lt;/div&gt;\r\n&lt;/div&gt;\r\n",
+  "displayorder": 90,
+  "enablerating": false,
+  "enabletracking": false,
+  "excludefromsearch": true,
+  "hiddenfromsitemap": true,
+  "isroot": true,
+  "pagetemplateid": "665a986d-1a3a-f111-bec6-000d3a7a0cab",
+  "parentpageid": "cf511b88-4b23-4858-b49e-9bb013db9e1a",
+  "partialurl": "payment-debug",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "sharedpageconfiguration": false,
+  "title": "Payment Debug"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Payment Debug</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <searchcontent>Payment Debug&lt;div style="max-width:1100px;margin:32px auto;padding:0 16px;font-family:Segoe UI, Arial, sans-serif;"&gt;
+  &lt;h1 style="margin-bottom:12px;"&gt;Payment Debug&lt;/h1&gt;
+  &lt;div style="background:#f8fafc;border:1px solid #d1d5db;border-radius:10px;padding:16px;margin-bottom:18px;"&gt;
+    &lt;strong&gt;Acceptance ID:&lt;/strong&gt; {{ request.params.acceptanceid | default: 'not supplied' | escape }}
+  &lt;/div&gt;
+  &lt;div style="background:#0b1f2b;color:#dfeaf6;border-radius:12px;padding:18px;box-shadow:0 2px 12px rgba(0,0,0,0.08);font-size:13px;line-height:1.7;white-space:pre-wrap;word-break:break-word;"&gt;
+    &lt;div&gt;Debug page is active.&lt;/div&gt;
+    &lt;div&gt;URL: {{ request.url | escape }}&lt;/div&gt;
+    &lt;div&gt;Timestamp: {{ 'now' | date: 'yyyy-MM-dd HH:mm:ss' }}&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+Payment Debug</searchcontent>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

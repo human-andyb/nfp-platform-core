@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{01a6e366-fbd1-4a15-a3c2-a9cbc331bc45}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls">
+      <tabs>
+        <tab verticallayout="true" id="{b12e3c91-83c7-4dcf-ad83-123aeb4f30dc}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{8310ed89-c790-4b2d-aa58-142c32d005df}" celllabelposition="Top">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{6a215eca-9016-4a97-bff1-40c2030785c6}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Strategy Cycle" languagecode="1033" />
+                        </labels>
+                        <control id="hit_strategycycle" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="hit_strategycycle" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0da80f50-4e0c-45c6-a4e6-b0a71447dd72}">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="hit_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="hit_name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{9cdd6ab5-ec71-4bd3-9fcd-814e5475320a}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Sort Order" languagecode="1033" />
+                        </labels>
+                        <control id="hit_sortorder" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="hit_sortorder" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ae107f1e-b1f1-4dd1-8592-ee13bb73e8b9}" visible="false">
+                        <labels>
+                          <label description="Owner" languagecode="1033" />
+                        </labels>
+                        <control id="ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="null_section_3" id="646823d8-83ea-4e14-b4f5-12196385a83e" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115">
+                  <labels>
+                    <label description="Measures &amp; Metrics" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{2506343c-aa43-400b-845d-ac187d4091ba}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Measures" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_1" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_scorecardmeasure_ScorecardSegment_hit_scorecardsegment</RelationshipName>
+                            <TargetEntityType>hit_scorecardmeasure</TargetEntityType>
+                            <ViewId>{8e70a8cd-ff83-40d4-8dc3-a9dd6e32b8d3}</ViewId>
+                            <ViewIds>{8e70a8cd-ff83-40d4-8dc3-a9dd6e32b8d3}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{e8598cdb-e255-4271-bb1f-36eb362385dc}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{8da0ddfc-9081-4a66-b737-9df384e17f24}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{e4db8168-8b2b-48f2-97c0-08af842f813c}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{0b47cde6-94fb-48d1-bc07-a19cae286fea}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{f6d795aa-3ba3-4ce7-949d-4e3c9f5a2699}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{ab9d5f94-827a-4589-9a50-8439de3d6613}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{f82c5fc2-b798-40f3-8cae-5af1dc16965c}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{a63d7418-e5d1-4848-aeb4-e26e64546fa9}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <DisplayConditions Order="0" FallbackForm="true">
+        <Everyone />
+      </DisplayConditions>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

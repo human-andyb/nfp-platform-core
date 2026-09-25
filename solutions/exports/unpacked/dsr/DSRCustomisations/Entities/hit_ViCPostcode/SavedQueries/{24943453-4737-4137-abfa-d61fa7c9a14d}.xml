@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{24943453-4737-4137-abfa-d61fa7c9a14d}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_vicpostcodeid">
+          <cell name="hit_name" width="300" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>1</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="hit_vicpostcode">
+          <attribute name="hit_vicpostcodeid" />
+          <attribute name="hit_name" />
+          <attribute name="createdon" />
+          <order attribute="hit_name" descending="false" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="ViC Postcode Advanced Find View" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{ed40c0b6-7e4c-4549-bc20-c5533cb83f3d}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls">
+      <tabs>
+        <tab verticallayout="true" id="{A81BCD3F-B599-41F1-BCFE-FC7232346DD2}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{79D0D18D-540E-4463-B079-4637E8A312C6}" columns="111" celllabelposition="Top">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{9B96A8C4-69B1-4645-8334-D4F6B21B1ECD}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                        <control id="hit_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="hit_Name" />
+                      </cell>
+                      <cell locklevel="0" id="{d1949c81-8947-4eed-a3e2-0d4a6a9c5ae9}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell id="{c6a46916-01ed-4603-8187-f29e1350c7f8}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Apply Import Tags" languagecode="1033" />
+                        </labels>
+                        <control id="hit_applyimporttags" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="hit_applyimporttags" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{72e348f1-9f44-42ca-a54e-4d0974dd2a6d}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="First Name" languagecode="1033" />
+                        </labels>
+                        <control id="hit_firstname" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_firstname" disabled="false" />
+                      </cell>
+                      <cell id="{fc8055ea-0826-4ecc-ba74-907ab8efed5b}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Last Name" languagecode="1033" />
+                        </labels>
+                        <control id="hit_lastname" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_lastname" disabled="false" />
+                      </cell>
+                      <cell id="{148c3521-6318-459e-844a-6f931440b89f}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Work Phone" languagecode="1033" />
+                        </labels>
+                        <control id="hit_workphone" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_workphone" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{20974e29-33db-4b73-8a4c-7e55ca1a2be6}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Email" languagecode="1033" />
+                        </labels>
+                        <control id="hit_email" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_email" disabled="false" />
+                      </cell>
+                      <cell id="{24eeb93a-b9f1-489d-8a64-a7e39d1e24fb}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Mobile" languagecode="1033" />
+                        </labels>
+                        <control id="hit_mobile" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_mobile" disabled="false" />
+                      </cell>
+                      <cell id="{aa02295c-3f4a-4836-9ed2-3997cf224b72}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Home Phone" languagecode="1033" />
+                        </labels>
+                        <control id="hit_homephone" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_homephone" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{00f65a98-55d5-4c7c-9a50-ec064b7b076a}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Address 1" languagecode="1033" />
+                        </labels>
+                        <control id="hit_address1" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_address1" disabled="false" />
+                      </cell>
+                      <cell id="{312a9083-9eb5-4e3f-b423-a864557305ab}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Address 2" languagecode="1033" />
+                        </labels>
+                        <control id="hit_address2" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_address2" disabled="false" />
+                      </cell>
+                      <cell id="{afa54b39-37f4-4223-93d9-287bb4c4c299}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Postcode" languagecode="1033" />
+                        </labels>
+                        <control id="hit_postcode" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_postcode" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ecfbfea6-d233-4c84-9a77-df734175a502}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Suburb" languagecode="1033" />
+                        </labels>
+                        <control id="hit_suburb" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_suburb" disabled="false" />
+                      </cell>
+                      <cell id="{0e43008d-e7c7-4380-b971-67dd6701d68f}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="State" languagecode="1033" />
+                        </labels>
+                        <control id="hit_state" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_state" disabled="false" />
+                      </cell>
+                      <cell locklevel="0" id="{8b00b120-7d4f-46f1-99d3-3e411f86523f}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{6b1ee639-f865-4773-9ad3-c9d19a56f3ad}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Organisation Name" languagecode="1033" />
+                        </labels>
+                        <control id="hit_organisationname" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_organisationname" disabled="false" />
+                      </cell>
+                      <cell id="{a63e73b5-89ae-4d37-a419-682d79150065}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Job Title" languagecode="1033" />
+                        </labels>
+                        <control id="hit_jobtitle" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_jobtitle" disabled="false" />
+                      </cell>
+                      <cell locklevel="0" id="{d13f3947-b0a0-4950-990d-fd36bbce0b12}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{c9f221b4-b279-4096-916b-7ffc6100a6ec}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{f4385904-bbca-4d74-b90f-62c265ec4485}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{b89adca4-f9bd-4b51-9bdc-ded527023389}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{0e2c0293-7639-4f17-a81b-d08088a4fa65}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{C4E743D9-96F9-4DE7-A483-447B6DFB46D4}" colspan="1" rowspan="1">
+              <labels>
+                <label description="Owner" languagecode="1033" />
+              </labels>
+              <control id="header_ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+            </cell>
+            <cell id="{86ff8692-c6aa-4c4b-8b43-00c584f0c725}" locklevel="0" colspan="1" rowspan="1">
+              <labels>
+                <label description="Import Status" languagecode="1033" />
+              </labels>
+              <control id="header_hit_importstatus" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_importstatus" disabled="false" />
+            </cell>
+            <cell id="{e5e63ca4-4148-4ce9-bb1d-cf66fce78f46}" locklevel="0" colspan="1" rowspan="1">
+              <labels>
+                <label description="ImportID" languagecode="1033" />
+              </labels>
+              <control id="header_hit_name" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_name" disabled="false" />
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{59f758f4-f7b6-4bf5-91a6-28c284e1062c}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{6643c832-caea-4dc9-9a2d-e0413c81467b}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{b76c7b73-d282-453a-a5ed-1c690f32f4b7}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{e1abda6e-2fbd-4fc6-ab96-fc8a39fbbb4f}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <DisplayConditions Order="0" FallbackForm="true">
+        <Everyone />
+      </DisplayConditions>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

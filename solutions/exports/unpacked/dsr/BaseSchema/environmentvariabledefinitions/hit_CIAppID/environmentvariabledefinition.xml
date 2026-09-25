@@ -1,0 +1,11 @@
+<environmentvariabledefinition schemaname="hit_CIAppID">
+  <defaultvalue>7a281c8d-6e08-f111-8407-000d3a7a0323</defaultvalue>
+  <displayname default="CIAppID">
+    <label description="CIAppID" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.0</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

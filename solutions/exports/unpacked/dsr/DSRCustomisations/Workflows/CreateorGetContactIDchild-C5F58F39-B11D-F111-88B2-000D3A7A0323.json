@@ -1,0 +1,684 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "e8acc703-6bd5-4929-8357-3f40fe3d332f"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "FirstName",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_1": {
+                  "title": "LastName",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_2": {
+                  "title": "Email",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_3": {
+                  "title": "Mobile",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text",
+                "text_1",
+                "text_2"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "init_sContactID": {
+          "runAfter": {
+            "Condition": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a47a66f9-aa56-4139-a601-ab66652bd85c"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sContactID",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_sFirstName": {
+          "runAfter": {
+            "init_sResponse": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e9ccc02f-e580-4ce5-87d6-3b4906c76c89"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sFirstName",
+                "type": "string",
+                "value": "@triggerBody()['text']"
+              }
+            ]
+          }
+        },
+        "init_sLastName": {
+          "runAfter": {
+            "init_sFirstName": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c69f9253-8f33-4ac5-b0e4-8ed37136a2a7"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sLastName",
+                "type": "string",
+                "value": "@triggerBody()['text_1']"
+              }
+            ]
+          }
+        },
+        "init_sEmail": {
+          "runAfter": {
+            "init_sLastName": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "2a0306c5-17a0-4541-a671-603173d18732"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sEmail",
+                "type": "string",
+                "value": "@triggerBody()['text_2']"
+              }
+            ]
+          }
+        },
+        "email-norm": {
+          "runAfter": {
+            "init_sContactID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "7517f864-f6d4-449b-ba6b-51486102677d"
+          },
+          "type": "Compose",
+          "inputs": "@toLower(trim(variables('sEmail')))"
+        },
+        "firstname-norm": {
+          "runAfter": {
+            "email-norm": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1cf7312b-a2eb-4d77-854c-f7ba47b0553f"
+          },
+          "type": "Compose",
+          "inputs": "@toLower(trim(variables('sFirstName')))"
+        },
+        "lastname-norm": {
+          "runAfter": {
+            "firstname-norm": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "854c9850-59a0-4507-979f-2d5c11f61625"
+          },
+          "type": "Compose",
+          "inputs": "@toLower(trim(variables('sLastName')))"
+        },
+        "Contacts_-_email": {
+          "runAfter": {
+            "lastname-norm": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "09ac4653-8a72-41fc-a960-03a04dd28acd"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "contacts",
+              "$filter": "emailaddress1 eq '@{outputs('email-norm')}'"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "match_email": {
+          "actions": {
+            "single_match_-_email": {
+              "actions": {
+                "Apply_to_each_2": {
+                  "foreach": "@outputs('Contacts_-_email')?['body/value']",
+                  "actions": {
+                    "set_sContactID_-_match_1": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "d4ad10b7-3f86-4949-9bec-b60910f9f094"
+                      },
+                      "type": "SetVariable",
+                      "inputs": {
+                        "name": "sContactID",
+                        "value": "@items('Apply_to_each_2')?['contactid']"
+                      }
+                    },
+                    "set_sResponse_-_Contact_ID_-_Existing": {
+                      "runAfter": {
+                        "set_sContactID_-_match_1": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "35d6fa4a-c46e-4df5-9582-e884263e39aa"
+                      },
+                      "type": "SetVariable",
+                      "inputs": {
+                        "name": "sResponse",
+                        "value": "Contact ID - Existing"
+                      }
+                    }
+                  },
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "93af8b69-078f-4b9d-a89f-bd501a153eb2"
+                  },
+                  "type": "Foreach"
+                }
+              },
+              "runAfter": {},
+              "else": {
+                "actions": {
+                  "multiple_contacts": {
+                    "runAfter": {},
+                    "metadata": {
+                      "operationMetadataId": "0548aee9-9c38-4603-9f31-f711632a65a5"
+                    },
+                    "type": "Compose",
+                    "inputs": "Multiple Contacts found - trigger warning"
+                  },
+                  "set_sResponse_-_Multiple_Contacts_Found": {
+                    "runAfter": {
+                      "multiple_contacts": [
+                        "Succeeded"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "e28aacff-fa69-4106-9925-8af5c7ce6477"
+                    },
+                    "type": "SetVariable",
+                    "inputs": {
+                      "name": "sResponse",
+                      "value": "Multiple Contacts Found"
+                    }
+                  }
+                }
+              },
+              "expression": {
+                "equals": [
+                  "@length(outputs('Contacts_-_email')?['body/value'])",
+                  1
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "2e19963a-d397-428d-863c-f81832050d52"
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "Contacts_-_email": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "contacts_-_name": {
+                "runAfter": {},
+                "metadata": {
+                  "operationMetadataId": "bb9772cb-1bde-4cfd-9231-15b853f03d98"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_commondataserviceforapps",
+                    "operationId": "ListRecords",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                  },
+                  "parameters": {
+                    "entityName": "contacts",
+                    "$filter": "firstname eq '@{replace(outputs('firstname-norm'),'''','''''')}' and lastname eq '@{replace(outputs('lastname-norm'),'''','''''')}'"
+                  },
+                  "authentication": {
+                    "type": "Raw",
+                    "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                  }
+                }
+              },
+              "match_name": {
+                "actions": {
+                  "single_match_-_name": {
+                    "actions": {
+                      "Apply_to_each_3": {
+                        "foreach": "@outputs('contacts_-_name')?['body/value']",
+                        "actions": {
+                          "set_sContactID_-_name_match": {
+                            "runAfter": {},
+                            "metadata": {
+                              "operationMetadataId": "17c39fbd-c80f-464a-be0c-8d865a494e05"
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                              "name": "sContactID",
+                              "value": "@items('Apply_to_each_3')?['contactid']"
+                            }
+                          },
+                          "set_sResponse_-_Contact_ID_-_Existing_2": {
+                            "runAfter": {
+                              "set_sContactID_-_name_match": [
+                                "Succeeded"
+                              ]
+                            },
+                            "metadata": {
+                              "operationMetadataId": "35d6fa4a-c46e-4df5-9582-e884263e39aa"
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                              "name": "sResponse",
+                              "value": "Contact ID - Existing"
+                            }
+                          }
+                        },
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "ddb284c8-d9de-43f8-b46f-6c158ef4d2e2"
+                        },
+                        "type": "Foreach"
+                      }
+                    },
+                    "runAfter": {},
+                    "else": {
+                      "actions": {
+                        "set_sResponse_-_Multiple_contacts_-_name": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "35d6fa4a-c46e-4df5-9582-e884263e39aa"
+                          },
+                          "type": "SetVariable",
+                          "inputs": {
+                            "name": "sResponse",
+                            "value": "Multiple Contacts Found"
+                          }
+                        }
+                      }
+                    },
+                    "expression": {
+                      "greater": [
+                        "@length(outputs('contacts_-_name')?['body/value'])",
+                        0
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "1dc94505-7387-4de5-a01b-bf86d4a26b90"
+                    },
+                    "type": "If"
+                  }
+                },
+                "runAfter": {
+                  "contacts_-_name": [
+                    "Succeeded"
+                  ]
+                },
+                "else": {
+                  "actions": {
+                    "Compose": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "563d1f34-67d7-4c7e-8faf-b67df1b09b07"
+                      },
+                      "type": "Compose",
+                      "inputs": "Add Contact"
+                    },
+                    "New_Contact": {
+                      "runAfter": {
+                        "Compose": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "b12fed53-1149-499d-98ce-1552b5c989c4"
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "shared_commondataserviceforapps",
+                          "operationId": "CreateRecord",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                        },
+                        "parameters": {
+                          "entityName": "contacts",
+                          "item/lastname": "@variables('sLastName')",
+                          "item/emailaddress1": "@variables('sEmail')",
+                          "item/firstname": "@variables('sFirstName')",
+                          "item/mobilephone": "@variables('mobile_raw')"
+                        },
+                        "authentication": {
+                          "type": "Raw",
+                          "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                        }
+                      }
+                    },
+                    "set_sContactID_-_New_Contact": {
+                      "runAfter": {
+                        "New_Contact": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "29f5632e-e8d5-4818-ad58-ae64e45cd79c"
+                      },
+                      "type": "SetVariable",
+                      "inputs": {
+                        "name": "sContactID",
+                        "value": "@outputs('New_Contact')?['body/contactid']"
+                      }
+                    },
+                    "set_sResponse_-_Contact_ID_-_New": {
+                      "runAfter": {
+                        "set_sContactID_-_New_Contact": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "66f8a5cf-05e6-4410-bb28-8c201ae2d853"
+                      },
+                      "type": "SetVariable",
+                      "inputs": {
+                        "name": "sResponse",
+                        "value": "Contact ID - New"
+                      }
+                    }
+                  }
+                },
+                "expression": {
+                  "greater": [
+                    "@length(outputs('contacts_-_name')?['body/value'])",
+                    0
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "6e25d459-6331-457d-aafa-264b4e998286"
+                },
+                "type": "If"
+              }
+            }
+          },
+          "expression": {
+            "greater": [
+              "@length(outputs('Contacts_-_email')?['body/value'])",
+              0
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c2396378-b4f4-4dc3-816a-4dd8cc73b0df"
+          },
+          "type": "If"
+        },
+        "init_mobile_raw": {
+          "runAfter": {
+            "init_sEmail": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "7c0cc3b3-8e7f-4b4a-9edf-2a15692505e1"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "mobile_raw",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "match_email": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "696ef87e-74ad-4f8a-95cc-20bb3c21d25b"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "contactguid": "@variables('sContactID')",
+              "response": "@variables('sResponse')"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "contactguid": {
+                  "title": "contactGUID",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                },
+                "response": {
+                  "title": "response",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "init_sResponse": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "73abbd92-6004-47b3-a231-0fbea7a05246"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sResponse",
+                "type": "string",
+                "value": "Incomplete"
+              }
+            ]
+          }
+        },
+        "Condition": {
+          "actions": {
+            "Set_variable": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "5cb70509-41c9-4b01-aad9-aed99e8066b8"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "mobile_raw",
+                "value": "@triggerBody()?['text_3']"
+              }
+            },
+            "Digits": {
+              "runAfter": {
+                "Set_variable": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "222748cd-820b-404e-b5fc-98fb81c97c12"
+              },
+              "type": "Compose",
+              "inputs": "0123456789"
+            },
+            "Indexes": {
+              "runAfter": {
+                "Digits": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "d6d9cb3e-8ecb-4ccc-b6a1-676a606fb630"
+              },
+              "type": "Compose",
+              "inputs": "range(0, length(variables('mobile_raw')))"
+            },
+            "SelectChars": {
+              "runAfter": {
+                "Indexes": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "3a17e133-4a6e-433c-9296-3b68c50a3f05"
+              },
+              "type": "Select",
+              "inputs": {
+                "from": "@range(0, length(coalesce(variables('mobile_raw'), '')))",
+                "select": {
+                  "char": "@{substring(variables('mobile_raw'), item(), 1)}",
+                  "keep": "@{greaterOrEquals(indexOf(outputs('Digits'), substring(variables('mobile_raw'), item(), 1)), 0)}"
+                }
+              }
+            },
+            "FilterDigits": {
+              "runAfter": {
+                "SelectChars": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "8950bb91-e0d7-437d-9962-c30f90fc555e"
+              },
+              "type": "Query",
+              "inputs": {
+                "from": "@body('SelectChars')",
+                "where": "@equals('keep', true)"
+              }
+            },
+            "Apply_to_each": {
+              "foreach": "@body('FilterDigits')",
+              "actions": {
+                "Append_to_string_variable": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "b298d7be-2379-45f2-a106-3d4adf514bc3"
+                  },
+                  "type": "AppendToStringVariable",
+                  "inputs": {
+                    "name": "mobile_raw",
+                    "value": "@items('Apply_to_each')?['char']"
+                  }
+                }
+              },
+              "runAfter": {
+                "FilterDigits": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "100f8261-3db9-4377-b7c9-7055dddca7d6"
+              },
+              "type": "Foreach"
+            }
+          },
+          "runAfter": {
+            "init_mobile_raw": [
+              "Succeeded"
+            ]
+          },
+          "expression": {
+            "greater": [
+              "@length(variables('mobile_raw'))",
+              0
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "de559df9-4b8e-46e8-928f-17e01dfe3d28"
+          },
+          "type": "If"
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

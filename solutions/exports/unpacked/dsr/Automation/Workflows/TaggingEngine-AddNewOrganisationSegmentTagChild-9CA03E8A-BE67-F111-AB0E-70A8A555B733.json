@@ -1,0 +1,529 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "67837868-2bb3-432b-a144-b1955f7d9dda"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "orgId",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Organisation GUID",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_1": {
+                  "title": "tagCode",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Tag Code",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "boolean_1": {
+                  "title": "exclusive",
+                  "type": "boolean",
+                  "x-ms-dynamically-added": true,
+                  "description": "Only 1 value allowed within the dimension",
+                  "x-ms-content-hint": "BOOLEAN"
+                },
+                "text_2": {
+                  "title": "tagDiminsion",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "LIF, ENG, VAL, DLF or other exclusive diminsion",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_3": {
+                  "title": "mode",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Add | Remove",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text",
+                "text_1",
+                "boolean_1",
+                "text_2",
+                "text_3"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "init_varTagCode": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "584fca46-a897-4723-a876-cc0448b6e180"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varTagCode",
+                "type": "string",
+                "value": "@triggerBody()['text_1']"
+              }
+            ]
+          }
+        },
+        "init_varContactId": {
+          "runAfter": {
+            "init_varTagCode": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "08a909a6-e3a8-4a6b-a591-ef65ca1b64ad"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varOrgId",
+                "type": "string",
+                "value": "@triggerBody()['text']"
+              }
+            ]
+          }
+        },
+        "segment_tag": {
+          "runAfter": {
+            "organisation": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "438ae68c-5e24-4959-934d-d6d551ece952"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_segmenttags",
+              "$filter": "hit_code eq '@{variables('varTagCode')}'"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "init_varTagId": {
+          "runAfter": {
+            "segment_tag": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1339411a-1b19-43f0-8e22-80023ddbe19e"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varTagId",
+                "type": "string",
+                "value": "@{first(outputs('segment_tag')?['body/value'])?['hit_segmenttagid']}"
+              }
+            ]
+          }
+        },
+        "hasTag": {
+          "actions": {
+            "mode_add": {
+              "actions": {
+                "Respond_to_a_Power_App_or_flow_2": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "00d0a5ef-90d1-44c8-bf4c-2f4ed728dedf"
+                  },
+                  "type": "Response",
+                  "kind": "PowerApp",
+                  "inputs": {
+                    "statusCode": 200,
+                    "body": {
+                      "response": "success"
+                    },
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "response": {
+                          "title": "response",
+                          "x-ms-dynamically-added": true,
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "Terminate": {
+                  "runAfter": {
+                    "Respond_to_a_Power_App_or_flow_2": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "19661b92-c600-4bce-b273-bba8542376a1"
+                  },
+                  "type": "Terminate",
+                  "inputs": {
+                    "runStatus": "Succeeded"
+                  }
+                }
+              },
+              "runAfter": {},
+              "else": {
+                "actions": {
+                  "Condition_2": {
+                    "actions": {
+                      "Apply_to_each": {
+                        "foreach": "@outputs('existingTags')?['body/value']",
+                        "actions": {
+                          "Delete_a_row_2": {
+                            "runAfter": {},
+                            "metadata": {
+                              "operationMetadataId": "3bfc7799-edf3-4311-9e00-3fa743736a71"
+                            },
+                            "type": "OpenApiConnection",
+                            "inputs": {
+                              "host": {
+                                "connectionName": "shared_commondataserviceforapps",
+                                "operationId": "DeleteRecord",
+                                "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                              },
+                              "parameters": {
+                                "entityName": "hit_accountsegmenttags",
+                                "recordId": "@items('Apply_to_each')?['hit_accountsegmenttagid']"
+                              },
+                              "authentication": {
+                                "type": "Raw",
+                                "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                              }
+                            }
+                          }
+                        },
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "4573c084-77ca-4152-acc1-45439e9b2722"
+                        },
+                        "type": "Foreach"
+                      }
+                    },
+                    "runAfter": {},
+                    "expression": {
+                      "equals": [
+                        "@triggerBody()['text_3']",
+                        "Remove"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "5241836f-7f10-4ad9-8e48-c52c7e55091f"
+                    },
+                    "type": "If"
+                  }
+                }
+              },
+              "expression": {
+                "equals": [
+                  "@triggerBody()['text_3']",
+                  "Add"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "676fb725-3e5b-48ac-b40b-aa38832f7a87"
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "init_varHasTag": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "mode_is_Add": {
+                "actions": {
+                  "exclusive_is_true": {
+                    "actions": {
+                      "existingDimTags": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "9a3a04c4-35c7-4ec0-96bf-57581876a9b7"
+                        },
+                        "type": "OpenApiConnection",
+                        "inputs": {
+                          "host": {
+                            "connectionName": "shared_commondataserviceforapps",
+                            "operationId": "ListRecords",
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                          },
+                          "parameters": {
+                            "entityName": "hit_accountsegmenttags",
+                            "$filter": "(_hit_account_value eq @{variables('varOrgId')}) and (hit_dimension eq '@{triggerBody()['text_2']}') "
+                          },
+                          "authentication": {
+                            "type": "Raw",
+                            "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                          }
+                        }
+                      },
+                      "remove_dim_tags": {
+                        "foreach": "@outputs('existingDimTags')?['body/value']",
+                        "actions": {
+                          "Delete_a_row": {
+                            "runAfter": {},
+                            "metadata": {
+                              "operationMetadataId": "6127dad0-cb01-49d9-8bd9-76e6160d3185"
+                            },
+                            "type": "OpenApiConnection",
+                            "inputs": {
+                              "host": {
+                                "connectionName": "shared_commondataserviceforapps",
+                                "operationId": "DeleteRecord",
+                                "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                              },
+                              "parameters": {
+                                "entityName": "hit_accountsegmenttags",
+                                "recordId": "@items('remove_dim_tags')?['hit_accountsegmenttagid']"
+                              },
+                              "authentication": {
+                                "type": "Raw",
+                                "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                              }
+                            }
+                          }
+                        },
+                        "runAfter": {
+                          "existingDimTags": [
+                            "Succeeded"
+                          ]
+                        },
+                        "metadata": {
+                          "operationMetadataId": "d28bdb3b-c813-4827-8973-cc7e2e4e0a43"
+                        },
+                        "type": "Foreach"
+                      }
+                    },
+                    "runAfter": {},
+                    "expression": {
+                      "equals": [
+                        "@triggerBody()['boolean_1']",
+                        "@true"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "1da0128d-395b-47b1-9500-d3673c23f0da"
+                    },
+                    "type": "If"
+                  },
+                  "Add_a_new_row": {
+                    "runAfter": {
+                      "exclusive_is_true": [
+                        "Succeeded"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "b4ce7e53-a862-4291-a0af-58fd11b22e15"
+                    },
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "host": {
+                        "connectionName": "shared_commondataserviceforapps",
+                        "operationId": "CreateRecord",
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                      },
+                      "parameters": {
+                        "entityName": "hit_accountsegmenttags",
+                        "item/hit_Account@odata.bind": "/accounts(@{variables('varOrgId')})",
+                        "item/hit_SegmentTag@odata.bind": "/hit_segmenttags(@{variables('varTagId')})",
+                        "item/hit_appliedon": "@utcNow()",
+                        "item/hit_dimension": "@triggerBody()['text_2']",
+                        "item/hit_name": "@{outputs('organisation')?['body/name']} - @{variables('varTagCode')}"
+                      },
+                      "authentication": {
+                        "type": "Raw",
+                        "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                      }
+                    }
+                  }
+                },
+                "runAfter": {},
+                "expression": {
+                  "equals": [
+                    "@triggerBody()['text_3']",
+                    "Add"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "d972d8a2-1104-4723-8928-26a6c6495833"
+                },
+                "type": "If"
+              }
+            }
+          },
+          "expression": {
+            "and": [
+              {
+                "equals": [
+                  "@variables('varHasTag')",
+                  "@true"
+                ]
+              },
+              {
+                "equals": [
+                  "@triggerBody()['boolean_1']",
+                  "@false"
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f05fdb5c-e607-46ab-97e7-338dff10ecc7"
+          },
+          "type": "If"
+        },
+        "existingTags": {
+          "runAfter": {
+            "init_varTagId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "51393626-996a-49e1-9059-b7d34f65bfc8"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_accountsegmenttags",
+              "$filter": "(_hit_account_value eq @{variables('varOrgId')}) and (_hit_segmenttag_value eq @{variables('varTagId')})"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "init_varHasTag": {
+          "runAfter": {
+            "existingTags": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "aa82d4a0-8ed5-493c-ac15-0b2d67e4645c"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varHasTag",
+                "type": "boolean",
+                "value": "@greater(length(outputs('existingTags')?['body/value']),0)"
+              }
+            ]
+          }
+        },
+        "organisation": {
+          "runAfter": {
+            "init_varContactId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e375b531-3136-400f-9f35-8c205644198b"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "accounts",
+              "recordId": "@variables('varOrgId')"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "hasTag": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "00d0a5ef-90d1-44c8-bf4c-2f4ed728dedf"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "response": "success"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "response": {
+                  "title": "response",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

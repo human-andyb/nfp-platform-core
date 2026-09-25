@@ -1,0 +1,214 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "3a829ab2-d70f-4cf2-ad5b-94e528e9720f"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "targetEntityType",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Contact | Account",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_1": {
+                  "title": "targetId",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "GUID",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_2": {
+                  "title": "stage",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Intent | Committed | Engaged | Reversed",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_3": {
+                  "title": "acceptanceId",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "GUID",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_4": {
+                  "title": "source",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "OfferingAcceptance | Fulfillment | System",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_5": {
+                  "title": "flowName",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "String",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text",
+                "text_1",
+                "text_2",
+                "text_3",
+                "text_4",
+                "text_5"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Compose": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "77ec3150-380e-48cf-81d7-420c338eb967"
+          },
+          "type": "Compose",
+          "inputs": "@triggerBody()['text_3']"
+        },
+        "OfferingAcceptance": {
+          "runAfter": {
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "71a2997c-e5fe-4fe4-a558-014955ad15a6"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "recordId": "@triggerBody()['text_3']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Offering": {
+          "runAfter": {
+            "OfferingAcceptance": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "b2dd0e4e-088a-4742-b17b-a5228c127e67"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offerings",
+              "recordId": "@outputs('OfferingAcceptance')?['body/_hit_offering_value']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "OfferingTagRules": {
+          "runAfter": {
+            "Offering": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "8d79fb1e-6d73-476c-bb84-b004e8405044"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringtagrules",
+              "$filter": "_hit_offering_value eq '@{outputs('Offering')?['body/hit_offeringid']}' "
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "OfferingTagRules": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "b7ce3393-64a4-4204-b31b-297026e47da6"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "response": "Success"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "response": {
+                  "title": "response",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,14 @@
+<msdyn_dmsrequeststatus msdyn_dmsrequeststatusid="7b68b5ef-851e-4178-a6ea-84994f3eb3bc">
+  <iscustomizable>1</iscustomizable>
+  <msdyn_errordetails>{"Version":"1.0","RequestErrorMessage":null,"RequestErrorCulprit":null,"EntityErrorDetails":[{"EntityName":"New Contacts","EntityErrorCulprit":"None","TaskErrors":[]}],"RetryAfter":null}</msdyn_errordetails>
+  <msdyn_lookupfield_uploadrequest>
+    <msdyn_dmsrequestid>fe458bdc-c0c6-42f9-820c-5344ea3c0d97</msdyn_dmsrequestid>
+  </msdyn_lookupfield_uploadrequest>
+  <msdyn_uploadendtime>7/25/2026 6:06:03 PM</msdyn_uploadendtime>
+  <msdyn_uploadstarttime>7/25/2026 6:04:35 PM</msdyn_uploadstarttime>
+  <msdyn_uploadstatus>Succeeded</msdyn_uploadstatus>
+  <msdyn_uploadstatusdetails>{"Version":"1.0","EntityStatusDetails":[{"EntityName":"New Contacts","EntityId":"e41edb4a-d291-4938-ac97-776777059c2d","Status":"Succeeded","StartTime":"2026-07-26T04:04:35.0701768+00:00","EndTime":"2026-07-26T04:06:03.3843164+00:00","CreatedRecords":0,"UpdatedRecords":2902,"DeletedRecords":0,"ErrorRecords":0}]}</msdyn_uploadstatusdetails>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+  <timezoneruleversionnumber>0</timezoneruleversionnumber>
+</msdyn_dmsrequeststatus>

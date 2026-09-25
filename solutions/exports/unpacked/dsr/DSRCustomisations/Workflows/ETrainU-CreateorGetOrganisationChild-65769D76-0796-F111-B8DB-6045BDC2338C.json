@@ -1,0 +1,511 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "930dd99f-1492-4616-93a6-c004403f6556"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "acceptanceID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "OfferingAcceptance": {
+          "runAfter": {
+            "init_sExpiryDate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f176c9bd-4226-4837-8c5f-5a161067ceb7"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "recordId": "@triggerBody()['text']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "organisation": {
+          "runAfter": {
+            "OfferingAcceptance": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "83327874-fc06-4f4f-9c39-c310eb0b3bd8"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "accounts",
+              "recordId": "@outputs('OfferingAcceptance')?['body/_hit_organisation_value']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "init_sETrainUOrgID": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "1b43a46b-2b91-4902-b2a1-ae26157d933e"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sETrainUOrgID",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "ETrainU_Organisations": {
+          "runAfter": {
+            "organisation": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "cb55ee99-d705-4e08-86fa-7ec7b80dc990"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_coursedefinitions",
+              "$filter": "_hit_organisation_value eq '@{outputs('organisation')?['body/accountid']}'",
+              "$top": 1
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "HTTP_-_authenticate": {
+          "runAfter": {
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "0f72fa32-fcb7-4fd1-ad02-cc7b3a3c884d"
+          },
+          "type": "Http",
+          "inputs": {
+            "method": "POST",
+            "uri": "https://api.etrainu.com/lms/v3/authenticate",
+            "headers": {
+              "x-api-key": "vhVI2L1EQ966GAx1wtxXq60KS0cMekVJIKX8jax8",
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "username": "levelthefield.api.user",
+              "password": ".ivQcY*Ro3dHz8uTkqQ9"
+            }
+          }
+        },
+        "Compose": {
+          "runAfter": {
+            "exsisting_orgid": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3ad91d5e-d60b-4430-97b8-0b591b49bfcd"
+          },
+          "type": "Compose",
+          "inputs": "base64('levelthefield.api.user:.ivQcY*Ro3dHz8uTkqQ9')"
+        },
+        "no_org_record_-_id": {
+          "actions": {
+            "HTTP_-_locations_list": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "6742a8e5-35fe-472e-8079-1063e13fa6a7"
+              },
+              "type": "Http",
+              "inputs": {
+                "method": "GET",
+                "uri": "https://api.etrainu.com/lms/v3/locations?region=185701",
+                "headers": {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json",
+                  "Authorization": "Bearer @{body('HTTP_-_authenticate')?['idtoken']}",
+                  "x-api-key": "vhVI2L1EQ966GAx1wtxXq60KS0cMekVJIKX8jax8"
+                }
+              }
+            },
+            "Parse_JSON_-_locations": {
+              "runAfter": {
+                "HTTP_-_locations_list": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "bc3968d8-d835-498c-b0aa-372078b3e11b"
+              },
+              "type": "ParseJson",
+              "inputs": {
+                "content": "@body('HTTP_-_locations_list')",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "locations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "externalId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "externalId"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "check_org_-_locations": {
+              "foreach": "@body('Parse_JSON_-_locations')?['locations']",
+              "actions": {
+                "Condition_2": {
+                  "actions": {
+                    "set_sETrainUOrgID_-_existing_etrainu": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "e705a0b1-7ac3-43ad-af04-be188daf16e8"
+                      },
+                      "type": "SetVariable",
+                      "inputs": {
+                        "name": "sETrainUOrgID",
+                        "value": "@{body('Parse_JSON_-_locations')?['id']}"
+                      }
+                    }
+                  },
+                  "runAfter": {},
+                  "expression": {
+                    "equals": [
+                      "@body('Parse_JSON_-_locations')?['name']",
+                      "@outputs('organisation')?['body/name']"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "59e8a092-7c5e-4bcb-a6fe-ab6d21a577bc"
+                  },
+                  "type": "If"
+                }
+              },
+              "runAfter": {
+                "Parse_JSON_-_locations": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "06d95959-f051-4aa6-82a5-f4ba5bbecacf"
+              },
+              "type": "Foreach"
+            }
+          },
+          "runAfter": {
+            "HTTP_-_authenticate": [
+              "Succeeded"
+            ]
+          },
+          "expression": {
+            "equals": [
+              "@empty(variables('sETrainUOrgID'))",
+              "@true"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "300b2c26-eec3-4cb2-85a6-71b175ade2ed"
+          },
+          "type": "If"
+        },
+        "exsisting_orgid": {
+          "foreach": "@outputs('ETrainU_Organisations')?['body/value']",
+          "actions": {
+            "set_sETrainUOrgID": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "ad7ddc4d-fe81-48cb-bc42-9040e832ee81"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "sETrainUOrgID",
+                "value": "@items('exsisting_orgid')?['hit_courseid']"
+              }
+            }
+          },
+          "runAfter": {
+            "ETrainU_Organisations": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "7492a82f-8d1a-4536-affd-dd691d5afaca"
+          },
+          "type": "Foreach"
+        },
+        "no_etrainu_org_id": {
+          "actions": {
+            "HTTP_-_create_organisation": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "3fc5644c-25cb-40f7-972d-39cd0868d1fc"
+              },
+              "type": "Http",
+              "inputs": {
+                "method": "POST",
+                "uri": "https://api.etrainu.com/lms/v3/locations",
+                "headers": {
+                  "Content-Type": "application/json",
+                  "x-api-key": "vhVI2L1EQ966GAx1wtxXq60KS0cMekVJIKX8jax8",
+                  "Authorization": "Bearer @{body('HTTP_-_authenticate')?['idtoken']}"
+                },
+                "body": {
+                  "name": "@{outputs('organisation')?['body/name']}",
+                  "externalId": "@{outputs('organisation')?['body/accountnumber']}",
+                  "region": 185701
+                }
+              }
+            },
+            "Parse_JSON_-_create_organisation": {
+              "runAfter": {
+                "HTTP_-_create_organisation": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "a052ebf3-caa4-48e5-92c9-fe344c710602"
+              },
+              "type": "ParseJson",
+              "inputs": {
+                "content": "@body('HTTP_-_create_organisation')",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "archiveDate": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "expiryDate": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "externalId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "set_sETrainUOrgID_-_new_EtrainU_suborg": {
+              "runAfter": {
+                "Parse_JSON_-_create_organisation": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "73f59e05-8eae-418f-974b-48b320f0a504"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "sETrainUOrgID",
+                "value": "@{body('Parse_JSON_-_create_organisation')?['id']}"
+              }
+            },
+            "add_EtrainU_Organisation_record": {
+              "runAfter": {
+                "set_sETrainUOrgID_-_new_EtrainU_suborg": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "c97abbba-3562-4bf5-8f11-4847888bda06"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "CreateRecord",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "hit_coursedefinitions",
+                  "item/hit_name": "@outputs('organisation')?['body/name']",
+                  "item/hit_Organisation@odata.bind": "/accounts(@{outputs('organisation')?['body/accountid']})",
+                  "item/hit_courseid": "@variables('sETrainUOrgID')",
+                  "item/hit_expirydate": "@variables('sExpiryDate')",
+                  "item/hit_maxmembers": 100,
+                  "item/hit_PrimaryContact@odata.bind": "/contacts(@{outputs('OfferingAcceptance')?['body/_hit_contact_value']})"
+                },
+                "authentication": {
+                  "type": "Raw",
+                  "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "no_org_record_-_id": [
+              "Succeeded"
+            ]
+          },
+          "expression": {
+            "equals": [
+              "@empty(variables('sETrainUOrgID'))",
+              "@true"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "dc75d87e-90ad-459d-8379-c3a8e7b0b4d4"
+          },
+          "type": "If"
+        },
+        "init_sExpiryDate": {
+          "runAfter": {
+            "init_sETrainUOrgID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c729b82e-de33-42ed-8aef-e6117cea93c1"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sExpiryDate",
+                "type": "string",
+                "value": "2027-06-30"
+              }
+            ]
+          }
+        },
+        "Compose_2": {
+          "runAfter": {
+            "no_etrainu_org_id": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "6c25d71c-0d57-4701-a4fb-617e148000ef"
+          },
+          "type": "Compose",
+          "inputs": "@variables('sETrainUOrgID')"
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "Compose_2": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "4750dfb8-b0ec-4d08-b3ab-eb367e5a1100"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "etrainuorgid": "@variables('sETrainUOrgID')"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "etrainuorgid": {
+                  "title": "etrainuOrgID",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

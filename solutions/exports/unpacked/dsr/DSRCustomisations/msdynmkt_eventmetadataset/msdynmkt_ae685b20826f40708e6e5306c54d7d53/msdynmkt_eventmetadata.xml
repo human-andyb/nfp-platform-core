@@ -1,0 +1,12 @@
+<msdynmkt_eventmetadata msdynmkt_uniquename="msdynmkt_ae685b20826f40708e6e5306c54d7d53">
+  <iscustomizable>1</iscustomizable>
+  <msdynmkt_branchable>0</msdynmkt_branchable>
+  <msdynmkt_customapiid>
+    <uniquename>msdynmkt_ae685b20826f40708e6e5306c54d7d53</uniquename>
+  </msdynmkt_customapiid>
+  <msdynmkt_eventjson>{"name":"Organisation Segment Tag Created (Due)","description":"","addCustomerDataProperty":true,"supportedTargetEntities":"contact","customEventVersion":"2.0.0.1","cdstEventProperties":{"source":"hit_accountsegmenttag","action":"Create","targetEntityAttribute":"hit_primarycontact"},"owningBusinessUnitId":"bbcea232-3a17-f111-8342-7ced8d344765"}</msdynmkt_eventjson>
+  <msdynmkt_name>Organisation Segment Tag Created (Due)</msdynmkt_name>
+  <msdynmkt_orchestrable>0</msdynmkt_orchestrable>
+  <msdynmkt_state>534120002</msdynmkt_state>
+  <msdynmkt_supportedtargetentities>contact</msdynmkt_supportedtargetentities>
+</msdynmkt_eventmetadata>

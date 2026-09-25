@@ -1,0 +1,9 @@
+<dvtablesearchentity dvtablesearchentityid="81d7b153-5464-f111-ab0c-7ced8dd14eac">
+  <dvtablesearch>
+    <dvtablesearchid>7fd7b153-5464-f111-ab0c-7ced8dd14eac</dvtablesearchid>
+  </dvtablesearch>
+  <entitylogicalname>hit_initiative</entitylogicalname>
+  <iscustomizable>1</iscustomizable>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</dvtablesearchentity>

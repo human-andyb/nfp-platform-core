@@ -1,0 +1,23 @@
+<duplicaterule uniquename="dre9e6f5dd22717f45d7490dcc22ee8e7add13adb1de8cc4ab6254a2d3de460b94">
+  <baseentityname>contact</baseentityname>
+  <description>High Confidence Match - Exact First Name, Last Name, Mobile</description>
+  <excludeinactiverecords>1</excludeinactiverecords>
+  <iscasesensitive>0</iscasesensitive>
+  <iscustomizable>1</iscustomizable>
+  <matchingentityname>contact</matchingentityname>
+  <name>First Name + Last Name + Mobile</name>
+  <duplicateruleconditions>
+    <duplicaterulecondition baseattributename="firstname" matchingattributename="firstname" operatorcode="0" uniquerulename="dre9e6f5dd22717f45d7490dcc22ee8e7add13adb1de8cc4ab6254a2d3de460b94">
+      <ignoreblankvalues>1</ignoreblankvalues>
+      <iscustomizable>1</iscustomizable>
+    </duplicaterulecondition>
+    <duplicaterulecondition baseattributename="lastname" matchingattributename="lastname" operatorcode="0" uniquerulename="dre9e6f5dd22717f45d7490dcc22ee8e7add13adb1de8cc4ab6254a2d3de460b94">
+      <ignoreblankvalues>1</ignoreblankvalues>
+      <iscustomizable>1</iscustomizable>
+    </duplicaterulecondition>
+    <duplicaterulecondition baseattributename="mobilephone" matchingattributename="mobilephone" operatorcode="0" uniquerulename="dre9e6f5dd22717f45d7490dcc22ee8e7add13adb1de8cc4ab6254a2d3de460b94">
+      <ignoreblankvalues>1</ignoreblankvalues>
+      <iscustomizable>1</iscustomizable>
+    </duplicaterulecondition>
+  </duplicateruleconditions>
+</duplicaterule>

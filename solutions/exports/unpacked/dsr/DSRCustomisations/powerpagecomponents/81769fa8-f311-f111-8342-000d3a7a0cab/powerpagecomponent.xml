@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="81769fa8-f311-f111-8342-000d3a7a0cab">
+  <content>{
+  "source": 0,
+  "value": "hit_offeringid,hit_offeringname,hit_displaytitle,hit_summary,hit_slug,hit_imageurl,hit_imageurldetail,hit_imageurlcardgallery,hit_offeringtype,hit_isactive,hit_webvisible,hit_formheadline,hit_formsummary,hit_formdescription,hit_pricingmodel,hit_allowrecurring,hit_subscriptionfrequency,hit_courseaccessaudience,hit_courseaccessplan"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Webapi/hit_offering/fields</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

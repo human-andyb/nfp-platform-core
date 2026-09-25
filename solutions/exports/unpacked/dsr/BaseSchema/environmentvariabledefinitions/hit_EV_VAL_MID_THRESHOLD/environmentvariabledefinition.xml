@@ -1,0 +1,11 @@
+<environmentvariabledefinition schemaname="hit_EV_VAL_MID_THRESHOLD">
+  <defaultvalue>250</defaultvalue>
+  <displayname default="EV_VAL_MID_THRESHOLD">
+    <label description="EV_VAL_MID_THRESHOLD" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.9</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000001</type>
+</environmentvariabledefinition>

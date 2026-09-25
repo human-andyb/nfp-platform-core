@@ -1,0 +1,39 @@
+<powerpagecomponent powerpagecomponentid="824db45c-c133-52e3-fa16-d7a23d5ca853">
+  <content>{
+  "copy": "&lt;div class=\"row sectionBlockLayout text-start\" style=\"min-height: auto; padding: 8px;\"&gt;\n    &lt;div class=\"container\" style=\"display: flex; flex-wrap: wrap;\"&gt;\n      &lt;div class=\"col-lg-12 columnBlockLayout\" style=\"padding: 16px; margin: 60px 0px; min-height: 200px;\"&gt;\n        {% include 'pages--impactstory-detail' %}\n      &lt;/div&gt;\n    &lt;/div&gt;\n  &lt;/div&gt;\n  ",
+  "displayorder": 18,
+  "enablerating": false,
+  "enabletracking": false,
+  "excludefromsearch": false,
+  "feedbackpolicy": 756150000,
+  "hiddenfromsitemap": true,
+  "isroot": false,
+  "pagetemplateid": "665a986d-1a3a-f111-bec6-000d3a7a0cab",
+  "parentpageid": "cf511b88-4b23-4858-b49e-9bb013db9e1a",
+  "partialurl": "impact-story-deleted",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "rootwebpageid": "3cafcf87-262a-f86b-3099-2ce022797c35",
+  "sharedpageconfiguration": false,
+  "summary": "&lt;p&gt;This is a sample landing page designed to be a starting point for your website&lt;/p&gt;",
+  "title": "Impact Story"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Impact Story-deleted</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>65f59487-4eee-417b-bf5e-782336e9abfd</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <searchcontent>Impact Story&lt;div class="row sectionBlockLayout text-start" style="min-height: auto; padding: 8px;"&gt;
+    &lt;div class="container" style="display: flex; flex-wrap: wrap;"&gt;
+      &lt;div class="col-lg-12 columnBlockLayout" style="padding: 16px; margin: 60px 0px; min-height: 200px;"&gt;
+        {% include 'pages--impactstory-detail' %}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  Impact Story-deleted</searchcontent>
+  <statecode>1</statecode>
+  <statuscode>2</statuscode>
+</powerpagecomponent>

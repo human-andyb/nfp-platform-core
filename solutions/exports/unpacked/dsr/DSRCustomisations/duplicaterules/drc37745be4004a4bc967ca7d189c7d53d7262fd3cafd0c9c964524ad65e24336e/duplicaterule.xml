@@ -1,0 +1,15 @@
+<duplicaterule uniquename="drc37745be4004a4bc967ca7d189c7d53d7262fd3cafd0c9c964524ad65e24336e">
+  <baseentityname>account</baseentityname>
+  <description>Detects account records that have the same value in the email address field.</description>
+  <excludeinactiverecords>1</excludeinactiverecords>
+  <iscasesensitive>0</iscasesensitive>
+  <iscustomizable>1</iscustomizable>
+  <matchingentityname>account</matchingentityname>
+  <name>Accounts with the same e-mail address</name>
+  <duplicateruleconditions>
+    <duplicaterulecondition baseattributename="emailaddress1" matchingattributename="emailaddress1" operatorcode="0" uniquerulename="drc37745be4004a4bc967ca7d189c7d53d7262fd3cafd0c9c964524ad65e24336e">
+      <ignoreblankvalues>1</ignoreblankvalues>
+      <iscustomizable>1</iscustomizable>
+    </duplicaterulecondition>
+  </duplicateruleconditions>
+</duplicaterule>

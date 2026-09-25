@@ -1,0 +1,20 @@
+<powerpagecomponent powerpagecomponentid="740e8f64-3391-8dd4-d77d-cdf024224be8">
+  <content>{
+  "displayimageonly": false,
+  "displayorder": 33,
+  "displaypagechildlinks": false,
+  "openinnewwindow": false,
+  "pageid": "ba546e5e-c98c-cf5a-ea22-816370de3fd7",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "robotsfollowlink": true,
+  "weblinksetid": "86aee643-0134-49dc-b168-405f3e024ed6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Resources</name>
+  <powerpagecomponenttype>5</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,31 @@
+<powerpagecomponent powerpagecomponentid="f6671e8d-67a3-87ca-2ddf-9cb3127d9105">
+  <content>{
+  "copy": "{% include 'pages--platform-renderer' %}",
+  "displayorder": 31,
+  "enablerating": false,
+  "enabletracking": false,
+  "excludefromsearch": false,
+  "hiddenfromsitemap": true,
+  "isroot": false,
+  "pagetemplateid": "665a986d-1a3a-f111-bec6-000d3a7a0cab",
+  "parentpageid": "cf511b88-4b23-4858-b49e-9bb013db9e1a",
+  "partialurl": "Who-we-are",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "rootwebpageid": "9727e962-a939-86eb-0399-dcdf18d5907c",
+  "sharedpageconfiguration": false,
+  "summary": "&lt;p&gt;This is a sample landing page designed to be a starting point for your website&lt;/p&gt;",
+  "title": "Who we are"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Who we are</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>65f59487-4eee-417b-bf5e-782336e9abfd</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <searchcontent>Who we are{% include 'pages--platform-renderer' %}Who we are</searchcontent>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

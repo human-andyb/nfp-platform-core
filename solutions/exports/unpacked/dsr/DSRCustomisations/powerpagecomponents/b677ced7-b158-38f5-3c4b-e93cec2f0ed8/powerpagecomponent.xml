@@ -1,0 +1,31 @@
+<powerpagecomponent powerpagecomponentid="b677ced7-b158-38f5-3c4b-e93cec2f0ed8">
+  <content>{
+  "copy": "{% include 'pages--platform-renderer' %}",
+  "displayorder": 32,
+  "enablerating": false,
+  "enabletracking": false,
+  "excludefromsearch": false,
+  "hiddenfromsitemap": true,
+  "isroot": false,
+  "pagetemplateid": "665a986d-1a3a-f111-bec6-000d3a7a0cab",
+  "parentpageid": "cf511b88-4b23-4858-b49e-9bb013db9e1a",
+  "partialurl": "What-we-do",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "rootwebpageid": "a811b026-b105-4d2e-453f-25f8596e1bc4",
+  "sharedpageconfiguration": false,
+  "summary": "&lt;p&gt;This is a sample landing page designed to be a starting point for your website&lt;/p&gt;",
+  "title": "What we do"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>What we do</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>65f59487-4eee-417b-bf5e-782336e9abfd</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <searchcontent>What we do{% include 'pages--platform-renderer' %}What we do</searchcontent>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

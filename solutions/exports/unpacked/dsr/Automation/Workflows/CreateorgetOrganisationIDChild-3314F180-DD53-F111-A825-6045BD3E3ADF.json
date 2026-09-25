@@ -1,0 +1,210 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "runtimeSource": "embedded"
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "description": "Please enter your input",
+                  "title": "OrgName",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          },
+          "metadata": {
+            "operationMetadataId": "85b9260d-b977-4b61-bf74-4e1205a9b01d"
+          }
+        }
+      },
+      "actions": {
+        "Compose": {
+          "type": "Compose",
+          "inputs": "@triggerBody()?['text']",
+          "runAfter": {
+            "init_sOrgID": [
+              "SUCCEEDED"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e5eabbea-9078-4580-ac40-5aa2ad31cb28"
+          }
+        },
+        "Organisations": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "entityName": "accounts",
+              "$filter": "name eq '@{triggerBody()?['text']}'"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          },
+          "runAfter": {
+            "Compose": [
+              "SUCCEEDED"
+            ]
+          }
+        },
+        "Condition": {
+          "type": "If",
+          "expression": {
+            "and": [
+              {
+                "greater": [
+                  "@length(outputs('Organisations')?['body/value'])",
+                  0
+                ]
+              }
+            ]
+          },
+          "actions": {
+            "For_each": {
+              "type": "foreach",
+              "foreach": "@outputs('Organisations')?['body/value']",
+              "actions": {
+                "set_sOrgID_-_Existing": {
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "sOrgID",
+                    "value": "@item()?['accountid']"
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "actions": {
+              "add_new_Organisation": {
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "parameters": {
+                    "entityName": "accounts",
+                    "item/name": "@variables('sRawOrgName')"
+                  },
+                  "host": {
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                    "operationId": "CreateRecord",
+                    "connectionName": "shared_commondataserviceforapps"
+                  }
+                }
+              },
+              "set_sOrgID_-_New_Org": {
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "sOrgID",
+                  "value": "@outputs('add_new_Organisation')?['body/accountid']"
+                },
+                "runAfter": {
+                  "add_new_Organisation": [
+                    "SUCCEEDED"
+                  ]
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Organisations": [
+              "SUCCEEDED"
+            ]
+          }
+        },
+        "init_sOrgID": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sOrgID",
+                "type": "string"
+              }
+            ]
+          },
+          "runAfter": {
+            "init_sRawOrgName": [
+              "SUCCEEDED"
+            ]
+          }
+        },
+        "init_sRawOrgName": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sRawOrgName",
+                "type": "string",
+                "value": "@triggerBody()?['text']"
+              }
+            ]
+          },
+          "runAfter": {}
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "organisationid": {
+                  "title": "organisationID",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                }
+              },
+              "additionalProperties": {}
+            },
+            "statusCode": 200,
+            "body": {
+              "organisationid": "@{variables('sOrgID')}"
+            }
+          },
+          "runAfter": {
+            "Condition": [
+              "SUCCEEDED"
+            ]
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}

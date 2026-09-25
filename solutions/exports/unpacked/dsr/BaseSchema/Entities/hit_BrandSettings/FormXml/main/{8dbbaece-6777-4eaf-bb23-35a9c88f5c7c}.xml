@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{8dbbaece-6777-4eaf-bb23-35a9c88f5c7c}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls">
+      <tabs>
+        <tab verticallayout="true" id="{e26fd67d-11d9-4149-b87f-2cf2f94c6c74}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{4ec2afcb-dfae-4bfb-b0c7-f72c54be7d94}" celllabelposition="Top" columns="1111">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{20497c32-e6cc-467f-939b-e09f2bc0f902}">
+                        <labels>
+                          <label description="Branding Name" languagecode="1033" />
+                        </labels>
+                        <control id="hit_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="hit_name" />
+                      </cell>
+                      <cell locklevel="0" id="{3dfd0139-8fa6-49dd-8e1e-5c10aa5534f2}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell id="{b514f54e-38e5-4504-89b0-1991bb04627e}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Background Colour" languagecode="1033" />
+                        </labels>
+                        <control id="hit_backgroundcolour" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_backgroundcolour" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{49a12e63-811b-445f-95aa-596548b018f4}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Primary Colour" languagecode="1033" />
+                        </labels>
+                        <control id="hit_primarycolour" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_primarycolour" disabled="false" />
+                      </cell>
+                      <cell id="{9f87cab2-df84-424a-b2c2-c59ce2a7c2a3}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Header Logo" languagecode="1033" />
+                        </labels>
+                        <control id="hit_headerlogo" classid="{71716B6C-711E-476C-8AB8-5D11542BFB47}" datafieldname="hit_headerlogo" disabled="false" />
+                      </cell>
+                      <cell id="{dcee28ca-d86d-4b51-9ba3-88f78018d298}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Surface Colour" languagecode="1033" />
+                        </labels>
+                        <control id="hit_surfacecolour" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_surfacecolour" disabled="false" />
+                      </cell>
+                      <cell id="{37dfaa1d-b678-4695-89b8-5c196c7b88a2}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Is Active" languagecode="1033" />
+                        </labels>
+                        <control id="hit_isactive" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="hit_isactive" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{61df7f3a-b39e-4afb-8c05-a07a8bc17f25}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Secondary Colour" languagecode="1033" />
+                        </labels>
+                        <control id="hit_secondarycolour" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_secondarycolour" disabled="false" />
+                      </cell>
+                      <cell id="{7c3a3ba9-dbee-40ed-bbea-50ee5dad73c7}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Header Logo Height" languagecode="1033" />
+                        </labels>
+                        <control id="hit_headerlogoheight" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="hit_headerlogoheight" disabled="false" />
+                      </cell>
+                      <cell id="{87ac0490-0661-42ad-91a2-940a050010bc}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Surface Muted Colour" languagecode="1033" />
+                        </labels>
+                        <control id="hit_surfacemutedcolour" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_surfacemutedcolour" disabled="false" />
+                      </cell>
+                      <cell id="{7362cf9c-ae14-4f23-8e94-2543ced6fcbd}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Locked by Platform" languagecode="1033" />
+                        </labels>
+                        <control id="hit_lockedbyplatform" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="hit_lockedbyplatform" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{665a0e3d-9eb1-44b4-8fb3-b623e4a69060}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Link Colour" languagecode="1033" />
+                        </labels>
+                        <control id="hit_linkcolour" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_linkcolour" disabled="false" />
+                      </cell>
+                      <cell id="{4cf6d962-225b-4ca1-bf3c-a0a66c0a7a37}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Header Background Colour" languagecode="1033" />
+                        </labels>
+                        <control id="hit_headerbackgroundcolour" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_headerbackgroundcolour" disabled="false" />
+                      </cell>
+                      <cell id="{987447c3-3030-429d-91c2-f94f5d548477}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Border Colour" languagecode="1033" />
+                        </labels>
+                        <control id="hit_bordercolour" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_bordercolour" disabled="false" />
+                      </cell>
+                      <cell id="{15328b55-30fa-4974-96c4-daf14ec03930}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Description" languagecode="1033" />
+                        </labels>
+                        <control id="hit_description" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="hit_description" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{3dd2d716-6486-48d4-a4a8-6435c6414ccc}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Base Font Family" languagecode="1033" />
+                        </labels>
+                        <control id="hit_basefontfamily" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_basefontfamily" disabled="false" />
+                      </cell>
+                      <cell id="{4756ef42-e3cc-4c49-a6c0-bc0adb07fbb5}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Header Border Colour" languagecode="1033" />
+                        </labels>
+                        <control id="hit_headerbordercolour" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_headerbordercolour" disabled="false" />
+                      </cell>
+                      <cell locklevel="0" id="{2d33a08c-b180-45cc-a7bb-70d18232d0c1}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell locklevel="0" id="{96e5c05a-5dfb-4cf7-8ea3-4ab16970299f}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{44bdab62-e462-41f0-98bd-fb33a6e0cb76}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Heading Font Family" languagecode="1033" />
+                        </labels>
+                        <control id="hit_headingfontfamily" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_headingfontfamily" disabled="false" />
+                      </cell>
+                      <cell locklevel="0" id="{5f29ee26-e014-4cc3-bde9-0b195d11c84a}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell locklevel="0" id="{8c4e2067-0d00-4a00-9bf1-2d8b21e4aec2}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell locklevel="0" id="{ac0e8f4e-7e1e-4e49-b122-0abdc74f6c6a}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{65781e66-3d4c-4a96-b3f9-106402bb4f4d}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Text Colour" languagecode="1033" />
+                        </labels>
+                        <control id="hit_textcolour" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_textcolour" disabled="false" />
+                      </cell>
+                      <cell locklevel="0" id="{24619e85-4217-4a1b-837e-f774e1449e68}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell locklevel="0" id="{aa1c96a1-8920-4d9c-bfa1-35f735b33100}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell locklevel="0" id="{67316fb9-eaf6-45f8-be55-1eb0889852a2}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{3cb8e9fb-2ed4-4ffa-89be-aabe8db74dd0}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Muted Text Colour" languagecode="1033" />
+                        </labels>
+                        <control id="hit_mutedtextcolour" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_mutedtextcolour" disabled="false" />
+                      </cell>
+                      <cell locklevel="0" id="{63cd3522-d6ae-42d6-a3db-0748259ddd12}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell locklevel="0" id="{de53583d-d818-4a8f-87ff-3f26fccb0b47}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell locklevel="0" id="{a00a6a1a-0254-4d15-b047-f21ba8b8b9ef}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{a8e3ac8a-0345-421f-b81a-a297ca29c1cd}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{7b7fe919-1351-4992-961f-d65f37aac47d}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{40d10d30-8157-4291-9a28-7f780da9cf18}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{21dcb20e-dfc2-48b0-8d7c-1b8915e1593e}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{19006836-cb58-4748-b6d5-43f270c70f89}" colspan="1" rowspan="1">
+              <labels>
+                <label description="Owner" languagecode="1033" />
+              </labels>
+              <control id="header_ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{ad720227-522e-496e-928e-3a2e7bf3c0e0}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{3180233d-b459-4743-a334-e46d23c7de39}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{bf74f17a-8739-4207-8beb-85ce25ec561a}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{6f6a304d-a1a8-4af4-aa23-b3c447651d3c}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <DisplayConditions Order="0" FallbackForm="true">
+        <Everyone />
+      </DisplayConditions>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

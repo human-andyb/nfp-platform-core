@@ -1,0 +1,14 @@
+<environmentvariabledefinition schemaname="hit_baseurl">
+  <defaultvalue>https://nfpdb.crm6.dynamics.com/</defaultvalue>
+  <description default="Base URL for application environment">
+    <label description="Base URL for application environment" languagecode="1033" />
+  </description>
+  <displayname default="baseurl">
+    <label description="baseurl" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.0</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

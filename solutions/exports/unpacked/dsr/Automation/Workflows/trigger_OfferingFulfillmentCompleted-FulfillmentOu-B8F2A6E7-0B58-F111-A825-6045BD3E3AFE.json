@@ -1,0 +1,256 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "When_a_row_is_added,_modified_or_deleted": {
+          "metadata": {
+            "operationMetadataId": "8d6bde0c-dfe4-406b-a76f-23dfefdde471"
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 3,
+              "subscriptionRequest/entityname": "hit_offeringfulfillment",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "hit_fulfillmentstage",
+              "subscriptionRequest/filterexpression": "hit_fulfillmentstage eq 815390005"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Compose": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "596f3abb-b28c-4dc1-bead-004f7603672b"
+          },
+          "type": "Compose",
+          "inputs": "@triggerOutputs()?['body/hit_offeringfulfillmentid']"
+        },
+        "FulfillmentOutcomes": {
+          "runAfter": {
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "6f56b210-6784-48a1-9ef0-f88eff0e6680"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_fulfillmentoutcomes",
+              "$filter": "_hit_offeringfulfillment_value eq '@{triggerOutputs()?['body/hit_offeringfulfillmentid']}'"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "already_exists": {
+          "actions": {
+            "Terminate": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "7e35524d-d367-4c8a-b74a-ce50ed654416"
+              },
+              "type": "Terminate",
+              "inputs": {
+                "runStatus": "Cancelled"
+              }
+            }
+          },
+          "runAfter": {
+            "FulfillmentOutcomes": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "OfferingFulfillment": {
+                "runAfter": {},
+                "metadata": {
+                  "operationMetadataId": "72ed1cc7-4890-4895-ac7c-3dd90bbc9780"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_commondataserviceforapps",
+                    "operationId": "GetItem",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                  },
+                  "parameters": {
+                    "entityName": "hit_offeringfulfillments",
+                    "recordId": "@triggerOutputs()?['body/hit_offeringfulfillmentid']"
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              },
+              "OfferingAcceptance": {
+                "runAfter": {
+                  "OfferingFulfillment": [
+                    "Succeeded"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "1d7f4b60-5005-4ca4-b338-2c4f498c8879"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_commondataserviceforapps",
+                    "operationId": "GetItem",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                  },
+                  "parameters": {
+                    "entityName": "hit_offeringacceptances",
+                    "recordId": "@outputs('OfferingFulfillment')?['body/_hit_offeringacceptance_value']"
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              },
+              "Offering": {
+                "runAfter": {
+                  "Contact": [
+                    "Succeeded"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "275f23ac-58dd-436f-a428-4b6dcc3ddfe4"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_commondataserviceforapps",
+                    "operationId": "GetItem",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                  },
+                  "parameters": {
+                    "entityName": "hit_offerings",
+                    "recordId": "@outputs('OfferingFulfillment')?['body/_hit_offering_value']"
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              },
+              "add_FulfillmentOutcome": {
+                "runAfter": {
+                  "Offering": [
+                    "Succeeded"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "dd9d8e2b-85c0-4f39-82a8-2da35bf5894f"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_commondataserviceforapps",
+                    "operationId": "CreateRecord",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                  },
+                  "parameters": {
+                    "entityName": "hit_fulfillmentoutcomes",
+                    "item/hit_name": "Outcome - @{outputs('Offering')?['body/hit_offeringname']}",
+                    "item/hit_Contact@odata.bind": "\\contacts(@{outputs('Contact')?['body/contactid']})",
+                    "item/hit_Offering@odata.bind": "/hit_offerings(@{outputs('Offering')?['body/hit_offeringid']})",
+                    "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                    "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingFulfillment')?['body/hit_offeringfulfillmentid']})",
+                    "item/hit_offeringtype": "@outputs('Offering')?['body/hit_offeringtype']",
+                    "item/hit_outcomedate": "@utcNow()",
+                    "item/hit_outcometype": 815390000,
+                    "item/hit_outcomevalue": "@outputs('OfferingAcceptance')?['body/hit_totalamount']"
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              },
+              "Contact": {
+                "runAfter": {
+                  "OfferingAcceptance": [
+                    "Succeeded"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "6a8962de-0235-4b98-b1a8-6db42228b5c1"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_commondataserviceforapps",
+                    "operationId": "GetItem",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                  },
+                  "parameters": {
+                    "entityName": "contacts",
+                    "recordId": "@outputs('OfferingAcceptance')?['body/_hit_contact_value']"
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              },
+              "Compose_2": {
+                "runAfter": {
+                  "add_FulfillmentOutcome": [
+                    "Succeeded"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "d6d010d6-c797-4f0c-a399-d3fc7804d50b"
+                },
+                "type": "Compose",
+                "inputs": "Outcome created for fulfillment @{outputs('OfferingFulfillment')?['body/hit_offeringfulfillmentid']}"
+              }
+            }
+          },
+          "expression": {
+            "and": [
+              {
+                "greater": [
+                  "@length(outputs('FulfillmentOutcomes')?['body/value'])",
+                  0
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "0315523c-5a63-40a7-a116-09dd782d7bf6"
+          },
+          "type": "If"
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

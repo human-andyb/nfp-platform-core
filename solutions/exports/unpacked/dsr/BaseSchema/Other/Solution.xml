@@ -1,0 +1,1888 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.2.26092.134" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26092.134" OrganizationSchemaType="Full" CRMServerServiceabilityVersion="9.2.26092.00135">
+  <SolutionManifest>
+    <UniqueName>NFPDataBase</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="NFP.DataPlatform.Base_vNext" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Upgrade of NFP.DataPlatform.Base" languagecode="1033" />
+    </Descriptions>
+    <Version>1.1.0.2</Version>
+    <Managed>0</Managed>
+    <Publisher>
+      <UniqueName>humanIT</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="humanIT" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="humanIT" languagecode="1033" />
+      </Descriptions>
+      <EMailAddress xsi:nil="true"></EMailAddress>
+      <SupportingWebsiteUrl xsi:nil="true"></SupportingWebsiteUrl>
+      <CustomizationPrefix>hit</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>81539</CustomizationOptionValuePrefix>
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+        <Address>
+          <AddressNumber>2</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents>
+      <RootComponent type="1" schemaName="account" behavior="2" />
+      <RootComponent type="1" schemaName="contact" behavior="2" />
+      <RootComponent type="1" schemaName="hit_acceptanceagreement" behavior="0" />
+      <RootComponent type="1" schemaName="hit_acceptancecomponent" behavior="0" />
+      <RootComponent type="1" schemaName="hit_accountsegmenttag" behavior="0" />
+      <RootComponent type="1" schemaName="hit_allocationledger" behavior="0" />
+      <RootComponent type="1" schemaName="hit_article" behavior="0" />
+      <RootComponent type="1" schemaName="hit_audience" behavior="0" />
+      <RootComponent type="1" schemaName="hit_audiencecontactmember" behavior="0" />
+      <RootComponent type="1" schemaName="hit_audienceorganisationmember" behavior="0" />
+      <RootComponent type="1" schemaName="hit_audiencerule" behavior="0" />
+      <RootComponent type="1" schemaName="hit_brandsettings" behavior="0" />
+      <RootComponent type="1" schemaName="hit_communicationevent" behavior="0" />
+      <RootComponent type="1" schemaName="hit_contactorganisation" behavior="0" />
+      <RootComponent type="1" schemaName="hit_contactorgroletype" behavior="0" />
+      <RootComponent type="1" schemaName="hit_contactorgsegmenttag" behavior="0" />
+      <RootComponent type="1" schemaName="hit_contactsegmenttag" behavior="0" />
+      <RootComponent type="1" schemaName="hit_coursedefinition" behavior="0" />
+      <RootComponent type="1" schemaName="hit_courseregistration" behavior="0" />
+      <RootComponent type="1" schemaName="hit_designatedfund" behavior="0" />
+      <RootComponent type="1" schemaName="hit_donationladder" behavior="0" />
+      <RootComponent type="1" schemaName="hit_donationladderitem" behavior="0" />
+      <RootComponent type="1" schemaName="hit_featuredcontent" behavior="0" />
+      <RootComponent type="1" schemaName="hit_fulfillmentoutcome" behavior="0" />
+      <RootComponent type="1" schemaName="hit_fulfillmentsubstage" behavior="0" />
+      <RootComponent type="1" schemaName="hit_fundingreportingrequirement" behavior="0" />
+      <RootComponent type="1" schemaName="hit_impactstory" behavior="0" />
+      <RootComponent type="1" schemaName="hit_initiative" behavior="0" />
+      <RootComponent type="1" schemaName="hit_interaction" behavior="0" />
+      <RootComponent type="1" schemaName="hit_location" behavior="0" />
+      <RootComponent type="1" schemaName="hit_nextbestaction" behavior="0" />
+      <RootComponent type="1" schemaName="hit_offering" behavior="0" />
+      <RootComponent type="1" schemaName="hit_offeringacceptance" behavior="0" />
+      <RootComponent type="1" schemaName="hit_offeringbundlelink" behavior="0" />
+      <RootComponent type="1" schemaName="hit_offeringentitlement" behavior="0" />
+      <RootComponent type="1" schemaName="hit_offeringfulfillment" behavior="0" />
+      <RootComponent type="1" schemaName="hit_offeringtagrule" behavior="0" />
+      <RootComponent type="1" schemaName="hit_paymentschedule" behavior="0" />
+      <RootComponent type="1" schemaName="hit_paymenttransaction" behavior="0" />
+      <RootComponent type="1" schemaName="hit_persona" behavior="0" />
+      <RootComponent type="1" schemaName="hit_platformentrypoint" behavior="0" />
+      <RootComponent type="1" schemaName="hit_platformpage" behavior="0" />
+      <RootComponent type="1" schemaName="hit_platformpagesection" behavior="0" />
+      <RootComponent type="1" schemaName="hit_platformpagesectiontype" behavior="0" />
+      <RootComponent type="1" schemaName="hit_platformpageslot" behavior="0" />
+      <RootComponent type="1" schemaName="hit_platformpagetemplate" behavior="0" />
+      <RootComponent type="1" schemaName="hit_platformpagetemplatesection" behavior="0" />
+      <RootComponent type="1" schemaName="hit_platformroute" behavior="0" />
+      <RootComponent type="1" schemaName="hit_platformsectionlayout" behavior="0" />
+      <RootComponent type="1" schemaName="hit_priceoption" behavior="0" />
+      <RootComponent type="1" schemaName="hit_program" behavior="0" />
+      <RootComponent type="1" schemaName="hit_scorecardmeasure" behavior="0" />
+      <RootComponent type="1" schemaName="hit_scorecardmetric" behavior="0" />
+      <RootComponent type="1" schemaName="hit_scorecardsegment" behavior="0" />
+      <RootComponent type="1" schemaName="hit_segmenttag" behavior="0" />
+      <RootComponent type="1" schemaName="hit_sponsorshipcommitment" behavior="0" />
+      <RootComponent type="1" schemaName="hit_strategycycle" behavior="0" />
+      <RootComponent type="1" schemaName="hit_strategyenabler" behavior="0" />
+      <RootComponent type="1" schemaName="hit_strategyimpact" behavior="0" />
+      <RootComponent type="1" schemaName="hit_strategyinitiative" behavior="0" />
+      <RootComponent type="1" schemaName="hit_strategyinitiativemilestone" behavior="0" />
+      <RootComponent type="1" schemaName="hit_strategyobjective" behavior="0" />
+      <RootComponent type="1" schemaName="hit_strategyprinciple" behavior="0" />
+      <RootComponent type="1" schemaName="hit_strategypriority" behavior="0" />
+      <RootComponent type="1" schemaName="hit_strategyvalue" behavior="0" />
+      <RootComponent type="1" schemaName="hit_stripecustomer" behavior="0" />
+      <RootComponent type="1" schemaName="hit_stripepaymentmethod" behavior="0" />
+      <RootComponent type="1" schemaName="hit_survey" behavior="0" />
+      <RootComponent type="1" schemaName="hit_surveyinstance" behavior="0" />
+      <RootComponent type="1" schemaName="hit_surveyprogram" behavior="0" />
+      <RootComponent type="1" schemaName="hit_surveyquestion" behavior="0" />
+      <RootComponent type="1" schemaName="hit_surveyquestionmap" behavior="0" />
+      <RootComponent type="1" schemaName="hit_surveyresponse" behavior="0" />
+      <RootComponent type="1" schemaName="hit_taghistory" behavior="0" />
+      <RootComponent type="1" schemaName="hit_tagrule" behavior="0" />
+      <RootComponent type="1" schemaName="hit_tagstageconfig" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venueinclusion" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venuespace" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venuespaceblackout" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venuespacebooking" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venuespacebookingrequest" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venuespacefee" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venuespacehold" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venuespaceimage" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venuespaceinclusion" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venuespaceinclusionassignment" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venuespacepricingband" behavior="0" />
+      <RootComponent type="1" schemaName="hit_venuespacetradinghours" behavior="0" />
+      <RootComponent type="1" schemaName="hit_webcontent" behavior="0" />
+      <RootComponent type="1" schemaName="hit_webgalleryconfig" behavior="0" />
+      <RootComponent type="1" schemaName="hit_webgallerytag" behavior="0" />
+      <RootComponent type="1" schemaName="hit_webnavmenu" behavior="0" />
+      <RootComponent type="1" schemaName="hit_webnavmenuitem" behavior="0" />
+      <RootComponent type="1" schemaName="lead" behavior="2" />
+      <RootComponent type="1" schemaName="msdynmkt_journey" behavior="1" />
+      <RootComponent type="1" schemaName="msevtmgt_event" behavior="1" />
+      <RootComponent type="1" schemaName="mspp_webpage" behavior="2" />
+      <RootComponent type="1" schemaName="mspp_website" behavior="1" />
+      <RootComponent type="1" schemaName="opportunity" behavior="2" />
+      <RootComponent type="430" schemaName="account" behavior="0" />
+      <RootComponent type="430" schemaName="contact" behavior="0" />
+      <RootComponent type="430" schemaName="lead" behavior="0" />
+      <RootComponent type="430" schemaName="msevtmgt_attendeepass" behavior="0" />
+      <RootComponent type="430" schemaName="msevtmgt_checkin" behavior="0" />
+      <RootComponent type="430" schemaName="msevtmgt_event" behavior="0" />
+      <RootComponent type="430" schemaName="msevtmgt_eventregistration" behavior="0" />
+      <RootComponent type="430" schemaName="msevtmgt_room" behavior="0" />
+      <RootComponent type="430" schemaName="msevtmgt_session" behavior="0" />
+      <RootComponent type="60" id="{9a14ebb4-143e-e711-80e1-00155d871bb4}" />
+      <RootComponent type="60" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      <RootComponent type="9" schemaName="hit_acceptancestatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_appliestoscope" behavior="0" />
+      <RootComponent type="9" schemaName="hit_approvalstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_articletype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_attemptstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_audiencecategory" behavior="0" />
+      <RootComponent type="9" schemaName="hit_audienceentity" behavior="0" />
+      <RootComponent type="9" schemaName="hit_audiencetype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_betterdirection" behavior="0" />
+      <RootComponent type="9" schemaName="hit_bookingmode" behavior="0" />
+      <RootComponent type="9" schemaName="hit_bookingstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_cardtemplate" behavior="0" />
+      <RootComponent type="9" schemaName="hit_communicationtype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_confidencelevel" behavior="0" />
+      <RootComponent type="9" schemaName="hit_contentstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_contexttype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_ctabehaviour" behavior="0" />
+      <RootComponent type="9" schemaName="hit_ctatype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_customersegment" behavior="0" />
+      <RootComponent type="9" schemaName="hit_datatype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_dimension" behavior="0" />
+      <RootComponent type="9" schemaName="hit_durationtype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_engagementlevel" behavior="0" />
+      <RootComponent type="9" schemaName="hit_entitlementsource" behavior="0" />
+      <RootComponent type="9" schemaName="hit_entitlementstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_eventtype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_executionmode" behavior="0" />
+      <RootComponent type="9" schemaName="hit_expirytype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_fontfamily" behavior="0" />
+      <RootComponent type="9" schemaName="hit_fulfillmentmode" behavior="0" />
+      <RootComponent type="9" schemaName="hit_fulfillmentstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_fulfilmentstage" behavior="0" />
+      <RootComponent type="9" schemaName="hit_fundingreporttype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_fundsallocationtype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_fundtype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_gallerylayouttype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_gallerysourcetype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_herosize" behavior="0" />
+      <RootComponent type="9" schemaName="hit_holdstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_initiativestatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_interactionchannel" behavior="0" />
+      <RootComponent type="9" schemaName="hit_interactiontype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_layoutstyle" behavior="0" />
+      <RootComponent type="9" schemaName="hit_lifecyclestage" behavior="0" />
+      <RootComponent type="9" schemaName="hit_measurecategory" behavior="0" />
+      <RootComponent type="9" schemaName="hit_measureunit" behavior="0" />
+      <RootComponent type="9" schemaName="hit_mediatype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_menulocation" behavior="0" />
+      <RootComponent type="9" schemaName="hit_metricstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_metrictargettype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_milestonestatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_nextactiontype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_offeringtype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_opportunitytype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_outcometype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_paginationmode" behavior="0" />
+      <RootComponent type="9" schemaName="hit_paymentmethodtype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_paymentprovider" behavior="0" />
+      <RootComponent type="9" schemaName="hit_paymentschedulestatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_pricingtype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_principletype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_publicurlsource" behavior="0" />
+      <RootComponent type="9" schemaName="hit_rag" behavior="0" />
+      <RootComponent type="9" schemaName="hit_recieptstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_recurringfrequency" behavior="0" />
+      <RootComponent type="9" schemaName="hit_reportingfrequency" behavior="0" />
+      <RootComponent type="9" schemaName="hit_reportingstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_revenuesource" behavior="0" />
+      <RootComponent type="9" schemaName="hit_rolelevel" behavior="0" />
+      <RootComponent type="9" schemaName="hit_roletypecategory" behavior="0" />
+      <RootComponent type="9" schemaName="hit_segmenttype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_sortby" behavior="0" />
+      <RootComponent type="9" schemaName="hit_sortdirection" behavior="0" />
+      <RootComponent type="9" schemaName="hit_sourcechannel" behavior="0" />
+      <RootComponent type="9" schemaName="hit_sponsorcommitmentstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_sponsorcommitmenttype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_statusofpayment" behavior="0" />
+      <RootComponent type="9" schemaName="hit_storytype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_strategystatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_surveychannel" behavior="0" />
+      <RootComponent type="9" schemaName="hit_surveytype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_tagaction" behavior="0" />
+      <RootComponent type="9" schemaName="hit_taggingstage" behavior="0" />
+      <RootComponent type="9" schemaName="hit_tagruletype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_tagsource" behavior="0" />
+      <RootComponent type="9" schemaName="hit_tagtype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_targetperiodtype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_transactioncategory" behavior="0" />
+      <RootComponent type="9" schemaName="hit_venuefeetype" behavior="0" />
+      <RootComponent type="9" schemaName="hit_venueinclusioncategory" behavior="0" />
+      <RootComponent type="9" schemaName="hit_verificationstatus" behavior="0" />
+      <RootComponent type="9" schemaName="hit_webaudience" behavior="0" />
+      <RootComponent type="9" schemaName="hit_webplacement" behavior="0" />
+    </RootComponents>
+    <MissingDependencies>
+      <MissingDependency>
+        <Required type="1" schemaName="adx_externalidentity" displayName="External Identity" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="lead" displayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="1" schemaName="lead" displayName="Lead" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdyn_kbattachment" displayName="Knowledge Article Attachment" solution="msdynce_KnowledgeManagementFeatures (9.0.26092.3003)">
+          <package appName="msdynce_KnowledgeManagement" version="9.0.26092.3003">msdynce_KnowledgeManagementAnchor (9.0.26092.3003)</package>
+        </Required>
+        <Dependent type="DVFileSearchEntity" id="{33217029-1ebc-46ee-a5c5-ab3d1795cd72}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msdynmkt_journey" displayName="Journey" solution="DynamicsMKT_CxpOrchestrationUI (1.3.1162.73)">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="1" schemaName="msdynmkt_journey" displayName="Journey" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msevtmgt_attendeepass" displayName="Attendee Pass" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msevtmgt_checkin" displayName="Check-in" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msevtmgt_event" displayName="Event" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="1" schemaName="msevtmgt_event" displayName="Event" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msevtmgt_eventregistration" displayName="Event Registration" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msevtmgt_sessionregistration" displayName="Session Registration" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="mspp_webpage" displayName="Web Page" solution="PowerPages_Apps (1.0.2605.0)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="1" schemaName="mspp_webpage" displayName="Web Page" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="mspp_webrole" displayName="Web Role" solution="PowerPages_Apps (1.0.2605.0)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="mspp_website" displayName="Website" solution="PowerPages_Apps (1.0.2605.0)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="1" schemaName="mspp_website" displayName="Website" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="opportunity" displayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="1" schemaName="opportunity" displayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="opportunity" displayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="hit_externalreference" displayName="External Reference" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="opportunity" displayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="hit_funder" displayName="Funder" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="opportunity" displayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="hit_isrestrictedfunding" displayName="Is Restricted Funding" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="opportunity" displayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="hit_opportunitytype" displayName="Opportunity Type" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="opportunity" displayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="hit_reportingfrequency" displayName="Reporting Frequency" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="opportunity" displayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="hit_reportingrequired" displayName="Reporting Required" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="opportunity" displayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="hit_restrictednotes" displayName="Restricted Notes" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="opportunity" displayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="hit_termenddate" displayName="Term End Date" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="opportunity" displayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="hit_termstartdate" displayName="Term Start Date" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="opportunityproduct" displayName="Opportunity Product" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="powerpagecomponent" displayName="Site Component" solution="PowerPages_CoreBase (1.1.2605.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="DVFileSearchEntity" id="{204f29f1-c60a-f111-8342-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="powerpagecomponent" displayName="Site Component" solution="PowerPages_CoreBase (1.1.2605.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="DVTableSearchEntity" id="{844483f3-c60a-f111-8342-000d3a7a0035}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="quote" displayName="Quote" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="adx_contact_externalidentity" displayName="adx_contact_externalidentity" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdyncrm_msdyncrm_customerjourney_contact_customerjourneyid" displayName="msdyncrm_msdyncrm_customerjourney_contact_customerjourneyid" parentSchemaName="msdyncrm_customerjourney" parentDisplayName="Customer journey" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdyncrm_msdyncrm_marketingemail_contact_emailid" displayName="msdyncrm_msdyncrm_marketingemail_contact_emailid" parentSchemaName="msdyncrm_marketingemail" parentDisplayName="Marketing email" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdyncrm_msdyncrm_marketingform_contact_marketingformid" displayName="msdyncrm_msdyncrm_marketingform_contact_marketingformid" parentSchemaName="msdyncrm_marketingform" parentDisplayName="Marketing form" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdyncrm_msdyncrm_marketingpage_contact_marketingpageid" displayName="msdyncrm_msdyncrm_marketingpage_contact_marketingpageid" parentSchemaName="msdyncrm_marketingpage" parentDisplayName="Marketing page" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdynmkt_msdynmkt_email_contact_emailid" displayName="msdynmkt_msdynmkt_email_contact_emailid" parentSchemaName="msdynmkt_email" parentDisplayName="Email" solution="DynamicsMKT_Forms (1.3.1162.73)">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdynmkt_msdynmkt_journey_contact_customerjourneyid" displayName="msdynmkt_msdynmkt_journey_contact_customerjourneyid" parentSchemaName="msdynmkt_journey" parentDisplayName="Journey" solution="DynamicsMKT_Forms (1.3.1162.73)">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msdynmkt_msdynmkt_marketingform_contact_marketingformid" displayName="msdynmkt_msdynmkt_marketingform_contact_marketingformid" parentSchemaName="msdynmkt_marketingform" parentDisplayName="Form" solution="DynamicsMKT_Forms (1.3.1162.73)">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msevtmgt_contact_msevtmgt_attendeepass_contact" displayName="msevtmgt_contact_msevtmgt_attendeepass_contact" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msevtmgt_contact_msevtmgt_checkin_Contact" displayName="msevtmgt_contact_msevtmgt_checkin_Contact" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msevtmgt_contact_msevtmgt_eventregistration_Contact" displayName="msevtmgt_contact_msevtmgt_eventregistration_Contact" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msevtmgt_contact_msevtmgt_sessionregistration_contactid" displayName="msevtmgt_contact_msevtmgt_sessionregistration_contactid" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msevtmgt_msevtmgt_event_contact_originatingeventid" displayName="msevtmgt_msevtmgt_event_contact_originatingeventid" parentSchemaName="msevtmgt_event" parentDisplayName="Event" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="10" schemaName="msgdpr_contact_msgdpr_gdprparent" displayName="msgdpr_contact_msgdpr_gdprparent" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_MktConsentManagement (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="actualclosedate" displayName="Actual Close Date" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="actualclosedate" displayName="Actual Close Date" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="actualvalue" displayName="Actual Revenue" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="actualvalue" displayName="Actual Revenue" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="address1_city" displayName="City" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="address1_country" displayName="Country/Region" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="address1_line1" displayName="Street 1" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="address1_line2" displayName="Street 2" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="address1_line3" displayName="Street 3" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="address1_postalcode" displayName="ZIP/Postal Code" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="address1_stateorprovince" displayName="State/Province" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_identity_accessfailedcount" displayName="Access Failed Count" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_identity_emailaddress1confirmed" displayName="Email Confirmed" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_identity_locallogindisabled" displayName="Local Login Disabled" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_identity_lockoutenabled" displayName="Lockout Enabled" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_identity_lockoutenddate" displayName="Lockout End Date" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_identity_logonenabled" displayName="Login Enabled" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_identity_mobilephoneconfirmed" displayName="Mobile Phone Confirmed" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_identity_securitystamp" displayName="Security Stamp" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_identity_twofactorenabled" displayName="Two Factor Enabled" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_identity_username" displayName="User Name" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_organizationname" displayName="Organization Name" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCoreDependencies (1.0.2305.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Profile Web Form (Enhanced) - Japanese" parentDisplayName="Contact" id="{01124dd8-9bff-4cc0-bb33-ea9d943c3f9f}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_organizationname" displayName="Organization Name" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCoreDependencies (1.0.2305.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Profile Web Form (Enhanced)" parentDisplayName="Contact" id="{bddc0100-0dbe-4562-aafe-31d08c8ab506}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_publicprofilecopy" displayName="Public Profile Copy" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Profile Web Form (Enhanced) - Japanese" parentDisplayName="Contact" id="{01124dd8-9bff-4cc0-bb33-ea9d943c3f9f}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_publicprofilecopy" displayName="Public Profile Copy" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Profile Web Form (Enhanced)" parentDisplayName="Contact" id="{bddc0100-0dbe-4562-aafe-31d08c8ab506}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="adx_timezone" displayName="Time Zone" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeCoreDependencies (1.0.2305.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="budgetamount" displayName="Budget amount" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="businesscard" displayName="Business Card" parentSchemaName="contact" parentDisplayName="Contact" solution="msdynce_SalesPatch201904 (9.0.1912.1007)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="businesscardattributes" displayName="BusinessCardAttributes" parentSchemaName="contact" parentDisplayName="Contact" solution="msdynce_SalesPatch201904 (9.0.1912.1007)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="campaignid" displayName="Source Campaign" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_Marketing (9.0.4.37)">
+          <package appName="msdynce_Marketing" version="9.0.26091.10004">msdynce_MarketingAnchor (9.0.26091.10004)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="campaignid" displayName="Source Campaign" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_MarketingSales (9.0.4.29)">
+          <package appName="msdynce_MarketingSales" version="9.0.26085.10001">msdynce_MarketingSalesAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="closeprobability" displayName="Probability" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="companyname" displayName="Company Name" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="contactid" displayName="contactid" parentSchemaName="contact" solution="System (5.0)" />
+        <Dependent type="2" schemaName="contactid" displayName="contactid" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="createdon" displayName="Created On" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Leads Dashboard" parentDisplayName="Lead" id="{9a14ebb4-143e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="currentsituation" displayName="Current Situation" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="customerid" displayName="Potential Customer" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="customerneed" displayName="Customer Need" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="defaultpricelevelid" displayName="Price List" parentSchemaName="account" parentDisplayName="Organisation" solution="msdynce_ProductManagement (9.0.4.0066)">
+          <package appName="msdynce_ProductManagement" version="9.0.26085.10001">msdynce_ProductManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Organisation" id="{b053a39a-041a-4356-acef-ddf00182762b}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="defaultpricelevelid" displayName="Price List" parentSchemaName="contact" parentDisplayName="Contact" solution="msdynce_ProductManagement (9.0.4.0066)">
+          <package appName="msdynce_ProductManagement" version="9.0.26085.10001">msdynce_ProductManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="description" displayName="Description" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="description" displayName="Description" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="description" displayName="Description" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="discountamount" displayName="Opportunity Discount Amount" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="discountpercentage" displayName="Opportunity Discount (%)" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="donotbulkemail" displayName="Do not allow Bulk Emails" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="donotemail" displayName="Do not allow Emails" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="donotfax" displayName="Do not allow Faxes" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="donotphone" displayName="Do not allow Phone Calls" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="donotpostalmail" displayName="Do not allow Mails" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="donotsendmm" displayName="Marketing Material" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="emailaddress1" displayName="Email" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="estimatedclosedate" displayName="Est. close date" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="estimatedclosedate" displayName="Est. close date" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="estimatedclosedate" displayName="Est. close date" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="estimatedclosedate" displayName="Est. close date" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="estimatedclosedate" displayName="Est. close date" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Opportunities Dashboard" parentDisplayName="Opportunity" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="estimatedvalue" displayName="Est. revenue" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="estimatedvalue" displayName="Est. revenue" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="estimatedvalue" displayName="Est. revenue" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="fax" displayName="Fax" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="firstname" displayName="First Name" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="followemail" displayName="Follow Email Activity" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="freightamount" displayName="Freight Amount" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_generateinvoice" displayName="Generate Invoice" parentSchemaName="contact" parentDisplayName="Contact" solution="Active" />
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_generateinvoiceamount" displayName="Generate Invoice Amount" parentSchemaName="contact" parentDisplayName="Contact" solution="Active" />
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_generateinvoicedate" displayName="Generate Invoice Date" parentSchemaName="contact" parentDisplayName="Contact" solution="Active" />
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="industrycode" displayName="Industry" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="isrevenuesystemcalculated" displayName="Revenue" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="jobtitle" displayName="Job Title" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="lastname" displayName="Last Name" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="lastusedincampaign" displayName="Last Campaign Date" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="leadqualitycode" displayName="Rating" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="leadsourcecode" displayName="Lead Source" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="mobilephone" displayName="Mobile Phone" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_contentstore" displayName="File storage content reference" parentSchemaName="knowledgearticle" parentDisplayName="Knowledge Article" solution="msdynce_KnowledgeManagementPatch (9.0.26092.3003)">
+          <package appName="msdynce_KnowledgeManagement" version="9.0.26092.3003">msdynce_KnowledgeManagementAnchor (9.0.26092.3003)</package>
+        </Required>
+        <Dependent type="DVFileSearchAttribute" displayName="ppages_06732588-acd9-4b70-adb0-53d6f2a0fde8.msdyn_contentstore" id.uniquename="ppages_06732588-acd9-4b70-adb0-53d6f2a0fde8.msdyn_contentstore" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_fileattachment" displayName="File Attachment" parentSchemaName="msdyn_kbattachment" parentDisplayName="Knowledge Article Attachment" solution="msdynce_KnowledgeManagementFeatures (9.0.26092.3003)">
+          <package appName="msdynce_KnowledgeManagement" version="9.0.26092.3003">msdynce_KnowledgeManagementAnchor (9.0.26092.3003)</package>
+        </Required>
+        <Dependent type="DVFileSearchAttribute" displayName="ppages_b979d966-a1f3-4c20-80f8-7042baf38394.msdyn_fileattachment" id.uniquename="ppages_b979d966-a1f3-4c20-80f8-7042baf38394.msdyn_fileattachment" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyn_forecastcategory" displayName="Forecast category" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdyn_Forecasting (9.0.26083.10003)">
+          <package appName="msdyn_SalesIntegrationsAndAddOns" version="9.0.26091.10001">msdyn_SalesIntegrationsAddOns (9.0.26091.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyncrm_customerjourneyid" displayName="Source customer journey (outbound marketing)" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyncrm_emailid" displayName="Source email (outbound marketing)" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyncrm_insights_placeholder" displayName="Insights" parentSchemaName="account" parentDisplayName="Organisation" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Organisation Main" parentDisplayName="Organisation" id="{e7cabe23-8364-f111-ab0d-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyncrm_insights_placeholder" displayName="Insights" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyncrm_marketingformid" displayName="Source form (outbound marketing)" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyncrm_marketingpageid" displayName="Source landing page (outbound marketing)" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdyncrm_rememberme" displayName="Remember me" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdynmkt_customerjourneyid" displayName="Source customer journey" parentSchemaName="contact" parentDisplayName="Contact" solution="DynamicsMKT_Forms (1.3.1162.73)">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdynmkt_emailid" displayName="Source email" parentSchemaName="contact" parentDisplayName="Contact" solution="DynamicsMKT_Forms (1.3.1162.73)">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdynmkt_marketingformid" displayName="Source form" parentSchemaName="contact" parentDisplayName="Contact" solution="DynamicsMKT_Forms (1.3.1162.73)">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msdynmkt_name" displayName="Name" parentSchemaName="msdynmkt_journey" parentDisplayName="Journey" solution="DynamicsMKT_CxpOrchestrationUI (1.3.1162.73)">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="10" schemaName="hit_nextbestaction_RelatedJourney_msdynmkt_journey" displayName="hit_nextbestaction_RelatedJourney_msdynmkt_journey" parentSchemaName="msdynmkt_journey" parentDisplayName="Journey" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msevtmgt_name" displayName="Name" parentSchemaName="msevtmgt_venue" parentDisplayName="Venue" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="10" schemaName="hit_venueinclusion_Venue_msevtmgt_venue" displayName="hit_venueinclusion_Venue_msevtmgt_venue" parentSchemaName="msevtmgt_venue" parentDisplayName="Venue" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msevtmgt_name" displayName="Name" parentSchemaName="msevtmgt_venue" parentDisplayName="Venue" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="10" schemaName="hit_venuespace_Venu_msevtmgt_venue" displayName="hit_venuespace_Venu_msevtmgt_venue" parentSchemaName="msevtmgt_venue" parentDisplayName="Venue" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msevtmgt_name" displayName="Name" parentSchemaName="msevtmgt_venue" parentDisplayName="Venue" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="10" schemaName="hit_venuespace_Venue_msevtmgt_venue" displayName="hit_venuespace_Venue_msevtmgt_venue" parentSchemaName="msevtmgt_venue" parentDisplayName="Venue" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msevtmgt_originatingeventid" displayName="Originating event" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msgdpr_donottrack" displayName="Do not track" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_MktConsentManagement (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msgdpr_gdprconsent" displayName="Consent given" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_MktConsentManagement (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msgdpr_gdprischild" displayName="GDPR is child" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_MktConsentManagement (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="msgdpr_gdprparentid" displayName="Parent or custodian" parentSchemaName="contact" parentDisplayName="Contact" solution="MicrosoftDynamics_MktConsentManagement (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="mspp_userpreferredlcid" displayName="Preferred Language" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeExtensions (1.1.2605.0)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Profile Web Form (Enhanced) - Japanese" parentDisplayName="Contact" id="{01124dd8-9bff-4cc0-bb33-ea9d943c3f9f}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="mspp_userpreferredlcid" displayName="Preferred Language" parentSchemaName="contact" parentDisplayName="Contact" solution="PowerPages_RuntimeExtensions (1.1.2605.0)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Profile Web Form (Enhanced)" parentDisplayName="Contact" id="{bddc0100-0dbe-4562-aafe-31d08c8ab506}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="name" displayName="Name" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="name" displayName="Name" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="name" displayName="Name" parentSchemaName="powerpagecomponent" parentDisplayName="Site Component" solution="PowerPages_CoreBase (1.1.2605.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="DVFileSearchAttribute" displayName="ppages_b224cde7-c60a-f111-8342-000d3a7a0d01.powerpagecomponent.name" id.uniquename="ppages_b224cde7-c60a-f111-8342-000d3a7a0d01.powerpagecomponent.name" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="new_donorlifecyclestage" displayName="Donor Lifecycle Stage" parentSchemaName="contact" parentDisplayName="Contact" solution="Active" />
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="new_lifetimevalue" displayName="Lifetime Value" parentSchemaName="contact" parentDisplayName="Contact" solution="Active" />
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="numberofemployees" displayName="No. of Employees" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="opportunityratingcode" displayName="Rating" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="originatingleadid" displayName="Originating Lead" parentSchemaName="account" parentDisplayName="Organisation" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Organisation" id="{b053a39a-041a-4356-acef-ddf00182762b}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="originatingleadid" displayName="Originating Lead" parentSchemaName="account" parentDisplayName="Organisation" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Organisation Main" parentDisplayName="Organisation" id="{e7cabe23-8364-f111-ab0d-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="originatingleadid" displayName="Originating Lead" parentSchemaName="contact" parentDisplayName="Contact" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="originatingleadid" displayName="Originating Lead" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="ownerid" displayName="Owner" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="ownerid" displayName="Owner" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="ownerid" displayName="Owner" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="pager" displayName="Pager" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="preferredcontactmethodcode" displayName="Preferred Method of Contact" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="pricelevelid" displayName="Price List" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="proposedsolution" displayName="Proposed Solution" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="purchaseprocess" displayName="Purchase Process" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="purchasetimeframe" displayName="Purchase Timeframe" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="revenue" displayName="Annual Revenue" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="salutation" displayName="Salutation" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="searchcontent" displayName="Search Content" parentSchemaName="powerpagecomponent" parentDisplayName="Site Component" solution="PowerPages_CoreBase (1.1.2605.1)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="DVFileSearchAttribute" displayName="ppages_b224cde7-c60a-f111-8342-000d3a7a0d01.powerpagecomponent.searchcontent" id.uniquename="ppages_b224cde7-c60a-f111-8342-000d3a7a0d01.powerpagecomponent.searchcontent" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="sic" displayName="SIC Code" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statecode" displayName="Status" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="statecode" displayName="Status" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statuscode" displayName="Status Reason" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statuscode" displayName="Status Reason" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="2" schemaName="statuscode" displayName="Status Reason" parentSchemaName="opportunity" parentDisplayName="Opportunity" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="statuscode" displayName="Status Reason" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="subject" displayName="Topic" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="telephone1" displayName="Business Phone" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="telephone2" displayName="Home Phone" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="telephone3" displayName="Other Phone" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="territoryid" displayName="Territory" parentSchemaName="account" parentDisplayName="Organisation" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Organisation" id="{b053a39a-041a-4356-acef-ddf00182762b}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="totalamount" displayName="Total Amount" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="totalamountlessfreight" displayName="Total Pre-Freight Amount" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="totallineitemamount" displayName="Total Detail Amount" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="totaltax" displayName="Total Tax" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="transactioncurrencyid" displayName="Currency" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="transactioncurrencyid" displayName="Currency" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="transactioncurrencyid" displayName="Currency" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="websiteurl" displayName="Website" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Active attendee passes" displayName="Active attendee passes" parentSchemaName="msevtmgt_attendeepass" parentDisplayName="Attendee Pass" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{d60e0c4f-2e74-4413-912e-24fa8ff59c74}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Active check-ins" displayName="Active check-ins" parentSchemaName="msevtmgt_checkin" parentDisplayName="Check-in" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{a607876d-ccce-404f-beb2-7531477015d1}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Active event registrations" displayName="Active event registrations" parentSchemaName="msevtmgt_eventregistration" parentDisplayName="Event Registration" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{36989e15-d3f3-4065-84c1-9dd3b27210df}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Active External Identities" displayName="Active External Identities" parentSchemaName="adx_externalidentity" parentDisplayName="External Identity" solution="PowerPages_RuntimeCore (1.0.2509.1)" id="{93fe9ed1-cabf-4755-9f63-4f3f989084e6}">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Active session registrations" displayName="Active session registrations" parentSchemaName="msevtmgt_sessionregistration" parentDisplayName="Session Registration" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{c9b4fe24-d2aa-4776-ab00-b53f92de99b3}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Active Web Roles" displayName="Active Web Roles" parentSchemaName="mspp_webrole" parentDisplayName="Web Role" solution="PowerPages_Apps (1.0.2605.0)" id="{735de4f0-c287-42eb-b5e6-2f01a75a40fb}">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="All Leads" displayName="All Leads" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)" id="{5a926b99-3a5f-df11-ae90-00155d2e3002}">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Leads Dashboard" parentDisplayName="Lead" id="{9a14ebb4-143e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="All Opportunities" displayName="All Opportunities" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)" id="{c6f6fc1b-1b3e-e711-80e1-00155d871bb4}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Opportunities Dashboard" parentDisplayName="Opportunity" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Closed Leads" displayName="Closed Leads" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)" id="{00000000-0000-0000-00aa-000010001009}">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Leads Dashboard" parentDisplayName="Lead" id="{9a14ebb4-143e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Closed Opportunities" displayName="Closed Opportunities" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)" id="{00000000-0000-0000-00aa-000010003006}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Opportunities Dashboard" parentDisplayName="Opportunity" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Email Lookup View" displayName="Email Lookup View" parentSchemaName="msdynmkt_email" parentDisplayName="Email" solution="DynamicsMKT_EmailChannel (1.3.1162.73)" id="{36d55147-a5a3-4dfa-9e46-b2f4d930ecd3}">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Event check-ins parent events" displayName="Event check-ins parent events" parentSchemaName="msevtmgt_checkin" parentDisplayName="Check-in" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{993e9fca-cfa2-e711-811c-000d3a743413}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Event registrations parent events" displayName="Event registrations parent events" parentSchemaName="msevtmgt_eventregistration" parentDisplayName="Event Registration" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{07fd6735-b4a2-e711-811c-000d3a743413}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Inactive attendee passes" displayName="Inactive attendee passes" parentSchemaName="msevtmgt_attendeepass" parentDisplayName="Attendee Pass" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{df23fa02-3a24-4abc-8b4d-0ff132d461e8}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Journey Lookup View" displayName="Journey Lookup View" parentSchemaName="msdynmkt_journey" parentDisplayName="Journey" solution="DynamicsMKT_CxpOrchestrationUI (1.3.1162.73)" id="{2899ca72-2cde-4890-a230-a8a0ab86fcbc}">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Marketing Form Lookup View" displayName="Marketing Form Lookup View" parentSchemaName="msdynmkt_marketingform" parentDisplayName="Form" solution="DynamicsMKT_Forms (1.3.1162.73)" id="{16af754d-8d9e-4ea1-a4a1-37320e5cb94f}">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="My Open Leads" displayName="My Open Leads" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)" id="{00000000-0000-0000-00aa-000010001005}">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Leads Dashboard" parentDisplayName="Lead" id="{9a14ebb4-143e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="My Open Opportunities" displayName="My Open Opportunities" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)" id="{00000000-0000-0000-00aa-000010003000}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Opportunities Dashboard" parentDisplayName="Opportunity" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Open Leads" displayName="Open Leads" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)" id="{00000000-0000-0000-00aa-000010001006}">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Leads Dashboard" parentDisplayName="Lead" id="{9a14ebb4-143e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Open Opportunities" displayName="Open Opportunities" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)" id="{00000000-0000-0000-00aa-000010003001}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Opportunities Dashboard" parentDisplayName="Opportunity" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Opportunity Product Inline Edit View" displayName="Opportunity Product Inline Edit View" parentSchemaName="opportunityproduct" parentDisplayName="Opportunity Product" solution="msdynce_Sales (9.0.4.0076)" id="{01010de7-749e-4fe6-8037-aca560a4fcbe}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Quote Associated View" displayName="Quote Associated View" parentSchemaName="quote" parentDisplayName="Quote" solution="msdynce_Sales (9.0.4.0076)" id="{642095db-91dd-4813-bb31-665a3a2bae61}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Session check-ins parent events" displayName="Session check-ins parent events" parentSchemaName="msevtmgt_checkin" parentDisplayName="Check-in" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{4e22561c-d0a2-e711-811c-000d3a743413}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="26" schemaName="Session-registration parent events" displayName="Session-registration parent events" parentSchemaName="msevtmgt_sessionregistration" parentDisplayName="Session Registration" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{2b8259f9-b4a2-e711-811c-000d3a743413}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="59" schemaName="Check-in records by company size" displayName="Check-in records by company size" parentSchemaName="msevtmgt_checkin" parentDisplayName="Check-in" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{b0f24ff0-9221-e611-80d3-00155db852b2}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="59" schemaName="Leads by Owner (Tag Chart)" displayName="Leads by Owner (Tag Chart)" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)" id="{b92a5119-193a-e711-80e3-00155d42a416}">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Leads Dashboard" parentDisplayName="Lead" id="{9a14ebb4-143e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="59" schemaName="Leads by Rating" displayName="Leads by Rating" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)" id="{f5976c58-5693-de11-97d4-00155da3b01e}">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Leads Dashboard" parentDisplayName="Lead" id="{9a14ebb4-143e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="59" schemaName="Leads by Source (DOUGHNUT)" displayName="Leads by Source (DOUGHNUT)" parentSchemaName="lead" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)" id="{d311600c-163a-e711-80e3-00155d42a416}">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Leads Dashboard" parentDisplayName="Lead" id="{9a14ebb4-143e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="59" schemaName="Number of session-registration records related by creation date" displayName="Number of session-registration records related by creation date" parentSchemaName="msevtmgt_sessionregistration" parentDisplayName="Session Registration" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{711aa88d-7a17-e611-80d3-00155db852b2}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="59" schemaName="Opportunities by Account" displayName="Opportunities by Account" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)" id="{8ed63b02-1e3e-e711-80e1-00155d871bb4}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Opportunities Dashboard" parentDisplayName="Opportunity" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="59" schemaName="Opportunities by Pipeline Phase" displayName="Opportunities by Pipeline Phase" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)" id="{166785b0-073a-e711-80e3-00155d42a416}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Opportunities Dashboard" parentDisplayName="Opportunity" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="59" schemaName="Opportunities by Rating" displayName="Opportunities by Rating" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)" id="{e91f96d7-1d3e-e711-80e1-00155d871bb4}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Opportunities Dashboard" parentDisplayName="Opportunity" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="59" schemaName="Opportunities by Status – Column Chart" displayName="Opportunities by Status – Column Chart" parentSchemaName="opportunity" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)" id="{4a534f35-1e3e-e711-80e1-00155d871bb4}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Opportunities Dashboard" parentDisplayName="Opportunity" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="59" schemaName="Registration records by company size" displayName="Registration records by company size" parentSchemaName="msevtmgt_eventregistration" parentDisplayName="Event Registration" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)" id="{0b2e9f4d-3e1c-e611-80d3-00155df8bff9}">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Profile Web Form (Enhanced) - Japanese" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)" id="{01124dd8-9bff-4cc0-bb33-ea9d943c3f9f}">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Profile Web Form (Enhanced) - Japanese" parentDisplayName="Contact" id="{01124dd8-9bff-4cc0-bb33-ea9d943c3f9f}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" solution="msdynce_MarketingSalesPatch (9.0.26085.10001)" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}">
+          <package appName="msdynce_MarketingSales" version="9.0.26085.10001">msdynce_MarketingSalesAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Information" parentDisplayName="Contact" solution="msdynce_AppCommon (9.0.4.0066)" id="{894cc46a-b0cb-4ab0-8bf6-200544e46a2d}">
+          <package appName="msdynce_AppCommon" version="9.0.26085.10002">msdynce_AppCommonAnchor (9.0.26085.10002)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Contact" id="{894cc46a-b0cb-4ab0-8bf6-200544e46a2d}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Information" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Leads Dashboard" parentDisplayName="Lead" solution="msdynce_LeadManagement (9.0.4.0066)" id="{9a14ebb4-143e-e711-80e1-00155d871bb4}">
+          <package appName="msdynce_LeadManagement" version="9.0.26085.10001">msdynce_LeadManagementAnchor (9.0.26085.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Leads Dashboard" parentDisplayName="Lead" id="{9a14ebb4-143e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Information" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Information" parentDisplayName="Organisation" solution="msdynce_AppCommon (9.0.4.0066)" id="{b053a39a-041a-4356-acef-ddf00182762b}">
+          <package appName="msdynce_AppCommon" version="9.0.26085.10002">msdynce_AppCommonAnchor (9.0.26085.10002)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Organisation" id="{b053a39a-041a-4356-acef-ddf00182762b}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Profile Web Form (Enhanced)" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)" id="{bddc0100-0dbe-4562-aafe-31d08c8ab506}">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Profile Web Form (Enhanced)" parentDisplayName="Contact" id="{bddc0100-0dbe-4562-aafe-31d08c8ab506}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Invite Web Form" parentDisplayName="Contact" solution="PowerPages_RuntimeCore (1.0.2509.1)" id="{d6190b35-9474-4098-9698-33f6627eb3bf}">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Invite Web Form" parentDisplayName="Contact" id="{d6190b35-9474-4098-9698-33f6627eb3bf}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="60" displayName="Opportunities Dashboard" parentDisplayName="Opportunity" solution="msdynce_Sales (9.0.4.0076)" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Opportunities Dashboard" parentDisplayName="Opportunity" id="{f7e6d29b-1e3e-e711-80e1-00155d871bb4}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="AppCommon/Account/Account_main_system_library.js" displayName="AppCommon/Account/Account_main_system_library.js" solution="msdynce_AppCommon (9.0.4.0066)">
+          <package appName="msdynce_AppCommon" version="9.0.26085.10002">msdynce_AppCommonAnchor (9.0.26085.10002)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Organisation" id="{b053a39a-041a-4356-acef-ddf00182762b}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="AppCommon/Contact/Contact_main_system_library.js" displayName="AppCommon/Contact/Contact_main_system_library.js" solution="msdynce_AppCommon (9.0.4.0066)">
+          <package appName="msdynce_AppCommon" version="9.0.26085.10002">msdynce_AppCommonAnchor (9.0.26085.10002)</package>
+        </Required>
+        <Dependent type="60" displayName="Profile Web Form (Enhanced) - Japanese" parentDisplayName="Contact" id="{01124dd8-9bff-4cc0-bb33-ea9d943c3f9f}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="AppCommon/Contact/Contact_main_system_library.js" displayName="AppCommon/Contact/Contact_main_system_library.js" solution="msdynce_AppCommon (9.0.4.0066)">
+          <package appName="msdynce_AppCommon" version="9.0.26085.10002">msdynce_AppCommonAnchor (9.0.26085.10002)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="AppCommon/Contact/Contact_main_system_library.js" displayName="AppCommon/Contact/Contact_main_system_library.js" solution="msdynce_AppCommon (9.0.4.0066)">
+          <package appName="msdynce_AppCommon" version="9.0.26085.10002">msdynce_AppCommonAnchor (9.0.26085.10002)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Contact" id="{894cc46a-b0cb-4ab0-8bf6-200544e46a2d}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="AppCommon/Contact/Contact_main_system_library.js" displayName="AppCommon/Contact/Contact_main_system_library.js" solution="msdynce_AppCommon (9.0.4.0066)">
+          <package appName="msdynce_AppCommon" version="9.0.26085.10002">msdynce_AppCommonAnchor (9.0.26085.10002)</package>
+        </Required>
+        <Dependent type="60" displayName="Profile Web Form (Enhanced)" parentDisplayName="Contact" id="{bddc0100-0dbe-4562-aafe-31d08c8ab506}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="AppCommon/Contact/Contact_main_system_library.js" displayName="AppCommon/Contact/Contact_main_system_library.js" solution="msdynce_AppCommon (9.0.4.0066)">
+          <package appName="msdynce_AppCommon" version="9.0.26085.10002">msdynce_AppCommonAnchor (9.0.26085.10002)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/Account/AssetCommon.Account.Library.js" displayName="msdyn_/Account/AssetCommon.Account.Library.js" solution="msdyn_AssetCommon (1.0.50.106)">
+          <package appName="msdynce_Service" version="9.0.26085.1009">msdynce_ServiceAnchor (9.0.26085.1009)</package>
+        </Required>
+        <Dependent type="60" displayName="Organisation Main" parentDisplayName="Organisation" id="{e7cabe23-8364-f111-ab0d-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/ActivityFeeds.Form.js" displayName="msdyn_/ActivityFeeds.Form.js" solution="ActivityFeedsCore (9.0.0.0014)">
+          <package appName="ActivityFeedsCore" version="9.0.0.0014">ActivityFeedsCore (9.0.0.0014)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/ActivityFeeds.Form.js" displayName="msdyn_/ActivityFeeds.Form.js" solution="ActivityFeedsCore (9.0.0.0014)">
+          <package appName="ActivityFeedsCore" version="9.0.0.0014">ActivityFeedsCore (9.0.0.0014)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/ActivityFeeds.Form.js" displayName="msdyn_/ActivityFeeds.Form.js" solution="ActivityFeedsCore (9.0.0.0014)">
+          <package appName="ActivityFeedsCore" version="9.0.0.0014">ActivityFeedsCore (9.0.0.0014)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/RecordWall.htm" displayName="msdyn_/RecordWall.htm" solution="ActivityFeedsCore (9.0.0.0014)">
+          <package appName="ActivityFeedsCore" version="9.0.0.0014">ActivityFeedsCore (9.0.0.0014)</package>
+        </Required>
+        <Dependent type="60" displayName="Lead qualification opportunity form" parentDisplayName="Opportunity" id="{2ad2c7ff-e6fa-ee11-9f89-7c1e521a5763}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/RecordWall.htm" displayName="msdyn_/RecordWall.htm" solution="ActivityFeedsCore (9.0.0.0014)">
+          <package appName="ActivityFeedsCore" version="9.0.0.0014">ActivityFeedsCore (9.0.0.0014)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Lead" id="{9886ead0-4fcc-4747-9a18-08e7a9a6de71}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/RecordWall.htm" displayName="msdyn_/RecordWall.htm" solution="ActivityFeedsCore (9.0.0.0014)">
+          <package appName="ActivityFeedsCore" version="9.0.0.0014">ActivityFeedsCore (9.0.0.0014)</package>
+        </Required>
+        <Dependent type="60" displayName="Information" parentDisplayName="Opportunity" id="{a2a56263-ec37-4991-a3b0-e7b37a71d818}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_/Scripts/WhoKnowsWhomLoader.js" displayName="msdyn_/Scripts/WhoKnowsWhomLoader.js" solution="msdyn_connectiongraph (9.3.26092.10001)">
+          <package appName="msdynce_SalesInsights" version="9.0.26092.10002">msdynce_SalesInsightsAnchor (9.0.26092.10002)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_SalesOmniChannel/SalesPhoneNumber.Library.js" displayName="msdyn_SalesOmniChannel/SalesPhoneNumber.Library.js" solution="msdyn_SalesOmniChannel (9.1.26092.10003)">
+          <package appName="msdyn_AcceleratedSales" version="9.1.26092.10003">msdyn_AcceleratedSalesAnchor (9.1.26092.10003)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_SalesOmniChannel/SalesPhoneNumber.Library.js" displayName="msdyn_SalesOmniChannel/SalesPhoneNumber.Library.js" solution="msdyn_SalesOmniChannel (9.1.26092.10003)">
+          <package appName="msdyn_AcceleratedSales" version="9.1.26092.10003">msdyn_AcceleratedSalesAnchor (9.1.26092.10003)</package>
+        </Required>
+        <Dependent type="60" displayName="Organisation Main" parentDisplayName="Organisation" id="{e7cabe23-8364-f111-ab0d-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyn_talkingpointsloader.js" displayName="msdyn_talkingpointsloader.js" solution="msdynce_Talkingpoints (9.1.0.59)">
+          <package appName="msdynce_SalesInsights" version="9.0.26092.10002">msdynce_SalesInsightsAnchor (9.0.26092.10002)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyncrm_MarketingCjoFirst.CrmWebResource" displayName="msdyncrm_MarketingCjoFirst.CrmWebResource" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdyncrm_MarketingCjoFirst.CrmWebResource" displayName="msdyncrm_MarketingCjoFirst.CrmWebResource" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Organisation Main" parentDisplayName="Organisation" id="{e7cabe23-8364-f111-ab0d-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdynmkt_Consent.CrmWebResources" displayName="msdynmkt_Consent.CrmWebResources" solution="DynamicsMKT_Consent (1.3.1162.73)">
+          <package appName="CxpSales" version="1.3.1162.47">DynamicsMKT_CxpSalesAnchorSolution (1.3.1162.47)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdynmkt_CxpFormEditorHandlers.WebResource" displayName="msdynmkt_CxpFormEditorHandlers.WebResource" solution="DynamicsMKT_Forms (1.3.1162.73)">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msdynmkt_DynamicsMktOrchestrationAnalyaticsUIHandlers" displayName="msdynmkt_DynamicsMktOrchestrationAnalyaticsUIHandlers" solution="DynamicsMKT_OrchestrationAnalytics (1.3.1162.73)">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msevtmgt_es6_promise.min.js" displayName="msevtmgt_es6_promise.min.js" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="msevtmgt_EventMgmt.CrmWebResource" displayName="msevtmgt_EventMgmt.CrmWebResource" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="mspp_entities/subgrid_filtering.js" displayName="mspp_entities/subgrid_filtering.js" solution="PowerPages_AppResources (1.0.2605.0)">
+          <package appName="Power Pages Core Package" version="1.1.2605.258">PowerPages_Core (1.1.2605.258)</package>
+        </Required>
+        <Dependent type="60" displayName="Portal Contact (Enhanced)" parentDisplayName="Contact" id="{c1c97961-2d42-4103-abf8-2fe2bdf38224}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="61" schemaName="Sales/ClientCommon/Sales_ClientCommon.js" displayName="Sales/ClientCommon/Sales_ClientCommon.js" solution="msdynce_Sales (9.0.4.0076)">
+          <package appName="msdynce_Sales" version="9.0.26092.10001">msdynce_SalesAnchor (9.0.26092.10001)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="Consent.ContactabilityGridControl.ContactabilityGridControl" displayName="Consent.ContactabilityGridControl.ContactabilityGridControl" solution="DynamicsMKT_Consent (1.3.1162.73)">
+          <package appName="CxpSales" version="1.3.1162.47">DynamicsMKT_CxpSalesAnchorSolution (1.3.1162.47)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="CxpOrchestrationAnalytics.InsightsBannerControl.InsightsBannerControl" displayName="CxpOrchestrationAnalytics.InsightsBannerControl.InsightsBannerControl" solution="DynamicsMKT_OrchestrationAnalytics (1.3.1162.73)">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="dce_DCEPCF.PolyLookup" displayName="dce_DCEPCF.PolyLookup" solution="dce_pcfcomponents (1.1.1.0)" />
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="Intelligence.BusinessCardReaderControl.BusinessCardReader" displayName="Intelligence.BusinessCardReaderControl.BusinessCardReader" solution="BaseCustomControlsCore (9.0.2609.2006)">
+          <package appName="Base Custom Controls" version="9.0.2609.2006">BaseCustomControlsCore (9.0.2609.2006)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="Microsoft.AddressInputUCI" displayName="Microsoft.AddressInputUCI" solution="BaseCustomControlsCore (9.0.2609.2006)">
+          <package appName="Base Custom Controls" version="9.0.2609.2006">BaseCustomControlsCore (9.0.2609.2006)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="Microsoft.AddressInputUCI" displayName="Microsoft.AddressInputUCI" solution="BaseCustomControlsCore (9.0.2609.2006)">
+          <package appName="Base Custom Controls" version="9.0.2609.2006">BaseCustomControlsCore (9.0.2609.2006)</package>
+        </Required>
+        <Dependent type="60" displayName="Organisation Main" parentDisplayName="Organisation" id="{e7cabe23-8364-f111-ab0d-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="MscrmControls.InsightsControl.InsightsControl" displayName="MscrmControls.InsightsControl.InsightsControl" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="MscrmControls.InsightsControl.InsightsControl" displayName="MscrmControls.InsightsControl.InsightsControl" solution="MicrosoftDynamics_Marketing (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="60" displayName="Organisation Main" parentDisplayName="Organisation" id="{e7cabe23-8364-f111-ab0d-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="msdyn_SalesOmniChannel.SalesPhoneNumberControl" displayName="msdyn_SalesOmniChannel.SalesPhoneNumberControl" solution="msdyn_SalesOmniChannel (9.1.26092.10003)">
+          <package appName="msdyn_AcceleratedSales" version="9.1.26092.10003">msdyn_AcceleratedSalesAnchor (9.1.26092.10003)</package>
+        </Required>
+        <Dependent type="60" displayName="Organisation Main" parentDisplayName="Organisation" id="{e7cabe23-8364-f111-ab0d-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="66" schemaName="MsdynmktControls.TabbableInsightsControl.TabbableInsightsControl" displayName="MsdynmktControls.TabbableInsightsControl.TabbableInsightsControl" solution="DynamicsMKT_AnalyticsUx (1.3.1162.73)">
+          <package appName="CxpSales" version="1.3.1162.47">DynamicsMKT_CxpSalesAnchorSolution (1.3.1162.47)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="60" displayName="Contact Main" parentDisplayName="Contact" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="msdyncrm_days" displayName="Days" solution="MicrosoftDynamics_MarketingOrchestrationModule (1.122.2010.0)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+        </Required>
+        <Dependent type="2" schemaName="hit_dayofweek" displayName="Day of Week" parentSchemaName="hit_venuespacetradinghours" parentDisplayName="Venue Space Trading Hours" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="msevtmgt_publishstatus" displayName="Publish status" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="2" schemaName="hit_publishedstatus" displayName="Published Status" parentSchemaName="hit_offering" parentDisplayName="Offering" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="msdynmkt_formtargetaudience" displayName="msdynmkt_defaultcontacttargetaudience" solution="DynamicsMKT_FormData (1.3.1162.18)" id.msdynmkt_uniquename="msdynmkt_defaultcontacttargetaudience">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="msdynmkt_marketingformtemplate" displayName="msdynmkt_contactbasicformtemplate" id.msdynmkt_uniquename="msdynmkt_contactbasicformtemplate" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="msdynmkt_formtargetaudience" displayName="msdynmkt_defaultleadtargetaudience" solution="DynamicsMKT_FormData (1.3.1162.18)" id.msdynmkt_uniquename="msdynmkt_defaultleadtargetaudience">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="msdynmkt_marketingformtemplate" displayName="msdynmkt_leadbasicformtemplate" id.msdynmkt_uniquename="msdynmkt_leadbasicformtemplate" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="msdynmkt_formtargetaudience" displayName="msdynmkt_defaultleadtargetaudience" solution="DynamicsMKT_FormData (1.3.1162.18)" id.msdynmkt_uniquename="msdynmkt_defaultleadtargetaudience">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="msdynmkt_marketingformtemplate" displayName="msdynmkt_leadleadgenerationtemplate" id.msdynmkt_uniquename="msdynmkt_leadleadgenerationtemplate" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="msdynmkt_formtargetaudience" displayName="msdynmkt_defaultleadtargetaudience" solution="DynamicsMKT_FormData (1.3.1162.18)" id.msdynmkt_uniquename="msdynmkt_defaultleadtargetaudience">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="msdynmkt_marketingformtemplate" displayName="msdynmkt_leadnewslettersignuptemplate" id.msdynmkt_uniquename="msdynmkt_leadnewslettersignuptemplate" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="msdynmkt_matchingstrategy" displayName="msdynmkt_default_contactmatchingstrategy" solution="DynamicsMKT_FormData (1.3.1162.18)" id.msdynmkt_uniquename="msdynmkt_default_contactmatchingstrategy">
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="msdynmkt_marketingformtemplate" displayName="msdynmkt_contactbasicformtemplate" id.msdynmkt_uniquename="msdynmkt_contactbasicformtemplate" />
+      </MissingDependency>
+    </MissingDependencies>
+  </SolutionManifest>
+</ImportExportXml>

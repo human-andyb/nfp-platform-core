@@ -1,0 +1,442 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{6e7d8590-f239-4183-aac6-597c7715e98f}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls">
+      <tabs>
+        <tab verticallayout="true" id="{81f30c87-dc3a-4652-8508-d71f6e2bdff9}" IsUserDefined="1">
+          <labels>
+            <label description="Overview" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{87d99025-b1d3-4224-8faa-4beab5ad47f1}" celllabelposition="Top" columns="11">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{38043516-c771-4a89-a7e0-f95ed5c27e1a}">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="hit_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="hit_name" />
+                      </cell>
+                      <cell id="{30768a18-cc62-4cd9-9bbf-dbaf2d985a0c}" locklevel="0" colspan="1" rowspan="1" visible="false">
+                        <labels>
+                          <label description="Status" languagecode="1033" />
+                        </labels>
+                        <control id="statecode" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="statecode" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{49dc7e66-d643-433c-9eb2-3c5571902a83}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Tagline" languagecode="1033" />
+                        </labels>
+                        <control id="hit_tagline" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_tagline" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{8f5ace87-d089-4fad-b383-94f182b32495}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Strategy Status" languagecode="1033" />
+                        </labels>
+                        <control id="header_hit_strategystatus" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_strategystatus" disabled="false" />
+                      </cell>
+                      <cell id="{7a0e0509-0f55-4367-8420-53beb03a39f3}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Version Label" languagecode="1033" />
+                        </labels>
+                        <control id="hit_versionlabel" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_versionlabel" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell locklevel="0" id="{2751bdf4-78eb-454a-a3a7-c5a50303814a}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell id="{3df505c2-883c-4cf4-a291-5e5213b873ba}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Start Date" languagecode="1033" />
+                        </labels>
+                        <control id="hit_startdate" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="hit_startdate" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell locklevel="0" id="{17094c63-d864-420a-bdd3-78fcc0e95677}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell id="{b118a2cf-76c2-4d19-a0ca-1c838b0882f1}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="End Date" languagecode="1033" />
+                        </labels>
+                        <control id="hit_enddate" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="hit_enddate" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell locklevel="0" id="{983ab6fd-f65c-482d-8fbc-38495624e2c0}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell id="{930bcff3-8310-41aa-aff6-3b31eae39442}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Notes" languagecode="1033" />
+                        </labels>
+                        <control id="hit_notes" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="hit_notes" disabled="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_2" id="c2733605-835a-42f9-a716-cf8b20e962d0" IsUserDefined="0" locklevel="0" showlabel="true">
+          <labels>
+            <label description="Strategy on a Page" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="tab_2_section_1" id="6db8075b-50a9-4021-9afb-f0af54f28792" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Top" columns="11" labelwidth="115">
+                  <labels>
+                    <label description="Belief &amp; Purpose" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell locklevel="0" id="{13597349-7817-4ffe-8578-6d559f2e6b45}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell locklevel="0" id="{650b2ab7-33a3-4b2f-a870-e0879edc2f1c}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell locklevel="0" id="{8d12c643-3ff0-476f-bb9e-e569e410e46c}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Strategy Principles" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_1" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_strategyprinciple_StrategyCycle_hit_strategycycle</RelationshipName>
+                            <TargetEntityType>hit_strategyprinciple</TargetEntityType>
+                            <ViewId>{033C4C0C-B666-40B0-8EDB-68DFE6912648}</ViewId>
+                            <ViewIds>{033C4C0C-B666-40B0-8EDB-68DFE6912648}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                      <cell locklevel="0" id="{7bc2702e-007c-4dc8-b5b1-ab0afd930d5a}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Strategy Principles" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_2" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_strategyobjective_StrategyCycle_hit_strategycycle</RelationshipName>
+                            <TargetEntityType>hit_strategyobjective</TargetEntityType>
+                            <ViewId>{1CDE56E5-F6ED-4C09-8C7F-3401056278B6}</ViewId>
+                            <ViewIds>{1CDE56E5-F6ED-4C09-8C7F-3401056278B6}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+                <section name="tab_2_section_3" id="1c5c2097-fec8-4ae3-9265-2ecc254f3d00" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Top" columns="11" labelwidth="115">
+                  <labels>
+                    <label description="Priorities &amp; Initiatives" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{f081e17c-3835-4628-a4de-a58f56695c5d}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Strategic Priorities" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_3" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_strategypriority_StrategyCycle_hit_strategycycle</RelationshipName>
+                            <TargetEntityType>hit_strategypriority</TargetEntityType>
+                            <ViewId>{3F4AC59D-033A-4AB4-BF99-B1F2EAF05442}</ViewId>
+                            <ViewIds>{3F4AC59D-033A-4AB4-BF99-B1F2EAF05442}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                      <cell locklevel="0" id="{7a2dd8df-2917-4cc5-af28-e08c3e117205}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Strategic Initiatives" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_4" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_strategyinitiative_StrategyCycle_hit_strategycycle</RelationshipName>
+                            <TargetEntityType>hit_strategyinitiative</TargetEntityType>
+                            <ViewId>{87A06AEA-8790-4AA0-921B-767F0C6343CB}</ViewId>
+                            <ViewIds>{87A06AEA-8790-4AA0-921B-767F0C6343CB}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+                <section name="tab_2_section_4" id="7e8a3b4e-a479-4e84-9041-0c542824a917" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="11" labelwidth="115">
+                  <labels>
+                    <label description="Enablers &amp; Values" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{7968dff2-01a0-4e6c-a0d1-c3439fdd4a3f}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Enablers" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_5" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_strategyenabler_StrategyCycle_hit_strategycycle</RelationshipName>
+                            <TargetEntityType>hit_strategyenabler</TargetEntityType>
+                            <ViewId>{41E3A146-999C-4A0C-8E9A-27BDA8A13FC0}</ViewId>
+                            <ViewIds>{41E3A146-999C-4A0C-8E9A-27BDA8A13FC0}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                      <cell locklevel="0" id="{713e908e-c353-4b8b-92dd-d5d9b4294913}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Values" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_6" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_strategyvalue_StrategyCycle_hit_strategycycle</RelationshipName>
+                            <TargetEntityType>hit_strategyvalue</TargetEntityType>
+                            <ViewId>{554E689D-7946-46C5-8650-32224C6471BA}</ViewId>
+                            <ViewIds>{554E689D-7946-46C5-8650-32224C6471BA}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_3" id="181816b1-3272-421b-b9b9-428eef2b50f7" IsUserDefined="0" locklevel="0" showlabel="true">
+          <labels>
+            <label description="Scorecard" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="tab_3_section_1" id="0285b8f6-0c11-4a7b-bb74-361db4659bf3" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Top" columns="11" labelwidth="115">
+                  <labels>
+                    <label description="Scorecard Segments &amp; Measures" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell locklevel="0" id="{abe8d037-d18f-43c1-9e0f-961d2091d6d2}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell locklevel="0" id="{114c3be8-3fd3-4964-bb89-a8bf459a6188}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell locklevel="0" id="{101c95f2-9f98-46e3-ad8e-bcf54ef4b3a3}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Scorecard Segments" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_7" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_scorecardsegment_StrategyCycle_hit_strategycycle</RelationshipName>
+                            <TargetEntityType>hit_scorecardsegment</TargetEntityType>
+                            <ViewId>{C4319E5C-9DE6-4A3B-822B-0D62D3BAFB35}</ViewId>
+                            <ViewIds>{C4319E5C-9DE6-4A3B-822B-0D62D3BAFB35}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                      <cell locklevel="0" id="{f80c4231-3034-49f1-96e1-48f8cfdc7b7d}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_4" id="7ce7780a-8e07-496b-b12a-5a67836f8bdd" IsUserDefined="0" locklevel="0" showlabel="true">
+          <labels>
+            <label description="Initiative Plans" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="tab_4_section_1" id="505c8254-912f-496a-8adb-b6c9bcff7810" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{8c3aaed0-ce24-43b0-b72b-b724e18da66c}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Initiatives" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_8" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_strategyinitiative_StrategyCycle_hit_strategycycle</RelationshipName>
+                            <TargetEntityType>hit_strategyinitiative</TargetEntityType>
+                            <ViewId>{87A06AEA-8790-4AA0-921B-767F0C6343CB}</ViewId>
+                            <ViewIds>{87A06AEA-8790-4AA0-921B-767F0C6343CB}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{c015ff4c-ad05-4fac-bcbf-12a1ac731dad}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{0acd2b8d-1aca-489e-ab92-c614c722a2cc}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{f1dcf398-f006-44a5-b50a-e068d640bf5c}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{3bc59213-63b7-4325-8c68-037c11b3b69c}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{ba1ed5b5-b5c5-4104-a43a-8e0cec142fe8}" colspan="1" rowspan="1" visible="false">
+              <labels>
+                <label description="Owner" languagecode="1033" />
+              </labels>
+              <control id="header_ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{c2642f1c-ec7a-43cc-9d6d-903d26e14957}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{f95ad18b-1270-4cb7-a760-28c6327926d0}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{8d66c3b5-a2a7-4b5f-9d94-e60193e0d273}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{303fbd28-d6df-46d7-916e-54c3a0eaff70}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <DisplayConditions Order="0" FallbackForm="true">
+        <Everyone />
+      </DisplayConditions>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

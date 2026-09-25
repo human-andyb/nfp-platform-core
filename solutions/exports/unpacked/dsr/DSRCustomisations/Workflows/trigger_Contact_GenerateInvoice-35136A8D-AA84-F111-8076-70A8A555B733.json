@@ -1,0 +1,140 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_2d19c"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "When_a_row_is_added,_modified_or_deleted": {
+          "metadata": {
+            "operationMetadataId": "e284337e-01d1-414f-a873-1cf1fb33bec8"
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 3,
+              "subscriptionRequest/entityname": "contact",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "contactid, hit_generateinvoiceamount",
+              "subscriptionRequest/filterexpression": "hit_generateinvoice eq 815390001"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "init_sContactID": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "f1c33ba8-5bcf-44e6-a97b-442a5aeb870b"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sContactID",
+                "type": "string",
+                "value": "@triggerOutputs()?['body/contactid']"
+              }
+            ]
+          }
+        },
+        "init_fAmount": {
+          "runAfter": {
+            "init_sContactID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "586bc75e-57f5-4c4f-a061-acbefacc9e0b"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "fAmount",
+                "type": "float",
+                "value": "@triggerOutputs()?['body/hit_generateinvoiceamount']"
+              }
+            ]
+          }
+        },
+        "Update_a_row": {
+          "runAfter": {
+            "run_-_Generate_Donation_Invoice": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "ed9e1157-647a-442f-9044-e46c9618a51b"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "UpdateOnlyRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "contacts",
+              "recordId": "@variables('sContactID')",
+              "item/hit_generateinvoice": "@null",
+              "item/hit_generateinvoiceamount": "@null",
+              "item/hit_generateinvoicedate": "@null"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "run_-_Generate_Donation_Invoice": {
+          "runAfter": {
+            "init_fAmount": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "532fe81c-5aac-4009-b9c2-e387cbd56510"
+          },
+          "type": "Workflow",
+          "inputs": {
+            "host": {
+              "workflowReferenceName": "45019359-a884-f111-8076-6045bde72793"
+            },
+            "body": {
+              "text": "Contact",
+              "text_1": "@variables('sContactID')",
+              "number": "@variables('fAmount')"
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

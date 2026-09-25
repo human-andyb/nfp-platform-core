@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{538b5e2d-cb32-4ac5-87c3-5bef7a36e3cb}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls">
+      <tabs>
+        <tab verticallayout="true" id="{f088510e-3c74-415f-849c-bd36a3a3fbfd}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{33d037db-9821-41f0-9d74-681ac4338ee8}" celllabelposition="Top" columns="111">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{aed7780c-9798-429d-8a87-38d9fd2ac653}">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="hit_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="hit_name" />
+                      </cell>
+                      <cell id="{1f62efcc-c16b-4fad-b167-86220d2bf76d}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Is Active" languagecode="1033" />
+                        </labels>
+                        <control id="hit_isactive" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="hit_isactive" disabled="false" />
+                      </cell>
+                      <cell id="{e8a32241-0058-47b2-a1b3-57c25b92d2c0}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Summary" languagecode="1033" />
+                        </labels>
+                        <control id="hit_summary" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="hit_summary" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{120afa66-b375-4eca-8f29-97911889447d}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Title" languagecode="1033" />
+                        </labels>
+                        <control id="hit_title" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_title" disabled="false" />
+                      </cell>
+                      <cell id="{166dbb7f-8abf-4490-93c8-86e9c5e17b73}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Web Visible" languagecode="1033" />
+                        </labels>
+                        <control id="hit_webvisible" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="hit_webvisible" disabled="false" />
+                      </cell>
+                      <cell locklevel="0" id="{a8a4d6a6-528b-444c-a573-76335748e844}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{3c747862-d4a8-47ec-9ef0-f4429559badb}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Display Title" languagecode="1033" />
+                        </labels>
+                        <control id="hit_displaytitle" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_displaytitle" disabled="false" />
+                      </cell>
+                      <cell id="{0f9df0ad-a7d8-4b55-a0c1-7fd5ce2e8ff6}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Type Label" languagecode="1033" />
+                        </labels>
+                        <control id="hit_typelabel" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_typelabel" disabled="false" />
+                      </cell>
+                      <cell locklevel="0" id="{b3640896-cf24-44ca-b5ab-3d090152d101}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="null_section_3" id="6ca5c207-6b3b-4da4-add9-0499c1c884e2" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115">
+                  <labels>
+                    <label description="URLs" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell id="{67144b1b-e132-4fd5-9bc4-5a61e009db10}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Image URL" languagecode="1033" />
+                        </labels>
+                        <control id="hit_imageurl" classid="{71716B6C-711E-476C-8AB8-5D11542BFB47}" datafieldname="hit_imageurl" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{bfccb4ad-7e5c-4b10-a90d-da0a09b775b2}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Web URL" languagecode="1033" />
+                        </labels>
+                        <control id="hit_weburl" classid="{71716B6C-711E-476C-8AB8-5D11542BFB47}" datafieldname="hit_weburl" disabled="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_2" id="c8894286-96f4-4525-931f-674b34185b2e" IsUserDefined="0" locklevel="0" showlabel="true">
+          <labels>
+            <label description="Content" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section name="tab_2_section_1" id="373cc0dd-d40c-41a5-bcaf-ba8b0d5a131e" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115">
+                  <labels>
+                    <label description="Body" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell id="{51d17489-a7d7-444f-9ab2-01ac0570f98d}" locklevel="0" colspan="1" rowspan="10" auto="true" showlabel="false">
+                        <labels>
+                          <label description="Body" languagecode="1033" />
+                        </labels>
+                        <control id="hit_body" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="hit_body" disabled="false" />
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{557b49bb-2c53-46fc-9989-23b925390935}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{f6fdc72b-74d4-4568-b26b-647b694ebc4b}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{d9c5788b-86de-485e-bed0-c80b354e0c4b}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{50621e80-f89c-4c0d-a26a-f54a44d947e3}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{d6a6f63c-9043-4937-8a69-f08f2d07d515}" colspan="1" rowspan="1">
+              <labels>
+                <label description="Owner" languagecode="1033" />
+              </labels>
+              <control id="header_ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{d6199d53-ae81-48ed-b43e-8066dc30ff22}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{98caef04-0e5d-4a00-ab80-98b45d7ba701}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{3dedfcfe-cf6b-49b1-96fc-b631db75f42b}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{21b8b8c3-ba45-4d62-94ae-3a971966867c}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <DisplayConditions Order="0" FallbackForm="true">
+        <Everyone />
+      </DisplayConditions>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

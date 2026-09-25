@@ -1,0 +1,569 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      },
+      "shared_sharepointonline": {
+        "runtimeSource": "invoker",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedsharepointonline_5658b"
+        },
+        "api": {
+          "name": "shared_sharepointonline"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "6578616e-fee4-4854-a055-5f197da3ae64"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            }
+          }
+        }
+      },
+      "actions": {
+        "segmenttags": {
+          "runAfter": {
+            "init_sContactName": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "78219ab5-5ed4-4049-8308-98dd89deb603"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "entityName": "hit_segmenttags",
+              "$filter": "hit_code eq 'ESC__PHONE_QUEUE'"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          }
+        },
+        "init_sEscPhoneTagID": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "bb3f0bc8-ce1a-48a5-9d8d-426f0543d541"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sEscPhoneTagID",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "apply_sEscPhoneTagID": {
+          "foreach": "@outputs('segmenttags')?['body/value']",
+          "actions": {
+            "set_sEscPhoneTagID": {
+              "metadata": {
+                "operationMetadataId": "06d47f79-47c5-4d63-aa3f-326f8b7d81db"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "sEscPhoneTagID",
+                "value": "@items('apply_sEscPhoneTagID')?['hit_segmenttagid']"
+              }
+            }
+          },
+          "runAfter": {
+            "segmenttags": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "64802bf1-132c-4f83-ab79-1b91055fc0a9"
+          },
+          "type": "Foreach"
+        },
+        "TaggedOrganisations": {
+          "runAfter": {
+            "apply_sEscPhoneTagID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "630ee761-c14c-4673-a868-749bff20375d"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "entityName": "hit_accountsegmenttags",
+              "$filter": "_hit_segmenttag_value eq '@{variables('sEscPhoneTagID')}'"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          }
+        },
+        "Apply_to_each": {
+          "foreach": "@outputs('TaggedOrganisations')?['body/value']",
+          "actions": {
+            "organisation": {
+              "metadata": {
+                "operationMetadataId": "1e329c3b-78f6-4250-8569-115346d9955f"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "entityName": "accounts",
+                  "recordId": "@items('Apply_to_each')?['_hit_account_value']"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "operationId": "GetItem",
+                  "connectionName": "shared_commondataserviceforapps"
+                }
+              }
+            },
+            "is_prospect": {
+              "actions": {
+                "Append_to_arDSR_ProspectContacts": {
+                  "metadata": {
+                    "operationMetadataId": "7ae72d20-a7f7-41cc-8ffc-ff5394207041"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "arDSR_ProspectOrganiations",
+                    "value": {
+                      "ConstituentID": "@{outputs('organisation')?['body/accountnumber']}",
+                      "Organisation": "@{outputs('organisation')?['body/name']}",
+                      "FullName": "@{variables('sContactName')}",
+                      "Phone1": "@{replace(coalesce(outputs('organisation')?['body/telephone1'],''),' ','')}",
+                      "Phone2": "@{replace(coalesce(outputs('organisation')?['body/telephone2'],''),' ','')}",
+                      "Phone3": "@{replace(coalesce(outputs('organisation')?['body/telephone3'],''),' ','')}",
+                      "Email": "@{coalesce(outputs('organisation')?['body/emailaddress1'],'')}",
+                      "Location": "VIC",
+                      "CRMUrl": "@{variables('sCrmUrlBase')}@{outputs('organisation')?['body/accountid']}"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Primary_Contact_exists": [
+                  "Succeeded"
+                ]
+              },
+              "else": {
+                "actions": {
+                  "Append_to_arDSR_ActiveContacts": {
+                    "metadata": {
+                      "operationMetadataId": "7ae72d20-a7f7-41cc-8ffc-ff5394207041"
+                    },
+                    "type": "AppendToArrayVariable",
+                    "inputs": {
+                      "name": "arDSR_ActiveOrganisations",
+                      "value": {
+                        "ConstituentID": "@{outputs('organisation')?['body/accountnumber']}",
+                        "Organisation": "@{outputs('organisation')?['body/name']}",
+                        "FullName": "@{variables('sContactName')}",
+                        "Phone1": "@{replace(coalesce(outputs('organisation')?['body/telephone1'],''),' ','')}",
+                        "Phone2": "@{replace(coalesce(outputs('organisation')?['body/telephone2'],''),' ','')}",
+                        "Phone3": "@{replace(coalesce(outputs('organisation')?['body/telephone3'],''),' ','')}",
+                        "Email": "@{coalesce(outputs('organisation')?['body/emailaddress1'],'')}",
+                        "Location": "VIC",
+                        "CRMUrl": "@{variables('sCrmUrlBase')}@{outputs('organisation')?['body/accountid']}"
+                      }
+                    }
+                  }
+                }
+              },
+              "expression": {
+                "and": [
+                  {
+                    "equals": [
+                      "@outputs('organisation')?['body/hit_dlfcode']",
+                      "DLF__PROSPECT"
+                    ]
+                  }
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "7172e498-d1db-40fa-9a28-ad8210ebce35"
+              },
+              "type": "If"
+            },
+            "Primary_Contact_exists": {
+              "actions": {
+                "primarycontact": {
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "parameters": {
+                      "entityName": "contacts",
+                      "recordId": "@outputs('organisation')?['body/_primarycontactid_value']"
+                    },
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                      "operationId": "GetItem",
+                      "connectionName": "shared_commondataserviceforapps"
+                    }
+                  }
+                },
+                "set_sContactName_-_fullname": {
+                  "runAfter": {
+                    "primarycontact": [
+                      "Succeeded"
+                    ]
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "sContactName",
+                    "value": "@outputs('primarycontact')?['body/fullname']"
+                  }
+                }
+              },
+              "runAfter": {
+                "organisation": [
+                  "Succeeded"
+                ]
+              },
+              "else": {
+                "actions": {
+                  "set_sContactName_-_blank": {
+                    "type": "SetVariable",
+                    "inputs": {
+                      "name": "sContactName",
+                      "value": "\"\""
+                    }
+                  }
+                }
+              },
+              "expression": {
+                "and": [
+                  {
+                    "not": {
+                      "equals": [
+                        "@outputs('organisation')?['body/_primarycontactid_value']",
+                        "@null"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "init_sCrmUrlBase": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f3524bf0-55f5-4078-bd35-d35cad0aab01"
+          },
+          "type": "Foreach"
+        },
+        "init_arDSR_ActiveOrganiations": {
+          "runAfter": {
+            "TaggedOrganisations": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "08394736-f90f-42ba-a3d2-02f8f591dc0e"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "arDSR_ActiveOrganisations",
+                "type": "array"
+              }
+            ]
+          }
+        },
+        "init_sCrmUrlBase": {
+          "runAfter": {
+            "init_arDSR_ProspectOrganiations": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "50b4df85-d63f-470b-b719-099c671f2137"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sCrmUrlBase",
+                "type": "string",
+                "value": "dsr-prod.crm6.dynamics.com/main.aspx?appid=176ba671-307f-f111-ab0e-6045bde72793&pagetype=entityrecord&etn=account&id="
+              }
+            ]
+          }
+        },
+        "init_sDatePrefix": {
+          "runAfter": {
+            "init_sEscPhoneTagID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "34b3b3ee-3c6a-4607-85b2-6288716076d1"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sDatePrefix",
+                "type": "string",
+                "value": "@formatDateTime(utcNow(),'yyyyMMdd')"
+              }
+            ]
+          }
+        },
+        "init_arDSR_ProspectOrganiations": {
+          "runAfter": {
+            "init_arDSR_ActiveOrganiations": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "cfdb1c3c-557e-4ae4-8b26-fa1034120183"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "arDSR_ProspectOrganiations",
+                "type": "array"
+              }
+            ]
+          }
+        },
+        "init_sFileNameActive": {
+          "runAfter": {
+            "Apply_to_each": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "bbadd04e-0503-4fb8-af08-fc08110f8911"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sFileNameActive",
+                "type": "string",
+                "value": "@{variables('sDatePrefix')}_DSR_ActiveOrganisations"
+              }
+            ]
+          }
+        },
+        "init_sFileNameProspect": {
+          "runAfter": {
+            "Apply_to_each": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "bbadd04e-0503-4fb8-af08-fc08110f8911"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sFileNameProspect",
+                "type": "string",
+                "value": "@{variables('sDatePrefix')}_DSR_ProspectOrganisations"
+              }
+            ]
+          }
+        },
+        "Create_CSV_table_-_ActiveOrganisations": {
+          "runAfter": {
+            "init_sFileNameActive": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "fb094443-ba8b-4eee-87eb-823d62e6d5b2"
+          },
+          "type": "Table",
+          "inputs": {
+            "from": "@variables('arDSR_ActiveOrganisations')",
+            "format": "CSV"
+          }
+        },
+        "Create_CSV_table_-_ProspectOrganisations": {
+          "runAfter": {
+            "init_sFileNameProspect": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "fb094443-ba8b-4eee-87eb-823d62e6d5b2"
+          },
+          "type": "Table",
+          "inputs": {
+            "from": "@variables('arDSR_ProspectOrganiations')",
+            "format": "CSV"
+          }
+        },
+        "Create_Active_File": {
+          "runAfter": {
+            "Create_CSV_table_-_ActiveOrganisations": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "848d4f2e-ec98-4ecc-bd9d-c5596c5d44ed"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "dataset": "https://disabilitysportrecreation.sharepoint.com/sites/DSRD365Assests",
+              "folderPath": "/Shared Documents/PCP Files",
+              "name": "@{variables('sFileNameActive')}.csv",
+              "body": "@body('Create_CSV_table_-_ActiveOrganisations')"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+              "operationId": "CreateFile",
+              "connectionName": "shared_sharepointonline"
+            }
+          },
+          "runtimeConfiguration": {
+            "contentTransfer": {
+              "transferMode": "Chunked"
+            }
+          }
+        },
+        "HTTP_-_call_logic_app_Active": {
+          "runAfter": {
+            "Create_Active_File": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "0658f753-441e-4c17-8044-c2194707cb30"
+          },
+          "type": "Http",
+          "inputs": {
+            "uri": "https://prod-11.australiaeast.logic.azure.com:443/workflows/0ad90e69d6fc4c5cb7dd9d3729d322f9/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=GulloHsW0dNCRfjMlyHFP6Mqm5QcBs4op7Gj6C_JmLM",
+            "method": "POST",
+            "body": {
+              "fileName": "@{outputs('Create_Active_File')?['body/Name']}",
+              "filePath": "@{outputs('Create_Active_File')?['body/Path']}"
+            }
+          },
+          "runtimeConfiguration": {
+            "contentTransfer": {
+              "transferMode": "Chunked"
+            }
+          }
+        },
+        "Create_Prospect_File": {
+          "runAfter": {
+            "Create_CSV_table_-_ProspectOrganisations": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "848d4f2e-ec98-4ecc-bd9d-c5596c5d44ed"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "dataset": "https://disabilitysportrecreation.sharepoint.com/sites/DSRD365Assests",
+              "folderPath": "/Shared Documents/PCP Files",
+              "name": "@{variables('sFileNameProspect')}.csv",
+              "body": "@body('Create_CSV_table_-_ProspectOrganisations')"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+              "operationId": "CreateFile",
+              "connectionName": "shared_sharepointonline"
+            }
+          },
+          "runtimeConfiguration": {
+            "contentTransfer": {
+              "transferMode": "Chunked"
+            }
+          }
+        },
+        "HTTP_-_call_logic_app_Prospect": {
+          "runAfter": {
+            "Create_Prospect_File": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "0658f753-441e-4c17-8044-c2194707cb30"
+          },
+          "type": "Http",
+          "inputs": {
+            "uri": "https://prod-11.australiaeast.logic.azure.com:443/workflows/0ad90e69d6fc4c5cb7dd9d3729d322f9/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=GulloHsW0dNCRfjMlyHFP6Mqm5QcBs4op7Gj6C_JmLM",
+            "method": "POST",
+            "body": {
+              "fileName": "@{outputs('Create_Prospect_File')?['body/Name']}",
+              "filePath": "@{outputs('Create_Prospect_File')?['body/Path']}"
+            }
+          },
+          "runtimeConfiguration": {
+            "contentTransfer": {
+              "transferMode": "Chunked"
+            }
+          }
+        },
+        "init_sContactName": {
+          "runAfter": {
+            "init_sDatePrefix": [
+              "Succeeded"
+            ]
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sContactName",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,13 @@
+<powerpagecomponent powerpagecomponentid="d5a43386-0579-f111-ab0e-6045bde72793">
+  <content>{
+  "source": "{% assign embedUrl = slot.hit_mediaurl %}\r\n{% assign embedHeight = slot.hit_contentheight | default: 600 %}\r\n\r\n{% if embedUrl contains 'youtu.be/' %}\r\n  {% assign youtubeId = embedUrl | split:'youtu.be/' | last | split:'?' | first %}\r\n  {% assign embedUrl = 'https://www.youtube.com/embed/' | append: youtubeId %}\r\n{% endif %}\r\n\r\n{% if embedUrl contains 'watch?v=' %}\r\n  {% assign youtubeId = embedUrl | split:'watch?v=' | last | split:'&amp;' | first %}\r\n  {% assign embedUrl = 'https://www.youtube.com/embed/' | append: youtubeId %}\r\n{% endif %}\r\n\r\n&lt;div class=\"hit-embed\"&gt;\r\n\r\n{% if embedUrl != blank %}\r\n\r\n&lt;iframe src=\"{{ embedUrl }}\" width=\"100%\" height=\"{{ embedHeight }}\" frameborder=\"0\" allowfullscreen&gt;&lt;/iframe&gt;\r\n\r\n{% else %}\r\n\r\n&lt;div class=\"hit-embed__empty\"&gt;No Media URL configured.&lt;/div&gt;\r\n\r\n{% endif %}\r\n\r\n&lt;/div&gt;\r\n"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>sections--embed</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

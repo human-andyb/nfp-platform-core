@@ -1,0 +1,171 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "da3fd9d2-b0eb-4468-b862-5ead5bac4ff2"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            }
+          }
+        }
+      },
+      "actions": {
+        "contacts": {
+          "runAfter": {
+            "filterDate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "01cd09df-3323-412a-a221-8dae7c814c30"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "entityName": "contacts",
+              "$filter": "hit_outboundactive eq true and hit_lastoutboundcontactdate le @{outputs('filterDate')}"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          }
+        },
+        "Compose": {
+          "runAfter": {
+            "contacts": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c5c3b4e6-e420-464f-84f3-cd5b5e5eac62"
+          },
+          "type": "Compose",
+          "inputs": "@length(outputs('contacts')?['body/value'])"
+        },
+        "For_each": {
+          "foreach": "@outputs('contacts')?['body/value']",
+          "actions": {
+            "update_contact_-_reset_outbound": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "entityName": "contacts",
+                  "recordId": "@items('For_each')?['contactid']",
+                  "item/hit_outboundactive": false
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "operationId": "UpdateOnlyRecord",
+                  "connectionName": "shared_commondataserviceforapps"
+                }
+              }
+            },
+            "remove_JRN__CONTACT_DUE": {
+              "runAfter": {
+                "run_-_Set_Next_Eligible_Contact_Date": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                },
+                "body": {
+                  "text": "@outputs('update_contact_-_reset_outbound')?['body/contactid']",
+                  "text_1": "JRN__CONTACT_DUE",
+                  "boolean_1": false,
+                  "text_2": "JRN",
+                  "text_3": "Remove"
+                }
+              }
+            },
+            "remove_ESC__PHONE_QUEUE": {
+              "runAfter": {
+                "remove_JRN__CONTACT_DUE": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                },
+                "body": {
+                  "text": "@outputs('update_contact_-_reset_outbound')?['body/contactid']",
+                  "text_1": "ESC__PHONE_QUEUE",
+                  "boolean_1": false,
+                  "text_2": "ESC",
+                  "text_3": "Remove"
+                }
+              }
+            },
+            "run_-_Set_Next_Eligible_Contact_Date": {
+              "runAfter": {
+                "update_contact_-_reset_outbound": [
+                  "Succeeded"
+                ]
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "97367a17-2395-f111-b8db-7ced8da2b423"
+                },
+                "body": {
+                  "text": "@items('For_each')?['contactid']"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "type": "Foreach"
+        },
+        "filterDate": {
+          "runAfter": {},
+          "type": "Compose",
+          "inputs": "@formatDateTime(addDays(utcNow(),1),'yyyy-MM-dd')"
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,261 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "98a0c164-80e4-4534-95c8-8f024ffebaf2"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "contactID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "contact": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "32714411-d8d7-4c6a-9a64-ee282b19874b"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "contacts",
+              "recordId": "@triggerBody()['text']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "is_DoNotCall": {
+          "actions": {
+            "run_-_add_DoNotCall_Tag": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "4215384c-7c18-4f88-be60-ba74007bec47"
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                },
+                "body": {
+                  "text": "@outputs('contact')?['body/contactid']",
+                  "text_1": "CON__DO_NOT_CALL",
+                  "boolean_1": false,
+                  "text_2": "CON",
+                  "text_3": "Add"
+                }
+              }
+            },
+            "is_DoNotEmail": {
+              "actions": {
+                "run_-_add_DoNotEmail_tag_2": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "4215384c-7c18-4f88-be60-ba74007bec47"
+                  },
+                  "type": "Workflow",
+                  "inputs": {
+                    "host": {
+                      "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                    },
+                    "body": {
+                      "text": "@outputs('contact')?['body/contactid']",
+                      "text_1": "CON__DO_NOT_EMAIL",
+                      "boolean_1": false,
+                      "text_2": "CON",
+                      "text_3": "Add"
+                    }
+                  }
+                },
+                "run_-_opt-out_email": {
+                  "runAfter": {
+                    "run_-_add_DoNotEmail_tag_2": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "da229995-3e0b-45da-8e3c-1132eee0eacb"
+                  },
+                  "type": "Workflow",
+                  "inputs": {
+                    "host": {
+                      "workflowReferenceName": "4764d24b-7289-f111-8076-6045bdc2338c"
+                    },
+                    "body": {
+                      "text": "@outputs('contact')?['body/contactid']",
+                      "text_1": "Email",
+                      "boolean": false
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "run_-_add_DoNotCall_Tag": [
+                  "Succeeded"
+                ]
+              },
+              "expression": {
+                "or": [
+                  {
+                    "equals": [
+                      "@outputs('contact')?['body/donotbulkemail']",
+                      "@true"
+                    ]
+                  },
+                  {
+                    "equals": [
+                      "@outputs('contact')?['body/donotemail']",
+                      "@true"
+                    ]
+                  }
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "bc23824a-976d-4865-8c47-48fe49f92c19"
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "contact": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "run_-_add_DoNotEmail_tag": {
+                "runAfter": {},
+                "metadata": {
+                  "operationMetadataId": "4215384c-7c18-4f88-be60-ba74007bec47"
+                },
+                "type": "Workflow",
+                "inputs": {
+                  "host": {
+                    "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                  },
+                  "body": {
+                    "text": "@outputs('contact')?['body/contactid']",
+                    "text_1": "CON__DO_NOT_EMAIL",
+                    "boolean_1": false,
+                    "text_2": "CON",
+                    "text_3": "Add"
+                  }
+                }
+              },
+              "run_-_opt-out_email_2": {
+                "runAfter": {
+                  "run_-_add_DoNotEmail_tag": [
+                    "Succeeded"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "234d07dd-fef2-409e-94ae-802e711bd55f"
+                },
+                "type": "Workflow",
+                "inputs": {
+                  "host": {
+                    "workflowReferenceName": "4764d24b-7289-f111-8076-6045bdc2338c"
+                  },
+                  "body": {
+                    "text": "@outputs('contact')?['body/contactid']",
+                    "text_1": "Email",
+                    "boolean": false
+                  }
+                }
+              }
+            }
+          },
+          "expression": {
+            "equals": [
+              "@outputs('contact')?['body/donotphone']",
+              "@true"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e4749407-727f-42e9-bc63-e3c62b148a8a"
+          },
+          "type": "If"
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "is_DoNotCall": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "03b907fc-1a08-4b0e-bd49-47082b86f6ce"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "response": "Success"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "response": {
+                  "title": "response",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

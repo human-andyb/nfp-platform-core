@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="e67c4447-7535-f111-88b4-000d3a7a0cab">
+  <content>{
+  "source": 0,
+  "value": "pk_live_ssS8vzJUg8I2jZW4C9Fp9t3x"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Stripe/PublishableKey</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

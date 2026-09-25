@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CanvasApp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>hit_processpaymentform_3a67f</Name>
+  <AppVersion>2026-09-21T01:12:22Z</AppVersion>
+  <Status>Ready</Status>
+  <CreatedByClientVersion>3.26092.6.0</CreatedByClientVersion>
+  <MinClientVersion>3.26092.6.0</MinClientVersion>
+  <Tags>{"primaryDeviceWidth":"1366","primaryDeviceHeight":"768","supportsPortrait":"true","supportsLandscape":"true","primaryFormFactor":"Tablet","showStatusBar":"false","publisherVersion":"3.26092.6","minimumRequiredApiVersion":"2.2.0","hasComponent":"false","hasUnlockedComponent":"false","isUnifiedRootApp":"false","m365CopilotSettingValue":"0","sienaVersion":"20260915T225036Z-3.26092.6.0"}</Tags>
+  <IsCdsUpgraded>0</IsCdsUpgraded>
+  <GalleryItemId xsi:nil="true"></GalleryItemId>
+  <BackgroundColor>RGBA(0,176,240,1)</BackgroundColor>
+  <DisplayName>Process Payment Form</DisplayName>
+  <Description xsi:nil="true"></Description>
+  <CommitMessage xsi:nil="true"></CommitMessage>
+  <Publisher></Publisher>
+  <AuthorizationReferences>[]</AuthorizationReferences>
+  <ConnectionReferences>{}</ConnectionReferences>
+  <DatabaseReferences>{"default.cds":{"databaseDetails":{"referenceType":"Environmental","environmentName":"default.cds","overrideValues":{"status":"NotSpecified","environmentVariableName":""}},"dataSources":{"Contacts":{"entitySetName":"contacts","logicalName":"contact"},"Offering Acceptances":{"entitySetName":"hit_offeringacceptances","logicalName":"hit_offeringacceptance"},"Offerings_1":{"entitySetName":"hit_offerings","logicalName":"hit_offering"},"Organisations":{"entitySetName":"accounts","logicalName":"account"},"Environment Variable Definitions":{"entitySetName":"environmentvariabledefinitions","logicalName":"environmentvariabledefinition"},"Environment Variable Values":{"entitySetName":"environmentvariablevalues","logicalName":"environmentvariablevalue"},"Communication Events":{"entitySetName":"hit_communicationevents","logicalName":"hit_communicationevent"}}}}</DatabaseReferences>
+  <AppComponents>[]</AppComponents>
+  <AppComponentDependencies>[]</AppComponentDependencies>
+  <CanConsumeAppPass>1</CanConsumeAppPass>
+  <CanvasAppType>2</CanvasAppType>
+  <BypassConsent>0</BypassConsent>
+  <AdminControlBypassConsent>0</AdminControlBypassConsent>
+  <EmbeddedApp xsi:nil="true"></EmbeddedApp>
+  <IntroducedVersion>1.0</IntroducedVersion>
+  <CdsDependencies>{"cdsdependencies":[{"logicalname":"contact","componenttype":1},{"logicalname":"hit_offeringacceptance","componenttype":1},{"logicalname":"hit_offering","componenttype":1},{"logicalname":"account","componenttype":1},{"logicalname":"environmentvariabledefinition","componenttype":1},{"logicalname":"environmentvariablevalue","componenttype":1},{"logicalname":"hit_communicationevent","componenttype":1}]}</CdsDependencies>
+  <IsCustomizable>1</IsCustomizable>
+  <BackgroundImageUri>/CanvasApps/hit_processpaymentform_3a67f_BackgroundImageUri</BackgroundImageUri>
+  <DocumentUri>/CanvasApps/hit_processpaymentform_3a67f_DocumentUri.msapp</DocumentUri>
+  <AdditionalUris>
+    <AdditionalUri>/CanvasApps/hit_processpaymentform_3a67f_AdditionalUris0_identity.json</AdditionalUri>
+  </AdditionalUris>
+</CanvasApp>

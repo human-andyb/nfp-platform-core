@@ -1,0 +1,1186 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_2d19c"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "baseWebUrl (new_baseWebUrl)": {
+          "defaultValue": "https://dsr-site.powerappsportals.com/",
+          "type": "String",
+          "metadata": {
+            "schemaName": "new_baseWebUrl"
+          }
+        }
+      },
+      "triggers": {
+        "When_a_row_is_added,_modified_or_deleted": {
+          "metadata": {
+            "operationMetadataId": "21092f7d-365e-4af1-84e6-352ff1f9506d"
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 4,
+              "subscriptionRequest/entityname": "hit_offeringacceptance",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filterexpression": "hit_acceptancestatus ne null"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Acceptance_Status_Changed": {
+          "actions": {
+            "offering": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "0e6354ec-25d1-4bdf-b84a-74f42399ed70"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "GetItem",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "hit_offerings",
+                  "recordId": "@triggerOutputs()?['body/_hit_offering_value']"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Switch_-_Acceptance_Status": {
+              "runAfter": {
+                "offering": [
+                  "Succeeded"
+                ]
+              },
+              "cases": {
+                "Draft_-_0": {
+                  "case": 0,
+                  "actions": {
+                    "update_Offering_Acceptance_-_Pricing": {
+                      "runAfter": {
+                        "Is_it_free": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "a0883f80-c7e1-4c78-973d-1bc40d85f4c1"
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "shared_commondataserviceforapps",
+                          "operationId": "UpdateOnlyRecord",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                        },
+                        "parameters": {
+                          "entityName": "hit_offeringacceptances",
+                          "recordId": "@triggerOutputs()?['body/hit_offeringacceptanceid']",
+                          "item/hit_acceptancestatus": 815390000,
+                          "item/hit_lastprocessedstatus": 0,
+                          "item/hit_offeringtype": "@outputs('offering')?['body/hit_offeringtype']",
+                          "item/hit_paymentrequired": "@variables('bPaymentRequired')",
+                          "item/hit_quantity": "@variables('iQuantity')",
+                          "item/hit_totalamountcommitted": "@variables('fPriceTotal')",
+                          "item/hit_totalamounteffective": "@variables('fPriceTotal')",
+                          "item/hit_unitprice": "@variables('fUnitPrice')"
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    },
+                    "Is_it_free": {
+                      "actions": {},
+                      "runAfter": {},
+                      "else": {
+                        "actions": {
+                          "set_fUnitPrice_-_base": {
+                            "runAfter": {},
+                            "metadata": {
+                              "operationMetadataId": "35b6fbae-0689-408f-b3a3-275e47a24929"
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                              "name": "fUnitPrice",
+                              "value": "@coalesce(outputs('OfferingAcceptance')?['body/hit_baseamount'],0)"
+                            }
+                          },
+                          "set_iQuantity_-_base": {
+                            "runAfter": {
+                              "set_fUnitPrice_-_base": [
+                                "Succeeded"
+                              ]
+                            },
+                            "metadata": {
+                              "operationMetadataId": "fd2d5c97-2939-4aa1-89aa-686ed53f1bcd"
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                              "name": "iQuantity",
+                              "value": 1
+                            }
+                          },
+                          "set_fPriceTotal_-_base": {
+                            "runAfter": {
+                              "set_iQuantity_-_base": [
+                                "Succeeded"
+                              ]
+                            },
+                            "metadata": {
+                              "operationMetadataId": "8119748d-9dd2-4704-9c4f-fa93a576873d"
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                              "name": "fPriceTotal",
+                              "value": "@mul(coalesce(variables('fUnitPrice'),0), coalesce(variables('iQuantity'),0))"
+                            }
+                          },
+                          "set_bPaymentRequired": {
+                            "runAfter": {
+                              "set_fPriceTotal_-_base": [
+                                "Succeeded"
+                              ]
+                            },
+                            "metadata": {
+                              "operationMetadataId": "77e242d5-67dc-4439-810b-9ccd6feab3b9"
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                              "name": "bPaymentRequired",
+                              "value": "@ greater(variables('fPriceTotal'), 0)"
+                            }
+                          },
+                          "Compose_3": {
+                            "runAfter": {
+                              "set_bPaymentRequired": [
+                                "Succeeded"
+                              ]
+                            },
+                            "metadata": {
+                              "operationMetadataId": "09b5c118-d7f2-4669-a4b1-612d56ed50f8"
+                            },
+                            "type": "Compose",
+                            "inputs": "PaymentRequired: @{triggerOutputs()?['body/hit_paymentrequired']}  bPaymentRequired: @{variables('bPaymentRequired')}"
+                          }
+                        }
+                      },
+                      "expression": {
+                        "and": [
+                          {
+                            "equals": [
+                              "@outputs('offering')?['body/hit_pricingmodel']",
+                              815390002
+                            ]
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "b020a255-508b-4678-8e61-670058e0c59d"
+                      },
+                      "type": "If"
+                    }
+                  }
+                },
+                "Pending_Information_-_815390000": {
+                  "case": 815390000,
+                  "actions": {
+                    "Compose_2": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "efc9fede-d60d-453a-934b-fc841de7d83d"
+                      },
+                      "type": "Compose",
+                      "inputs": "@{outputs('OfferingAcceptance')?['body/hit_firstname']} @{outputs('OfferingAcceptance')?['body/hit_lastname']} @{outputs('OfferingAcceptance')?['body/hit_email']}"
+                    },
+                    "Info_Exists": {
+                      "actions": {
+                        "Switch_-_Fulfillment_Mode": {
+                          "runAfter": {
+                            "Is_Organisation": [
+                              "Succeeded"
+                            ]
+                          },
+                          "cases": {
+                            "Instant_-_815390000": {
+                              "case": 815390000,
+                              "actions": {
+                                "Is_Payment_Required": {
+                                  "actions": {
+                                    "set_iNextStatusId_-_Pending_Payment": {
+                                      "runAfter": {},
+                                      "metadata": {
+                                        "operationMetadataId": "3aa4786c-5400-4150-b2a9-01b6d82f6935"
+                                      },
+                                      "type": "SetVariable",
+                                      "inputs": {
+                                        "name": "iNextStatusId",
+                                        "value": 815390001
+                                      }
+                                    },
+                                    "set_bPaymentRequired_-_true": {
+                                      "runAfter": {
+                                        "set_iNextStatusId_-_Pending_Payment": [
+                                          "Succeeded"
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "eb98e104-a707-4303-81de-ae01fd0fb636"
+                                      },
+                                      "type": "SetVariable",
+                                      "inputs": {
+                                        "name": "bPaymentRequired",
+                                        "value": true
+                                      }
+                                    }
+                                  },
+                                  "runAfter": {},
+                                  "else": {
+                                    "actions": {
+                                      "set_iNextStatusId_-_Completed": {
+                                        "runAfter": {},
+                                        "metadata": {
+                                          "operationMetadataId": "dc493ceb-69fd-4aff-aa85-b288c7af89bf"
+                                        },
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                          "name": "iNextStatusId",
+                                          "value": 815390003
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "expression": {
+                                    "or": [
+                                      {
+                                        "equals": [
+                                          "@outputs('OfferingAcceptance')?['body/hit_paymentrequired']",
+                                          "@true"
+                                        ]
+                                      },
+                                      {
+                                        "equals": [
+                                          "@greater(coalesce(outputs('OfferingAcceptance')?['body/hit_baseamount'], 0), 0)",
+                                          "@true"
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  "metadata": {
+                                    "operationMetadataId": "3076aed9-1fe5-4073-8c49-2bf581210300"
+                                  },
+                                  "type": "If"
+                                }
+                              }
+                            },
+                            "Approval_Required_-_815390001": {
+                              "case": 815390001,
+                              "actions": {
+                                "set_iNextStatusId_-_Pending_Approval": {
+                                  "runAfter": {},
+                                  "metadata": {
+                                    "operationMetadataId": "ca0710d8-6560-480e-89c8-e190d43ffc24"
+                                  },
+                                  "type": "SetVariable",
+                                  "inputs": {
+                                    "name": "iNextStatusId",
+                                    "value": 815390002
+                                  }
+                                }
+                              }
+                            },
+                            "External_Process_-_815390002": {
+                              "case": 815390002,
+                              "actions": {}
+                            }
+                          },
+                          "default": {
+                            "actions": {}
+                          },
+                          "expression": "@outputs('offering')?['body/hit_fulfillmentmode']",
+                          "metadata": {
+                            "operationMetadataId": "4e9db24a-b41c-4f79-869b-3256d532ac6b"
+                          },
+                          "type": "Switch"
+                        },
+                        "run_-_create_or_get_contact_ID": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "c5b4a03c-a683-4f9d-8de0-1d4487fb045a"
+                          },
+                          "type": "Workflow",
+                          "inputs": {
+                            "host": {
+                              "workflowReferenceName": "c5f58f39-b11d-f111-88b2-000d3a7a0323"
+                            },
+                            "body": {
+                              "text": "@outputs('OfferingAcceptance')?['body/hit_firstname']",
+                              "text_1": "@outputs('OfferingAcceptance')?['body/hit_lastname']",
+                              "text_2": "@outputs('OfferingAcceptance')?['body/hit_email']"
+                            }
+                          }
+                        },
+                        "set_sContactID": {
+                          "runAfter": {
+                            "run_-_create_or_get_contact_ID": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "c2ceb7ae-df46-45d3-b435-770f8430f21d"
+                          },
+                          "type": "SetVariable",
+                          "inputs": {
+                            "name": "sContactID",
+                            "value": "@body('run_-_create_or_get_contact_ID')?['contactguid']"
+                          }
+                        },
+                        "Is_Organisation": {
+                          "actions": {
+                            "run_getOrgID": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "8102190c-8f16-4054-8699-9f9d2ab6c2ae"
+                              },
+                              "type": "Workflow",
+                              "inputs": {
+                                "host": {
+                                  "workflowReferenceName": "3314f180-dd53-f111-a825-6045bd3e3adf"
+                                },
+                                "body": {
+                                  "text": "@outputs('OfferingAcceptance')?['body/hit_organisationinput']"
+                                }
+                              }
+                            },
+                            "set_sOrgID": {
+                              "runAfter": {
+                                "run_getOrgID": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "metadata": {
+                                "operationMetadataId": "c311c604-0797-417d-8393-861e6fb9d2ab"
+                              },
+                              "type": "SetVariable",
+                              "inputs": {
+                                "name": "sOrgID",
+                                "value": "@body('run_getOrgID')?['organisationid']"
+                              }
+                            },
+                            "run_getRelationshipID": {
+                              "runAfter": {
+                                "set_sOrgID": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "metadata": {
+                                "operationMetadataId": "608259e9-d3de-4e32-862d-6ff262c6478b"
+                              },
+                              "type": "Workflow",
+                              "inputs": {
+                                "host": {
+                                  "workflowReferenceName": "b2210b87-b254-f111-a825-6045bd3d0cb5"
+                                },
+                                "body": {
+                                  "text": "@variables('sOrgID')",
+                                  "text_1": "@variables('sContactID')",
+                                  "text_2": "Other"
+                                }
+                              }
+                            },
+                            "set_sRelationshipID": {
+                              "runAfter": {
+                                "run_getRelationshipID": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "metadata": {
+                                "operationMetadataId": "adaf68e0-a593-4ff3-9cff-a10bc796be6d"
+                              },
+                              "type": "SetVariable",
+                              "inputs": {
+                                "name": "sRelationshipID",
+                                "value": "@body('run_getRelationshipID')?['relationshipid']"
+                              }
+                            }
+                          },
+                          "runAfter": {
+                            "set_sContactID": [
+                              "Succeeded"
+                            ]
+                          },
+                          "expression": {
+                            "not": {
+                              "equals": [
+                                "@outputs('OfferingAcceptance')?['body/hit_organisationinput']",
+                                "@null"
+                              ]
+                            }
+                          },
+                          "metadata": {
+                            "operationMetadataId": "ea9103ac-56b2-4450-be91-81082be8ea03"
+                          },
+                          "type": "If"
+                        },
+                        "is_org_acceptance": {
+                          "actions": {
+                            "update_Offering_Acceptance_-_info_Org": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "9f8df099-ef27-4e5e-a4b7-b2e93237dc8d"
+                              },
+                              "type": "OpenApiConnection",
+                              "inputs": {
+                                "host": {
+                                  "connectionName": "shared_commondataserviceforapps",
+                                  "operationId": "UpdateOnlyRecord",
+                                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                },
+                                "parameters": {
+                                  "entityName": "hit_offeringacceptances",
+                                  "recordId": "@outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']",
+                                  "item/hit_acceptancestatus": "@variables('iNextStatusId')",
+                                  "item/hit_Contact@odata.bind": "/contacts(@{variables('sContactID')})",
+                                  "item/hit_ContactOrganisation@odata.bind": "/hit_contactorganisations(@{variables('sRelationshipID')})",
+                                  "item/hit_lastprocessedstatus": 815390000,
+                                  "item/hit_Organisation@odata.bind": "/accounts(@{variables('sOrgID')})",
+                                  "item/hit_paymentrequired": "@variables('bPaymentRequired')"
+                                },
+                                "authentication": "@parameters('$authentication')"
+                              }
+                            }
+                          },
+                          "runAfter": {
+                            "Switch_-_Fulfillment_Mode": [
+                              "Succeeded"
+                            ]
+                          },
+                          "else": {
+                            "actions": {
+                              "update_Offering_Acceptance_-_info_Contact": {
+                                "runAfter": {},
+                                "metadata": {
+                                  "operationMetadataId": "9f8df099-ef27-4e5e-a4b7-b2e93237dc8d"
+                                },
+                                "type": "OpenApiConnection",
+                                "inputs": {
+                                  "host": {
+                                    "connectionName": "shared_commondataserviceforapps",
+                                    "operationId": "UpdateOnlyRecord",
+                                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                  },
+                                  "parameters": {
+                                    "entityName": "hit_offeringacceptances",
+                                    "recordId": "@outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']",
+                                    "item/hit_acceptancestatus": "@variables('iNextStatusId')",
+                                    "item/hit_Contact@odata.bind": "/contacts(@{variables('sContactID')})",
+                                    "item/hit_lastprocessedstatus": 815390000,
+                                    "item/hit_paymentrequired": "@variables('bPaymentRequired')"
+                                  },
+                                  "authentication": "@parameters('$authentication')"
+                                }
+                              }
+                            }
+                          },
+                          "expression": {
+                            "greater": [
+                              "@length(variables('sOrgID'))",
+                              0
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "9428fed5-d6cb-46d8-a9b6-65b39b9ec686"
+                          },
+                          "type": "If"
+                        }
+                      },
+                      "runAfter": {
+                        "Compose_5": [
+                          "Succeeded"
+                        ]
+                      },
+                      "expression": {
+                        "and": [
+                          {
+                            "not": {
+                              "equals": [
+                                "@outputs('OfferingAcceptance')?['body/hit_firstname']",
+                                "@null"
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "e6a06d80-e60d-48ba-881d-908df4acabb7"
+                      },
+                      "type": "If"
+                    },
+                    "Compose_5": {
+                      "runAfter": {
+                        "Compose_2": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "2b0f1859-a810-4cdc-8b2e-bd170ca8d124"
+                      },
+                      "type": "Compose",
+                      "inputs": "and(\n  not(empty(trim(outputs('OfferingAcceptance')?['body/hit_firstname']))),\n  not(empty(trim(outputs('OfferingAcceptance')?['body/hit_lastname']))),\n  not(empty(trim(outputs('OfferingAcceptance')?['body/hit_email'])))\n)"
+                    }
+                  }
+                },
+                "Pending_Payment_-_815390001": {
+                  "case": 815390001,
+                  "actions": {
+                    "Check_Client_Secret_-_prevent_duplicates": {
+                      "actions": {},
+                      "runAfter": {},
+                      "else": {
+                        "actions": {
+                          "HTTP_Stripe_Create_Payment_Intent": {
+                            "runAfter": {},
+                            "metadata": {
+                              "operationMetadataId": "dac4c22d-fade-4820-b109-ee8517145101"
+                            },
+                            "type": "Http",
+                            "inputs": {
+                              "method": "POST",
+                              "uri": "https://c767551e0076ed96815606468fc034.c3.environment.api.powerplatform.com/powerautomate/automations/direct/cu/21/workflows/68e4f9a75755443292419f616571b395/triggers/manual/paths/invoke/stripe/createpaymentintent?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=s7L-WBUE1NKcffayq2KHD8qPS7kmy4yUnc1WdSkUdpA",
+                              "headers": {
+                                "Content-Type": "application/json"
+                              },
+                              "body": {
+                                "acceptanceId": "@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']}",
+                                "clientToken": "@{outputs('OfferingAcceptance')?['body/hit_clienttoken']}",
+                                "amount": "@mul(outputs('OfferingAcceptance')?['body/hit_totalamounteffective'], 100)",
+                                "currency": "aud",
+                                "email": "@{outputs('OfferingAcceptance')?['body/hit_email']}",
+                                "description": "@{outputs('offering')?['body/hit_offeringname']}"
+                              }
+                            },
+                            "runtimeConfiguration": {
+                              "contentTransfer": {
+                                "transferMode": "Chunked"
+                              }
+                            }
+                          },
+                          "Parse_JSON": {
+                            "runAfter": {
+                              "HTTP_Stripe_Create_Payment_Intent": [
+                                "Succeeded"
+                              ]
+                            },
+                            "metadata": {
+                              "operationMetadataId": "b940da83-29c7-41b0-9a03-8da11fedb42d"
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                              "content": "@body('HTTP_Stripe_Create_Payment_Intent')",
+                              "schema": {
+                                "type": "object",
+                                "properties": {
+                                  "paymentIntentId": {
+                                    "type": "string"
+                                  },
+                                  "clientSecret": {
+                                    "type": "string"
+                                  },
+                                  "paymentTransactionId": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "update_OfferingAcceptance_-_PaymentIntent": {
+                            "runAfter": {
+                              "Parse_JSON": [
+                                "Succeeded"
+                              ]
+                            },
+                            "metadata": {
+                              "operationMetadataId": "488387f3-db61-4ae2-b932-f24f9cb1af4e"
+                            },
+                            "type": "OpenApiConnection",
+                            "inputs": {
+                              "host": {
+                                "connectionName": "shared_commondataserviceforapps",
+                                "operationId": "UpdateOnlyRecord",
+                                "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                              },
+                              "parameters": {
+                                "entityName": "hit_offeringacceptances",
+                                "recordId": "@outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']",
+                                "item/hit_lastprocessedstatus": 815390001,
+                                "item/hit_paymentlink": "@{parameters('baseWebUrl (new_baseWebUrl)')}donate/?page=offering-acceptance&acceptanceId=@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']}",
+                                "item/hit_PaymentTransaction@odata.bind": "/hit_paymenttransactions(@{body('Parse_JSON')?['paymentTransactionId']})",
+                                "item/hit_stripeclientsecret": "@body('Parse_JSON')?['clientSecret']",
+                                "item/hit_stripepaymentintentid": "@body('Parse_JSON')?['paymentIntentId']"
+                              },
+                              "authentication": "@parameters('$authentication')"
+                            }
+                          }
+                        }
+                      },
+                      "expression": {
+                        "and": [
+                          {
+                            "equals": [
+                              "@and(\r\n  greater(length(coalesce(outputs('OfferingAcceptance')?['body/hit_stripeclientsecret'], '')), 0),\r\n  greater(length(coalesce(outputs('OfferingAcceptance')?['body/hit_stripepaymentintentid'], '')), 0)\r\n)",
+                              "@true"
+                            ]
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "a74c699b-37ea-462d-be61-6142078e6be6"
+                      },
+                      "type": "If"
+                    }
+                  }
+                },
+                "Completed_-_815390003": {
+                  "case": 815390003,
+                  "actions": {
+                    "OfferingFulfillments": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "967be686-92d1-4328-9e39-1552d7756b80"
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "shared_commondataserviceforapps",
+                          "operationId": "ListRecords",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                        },
+                        "parameters": {
+                          "entityName": "hit_offeringfulfillments",
+                          "$filter": "_hit_contact_value eq '@{outputs('OfferingAcceptance')?['body/_hit_contact_value']}' and _hit_offeringacceptance_value eq '@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']}'"
+                        },
+                        "authentication": "@parameters('$authentication')"
+                      }
+                    },
+                    "Fulfillment_Rec_Exists": {
+                      "actions": {
+                        "Apply_to_each": {
+                          "foreach": "@outputs('OfferingFulfillments')?['body/value']",
+                          "actions": {
+                            "set_sFulfillmentId_-_existing": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "3e19a161-2c04-4972-b09c-37b8a71c1ddb"
+                              },
+                              "type": "SetVariable",
+                              "inputs": {
+                                "name": "sFulfillmentId",
+                                "value": "@items('Apply_to_each')?['hit_offeringfulfillmentid']"
+                              }
+                            }
+                          },
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "1f2d1307-4e33-48a2-bb02-9a888395037c"
+                          },
+                          "type": "Foreach"
+                        }
+                      },
+                      "runAfter": {
+                        "OfferingFulfillments": [
+                          "Succeeded"
+                        ]
+                      },
+                      "else": {
+                        "actions": {
+                          "add_OfferingFulfillment_": {
+                            "runAfter": {},
+                            "metadata": {
+                              "operationMetadataId": "bed9dc8b-1c0c-4f41-88a1-7476a40f683e"
+                            },
+                            "type": "OpenApiConnection",
+                            "inputs": {
+                              "host": {
+                                "connectionName": "shared_commondataserviceforapps",
+                                "operationId": "CreateRecord",
+                                "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                              },
+                              "parameters": {
+                                "entityName": "hit_offeringfulfillments",
+                                "item/hit_Contact@odata.bind": "/contacts(@{outputs('OfferingAcceptance')?['body/_hit_contact_value']})",
+                                "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                                "item/hit_fulfilmentstage": 815390001,
+                                "item/hit_Offering@odata.bind": "/hit_offerings(@{outputs('OfferingAcceptance')?['body/_hit_offering_value']})"
+                              },
+                              "authentication": "@parameters('$authentication')"
+                            }
+                          },
+                          "set_sFulfillmentId_-_new": {
+                            "runAfter": {
+                              "add_OfferingFulfillment_": [
+                                "Succeeded"
+                              ]
+                            },
+                            "metadata": {
+                              "operationMetadataId": "27080a58-69d0-4e92-89ee-a7d2dcc139db"
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                              "name": "sFulfillmentId",
+                              "value": "@outputs('add_OfferingFulfillment_')?['body/hit_offeringfulfillmentid']"
+                            }
+                          }
+                        }
+                      },
+                      "expression": {
+                        "greater": [
+                          "@length(outputs('OfferingFulfillments')?['body/value'])",
+                          0
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "86a3dc82-ac70-48b6-99ce-04139cb8868f"
+                      },
+                      "type": "If"
+                    },
+                    "is_org": {
+                      "actions": {
+                        "update_OfferingAcceptance_-_Org": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "aebe2498-62f5-4f28-a671-1ff1557c0c8c"
+                          },
+                          "type": "OpenApiConnection",
+                          "inputs": {
+                            "host": {
+                              "connectionName": "shared_commondataserviceforapps",
+                              "operationId": "UpdateOnlyRecord",
+                              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                            },
+                            "parameters": {
+                              "entityName": "hit_offeringacceptances",
+                              "recordId": "@outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']",
+                              "item/hit_accepteddatetime": "@utcNow()",
+                              "item/hit_lastprocessedstatus": 815390003,
+                              "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{variables('sFulfillmentId')})",
+                              "item/hit_Organisation@odata.bind": "/accounts(@{variables('sOrgID')})"
+                            },
+                            "authentication": "@parameters('$authentication')"
+                          }
+                        },
+                        "run_-_recalc_org_tags": {
+                          "runAfter": {
+                            "update_OfferingAcceptance_-_Org": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "d606960d-1f03-4505-84a9-58680f20d0d8"
+                          },
+                          "type": "Workflow",
+                          "inputs": {
+                            "host": {
+                              "workflowReferenceName": "d8a549f1-9f66-f111-ab0d-6045bde72793"
+                            },
+                            "body": {
+                              "text": "@variables('sOrgID')",
+                              "text_1": "Offering Acceptance - Completed"
+                            }
+                          }
+                        }
+                      },
+                      "runAfter": {
+                        "Fulfillment_Rec_Exists": [
+                          "Succeeded"
+                        ]
+                      },
+                      "else": {
+                        "actions": {
+                          "update_OfferingAcceptance_-_Contact": {
+                            "runAfter": {},
+                            "metadata": {
+                              "operationMetadataId": "230d2a8c-b13e-4281-86b0-7dc8f7aa568a"
+                            },
+                            "type": "OpenApiConnection",
+                            "inputs": {
+                              "host": {
+                                "connectionName": "shared_commondataserviceforapps",
+                                "operationId": "UpdateOnlyRecord",
+                                "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                              },
+                              "parameters": {
+                                "entityName": "hit_offeringacceptances",
+                                "recordId": "@outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']",
+                                "item/hit_accepteddatetime": "@utcNow()",
+                                "item/hit_lastprocessedstatus": 815390003,
+                                "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{variables('sFulfillmentId')})"
+                              },
+                              "authentication": "@parameters('$authentication')"
+                            }
+                          },
+                          "run_-_recalc_contact_tags": {
+                            "runAfter": {
+                              "update_OfferingAcceptance_-_Contact": [
+                                "Succeeded"
+                              ]
+                            },
+                            "metadata": {
+                              "operationMetadataId": "6d67fb02-4994-43a4-a237-f0fe2af77a00"
+                            },
+                            "type": "Workflow",
+                            "inputs": {
+                              "host": {
+                                "workflowReferenceName": "68f69a3d-515e-f111-a826-000d3a7a0cab"
+                              },
+                              "body": {
+                                "text": "@variables('sContactID')",
+                                "text_1": "Offering Acceptance - Completed"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "expression": {
+                        "not": {
+                          "equals": [
+                            "@empty(variables('sOrgID'))",
+                            "@true"
+                          ]
+                        }
+                      },
+                      "metadata": {
+                        "operationMetadataId": "9d189ffc-b848-433f-86f3-1057184a8c9a"
+                      },
+                      "type": "If"
+                    }
+                  }
+                },
+                "Cancelled_-_815390005": {
+                  "case": 815390005,
+                  "actions": {}
+                },
+                "Failed_-_815390004": {
+                  "case": 815390004,
+                  "actions": {}
+                },
+                "Pending_Approval_-_815390002": {
+                  "case": 815390002,
+                  "actions": {
+                    "Switch_-_Offering_Type_-_Approval": {
+                      "runAfter": {},
+                      "cases": {
+                        "Venue_Booking_-_815390008": {
+                          "case": 815390008,
+                          "actions": {}
+                        }
+                      },
+                      "default": {
+                        "actions": {}
+                      },
+                      "expression": "@outputs('offering')?['body/hit_offeringtype']",
+                      "metadata": {
+                        "operationMetadataId": "37e76ead-1850-4d13-990f-4b898e325b3d"
+                      },
+                      "type": "Switch"
+                    }
+                  }
+                }
+              },
+              "default": {
+                "actions": {}
+              },
+              "expression": "@triggerOutputs()?['body/hit_acceptancestatus']",
+              "metadata": {
+                "operationMetadataId": "7f15a7ee-7b9f-4ca2-942c-e161d753f81e"
+              },
+              "type": "Switch"
+            }
+          },
+          "runAfter": {
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "Terminate": {
+                "runAfter": {},
+                "metadata": {
+                  "operationMetadataId": "277f2ad5-9d2d-4a38-80f3-3fb98e95845d"
+                },
+                "type": "Terminate",
+                "inputs": {
+                  "runStatus": "Succeeded"
+                }
+              }
+            }
+          },
+          "expression": {
+            "greater": [
+              "@coalesce(outputs('OfferingAcceptance')?['body/hit_acceptancestatus'],-1)",
+              "@variables('iLastStatusId')"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a2e618c9-fa76-4b51-90cc-d9a9f57d9fec"
+          },
+          "type": "If"
+        },
+        "init_sContactID": {
+          "runAfter": {
+            "OfferingAcceptance": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "34d9c53b-ba86-4ec8-9ba6-d5ca0ddf4cf7"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sContactID",
+                "type": "string",
+                "value": "@outputs('OfferingAcceptance')?['body/_hit_contact_value']"
+              }
+            ]
+          }
+        },
+        "Compose": {
+          "runAfter": {
+            "init_bPaymentRequired": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "ea31401c-cd4f-40c2-aec6-eca5c327305a"
+          },
+          "type": "Compose",
+          "inputs": "@triggerOutputs()?['body/hit_acceptancestatus']"
+        },
+        "init_fUnitPrice": {
+          "runAfter": {
+            "init_iLastStatusId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "10d662b4-7c8d-4611-b4ef-841a4707f89f"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "fUnitPrice",
+                "type": "float"
+              }
+            ]
+          }
+        },
+        "init_iQuantity": {
+          "runAfter": {
+            "init_fUnitPrice": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "8b3f327d-f95d-4ab4-a8f1-6b0694dee5f6"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "iQuantity",
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "init_fPriceTotal": {
+          "runAfter": {
+            "init_iQuantity": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "6ba075bd-b1ad-43c4-9dac-7ed0677ad8b2"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "fPriceTotal",
+                "type": "float"
+              }
+            ]
+          }
+        },
+        "init_bPaymentRequired": {
+          "runAfter": {
+            "init_fPriceTotal": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "51a5b516-09c7-42b6-9450-91c19cbcdd2f"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "bPaymentRequired",
+                "type": "boolean",
+                "value": false
+              }
+            ]
+          }
+        },
+        "init_iNextStatusId": {
+          "runAfter": {
+            "init_sRelationshipID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3affa6a2-ca59-45ef-af4e-5a98bd438c00"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "iNextStatusId",
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "init_iLastStatusId": {
+          "runAfter": {
+            "init_iNextStatusId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "d5dcb168-e858-4a2d-8610-1b97ce36de91"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "iLastStatusId",
+                "type": "integer",
+                "value": "@coalesce(outputs('OfferingAcceptance')?['body/hit_lastprocessedstatus'],-1)"
+              }
+            ]
+          }
+        },
+        "OfferingAcceptance": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "50f85d00-57d9-4058-95a8-bd75f1bf75bb"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "recordId": "@triggerOutputs()?['body/hit_offeringacceptanceid']"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "init_sOrgID": {
+          "runAfter": {
+            "init_sContactID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "572b8cdf-2fc8-4aea-930d-695ad8b74bcd"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sOrgID",
+                "type": "string",
+                "value": "@outputs('OfferingAcceptance')?['body/_hit_organisation_value']"
+              }
+            ]
+          }
+        },
+        "init_sRelationshipID": {
+          "runAfter": {
+            "init_sFulfillmentId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "236b0271-8b24-48e9-adda-9e328ce861fb"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sRelationshipID",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_sFulfillmentId": {
+          "runAfter": {
+            "init_sOrgID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "6c02ec91-0b57-401b-b480-0bff35d1fa69"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sFulfillmentId",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

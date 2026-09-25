@@ -1,0 +1,26 @@
+<powerpagecomponent powerpagecomponentid="86d73023-8199-84ef-6217-5a8807ff161c">
+  <content>{
+  "displayorder": 32,
+  "enablerating": false,
+  "enabletracking": false,
+  "excludefromsearch": false,
+  "hiddenfromsitemap": true,
+  "isroot": true,
+  "pagetemplateid": "665a986d-1a3a-f111-bec6-000d3a7a0cab",
+  "parentpageid": "cf511b88-4b23-4858-b49e-9bb013db9e1a",
+  "partialurl": "Get-involved",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "sharedpageconfiguration": false,
+  "summary": "&lt;p&gt;This is a sample landing page designed to be a starting point for your website&lt;/p&gt;",
+  "title": "Get involved"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Get involved</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <searchcontent>Get involvedGet involved</searchcontent>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

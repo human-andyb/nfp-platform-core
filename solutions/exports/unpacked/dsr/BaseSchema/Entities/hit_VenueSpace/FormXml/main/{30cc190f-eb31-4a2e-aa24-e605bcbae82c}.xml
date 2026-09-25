@@ -1,0 +1,350 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{30cc190f-eb31-4a2e-aa24-e605bcbae82c}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls">
+      <tabs>
+        <tab verticallayout="true" id="{a3484f8c-a980-4a0d-a03c-64cffa50965e}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="50%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{6db9bf7a-b281-414a-9a36-103a3a676fbb}" celllabelposition="Top" columns="11">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{b915afcb-ac6c-456a-92f4-36b1fadba82f}">
+                        <labels>
+                          <label description="Name" languagecode="1033" />
+                        </labels>
+                        <control id="hit_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="hit_name" />
+                      </cell>
+                      <cell id="{6d25a4f4-e589-47f6-9467-ac26efaad523}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Venue" languagecode="1033" />
+                        </labels>
+                        <control id="hit_venue" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="hit_venue" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{2541790f-1d63-4e88-833b-6181a68b7093}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Display Title" languagecode="1033" />
+                        </labels>
+                        <control id="hit_displaytitle" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_displaytitle" disabled="false" />
+                      </cell>
+                      <cell id="{75eaab75-34cc-4210-83fa-35564ba35edf}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Slug" languagecode="1033" />
+                        </labels>
+                        <control id="hit_slug" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_slug" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ba6ff6d3-902c-488a-9b79-307a700aace6}" locklevel="0" colspan="2" rowspan="6">
+                        <labels>
+                          <label description="Description" languagecode="1033" />
+                        </labels>
+                        <control id="hit_description" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="hit_description" disabled="false" />
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row />
+                    <row>
+                      <cell id="{838e5a98-49ae-4f07-892e-caa9236b3984}" visible="false">
+                        <labels>
+                          <label description="Owner" languagecode="1033" />
+                        </labels>
+                        <control id="ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+                      </cell>
+                      <cell locklevel="0" id="{fc0d23a4-6e1a-41bf-861b-7e0f38b00f96}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="_section_134" id="30d73226-73f4-400b-b06f-99ba05e3a627" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Top" columns="11" labelwidth="115">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell locklevel="0" id="{0242550f-0d57-4830-9e60-f8ecd269f4b4}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                      <cell id="{8785e14e-607c-4392-9c7c-33ae07278d6a}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Requires Payment" languagecode="1033" />
+                        </labels>
+                        <control id="hit_requirespayment" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="hit_requirespayment" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{81c95be6-1671-41ce-93ea-f9dc1ff10082}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Booking Mode" languagecode="1033" />
+                        </labels>
+                        <control id="hit_bookingmode" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_bookingmode" disabled="false" />
+                      </cell>
+                      <cell id="{a0d51f4f-fd63-48cb-99e4-0b820cb31800}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Default Price" languagecode="1033" />
+                        </labels>
+                        <control id="hit_defaultprice" classid="{533B9E00-756B-4312-95A0-DC888637AC78}" datafieldname="hit_defaultprice" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{7e87fdc4-bf08-4cb9-aa62-5140edf90ce5}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Capacity Seated" languagecode="1033" />
+                        </labels>
+                        <control id="hit_capacityseated" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="hit_capacityseated" disabled="false" />
+                      </cell>
+                      <cell id="{4c7b76b9-091c-4f62-9dbc-455057cbc7e5}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Area" languagecode="1033" />
+                        </labels>
+                        <control id="hit_area" classid="{C3EFE0C3-0EC6-42BE-8349-CBD9079DFD8E}" datafieldname="hit_area" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{86e24b6f-a3a6-4768-8a9a-0a5cd9a48c70}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Capacity Standing" languagecode="1033" />
+                        </labels>
+                        <control id="hit_capacitystanding" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="hit_capacitystanding" disabled="false" />
+                      </cell>
+                      <cell locklevel="0" id="{ba5d6cae-0a3b-476c-83e1-8d15c5bc064e}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+            <column width="50%">
+              <sections>
+                <section name="null_section_4" id="1d68bc07-4047-482d-b617-10ffe098b00a" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{6c50441d-d42b-4448-b821-8c2ab457e419}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="New SG control 1778889339909" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_1" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_venuespacetradinghours_VenueSpace_hit_venuespace</RelationshipName>
+                            <TargetEntityType>hit_venuespacetradinghours</TargetEntityType>
+                            <ViewId>{AA29356E-AB35-4B1D-94DF-F97B1C0D48F3}</ViewId>
+                            <ViewIds>{AA29356E-AB35-4B1D-94DF-F97B1C0D48F3}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_2" id="5880c783-f085-4e39-80ee-1e19baba8672" IsUserDefined="0" locklevel="0" showlabel="true">
+          <labels>
+            <label description="Availability" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="50%">
+              <sections>
+                <section name="tab_2_section_1" id="71cd4e38-5ecc-4365-a1bf-3479b1df1ede" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{53621aed-7c54-4a25-95b6-3af8affad75c}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Active Bookings" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_2" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_venuespacebooking_VenueSpace_hit_venuespace</RelationshipName>
+                            <TargetEntityType>hit_venuespacebooking</TargetEntityType>
+                            <ViewId>{5D90A34C-12AE-48A0-9F78-370D3A27B31E}</ViewId>
+                            <ViewIds>{5D90A34C-12AE-48A0-9F78-370D3A27B31E}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{0492d6c7-70ff-4d7c-9c21-64cae45efdca}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Blackout Dates" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_4" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_venuespaceblackout_VenueSpace_hit_venuespace</RelationshipName>
+                            <TargetEntityType>hit_venuespaceblackout</TargetEntityType>
+                            <ViewId>{F977D559-FFA3-43D2-ADE1-BE8F6D7519E7}</ViewId>
+                            <ViewIds>{F977D559-FFA3-43D2-ADE1-BE8F6D7519E7}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+            <column width="50%">
+              <sections>
+                <section name="tab_2_section_2" id="28e95ac6-b636-468d-999c-747f67a02a6b" IsUserDefined="0" locklevel="0" showlabel="true" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{64dc527e-c2a2-41a4-afc6-830288ed1a23}" rowspan="4" colspan="1" auto="false">
+                        <labels>
+                          <label description="Active Holds" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_3" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>4</RecordsPerPage>
+                            <AutoExpand>Fixed</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_venuespacehold_VenueSpace_hit_venuespace</RelationshipName>
+                            <TargetEntityType>hit_venuespacehold</TargetEntityType>
+                            <ViewId>{94B64C9F-8BE4-4FBC-9E65-83123F445A23}</ViewId>
+                            <ViewIds>{94B64C9F-8BE4-4FBC-9E65-83123F445A23}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{79bb40a4-7707-42c1-8fd8-a19775a662c2}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{fcb590e0-8602-47d6-ad0e-18c1208d635b}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{620c392d-b17d-48d0-9433-76abd375b9ba}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{d5b6cf85-5af2-49cb-8f24-fb64cd2f7c24}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{be7dd0f9-453f-44d2-a40c-6fc9453aa1a9}" locklevel="0" colspan="1" rowspan="1">
+              <labels>
+                <label description="Is Active" languagecode="1033" />
+              </labels>
+              <control id="header_hit_isactive" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="hit_isactive" disabled="false" />
+            </cell>
+            <cell id="{f1405ae2-9fc6-47f4-bf1e-3359c7be39ca}" locklevel="0" colspan="1" rowspan="1">
+              <labels>
+                <label description="Web Visible" languagecode="1033" />
+              </labels>
+              <control id="header_hit_webvisible" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="hit_webvisible" disabled="false" />
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{570a4d41-229a-497b-a6ed-0e6fe2ebc87c}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{a4907695-972e-4708-9710-aa83700139de}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{87e117ef-c90e-41e9-b076-833453935aa0}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{4ed7f311-fcfd-4911-a894-1d3db0b40009}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <DisplayConditions Order="0" FallbackForm="true">
+        <Everyone />
+      </DisplayConditions>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

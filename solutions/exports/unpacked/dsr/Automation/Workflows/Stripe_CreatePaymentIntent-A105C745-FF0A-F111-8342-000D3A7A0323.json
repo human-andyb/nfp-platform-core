@@ -1,0 +1,486 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "Stripe Secret Key (hit_StripeSecretKey)": {
+          "defaultValue": "sk_test_51TgIZSATsrPcl80UVmub04uN92y8YM5325PByb91KNEYNwjU9kwZR9N2v4Fr1B5tDQ8qUsED02qFywVH9GxbbjjN00FaLALaP9",
+          "type": "String",
+          "metadata": {
+            "schemaName": "hit_StripeSecretKey"
+          }
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "fdcb21c0-ad5b-4992-afee-ee796672621c"
+          },
+          "type": "Request",
+          "kind": "Http",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "acceptanceId": {
+                  "type": "string"
+                },
+                "clientToken": {
+                  "type": "string"
+                },
+                "amount": {
+                  "type": "number"
+                },
+                "currency": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "acceptanceId",
+                "clientToken",
+                "amount",
+                "currency"
+              ]
+            },
+            "method": "POST",
+            "relativePath": "stripe/createpaymentintent",
+            "triggerAuthenticationType": "All"
+          }
+        }
+      },
+      "actions": {
+        "init_varAcceptanceId": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "c0dbf8de-9d3c-4667-830a-74d4876c6a65"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varAcceptanceId",
+                "type": "string",
+                "value": "@triggerBody()?['acceptanceId']"
+              }
+            ]
+          }
+        },
+        "init_varClientToken": {
+          "runAfter": {
+            "init_varAcceptanceId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c086a890-a8ee-487b-9efc-97c730ef03cf"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varClientToken",
+                "type": "string",
+                "value": "@triggerBody()?['clientToken']"
+              }
+            ]
+          }
+        },
+        "init_varAmountCents": {
+          "runAfter": {
+            "init_varClientSecret": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f54f4ff9-0d7e-404c-9ebe-25b16082cddc"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varAmountCents",
+                "type": "integer",
+                "value": "@int(mul(coalesce(triggerBody()?['amount'], 0), 100))\r\n"
+              }
+            ]
+          }
+        },
+        "init_varAttemptNumber": {
+          "runAfter": {
+            "init_varAmountCents": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "da48444b-8ec2-42f4-b492-ba14a549ba6d"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varAttemptNumber",
+                "type": "integer",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "init_varPaymentTransactionId": {
+          "runAfter": {
+            "init_varAttemptNumber": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c04da4e6-10b0-4c6a-854a-3382bc05c68e"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varPaymentTransactionId",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "OfferingAcceptance": {
+          "runAfter": {
+            "init_varStripePaymentIntentId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3618a7c4-da7a-41b5-b1bd-e4368ce769f1"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "recordId": "@variables('varAcceptanceId')"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "init_varStripePaymentIntentId": {
+          "runAfter": {
+            "init_varPaymentTransactionId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "41676fd0-dcd6-47fb-adb1-5a0a18d152ce"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varStripePaymentIntentId",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_varClientSecret": {
+          "runAfter": {
+            "init_varClientToken": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "38c1913e-a8be-4921-9b72-3626f290dd88"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varClientSecret",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Is_Stripe": {
+          "actions": {
+            "set_varAmountCents": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "b2d0a208-eed3-4f7d-a068-b9e096631003"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "varAmountCents",
+                "value": "@int(\r\n  mul(\r\n    float(\r\n      coalesce(\r\n        body('OfferingAcceptance')?['hit_totalamountcommitted'],\r\n        body('OfferingAcceptance')?['hit_baseamount'],\r\n        0\r\n      )\r\n    ),\r\n    100\r\n  )\r\n)"
+              }
+            },
+            "List_rows": {
+              "runAfter": {
+                "set_varAmountCents": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "fe934460-66b4-43df-8437-d9e371e635ae"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "hit_paymenttransactions",
+                  "$filter": "_hit_offeringacceptance_value eq @{variables('varAcceptanceId')}"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "set_varAttemptNumber": {
+              "runAfter": {
+                "List_rows": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "d96d33a7-3b3c-45e6-9366-b29306d73279"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "varAttemptNumber",
+                "value": "@add(length(outputs('List_rows')?['body/value']), 1)"
+              }
+            },
+            "add_Payment_Transaction": {
+              "runAfter": {
+                "set_varAttemptNumber": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "5ccef06c-90e8-48c5-8d22-ecf2dbaa94f5"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "CreateRecord",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "hit_paymenttransactions",
+                  "item/hit_amount": "@outputs('OfferingAcceptance')?['body/hit_totalamount']",
+                  "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{variables('varAcceptanceId')})",
+                  "item/hit_attemptnumber": "@variables('varAttemptNumber')",
+                  "item/hit_attemptstatus": 815390000
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "set_varPaymentTransactionId": {
+              "runAfter": {
+                "add_Payment_Transaction": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "2a9c1a92-cb58-4763-988b-07428abfcb6b"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "varPaymentTransactionId",
+                "value": "@outputs('add_Payment_Transaction')?['body/hit_paymenttransactionid']"
+              }
+            },
+            "HTTP": {
+              "runAfter": {
+                "Compose_-_HTTP_Body": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "1e429cd2-c12f-4ff4-b0da-24133304e006"
+              },
+              "type": "Http",
+              "inputs": {
+                "method": "POST",
+                "uri": "https://api.stripe.com/v1/payment_intents",
+                "headers": {
+                  "Authorization": "Bearer @{parameters('Stripe Secret Key (hit_StripeSecretKey)')}",
+                  "Content-Type": "application/x-www-form-urlencoded"
+                },
+                "body": "@outputs('Compose_-_HTTP_Body')"
+              }
+            },
+            "set_varStripePaymentIntentId": {
+              "runAfter": {
+                "HTTP": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "4f24cc2f-da2f-47b9-8c31-d0e7be7a698d"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "varStripePaymentIntentId",
+                "value": "@{body('HTTP')?['id']}"
+              }
+            },
+            "Update_a_row": {
+              "runAfter": {
+                "set_varClientSecret": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "aa51a7ac-baa0-4248-a905-98420cb14249"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "UpdateOnlyRecord",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "hit_paymenttransactions",
+                  "recordId": "@variables('varPaymentTransactionId')",
+                  "item/hit_attemptstatus": 815390001,
+                  "item/hit_stripepaymentintentid": "@variables('varStripePaymentIntentId')"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Response_3": {
+              "runAfter": {
+                "Update_a_row": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "7862b774-17df-4ecb-8943-638944b88831"
+              },
+              "type": "Response",
+              "kind": "Http",
+              "inputs": {
+                "statusCode": 200,
+                "body": {
+                  "clientSecret": "@{body('HTTP')?['client_secret']}",
+                  "paymentIntentId": "@{body('HTTP')?['id']}",
+                  "paymentTransactionId": "@{outputs('Update_a_row')?['body/hit_paymenttransactionid']}"
+                }
+              }
+            },
+            "Compose_amountInCents": {
+              "runAfter": {
+                "set_varPaymentTransactionId": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "3547c1de-09e9-4811-a4f2-78bff02e3756"
+              },
+              "type": "Compose",
+              "inputs": "@int(mul(float(coalesce(body('OfferingAcceptance')?['hit_totalamount'], 0)), 100))"
+            },
+            "Compose_-_HTTP_Body": {
+              "runAfter": {
+                "Compose_amountInCents": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "bbb2c89d-5fe5-420b-a575-96556407f293"
+              },
+              "type": "Compose",
+              "inputs": "@{concat(\r\n  'amount=', variables('varAmountCents'),\r\n  '&currency=', 'aud',\r\n  '&automatic_payment_methods[enabled]=true',\r\n  '&metadata[acceptanceId]=', variables('varAcceptanceId'),\r\n  '&metadata[clientToken]=', triggerBody()?['clientToken'],\r\n  '&metadata[attemptNumber]=', variables('varAttemptNumber'),\r\n  '&description=', triggerBody()?['description']\r\n)}\n"
+            },
+            "set_varClientSecret": {
+              "runAfter": {
+                "set_varStripePaymentIntentId": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "3e6bfc0e-5fc9-49a7-ab31-05142f38a9a2"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "varClientSecret",
+                "value": "@body('HTTP')?['client_secret']"
+              }
+            }
+          },
+          "runAfter": {
+            "OfferingAcceptance": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "Response_2": {
+                "runAfter": {},
+                "metadata": {
+                  "operationMetadataId": "26d051ce-ebea-4fab-a2f3-c210ce09089e"
+                },
+                "type": "Response",
+                "kind": "Http",
+                "inputs": {
+                  "statusCode": 400,
+                  "body": {
+                    "error": "Invalid payment provider"
+                  }
+                }
+              }
+            }
+          },
+          "expression": {
+            "equals": [
+              "@outputs('OfferingAcceptance')?['body/hit_paymentprovider']",
+              815390000
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "cc69fa64-79a2-4885-b0ce-70750aa5ed57"
+          },
+          "type": "If"
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

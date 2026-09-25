@@ -1,0 +1,411 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      },
+      "shared_sharepointonline": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedsharepointonline_5658b"
+        },
+        "api": {
+          "name": "shared_sharepointonline"
+        }
+      },
+      "shared_wordonlinebusiness": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedwordonlinebusiness_110ba"
+        },
+        "api": {
+          "name": "shared_wordonlinebusiness"
+        }
+      },
+      "shared_wordonlinebusiness-1": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedwordonlinebusiness_a073f"
+        },
+        "api": {
+          "name": "shared_wordonlinebusiness"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "dad74b5b-9f3b-40b6-ae27-5388c484ee6a"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "acceptanceID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Offering_Acceptance": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "5b2f3644-87bb-4d83-a235-a8f6ab0cf929"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "recordId": "@triggerBody()?['text']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Create_file_-_Donation_Invoice_-_Word": {
+          "runAfter": {
+            "Populate_a_Microsoft_Word_-_Invoice": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "9480c1c4-0d11-409f-aa90-dcd85837e361"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_sharepointonline",
+              "operationId": "CreateFile",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+            },
+            "parameters": {
+              "dataset": "https://disabilitysportrecreation.sharepoint.com/sites/DSRD365Assests",
+              "folderPath": "/Shared Documents/DSR Donation Documents",
+              "name": "@{outputs('FileName_-_Donation_Receipt')}.docx",
+              "body": "@body('Populate_a_Microsoft_Word_-_Invoice')"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          },
+          "runtimeConfiguration": {
+            "contentTransfer": {
+              "transferMode": "Chunked"
+            }
+          }
+        },
+        "FileName_-_Donation_Receipt": {
+          "runAfter": {
+            "init_sConstituentID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "98ccb207-822a-42db-801c-bed244ed934c"
+          },
+          "type": "Compose",
+          "inputs": "@{variables('sConstituentID')} - DSR Donation Invoice - @{outputs('Offering_Acceptance')?['body/hit_name']}"
+        },
+        "Populate_a_Microsoft_Word_-_Invoice": {
+          "runAfter": {
+            "FileName_-_Donation_Receipt": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "01KM4WPWYJE5IBKR7XHFFYQUFLWYMBCUWY": "/D365 Templates/Donation Invoice.docx",
+            "operationMetadataId": "a063b329-a056-4c61-99c4-ffd55693db4b"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_wordonlinebusiness",
+              "operationId": "CreateFileItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_wordonlinebusiness"
+            },
+            "parameters": {
+              "source": "me",
+              "drive": "b!j74_SAJsSkyY8maCG7ACN2h4Z0JilBNKgxXiU1tKi83qV0YHNctGTaz3gQa8r1IS",
+              "file": "01KM4WPWYJE5IBKR7XHFFYQUFLWYMBCUWY",
+              "dynamicFileSchema/4567350": "@outputs('contact')?['body/fullname']",
+              "dynamicFileSchema/880278097": "@outputs('contact')?['body/address1_composite']",
+              "dynamicFileSchema/1262567264": "@outputs('Offering_Acceptance')?['body/hit_baseamount_base']",
+              "dynamicFileSchema/1609932285": "@outputs('Offering_Acceptance')?['body/hit_name']",
+              "dynamicFileSchema/1701974275": "@outputs('contact')?['body/address1_city']",
+              "dynamicFileSchema/2013638525": "@outputs('contact')?['body/fullname']",
+              "dynamicFileSchema/2091200352": "@outputs('Offering_Acceptance')?['body/hit_name']",
+              "dynamicFileSchema/-774012862": "@outputs('Offering_Acceptance')?['body/hit_accepteddatetime']",
+              "dynamicFileSchema/-134724799": "@outputs('contact')?['body/address1_stateorprovince']",
+              "dynamicFileSchema/-543670928": "@outputs('contact')?['body/address1_postalcode']",
+              "dynamicFileSchema/-421638516": "@outputs('contact')?['body/address1_country']",
+              "dynamicFileSchema/-12847464": "@outputs('Offering_Acceptance')?['body/hit_name']",
+              "dynamicFileSchema/-1170784530": "@outputs('Offering_Acceptance')?['body/hit_baseamount_base']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Convert_Word_Document_to_PDF": {
+          "runAfter": {
+            "Create_file_-_Donation_Invoice_-_Word": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "49f62078-e70d-4648-9844-e2d552086dde"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_wordonlinebusiness-1",
+              "operationId": "GetFilePDF",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_wordonlinebusiness"
+            },
+            "parameters": {
+              "source": "groups/126c08ae-5666-4c7d-b619-cb7b540213a9",
+              "drive": "b!mZeGPZXYikKk1WwtEN8sKAanAto9dI1FvCi4JAzyhj_zqZlQZGZgS4cfLqwQTlyT",
+              "file": "/DSR Donation Documents/@{outputs('Create_file_-_Donation_Invoice_-_Word')?['body/Name']}"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Create_file_-_Donation_Invoice_PDF": {
+          "runAfter": {
+            "Convert_Word_Document_to_PDF": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e4ef2eb1-0855-422f-8168-ebf33c072151"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_sharepointonline",
+              "operationId": "CreateFile",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+            },
+            "parameters": {
+              "dataset": "https://disabilitysportrecreation.sharepoint.com/sites/DSRD365Assests",
+              "folderPath": "/Shared Documents/DSR Donation Documents",
+              "name": "@{outputs('FileName_-_Donation_Receipt')}.pdf",
+              "body": "@body('Convert_Word_Document_to_PDF')"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          },
+          "runtimeConfiguration": {
+            "contentTransfer": {
+              "transferMode": "Chunked"
+            }
+          }
+        },
+        "Delete_file_-_Word": {
+          "runAfter": {
+            "Create_file_-_Donation_Invoice_PDF": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "7ac83a88-82e7-48c0-8136-5c7fab802df5"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_sharepointonline",
+              "operationId": "DeleteFile",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+            },
+            "parameters": {
+              "dataset": "https://disabilitysportrecreation.sharepoint.com/sites/DSRD365Assests",
+              "id": "@outputs('Create_file_-_Donation_Invoice_-_Word')?['body/Id']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Create_sharing_link_-External": {
+          "runAfter": {
+            "Delete_file_-_Word": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e4ccd23b-1e8b-4dcd-9652-3b84763ce699"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_sharepointonline",
+              "operationId": "CreateSharingLink",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline"
+            },
+            "parameters": {
+              "dataset": "https://disabilitysportrecreation.sharepoint.com/sites/DSRD365Assests",
+              "table": "5099a9f3-6664-4b60-871f-2eac104e5c93",
+              "id": "@outputs('Create_file_-_Donation_Invoice_PDF')?['body/ItemId']",
+              "permission/type": "view",
+              "permission/scope": "organization"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Update_-_OfferingAcceptance_-_Invoice_Link": {
+          "runAfter": {
+            "Create_sharing_link_-External": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "15fd0e45-29b2-44a3-a416-f817e4c7e6ee"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "UpdateOnlyRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "recordId": "@outputs('Offering_Acceptance')?['body/hit_offeringacceptanceid']",
+              "item/hit_invoicelink": "@outputs('Create_sharing_link_-External')?['body/link/webUrl']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "Update_-_OfferingAcceptance_-_Invoice_Link": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1dc754c4-cc1d-4e2c-b083-ae8ad2394431"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "response": "Success"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "response": {
+                  "title": "response",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "contact": {
+          "runAfter": {
+            "Offering_Acceptance": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "b0c2f0e3-ddcb-49db-88ed-80b6c6206d84"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "contacts",
+              "recordId": "@outputs('Offering_Acceptance')?['body/_hit_contact_value']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "init_sConstituentID": {
+          "runAfter": {
+            "contact": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "024041a9-0ef9-476f-8aa1-b333998815db"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sConstituentID",
+                "type": "string",
+                "value": "@outputs('contact')?['body/hit_constituentid']"
+              }
+            ]
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,13 @@
+<powerpagecomponent powerpagecomponentid="a922b5f1-2e87-f111-8076-6045bde72793">
+  <content>{
+  "source": "{%- assign ctaText = ctaLabel | default: 'View Program' -%}\r\n{%- assign targetAttributes = targetAttrs | default: targetAttr | default: '' -%}\r\n\r\n{%- comment -%}\r\nFeatured card that matches existing CSS selectors:\r\n- .hit-card__inner--featured (aspect ratio + background image)\r\n- .hit-card__overlay\r\n- .hit-card__body--featured\r\n- .hit-card__title--featured\r\n- .hit-card__summary--featured\r\n- .hit-card__stretchedLink (z-index safety rules)\r\n{%- endcomment -%}\r\n\r\n{%- assign bgStyle = '' -%}\r\n{%- if imageUrl and imageUrl != '' -%}\r\n  {%- assign bgStyle = 'background-image:url(' | append: imageUrl | append: ');' -%}\r\n{%- endif -%}\r\n\r\n&lt;article class=\"hit-card hit-card--minimal\"&gt;\r\n  &lt;div class=\"hit-card__inner hit-card__inner--minimal\"&gt;\r\n\r\n    {%- if href and href != '' -%}\r\n      &lt;a class=\"hit-card__stretchedLink\"\r\n         href=\"{{ href | escape_once }}\"{{ targetAttributes }}\r\n         aria-label=\"{{ title | escape }}\"&gt;\r\n      &lt;/a&gt;\r\n    {%- endif -%}\r\n\r\n    {%- if imageUrl and imageUrl != '' -%}\r\n      &lt;div class=\"hit-card__media hit-card__media--minimal\"&gt;\r\n        &lt;img class=\"hit-card__image hit-card__image--minimal\"\r\n             src=\"{{ imageUrl | escape }}\"\r\n             alt=\"{{ title | escape }}\"&gt;\r\n      &lt;/div&gt;\r\n    {%- endif -%}\r\n\r\n    &lt;div class=\"hit-card__body hit-card__body--minimal\"&gt;\r\n      {%- if href and href != '' -%}\r\n        &lt;h3 class=\"hit-card__title hit-card__title--minimal\"&gt;\r\n          &lt;a class=\"hit-card__titleLink\"\r\n             href=\"{{ href | escape_once }}\"{{ targetAttributes }}&gt;\r\n            {{ title | escape }}\r\n          &lt;/a&gt;\r\n        &lt;/h3&gt;\r\n      {%- else -%}\r\n        &lt;h3 class=\"hit-card__title hit-card__title--minimal\"&gt;\r\n          {{ title | escape }}\r\n        &lt;/h3&gt;\r\n      {%- endif -%}\r\n    &lt;/div&gt;\r\n  &lt;/div&gt;\r\n&lt;/article&gt;"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>components--web-gallery-card-minimal</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

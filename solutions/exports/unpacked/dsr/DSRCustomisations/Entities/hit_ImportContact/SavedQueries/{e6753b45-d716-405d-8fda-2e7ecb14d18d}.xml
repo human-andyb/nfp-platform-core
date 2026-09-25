@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{e6753b45-d716-405d-8fda-2e7ecb14d18d}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_importcontactid">
+          <cell name="hit_firstname" width="103" />
+          <cell name="hit_lastname" width="102" />
+          <cell name="hit_email" width="100" />
+          <cell name="hit_mobile" width="100" />
+          <cell name="hit_homephone" width="113" />
+          <cell name="hit_workphone" width="110" />
+          <cell name="hit_organisationname" width="149" />
+          <cell name="hit_jobtitle" width="100" />
+          <cell name="hit_address1" width="100" />
+          <cell name="hit_address2" width="100" />
+          <cell name="hit_suburb" width="100" />
+          <cell name="hit_state" width="100" />
+          <cell name="hit_postcode" width="100" />
+          <cell name="hit_applyimporttags" width="147" />
+          <cell name="hit_importstatus" width="116" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="hit_importcontact">
+          <attribute name="hit_importcontactid" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+            <condition attribute="hit_importstatus" operator="eq" value="815390000" />
+          </filter>
+          <attribute name="hit_firstname" />
+          <attribute name="hit_lastname" />
+          <attribute name="hit_mobile" />
+          <attribute name="hit_homephone" />
+          <attribute name="hit_workphone" />
+          <attribute name="hit_email" />
+          <attribute name="hit_organisationname" />
+          <attribute name="hit_jobtitle" />
+          <attribute name="hit_address1" />
+          <attribute name="hit_address2" />
+          <attribute name="hit_suburb" />
+          <attribute name="hit_state" />
+          <attribute name="hit_postcode" />
+          <attribute name="hit_importstatus" />
+          <attribute name="hit_applyimporttags" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Import Contacts" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

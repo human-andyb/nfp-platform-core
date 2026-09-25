@@ -1,0 +1,104 @@
+<powerpagecomponent powerpagecomponentid="649ab892-26d8-0afb-452f-fd27be8fc2d7">
+  <content>{
+  "copy": "&lt;div class=\"row sectionBlockLayout text-start\" style=\"display: flex; flex-wrap: wrap; margin: 0px; min-height: auto; padding: 8px;\"&gt;\n  &lt;div class=\"container\" style=\"display: flex; flex-wrap: wrap;\"&gt;\n    &lt;div class=\"col-lg-12 columnBlockLayout\" style=\"flex-grow: 1; display: flex; flex-direction: column; min-width: 250px; padding: 16px; margin: 60px 0px;\"&gt;\n      &lt;h2&gt;Test: Create Offering Acceptance&lt;/h2&gt;\n      &lt;p&gt;This page attempts to create a single Offering Acceptance record with hard‑coded values.&lt;/p&gt;\n      &lt;button id=\"testCreateBtn\" style=\"padding: 10px 16px; font-size: 16px;\"&gt;Create Offering Acceptance&lt;/button&gt;\n      &lt;pre id=\"output\" style=\"margin-top: 16px; padding: 12px; background: #f6f8fa; border: 1px solid #ddd; white-space: pre-wrap;\"&gt;&lt;/pre&gt;\n      &lt;script&gt;\n        (async function(){\n\n          const output = document.getElementById(\"output\");\n          const btn = document.getElementById(\"testCreateBtn\");\n\n          function log(msg){\n            output.textContent += msg + \"\\n\";\n          }\n\n          async function getCsrfToken(){\n            const res = await fetch(\"/_layout/tokenhtml\", { credentials: \"same-origin\" });\n            const text = await res.text();\n            const doc = new DOMParser().parseFromString(text, \"text/html\");\n            const input = doc.querySelector(\"input[name='__RequestVerificationToken']\");\n            if (!input) throw new Error(\"CSRF token not found\");\n            return input.value;\n          }\n\n          btn.addEventListener(\"click\", async function(){\n\n            output.textContent = \"\";\n            log(\"Starting create test...\");\n\n            const payload = {\n              \"hit_baseamount\": 123,\n              \"hit_Offering@odata.bind\": \"/hit_offerings(ed2ec11a-5b09-f111-8407-000d3a7a0035)\"\n            };\n\n            log(\"Payload:\");\n            log(JSON.stringify(payload, null, 2));\n\n            try {\n              const token = await getCsrfToken();\n              log(\"CSRF token acquired\");\n\n              const res = await fetch(\"/_api/hit_offeringacceptances\", {\n                method: \"POST\",\n                headers: {\n                  \"Content-Type\": \"application/json\",\n                  \"Accept\": \"application/json\",\n                  \"__RequestVerificationToken\": token,\n                  \"OData-Version\": \"4.0\",\n                  \"OData-MaxVersion\": \"4.0\"\n                },\n                body: JSON.stringify(payload)\n              });\n\n              log(\"HTTP status: \" + res.status);\n\n              const body = await res.text();\n              log(\"Raw response:\");\n              log(body || \"(empty)\");\n\n            } catch (err){\n              log(\"Error:\");\n              log(err.message || String(err));\n            }\n\n          });\n\n        })();\n      &lt;/script&gt;\n    &lt;/div&gt;\n  &lt;/div&gt;\n&lt;/div&gt;\n",
+  "displayorder": 11,
+  "enablerating": false,
+  "enabletracking": false,
+  "excludefromsearch": false,
+  "hiddenfromsitemap": true,
+  "isroot": false,
+  "pagetemplateid": "003b57a0-2c6d-4486-92a1-a17dfda5ecce",
+  "parentpageid": "cf511b88-4b23-4858-b49e-9bb013db9e1a",
+  "partialurl": "Test---Create-Record-deleted",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "rootwebpageid": "9dab3ed4-9aff-561d-9d6b-9c315615037d",
+  "sharedpageconfiguration": false,
+  "summary": "&lt;p&gt;This is a sample landing page designed to be a starting point for your website&lt;/p&gt;",
+  "title": "Test - Create Record"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Test - Create Record-deleted</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>65f59487-4eee-417b-bf5e-782336e9abfd</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <searchcontent>Test - Create Record&lt;div class="row sectionBlockLayout text-start" style="display: flex; flex-wrap: wrap; margin: 0px; min-height: auto; padding: 8px;"&gt;
+  &lt;div class="container" style="display: flex; flex-wrap: wrap;"&gt;
+    &lt;div class="col-lg-12 columnBlockLayout" style="flex-grow: 1; display: flex; flex-direction: column; min-width: 250px; padding: 16px; margin: 60px 0px;"&gt;
+      &lt;h2&gt;Test: Create Offering Acceptance&lt;/h2&gt;
+      &lt;p&gt;This page attempts to create a single Offering Acceptance record with hard‑coded values.&lt;/p&gt;
+      &lt;button id="testCreateBtn" style="padding: 10px 16px; font-size: 16px;"&gt;Create Offering Acceptance&lt;/button&gt;
+      &lt;pre id="output" style="margin-top: 16px; padding: 12px; background: #f6f8fa; border: 1px solid #ddd; white-space: pre-wrap;"&gt;&lt;/pre&gt;
+      &lt;script&gt;
+        (async function(){
+
+          const output = document.getElementById("output");
+          const btn = document.getElementById("testCreateBtn");
+
+          function log(msg){
+            output.textContent += msg + "\n";
+          }
+
+          async function getCsrfToken(){
+            const res = await fetch("/_layout/tokenhtml", { credentials: "same-origin" });
+            const text = await res.text();
+            const doc = new DOMParser().parseFromString(text, "text/html");
+            const input = doc.querySelector("input[name='__RequestVerificationToken']");
+            if (!input) throw new Error("CSRF token not found");
+            return input.value;
+          }
+
+          btn.addEventListener("click", async function(){
+
+            output.textContent = "";
+            log("Starting create test...");
+
+            const payload = {
+              "hit_baseamount": 123,
+              "hit_Offering@odata.bind": "/hit_offerings(ed2ec11a-5b09-f111-8407-000d3a7a0035)"
+            };
+
+            log("Payload:");
+            log(JSON.stringify(payload, null, 2));
+
+            try {
+              const token = await getCsrfToken();
+              log("CSRF token acquired");
+
+              const res = await fetch("/_api/hit_offeringacceptances", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Accept": "application/json",
+                  "__RequestVerificationToken": token,
+                  "OData-Version": "4.0",
+                  "OData-MaxVersion": "4.0"
+                },
+                body: JSON.stringify(payload)
+              });
+
+              log("HTTP status: " + res.status);
+
+              const body = await res.text();
+              log("Raw response:");
+              log(body || "(empty)");
+
+            } catch (err){
+              log("Error:");
+              log(err.message || String(err));
+            }
+
+          });
+
+        })();
+      &lt;/script&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+Test - Create Record-deleted</searchcontent>
+  <statecode>1</statecode>
+  <statuscode>2</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,359 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "d8782d7a-88ee-4873-b11a-3e2f2efdcf6d"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            }
+          }
+        }
+      },
+      "actions": {
+        "Contacts_Batch": {
+          "runAfter": {
+            "todayDate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "462a2645-1c4d-40f2-bc0c-d2e4ee575620"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "entityName": "contacts",
+              "$filter": "(hit_nexteligiblecontactdate le '@{outputs('todayDate')}')   and (hit_allowoutbound eq true)",
+              "$orderby": "hit_nexteligiblecontactdate desc"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          }
+        },
+        "todayDate": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "cf942d62-7278-45ee-a536-ea87bc2efb1e"
+          },
+          "type": "Compose",
+          "inputs": "@formatDateTime(utcNow(),'yyyy-MM-dd')"
+        },
+        "Apply_to_each": {
+          "foreach": "@outputs('Contacts_Batch')?['body/value']",
+          "actions": {
+            "Compose": {
+              "metadata": {
+                "operationMetadataId": "cf47901c-8415-46b9-b1f9-45500a372c9f"
+              },
+              "type": "Compose",
+              "inputs": "@item()?['contactid']"
+            },
+            "has_email_address": {
+              "actions": {
+                "allow_email": {
+                  "actions": {
+                    "update_contact_-_outbound_active": {
+                      "metadata": {
+                        "operationMetadataId": "fac0975f-86e4-472e-9509-e07135288edf"
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "parameters": {
+                          "entityName": "contacts",
+                          "recordId": "@items('Apply_to_each')?['contactid']",
+                          "item/hit_lastoutboundcontactdate": "@outputs('todayDate')",
+                          "item/hit_outboundactive": true
+                        },
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                          "operationId": "UpdateOnlyRecord",
+                          "connectionName": "shared_commondataserviceforapps"
+                        }
+                      }
+                    },
+                    "run_-_add_JRN__CONTACT_DUE": {
+                      "runAfter": {
+                        "update_contact_-_outbound_active": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "e5eb5eda-bd1a-4518-8e35-5e2cf24abbdd"
+                      },
+                      "type": "Workflow",
+                      "inputs": {
+                        "host": {
+                          "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                        },
+                        "body": {
+                          "text": "@items('Apply_to_each')?['contactid']",
+                          "text_1": "JRN__CONTACT_DUE",
+                          "boolean_1": false,
+                          "text_2": "JRN",
+                          "text_3": "Add"
+                        }
+                      }
+                    }
+                  },
+                  "else": {
+                    "actions": {
+                      "has_mobile": {
+                        "actions": {
+                          "update_contact_-_outbound_active_-_Phone": {
+                            "metadata": {
+                              "operationMetadataId": "fac0975f-86e4-472e-9509-e07135288edf"
+                            },
+                            "type": "OpenApiConnection",
+                            "inputs": {
+                              "parameters": {
+                                "entityName": "contacts",
+                                "recordId": "@items('Apply_to_each')?['contactid']",
+                                "item/hit_lastoutboundcontactdate": "@outputs('todayDate')",
+                                "item/hit_outboundactive": true
+                              },
+                              "host": {
+                                "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                "operationId": "UpdateOnlyRecord",
+                                "connectionName": "shared_commondataserviceforapps"
+                              }
+                            }
+                          },
+                          "run_-_add_ESC__PHONE_QUEUE": {
+                            "runAfter": {
+                              "update_contact_-_outbound_active_-_Phone": [
+                                "Succeeded"
+                              ]
+                            },
+                            "metadata": {
+                              "operationMetadataId": "e5eb5eda-bd1a-4518-8e35-5e2cf24abbdd"
+                            },
+                            "type": "Workflow",
+                            "inputs": {
+                              "host": {
+                                "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                              },
+                              "body": {
+                                "text": "@items('Apply_to_each')?['contactid']",
+                                "text_1": "ESC__PHONE_QUEUE",
+                                "boolean_1": false,
+                                "text_2": "ESC",
+                                "text_3": "Add"
+                              }
+                            }
+                          }
+                        },
+                        "else": {
+                          "actions": {}
+                        },
+                        "expression": {
+                          "and": [
+                            {
+                              "not": {
+                                "equals": [
+                                  "@items('Apply_to_each')?['mobilephone']",
+                                  "@null"
+                                ]
+                              }
+                            },
+                            {
+                              "equals": [
+                                "@items('Apply_to_each')?['donotphone']",
+                                "@false"
+                              ]
+                            }
+                          ]
+                        },
+                        "metadata": {
+                          "operationMetadataId": "160a3447-39c0-41ea-adad-36ca4d8d31d4"
+                        },
+                        "type": "If"
+                      }
+                    }
+                  },
+                  "expression": {
+                    "and": [
+                      {
+                        "equals": [
+                          "@items('Apply_to_each')?['donotemail']",
+                          "@false"
+                        ]
+                      },
+                      {
+                        "equals": [
+                          "@items('Apply_to_each')?['donotbulkemail']",
+                          "@false"
+                        ]
+                      }
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "54e60376-90d7-4a57-8cfc-07e39b470d94"
+                  },
+                  "type": "If"
+                }
+              },
+              "runAfter": {
+                "Compose": [
+                  "Succeeded"
+                ]
+              },
+              "else": {
+                "actions": {
+                  "has_mobile_allow_call": {
+                    "actions": {
+                      "update_contact_-_outbound_active_-_Phone_2": {
+                        "metadata": {
+                          "operationMetadataId": "fac0975f-86e4-472e-9509-e07135288edf"
+                        },
+                        "type": "OpenApiConnection",
+                        "inputs": {
+                          "parameters": {
+                            "entityName": "contacts",
+                            "recordId": "@items('Apply_to_each')?['contactid']",
+                            "item/hit_lastoutboundcontactdate": "@outputs('todayDate')",
+                            "item/hit_outboundactive": true
+                          },
+                          "host": {
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                            "operationId": "UpdateOnlyRecord",
+                            "connectionName": "shared_commondataserviceforapps"
+                          }
+                        }
+                      },
+                      "run_-_add_ESC__PHONE_QUEUE_2": {
+                        "runAfter": {
+                          "update_contact_-_outbound_active_-_Phone_2": [
+                            "Succeeded"
+                          ]
+                        },
+                        "metadata": {
+                          "operationMetadataId": "e5eb5eda-bd1a-4518-8e35-5e2cf24abbdd"
+                        },
+                        "type": "Workflow",
+                        "inputs": {
+                          "host": {
+                            "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                          },
+                          "body": {
+                            "text": "@items('Apply_to_each')?['contactid']",
+                            "text_1": "ESC__PHONE_QUEUE",
+                            "boolean_1": false,
+                            "text_2": "ESC",
+                            "text_3": "Add"
+                          }
+                        }
+                      }
+                    },
+                    "else": {
+                      "actions": {}
+                    },
+                    "expression": {
+                      "and": [
+                        {
+                          "not": {
+                            "equals": [
+                              "@items('Apply_to_each')?['mobilephone']",
+                              "@null"
+                            ]
+                          }
+                        },
+                        {
+                          "equals": [
+                            "@items('Apply_to_each')?['donotphone']",
+                            "@false"
+                          ]
+                        }
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "160a3447-39c0-41ea-adad-36ca4d8d31d4"
+                    },
+                    "type": "If"
+                  }
+                }
+              },
+              "expression": {
+                "not": {
+                  "equals": [
+                    "@items('Apply_to_each')?['emailaddress1']",
+                    "@null"
+                  ]
+                }
+              },
+              "metadata": {
+                "operationMetadataId": "02fdb14a-fe32-4472-97e2-15a91ee4b4a7"
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "Terminate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "b4b8d57f-302b-4180-8967-1e398227b7d9"
+          },
+          "type": "Foreach"
+        },
+        "Terminate": {
+          "runAfter": {
+            "Compose_1": [
+              "Succeeded"
+            ]
+          },
+          "type": "Terminate",
+          "inputs": {
+            "runStatus": "Cancelled"
+          }
+        },
+        "Compose_1": {
+          "runAfter": {
+            "Contacts_Batch": [
+              "Succeeded"
+            ]
+          },
+          "type": "Compose",
+          "inputs": "@length(outputs('Contacts_Batch')?['body/value'])"
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}

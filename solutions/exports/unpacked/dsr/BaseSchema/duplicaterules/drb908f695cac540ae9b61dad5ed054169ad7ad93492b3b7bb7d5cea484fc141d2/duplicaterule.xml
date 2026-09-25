@@ -1,0 +1,15 @@
+<duplicaterule uniquename="drb908f695cac540ae9b61dad5ed054169ad7ad93492b3b7bb7d5cea484fc141d2">
+  <baseentityname>msdyncrm_marketingformfield</baseentityname>
+  <description>Detects field records that have the same value in the Contact Mapping attribute.</description>
+  <excludeinactiverecords>1</excludeinactiverecords>
+  <iscasesensitive>0</iscasesensitive>
+  <iscustomizable>1</iscustomizable>
+  <matchingentityname>msdyncrm_marketingformfield</matchingentityname>
+  <name>Fields with same contact attribute mapping</name>
+  <duplicateruleconditions>
+    <duplicaterulecondition baseattributename="msdyncrm_contactmapping" matchingattributename="msdyncrm_contactmapping" operatorcode="0" uniquerulename="drb908f695cac540ae9b61dad5ed054169ad7ad93492b3b7bb7d5cea484fc141d2">
+      <ignoreblankvalues>1</ignoreblankvalues>
+      <iscustomizable>1</iscustomizable>
+    </duplicaterulecondition>
+  </duplicateruleconditions>
+</duplicaterule>

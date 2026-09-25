@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{6b08679b-b2d3-48b1-a2ed-2d673de8a0b4}</savedqueryid>
+    <layoutxml>
+      <grid name="hit_venuespacebookings" jump="hit_venuebookingid" select="1" icon="1" preview="1">
+        <row name="hit_venuespacebooking" id="hit_venuespacebookingid">
+          <cell name="hit_venuebookingid" width="300" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>2</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="hit_venuespacebooking">
+          <attribute name="hit_venuespacebookingid" />
+          <attribute name="hit_venuebookingid" />
+          <attribute name="createdon" />
+          <order attribute="hit_venuebookingid" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Venue Space Booking Associated View" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

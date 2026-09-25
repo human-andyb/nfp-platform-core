@@ -1,0 +1,365 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "27350a39-d578-42ea-9bb9-1242f6b18673"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "fulfillmentId",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "OfferingFulfillment": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "0ee88eec-9644-4187-b495-da5b415efef2"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringfulfillments",
+              "recordId": "@triggerBody()['text']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Compose": {
+          "runAfter": {
+            "OfferingFulfillment": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "29567cc4-071b-4d18-a649-85d4e06973a4"
+          },
+          "type": "Compose",
+          "inputs": "@outputs('OfferingFulfillment')?['body/_hit_offeringacceptance_value']"
+        },
+        "Offering": {
+          "runAfter": {
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a3c5799f-2efb-4aa3-81f6-27e8c2122f7f"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offerings",
+              "recordId": "@outputs('OfferingFulfillment')?['body/_hit_offering_value']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "OfferingAcceptance": {
+          "runAfter": {
+            "Offering": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "dd8ae2a3-2143-4670-be4f-030e441c0908"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "recordId": "@outputs('OfferingFulfillment')?['body/_hit_offeringacceptance_value']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Switch_-_Offering_Type": {
+          "runAfter": {
+            "contact": [
+              "Succeeded"
+            ]
+          },
+          "cases": {
+            "Donation_-_815390000": {
+              "case": 815390000,
+              "actions": {
+                "add_Communication_Event_-_Donation_Receipt": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "976aa766-1d4b-4ae3-b4bc-70e4a6b2c7d3"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "CreateRecord",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "hit_communicationevents",
+                      "item/hit_name": "Donation Receipt",
+                      "item/hit_channel": 815390001,
+                      "item/hit_communicationtype": 815390000,
+                      "item/hit_Contact@odata.bind": "/contacts(@{outputs('contact')?['body/contactid']})",
+                      "item/hit_eventstatus": 815390000,
+                      "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                      "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingFulfillment')?['body/hit_offeringfulfillmentid']})",
+                      "item/hit_offeringtype": 815390000,
+                      "item/hit_receiptnumber": "@outputs('OfferingFulfillment')?['body/hit_receiptnumber']"
+                    },
+                    "authentication": {
+                      "type": "Raw",
+                      "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                    }
+                  }
+                }
+              }
+            },
+            "Event_-_815390001": {
+              "case": 815390001,
+              "actions": {
+                "Event": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "22ea1e53-c427-4837-ba14-a5d397be93eb"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "GetItem",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "msevtmgt_events",
+                      "recordId": "@outputs('Offering')?['body/_hit_cievent_value']"
+                    },
+                    "authentication": {
+                      "type": "Raw",
+                      "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                    }
+                  }
+                },
+                "add_Event_Registration": {
+                  "runAfter": {
+                    "Event": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "ebbb2b88-e1d0-4fd7-892b-867c00ad94b3"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "CreateRecord",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "msevtmgt_eventregistrations",
+                      "item/msevtmgt_ContactId@odata.bind": "/contacts(@{outputs('OfferingAcceptance')?['body/_hit_contact_value']})",
+                      "item/msevtmgt_EventId@odata.bind": "/msevtmgt_events(@{outputs('Event')?['body/msevtmgt_eventid']})",
+                      "item/msevtmgt_name": "123"
+                    },
+                    "authentication": {
+                      "type": "Raw",
+                      "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                    }
+                  }
+                }
+              }
+            },
+            "Course_Access_=_815390002": {
+              "case": 815390002,
+              "actions": {}
+            },
+            "Membership_-_815390003": {
+              "case": 815390003,
+              "actions": {}
+            },
+            "Volunteer_Engagement_-_815390004": {
+              "case": 815390004,
+              "actions": {}
+            },
+            "Resource_Download_-_815390005": {
+              "case": 815390005,
+              "actions": {}
+            },
+            "Sponsorship_-_815390006": {
+              "case": 815390006,
+              "actions": {}
+            },
+            "EOI_-_815390007": {
+              "case": 815390007,
+              "actions": {
+                "add_Communication_Event_-_EOI_Confirmation": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "520aa1aa-e8a1-4341-b538-9016715307d8"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "CreateRecord",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "hit_communicationevents",
+                      "item/hit_name": "EOI Confirmation",
+                      "item/hit_channel": 815390001,
+                      "item/hit_communicationtype": 815390001,
+                      "item/hit_Contact@odata.bind": "/contacts(@{outputs('contact')?['body/contactid']})",
+                      "item/hit_eventstatus": 815390000,
+                      "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                      "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingAcceptance')?['body/_hit_offeringfulfillment_value']})",
+                      "item/hit_offeringtype": 815390007
+                    },
+                    "authentication": {
+                      "type": "Raw",
+                      "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                    }
+                  }
+                }
+              }
+            },
+            "Venue_Booking_-_815390008": {
+              "case": 815390008,
+              "actions": {}
+            }
+          },
+          "default": {
+            "actions": {}
+          },
+          "expression": "@outputs('Offering')?['body/hit_offeringtype']",
+          "metadata": {
+            "operationMetadataId": "0af510b6-2939-47c4-ac9c-16a82b7513e5"
+          },
+          "type": "Switch"
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "Switch_-_Offering_Type": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "95a6e8c8-9dc2-4fbc-9efc-371bec1cf962"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "response": "Success"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "response": {
+                  "title": "response",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "contact": {
+          "runAfter": {
+            "OfferingAcceptance": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "4a786ce4-637e-43f4-bcaf-d7c460ab9313"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "contacts",
+              "recordId": "@outputs('OfferingAcceptance')?['body/_hit_contact_value']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

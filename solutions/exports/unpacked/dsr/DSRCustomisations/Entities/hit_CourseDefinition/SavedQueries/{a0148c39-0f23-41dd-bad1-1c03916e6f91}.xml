@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{a0148c39-0f23-41dd-bad1-1c03916e6f91}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_coursedefinitionid">
+          <cell name="hit_name" width="153" />
+          <cell name="hit_organisation" width="113" />
+          <cell name="hit_courseid" width="107" />
+          <cell name="hit_description" width="106" />
+          <cell name="hit_expirydate" width="109" />
+          <cell name="hit_maxmembers" width="123" />
+          <cell name="hit_primarycontact" width="133" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="hit_coursedefinition">
+          <attribute name="hit_coursedefinitionid" />
+          <attribute name="hit_name" />
+          <attribute name="createdon" />
+          <order attribute="hit_name" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="hit_courseid" />
+          <attribute name="hit_expirydate" />
+          <attribute name="hit_maxmembers" />
+          <attribute name="hit_organisation" />
+          <attribute name="hit_primarycontact" />
+          <attribute name="hit_description" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Registered Organisations" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

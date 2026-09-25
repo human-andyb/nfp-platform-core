@@ -1,0 +1,14 @@
+<environmentvariabledefinition schemaname="hit_EV_ENG_LOW_DAYS">
+  <defaultvalue>180</defaultvalue>
+  <description default="Engagement window - days">
+    <label description="Engagement window - days" languagecode="1033" />
+  </description>
+  <displayname default="EV_ENG_LOW_DAYS">
+    <label description="EV_ENG_LOW_DAYS" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.9</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000001</type>
+</environmentvariabledefinition>

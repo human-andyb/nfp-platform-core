@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{aab52277-9264-f111-ab0d-6045bdc335b7}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_offeringacceptanceid">
+          <cell name="hit_name" width="200" />
+          <cell name="hit_accepteddatetime" width="152" />
+          <cell name="hit_totalamountrealised" width="170" />
+          <cell name="hit_offeringtype" width="120" />
+          <cell name="new_donorcustomer" width="134" />
+          <cell name="hit_acceptancestatus" width="144" />
+          <cell name="createdon" width="105" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" output-format="xml-platform" mapping="logical">
+        <entity name="hit_offeringacceptance">
+          <attribute name="hit_name" />
+          <attribute name="hit_offeringacceptanceid" />
+          <attribute name="hit_offeringtype" />
+          <filter type="and">
+            <condition attribute="hit_offeringtype" operator="eq" value="815390000" />
+            <condition attribute="hit_acceptancestatus" operator="in">
+              <value>815390003</value>
+              <value>815390001</value>
+            </condition>
+          </filter>
+          <attribute name="hit_acceptancestatus" />
+          <attribute name="hit_accepteddatetime" />
+          <attribute name="new_donorcustomer" />
+          <attribute name="hit_totalamountrealised" />
+          <attribute name="createdon" />
+          <order attribute="createdon" descending="true" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Completed Donations" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

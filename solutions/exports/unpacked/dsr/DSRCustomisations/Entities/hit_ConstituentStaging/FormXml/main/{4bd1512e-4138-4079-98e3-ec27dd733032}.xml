@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{4bd1512e-4138-4079-98e3-ec27dd733032}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls">
+      <tabs>
+        <tab verticallayout="true" id="{E54B5F46-0D6C-499A-899E-C87DFB50DC80}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{12FD2174-528E-468C-9502-555F2A41D4F4}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{91E4A9B3-C4A6-4E82-81DB-BE3BAC205F40}">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                        <control id="hit_name" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="hit_Name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{5aec302a-c421-44d7-97e3-9188ccd443ba}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Constituent ID" languagecode="1033" />
+                        </labels>
+                        <control id="hit_name" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_name" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{c52b9164-7559-4ba9-a2d7-925c382a4d21}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Constituent" languagecode="1033" />
+                        </labels>
+                        <control id="hit_constituent" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="hit_constituent" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ee4b2167-1da4-4d7c-a5ff-1aa9341e9c86}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Process Description" languagecode="1033" />
+                        </labels>
+                        <control id="hit_processdescription" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_processdescription" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ce3ec43e-053d-446f-9143-c4b5de695a1e}" locklevel="0" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Process Status" languagecode="1033" />
+                        </labels>
+                        <control id="hit_processstatus" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_processstatus" disabled="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{b6f8d41d-cc29-467e-8e4c-8a80abd77aa5}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{cae25971-c1bb-4ebb-96f9-65aa672e0888}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{79546e76-e39c-4d35-aafe-3bc4da46d199}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{b9ed2aaf-feb5-4095-9963-464c9de062d5}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{A0E3C172-8446-462C-876F-7AF27CB6E0BD}" colspan="1" rowspan="1">
+              <labels>
+                <label description="Owner" languagecode="1033" />
+              </labels>
+              <control id="header_ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{2b920dd4-a39e-4e3c-b5c5-9366c863171c}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{144034ff-3f80-4a7f-989c-31ccdb847032}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{61001cc7-3722-4807-b1e0-a16c08eb5e80}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{6cb40d34-d519-43e0-a914-741093c323f5}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <DisplayConditions Order="0" FallbackForm="true">
+        <Everyone />
+      </DisplayConditions>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

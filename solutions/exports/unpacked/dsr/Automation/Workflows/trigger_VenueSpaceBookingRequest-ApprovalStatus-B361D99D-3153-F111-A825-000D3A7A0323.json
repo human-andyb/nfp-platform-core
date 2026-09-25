@@ -1,0 +1,251 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "When_a_row_is_added,_modified_or_deleted": {
+          "metadata": {
+            "operationMetadataId": "ccc3db32-7b24-4af3-a754-1792c1ac045f"
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 3,
+              "subscriptionRequest/entityname": "hit_venuespacebookingrequest",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "hit_approvalstatus",
+              "subscriptionRequest/filterexpression": "hit_approvalstatus ne null"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Switch_-_Approval_Status": {
+          "runAfter": {
+            "OfferingAcceptance": [
+              "Succeeded"
+            ]
+          },
+          "cases": {
+            "Pending_-_815390000": {
+              "case": 815390000,
+              "actions": {}
+            },
+            "Approved_-_815390001": {
+              "case": 815390001,
+              "actions": {
+                "update_Offering_Acceptance_-_Pending_Payment": {
+                  "runAfter": {
+                    "update_BookingRequest_-_Approval": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "4ba557b9-30eb-45eb-9926-022a86a25284"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "UpdateOnlyRecord",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "hit_offeringacceptances",
+                      "recordId": "@variables('sOfferingAcceptanceID')",
+                      "item/hit_acceptancestatus": 815390001
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                },
+                "update_BookingRequest_-_Approval": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "5e1979a1-07c8-4f1d-85ce-92497a54d57f"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "UpdateOnlyRecord",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "hit_venuespacebookingrequests",
+                      "recordId": "@variables('sBookingRequestID')",
+                      "item/hit_approvaldate": "@outputs('OfferingAcceptance')?['body/modifiedon']"
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              }
+            },
+            "Declined_-_815390002": {
+              "case": 815390002,
+              "actions": {
+                "update_Offering_Acceptance_-_Failed": {
+                  "runAfter": {
+                    "update_BookingRequest_-_Decline": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "47fa8e1f-d938-4872-9cee-252bb49e244c"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "UpdateOnlyRecord",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "hit_offeringacceptances",
+                      "recordId": "@variables('sOfferingAcceptanceID')",
+                      "item/hit_acceptancestatus": 815390004
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                },
+                "update_BookingRequest_-_Decline": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "6d811016-4930-4aec-af30-b12825b14895"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "UpdateOnlyRecord",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "hit_venuespacebookingrequests",
+                      "recordId": "@variables('sBookingRequestID')",
+                      "item/hit_approvaldate": "@outputs('OfferingAcceptance')?['body/modifiedon']"
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                }
+              }
+            },
+            "Expired_-_815390003": {
+              "case": 815390003,
+              "actions": {}
+            }
+          },
+          "default": {
+            "actions": {}
+          },
+          "expression": "@triggerOutputs()?['body/hit_approvalstatus']",
+          "metadata": {
+            "operationMetadataId": "bcaea7e8-9553-496a-a181-a916789a2017"
+          },
+          "type": "Switch"
+        },
+        "Compose": {
+          "runAfter": {
+            "init_sOfferingAcceptanceID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "50289cc7-d7bb-4b7a-900c-dfd06b8b35e5"
+          },
+          "type": "Compose",
+          "inputs": "@triggerOutputs()?['body/hit_approvalstatus']"
+        },
+        "OfferingAcceptance": {
+          "runAfter": {
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "633e1b3e-3c9a-48b3-b0f7-0034406efd0a"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "recordId": "@variables('sOfferingAcceptanceID')"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "init_sBookingRequestID": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "bcd9633a-d879-482d-984a-89ff83a89965"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sBookingRequestID",
+                "type": "string",
+                "value": "@triggerOutputs()?['body/hit_venuespacebookingrequestid']"
+              }
+            ]
+          }
+        },
+        "init_sOfferingAcceptanceID": {
+          "runAfter": {
+            "init_sBookingRequestID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "eb5bcf2e-c3c9-4b0f-8673-aa288c1fbcb4"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sOfferingAcceptanceID",
+                "type": "string",
+                "value": "@triggerOutputs()?['body/_hit_offeringacceptance_value']"
+              }
+            ]
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

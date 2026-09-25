@@ -1,0 +1,371 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "3998489f-75bd-4cea-8434-86e6484db8df"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "contactID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "GUID",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_1": {
+                  "title": "contactPoint",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Email | Phone",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "boolean": {
+                  "title": "Opt-in",
+                  "type": "boolean",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please select yes or no",
+                  "x-ms-content-hint": "BOOLEAN"
+                }
+              },
+              "required": [
+                "text",
+                "text_1",
+                "boolean"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "contact": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "ad2d697c-c7cc-4405-93ff-002c2a3262da"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "contacts",
+              "recordId": "@triggerBody()['text']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "contactPointConsent": {
+          "runAfter": {
+            "contact": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a395c8d6-6671-4948-a110-1087031b214a"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "msdynmkt_contactpointconsent4s",
+              "$filter": "msdynmkt_contactpointvalue eq '@{outputs('contact')?['body/emailaddress1']}'",
+              "$top": 1
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "hasConsentRecord": {
+          "actions": {
+            "Apply_to_each": {
+              "foreach": "@outputs('contactPointConsent')?['body/value']",
+              "actions": {
+                "Condition": {
+                  "actions": {
+                    "update_Consent_-_Opt-in": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "9a61cf90-20d8-45c5-abe5-984d61652712"
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "connectionName": "shared_commondataserviceforapps",
+                          "operationId": "UpdateOnlyRecord",
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                        },
+                        "parameters": {
+                          "entityName": "msdynmkt_contactpointconsent4s",
+                          "recordId": "@items('Apply_to_each')?['msdynmkt_contactpointconsent4id']",
+                          "item/msdynmkt_contactpointtype": 534120000,
+                          "item/msdynmkt_value": 534120001,
+                          "item/msdynmkt_source": 534120000
+                        },
+                        "authentication": {
+                          "type": "Raw",
+                          "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                        }
+                      }
+                    }
+                  },
+                  "runAfter": {},
+                  "else": {
+                    "actions": {
+                      "update_Consent_-_Opt-out": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "fd035893-ba3c-4c36-8d17-c9373a7efb80"
+                        },
+                        "type": "OpenApiConnection",
+                        "inputs": {
+                          "host": {
+                            "connectionName": "shared_commondataserviceforapps",
+                            "operationId": "UpdateOnlyRecord",
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                          },
+                          "parameters": {
+                            "entityName": "msdynmkt_contactpointconsent4s",
+                            "recordId": "@items('Apply_to_each')?['msdynmkt_contactpointconsent4id']",
+                            "item/msdynmkt_contactpointtype": 534120000,
+                            "item/msdynmkt_value": 534120002,
+                            "item/msdynmkt_source": 534120000
+                          },
+                          "authentication": {
+                            "type": "Raw",
+                            "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "expression": {
+                    "equals": [
+                      "@triggerBody()['boolean']",
+                      "@true"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "1b801ede-720d-4e7b-a1ea-bac6c3961e72"
+                  },
+                  "type": "If"
+                }
+              },
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "3451b734-13de-44f8-ab3b-0e5770028e6d"
+              },
+              "type": "Foreach"
+            }
+          },
+          "runAfter": {
+            "get_sPurposeID_-_Commercial": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "is_opt-out": {
+                "actions": {
+                  "add_consent_-_Opt-out": {
+                    "runAfter": {},
+                    "metadata": {
+                      "operationMetadataId": "a63ce121-4dc8-4495-9852-db93e375e4bb"
+                    },
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "host": {
+                        "connectionName": "shared_commondataserviceforapps",
+                        "operationId": "CreateRecord",
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                      },
+                      "parameters": {
+                        "entityName": "msdynmkt_contactpointconsent4s",
+                        "item/msdynmkt_contactpointtype": 534120000,
+                        "item/msdynmkt_value": 534120002,
+                        "item/msdynmkt_contactpointvalue": "@outputs('contact')?['body/emailaddress1']",
+                        "item/msdynmkt_purposeId@odata.bind": "/msdynmkt_purposes(@{variables('sPurposeID')})",
+                        "item/msdynmkt_logicalreason": 534119999,
+                        "item/msdynmkt_source": 534120000,
+                        "item/msdynmkt_contactpointconsenttype": 534120000
+                      },
+                      "authentication": {
+                        "type": "Raw",
+                        "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                      }
+                    }
+                  }
+                },
+                "runAfter": {},
+                "expression": {
+                  "not": {
+                    "equals": [
+                      "@triggerBody()['boolean']",
+                      "@true"
+                    ]
+                  }
+                },
+                "metadata": {
+                  "operationMetadataId": "32e4c154-8f42-4455-b9b7-0e5442136b68"
+                },
+                "type": "If"
+              }
+            }
+          },
+          "expression": {
+            "greater": [
+              "@length(outputs('contactPointConsent')?['body/value'])",
+              0
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "95791a6e-3a5c-4f37-867d-5fb7df256bc0"
+          },
+          "type": "If"
+        },
+        "purpose_-_commercial": {
+          "runAfter": {
+            "init_sPurposeID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a5c60913-8488-4207-805b-4dbc9aa75f75"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "msdynmkt_purposes",
+              "$filter": "msdynmkt_name eq 'Commercial'",
+              "$top": 1
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "get_sPurposeID_-_Commercial": {
+          "foreach": "@outputs('purpose_-_commercial')?['body/value']",
+          "actions": {
+            "set_sPurposeID": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "f96e6130-96e2-4805-b332-0f8476189309"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "sPurposeID",
+                "value": "@items('get_sPurposeID_-_Commercial')?['msdynmkt_purposeid']"
+              }
+            }
+          },
+          "runAfter": {
+            "purpose_-_commercial": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "2611d256-a472-47c9-864b-e2eec6b81543"
+          },
+          "type": "Foreach"
+        },
+        "init_sPurposeID": {
+          "runAfter": {
+            "contactPointConsent": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "8033f029-eb78-4b04-a823-996a96d9b8c1"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sPurposeID",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "hasConsentRecord": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a7f0abac-027c-4c34-b462-4e37840984f6"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "response": "Success"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "response": {
+                  "title": "response",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

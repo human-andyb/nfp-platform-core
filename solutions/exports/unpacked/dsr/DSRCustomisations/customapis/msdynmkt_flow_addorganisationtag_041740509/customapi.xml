@@ -1,0 +1,15 @@
+<customapi uniquename="msdynmkt_flow_addorganisationtag_041740509">
+  <allowedcustomprocessingsteptype>1</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default=" ">
+    <label description=" " languagecode="1033" />
+  </description>
+  <displayname default="Flow - Add Organisation Tag">
+    <label description="Flow - Add Organisation Tag" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>0</isprivate>
+  <name>Flow - Add Organisation Tag</name>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

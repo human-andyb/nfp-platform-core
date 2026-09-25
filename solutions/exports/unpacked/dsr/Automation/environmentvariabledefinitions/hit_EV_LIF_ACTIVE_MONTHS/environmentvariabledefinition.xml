@@ -1,0 +1,14 @@
+<environmentvariabledefinition schemaname="hit_EV_LIF_ACTIVE_MONTHS">
+  <defaultvalue>12</defaultvalue>
+  <description default="Lifecycle window - months">
+    <label description="Lifecycle window - months" languagecode="1033" />
+  </description>
+  <displayname default="EV_LIF_ACTIVE_MONTHS">
+    <label description="EV_LIF_ACTIVE_MONTHS" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.9</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000001</type>
+</environmentvariabledefinition>

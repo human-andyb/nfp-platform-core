@@ -1,0 +1,14 @@
+<catalogassignments>
+  <catalogassignment catalogid.uniquename="msdynmkt_custom" object.uniquename="msdynmkt_flow_addorganisationtag_041740509" objectidtype="customapi">
+    <iscustomizable>1</iscustomizable>
+    <name>msdynmkt_flow_addorganisationtag_041740509</name>
+  </catalogassignment>
+  <catalogassignment catalogid.uniquename="msdynmkt_custom" object.uniquename="msdynmkt_flow_updatecommunicationevent_050253647" objectidtype="customapi">
+    <iscustomizable>1</iscustomizable>
+    <name>msdynmkt_flow_updatecommunicationevent_050253647</name>
+  </catalogassignment>
+  <catalogassignment catalogid.uniquename="msdynmkt_custombusiness" object.uniquename="msdynmkt_ae685b20826f40708e6e5306c54d7d53" objectidtype="customapi">
+    <iscustomizable>1</iscustomizable>
+    <name>msdynmkt_ae685b20826f40708e6e5306c54d7d53</name>
+  </catalogassignment>
+</catalogassignments>

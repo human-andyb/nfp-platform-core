@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WebResource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <WebResourceId>{cd40840e-1c9a-f111-b8dd-6045bdc2338c}</WebResourceId>
+  <Name>hit_paymentDialogForm</Name>
+  <DisplayName>Donation Payment</DisplayName>
+  <Description>Take a donation payment</Description>
+  <LanguageCode>1033</LanguageCode>
+  <WebResourceType>3</WebResourceType>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <IsEnabledForMobileClient>0</IsEnabledForMobileClient>
+  <IsAvailableForMobileOffline>0</IsAvailableForMobileOffline>
+  <IsCustomizable>1</IsCustomizable>
+  <CanBeDeleted>1</CanBeDeleted>
+  <IsHidden>0</IsHidden>
+  <FileName>/WebResources/hit_paymentDialogFormCD40840E-1C9A-F111-B8DD-6045BDC2338C</FileName>
+</WebResource>

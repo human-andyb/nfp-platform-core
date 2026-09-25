@@ -1,0 +1,15 @@
+<duplicaterule uniquename="dr06ee7a37c4ab8231925095e5082faac240f4b1fea661f6f47be7198b3d8680bc">
+  <baseentityname>msdyncrm_marketingformfield</baseentityname>
+  <description>Detects field records that have the same value in the Lead Mapping attribute.</description>
+  <excludeinactiverecords>1</excludeinactiverecords>
+  <iscasesensitive>0</iscasesensitive>
+  <iscustomizable>1</iscustomizable>
+  <matchingentityname>msdyncrm_marketingformfield</matchingentityname>
+  <name>Fields with same lead attribute mapping</name>
+  <duplicateruleconditions>
+    <duplicaterulecondition baseattributename="msdyncrm_leadmapping" matchingattributename="msdyncrm_leadmapping" operatorcode="0" uniquerulename="dr06ee7a37c4ab8231925095e5082faac240f4b1fea661f6f47be7198b3d8680bc">
+      <ignoreblankvalues>1</ignoreblankvalues>
+      <iscustomizable>1</iscustomizable>
+    </duplicaterulecondition>
+  </duplicateruleconditions>
+</duplicaterule>

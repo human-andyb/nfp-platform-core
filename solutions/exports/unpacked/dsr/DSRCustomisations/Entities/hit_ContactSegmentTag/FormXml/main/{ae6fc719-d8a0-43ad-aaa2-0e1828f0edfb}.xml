@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{ae6fc719-d8a0-43ad-aaa2-0e1828f0edfb}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls" solutionaction="Modified">
+      <tabs>
+        <tab verticallayout="true" id="{b7de4d1c-67d6-40f1-94dc-7f2072d4c7f9}" IsUserDefined="1" ordinalvalue="0">
+          <columns>
+            <column width="100%" id="0">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{404fd66a-ef54-4ba9-9aee-107db255c79e}" ordinalvalue="0">
+                  <rows>
+                    <row>
+                      <cell id="{d02cb72d-1650-4c6b-89d2-d2eb2e2381a2}" visible="false" ordinalvalue="10000" solutionaction="Modified">
+                        <labels>
+                          <label description="Name" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{8c97ee17-aac7-4664-906a-a8cdcc3f1de3}" ordinalvalue="10001" solutionaction="Removed" />
+                    </row>
+                    <row>
+                      <cell id="{1ed1996e-dec2-4b36-b047-09ac7cafe716}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10001" solutionaction="Added">
+                        <labels>
+                          <label description="Contact" languagecode="1033" />
+                        </labels>
+                        <control id="hit_contact" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="hit_contact" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{564b4305-a7c9-4e9d-a408-7ae8a3b70e5f}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10002" solutionaction="Added">
+                        <labels>
+                          <label description="Segment Tag" languagecode="1033" />
+                        </labels>
+                        <control id="hit_segmenttag" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="hit_segmenttag" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{e9bb4514-65ee-4f74-881e-681f9c26cfeb}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10003" solutionaction="Added">
+                        <labels>
+                          <label description="Notes" languagecode="1033" />
+                        </labels>
+                        <control id="hit_notes" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="hit_notes" disabled="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{d1e6d26f-ee6c-4449-a4bd-97d2255a04d8}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left" solutionaction="Added">
+        <rows>
+          <row>
+            <cell id="{38f7d58c-2a17-4376-a701-dbdc3fa238ab}" showlabel="false" ordinalvalue="10000">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{2b3608b3-d10e-4b13-8a2b-1d52703d5c0f}" showlabel="false" ordinalvalue="20001">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{fb0ad4a2-8740-4c92-8f17-81f70ab5b0fc}" showlabel="false" ordinalvalue="30002">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{8c97ee17-aac7-4664-906a-a8cdcc3f1de3}" colspan="1" rowspan="1" ordinalvalue="40003">
+              <labels>
+                <label description="Owner" languagecode="1033" />
+              </labels>
+              <control id="header_ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+            </cell>
+            <cell id="{90c153ad-6817-4473-9e15-735515b76451}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="50004">
+              <labels>
+                <label description="Added On" languagecode="1033" />
+              </labels>
+              <control id="header_hit_addedon" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="hit_addedon" disabled="false" />
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{086355f8-02d2-4fdd-829f-08ae4afcf0ee}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left" solutionaction="Added">
+        <rows>
+          <row>
+            <cell id="{3c9ce7e2-fae1-4e40-bfc4-e8263f16cabf}" showlabel="false" ordinalvalue="10000">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{101e4c51-9ab6-418d-9f33-517a3dd8b4ae}" showlabel="false" ordinalvalue="20001">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{8e856fb1-35c3-459b-85f0-56493fee6d65}" showlabel="false" ordinalvalue="30002">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <DisplayConditions Order="0" FallbackForm="true" solutionaction="Added">
+        <Everyone />
+      </DisplayConditions>
+    </form>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

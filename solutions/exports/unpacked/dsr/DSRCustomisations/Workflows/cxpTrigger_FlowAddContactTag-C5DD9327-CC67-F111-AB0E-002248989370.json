@@ -1,0 +1,74 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "When_an_action_is_performed": {
+          "metadata": {
+            "operationMetadataId": "20b3e186-ee0d-474f-b0ed-9cbb2454aee7"
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "parameters": {
+              "catalog": "msdynmkt_catalog",
+              "category": "msdynmkt_custom",
+              "subscriptionRequest/entityname": "none",
+              "subscriptionRequest/sdkmessagename": "msdynmkt_flow_addcontacttag_082817060"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "BusinessEventsTrigger",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          }
+        }
+      },
+      "actions": {
+        "run_add_new_contact_tag": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "8626dbc1-857c-4c0a-9b30-a4398f6206d6"
+          },
+          "type": "Workflow",
+          "inputs": {
+            "host": {
+              "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+            },
+            "body": {
+              "text": "@triggerOutputs()?['body/InputParameters/msdynmkt_profileid']",
+              "text_1": "@triggerOutputs()?['body/InputParameters/msdynmkt_tagcode']",
+              "boolean_1": "@triggerOutputs()?['body/InputParameters/msdynmkt_exclusive']",
+              "text_2": "@triggerOutputs()?['body/InputParameters/msdynmkt_tagdimension']",
+              "text_3": "@triggerOutputs()?['body/InputParameters/msdynmkt_mode']"
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}

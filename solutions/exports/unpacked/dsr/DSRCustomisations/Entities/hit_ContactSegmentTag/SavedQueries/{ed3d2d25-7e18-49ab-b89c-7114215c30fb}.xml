@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{ed3d2d25-7e18-49ab-b89c-7114215c30fb}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_contactsegmenttagid">
+          <cell name="hit_contact" width="100" />
+          <cell name="a_e523c3fbb40e41ac9188daf5220b5dd4.emailaddress1" width="130" />
+          <cell name="a_e523c3fbb40e41ac9188daf5220b5dd4.mobilephone" width="176" />
+          <cell name="a_e523c3fbb40e41ac9188daf5220b5dd4.hit_primaryorganisation" width="218" />
+          <cell name="hit_segmenttag" width="182" />
+          <cell name="hit_dimension" width="102" />
+          <cell name="hit_addedon" width="100" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="hit_contactsegmenttag">
+          <attribute name="hit_contactsegmenttagid" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="hit_contact" />
+          <attribute name="hit_segmenttag" />
+          <attribute name="hit_dimension" />
+          <attribute name="hit_addedon" />
+          <link-entity alias="a_e523c3fbb40e41ac9188daf5220b5dd4" name="contact" to="hit_contact" from="contactid" link-type="outer" visible="false">
+            <attribute name="hit_primaryorganisation" />
+            <attribute name="emailaddress1" />
+            <attribute name="mobilephone" />
+          </link-entity>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Tagged Contacts" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

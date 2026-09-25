@@ -1,0 +1,137 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "When_a_row_is_added,_modified_or_deleted": {
+          "metadata": {
+            "operationMetadataId": "f116d79a-c012-45a1-a81c-f71e6cb268d5"
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 3,
+              "subscriptionRequest/entityname": "contact",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "contactid, donotemail, donotbulkemail",
+              "subscriptionRequest/filterexpression": "donotemail, donotbulkemail"
+            },
+            "authentication": "@parameters('$authentication')"
+          },
+          "conditions": []
+        }
+      },
+      "actions": {
+        "do_not_email": {
+          "actions": {
+            "run_add_new_segment_tag_-_add": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "b51b5158-2744-46f7-b4a8-9d108aed4581"
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                },
+                "body": {
+                  "text": "@triggerOutputs()?['body/contactid']",
+                  "text_1": "CON__DO_NOT_EMAIL",
+                  "boolean_1": false,
+                  "text_2": "CON",
+                  "text_3": "Add"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "run_add_new_segment_tag_-_remove": {
+                "runAfter": {},
+                "metadata": {
+                  "operationMetadataId": "febadd3b-8ffc-4314-bc81-d85ba5b0188a"
+                },
+                "type": "Workflow",
+                "inputs": {
+                  "host": {
+                    "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                  },
+                  "body": {
+                    "text": "@triggerOutputs()?['body/contactid']",
+                    "text_1": "CON__DO_NOT_EMAIL",
+                    "boolean_1": false,
+                    "text_2": "CON",
+                    "text_3": "Remove"
+                  }
+                }
+              }
+            }
+          },
+          "expression": {
+            "or": [
+              {
+                "equals": [
+                  "@triggerOutputs()?['body/donotbulkemail']",
+                  "@true"
+                ]
+              },
+              {
+                "equals": [
+                  "@triggerOutputs()?['body/donotemail']",
+                  "@true"
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "90d8653b-01c8-41b1-9132-6cef970ef386"
+          },
+          "type": "If"
+        },
+        "Compose": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "beafc5fb-e061-4ac4-92c4-7b26bf04c14e"
+          },
+          "type": "Compose",
+          "inputs": "bulk = @{triggerOutputs()?['body/donotbulkemail']}\nemail = @{triggerOutputs()?['body/donotemail']}"
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

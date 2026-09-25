@@ -1,0 +1,10 @@
+<mcpserver name="hit_NFPBase_MCPServer">
+  <description>MCP Server for app NFP Base</description>
+  <displayname>NFP Base MCP Server</displayname>
+  <iscustom>0</iscustom>
+  <iscustomizable>1</iscustomizable>
+  <isremote>0</isremote>
+  <serverurl>https://agent365.svc.cloud.microsoft/mcp/environments/1120199e-ba6a-e05a-834c-dc368fadc4cd/servers/hit_NFPBase_MCPServer</serverurl>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</mcpserver>

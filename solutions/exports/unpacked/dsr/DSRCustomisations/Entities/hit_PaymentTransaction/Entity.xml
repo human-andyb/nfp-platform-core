@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name LocalizedName="Payment Transaction" OriginalName="Payment Transaction">hit_PaymentTransaction</Name>
+  <EntityInfo>
+    <entity Name="hit_PaymentTransaction" unmodified="1">
+      <attributes />
+    </entity>
+  </EntityInfo>
+  <RibbonDiffXml />
+</Entity>

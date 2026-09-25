@@ -1,0 +1,11 @@
+<environmentvariabledefinition schemaname="hit_StripeSecretKey">
+  <defaultvalue>sk_test_51T1LbN1wkxROFX0uClbkFYJNocmuZSEWgiv4vbD2WVQ7IbIMMLveNPXEfIC2g7wy8CAIdwsEhFUP9AqiN3efNOFS006kQDIFG6</defaultvalue>
+  <displayname default="Stripe Secret Key">
+    <label description="Stripe Secret Key" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.3</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

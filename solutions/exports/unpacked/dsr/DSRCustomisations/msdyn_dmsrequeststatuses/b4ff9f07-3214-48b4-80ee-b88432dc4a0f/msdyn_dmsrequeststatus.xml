@@ -1,0 +1,14 @@
+<msdyn_dmsrequeststatus msdyn_dmsrequeststatusid="b4ff9f07-3214-48b4-80ee-b88432dc4a0f">
+  <iscustomizable>1</iscustomizable>
+  <msdyn_errordetails>{"Version":"1.0","RequestErrorMessage":null,"RequestErrorCulprit":null,"EntityErrorDetails":[{"EntityName":"msnfp_transaction acc","EntityErrorCulprit":"None","TaskErrors":[]}],"RetryAfter":null}</msdyn_errordetails>
+  <msdyn_lookupfield_uploadrequest>
+    <msdyn_dmsrequestid>7b42d9e1-0aa5-4a4a-8767-77988f0f3916</msdyn_dmsrequestid>
+  </msdyn_lookupfield_uploadrequest>
+  <msdyn_uploadendtime>7/25/2026 8:22:24 PM</msdyn_uploadendtime>
+  <msdyn_uploadstarttime>7/25/2026 8:01:49 PM</msdyn_uploadstarttime>
+  <msdyn_uploadstatus>Succeeded</msdyn_uploadstatus>
+  <msdyn_uploadstatusdetails>{"Version":"1.0","EntityStatusDetails":[{"EntityName":"msnfp_transaction acc","EntityId":"9fa26bb7-9871-47fd-9e76-d2538414feaa","Status":"Succeeded","StartTime":"2026-07-26T06:01:49.4750284+00:00","EndTime":"2026-07-26T06:22:24.120389+00:00","CreatedRecords":0,"UpdatedRecords":83478,"DeletedRecords":0,"ErrorRecords":0}]}</msdyn_uploadstatusdetails>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+  <timezoneruleversionnumber>0</timezoneruleversionnumber>
+</msdyn_dmsrequeststatus>

@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{0b03cec5-3a10-4d27-99d2-3b803ad5f139}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls" shownavigationbar="false" solutionaction="Modified">
+      <tabs>
+        <tab verticallayout="true" id="{ea73c5d9-4e95-4eed-9b56-c3d6c6a54df2}" IsUserDefined="1" ordinalvalue="0">
+          <columns>
+            <column width="100%" id="0">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{2f66a6d4-dd0f-49b2-a201-b52e44f54f12}" columns="11" celllabelposition="Top" ordinalvalue="0">
+                  <rows>
+                    <row>
+                      <cell id="{d5210239-a8cc-4e21-8f61-015f69d1b42f}" ordinalvalue="10000">
+                        <labels>
+                          <label description="Name" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                      <cell id="{84878fa6-7b7a-4fdc-b603-90856fb82b67}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20001">
+                        <labels>
+                          <label description="Audience Entity" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{830a2693-d828-440a-87a9-e5bdb7274e0b}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10002">
+                        <labels>
+                          <label description="Description" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                      <cell id="{b122ba42-734e-4065-8e5a-8e4e2f9526d3}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20003">
+                        <labels>
+                          <label description="Audience Category" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{868824b6-ea40-4f7f-90a5-f6c5c44515be}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20005">
+                        <labels>
+                          <label description="Audience Selection Type" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="null_section_3" id="6850579f-9001-48c5-b411-aa3fcff621ee" IsUserDefined="0" locklevel="0" showlabel="false" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Top" columns="1111" labelwidth="115" ordinalvalue="1">
+                  <rows>
+                    <row>
+                      <cell id="{de4659b2-ff5d-4196-9917-67bece51b573}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10004">
+                        <labels>
+                          <label description="Is CI Enabled" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                      <cell id="{72eb8f59-ab7d-48fb-b94a-c51737cf7361}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20005">
+                        <labels>
+                          <label description="Is Exportable" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                      <cell id="{d1392d6d-f810-46e5-bc29-ebeea6ab178a}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="30006">
+                        <labels>
+                          <label description="Execution Mode" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                      <cell id="{4247ee6e-02c9-4f1e-8f5a-11c96176fcb4}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="40007">
+                        <labels>
+                          <label description="Priority" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section name="null_section_4" id="68809df7-a992-422d-abed-b658c1890e85" IsUserDefined="0" locklevel="0" showlabel="false" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115" ordinalvalue="2">
+                  <rows>
+                    <row>
+                      <cell locklevel="0" id="{32df081a-b245-4a99-94f4-2aaeed54171a}" rowspan="4" colspan="1" auto="false" ordinalvalue="10000">
+                        <labels>
+                          <label description="Audience Rules" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_2" id="8ffcd670-3fb9-4dba-a445-4c2afc6e3acc" IsUserDefined="0" locklevel="0" showlabel="true" ordinalvalue="1" solutionaction="Added">
+          <labels>
+            <label description="Audience Contacts" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%" id="0">
+              <sections>
+                <section name="tab_2_section_1" id="b365dbe7-fd94-49f2-8c88-d91d499ac2a6" IsUserDefined="0" locklevel="0" showlabel="false" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115" ordinalvalue="0">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{5de55d20-1edf-4963-840d-a62f8472aaa6}" rowspan="4" colspan="1" auto="true" ordinalvalue="10000">
+                        <labels>
+                          <label description="Audience Contacts" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_2" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>20</RecordsPerPage>
+                            <AutoExpand>Auto</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_audiencecontactmember_Audience_hit_audience</RelationshipName>
+                            <TargetEntityType>hit_audiencecontactmember</TargetEntityType>
+                            <ViewId>{BB18C443-B9DF-4C53-A2E3-3837F94B315A}</ViewId>
+                            <ViewIds>{BB18C443-B9DF-4C53-A2E3-3837F94B315A}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_3" id="0286d8a8-451f-4944-9aa1-43dec89da740" IsUserDefined="0" locklevel="0" showlabel="true" ordinalvalue="2" solutionaction="Added">
+          <labels>
+            <label description="Audience Organisations" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%" id="0">
+              <sections>
+                <section name="tab_3_section_1" id="480b04b5-008f-4779-856a-0f0a1219cbb6" IsUserDefined="0" locklevel="0" showlabel="false" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115" visible="true" ordinalvalue="0">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{cf5925bd-bd8d-446f-9dde-f3d6c97d8672}" rowspan="4" colspan="1" auto="true" ordinalvalue="10000">
+                        <labels>
+                          <label description="Audience Organisations" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_3" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>20</RecordsPerPage>
+                            <AutoExpand>Auto</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_audienceorganisationmember_Audience_hit_audience</RelationshipName>
+                            <TargetEntityType>hit_audienceorganisationmember</TargetEntityType>
+                            <ViewId>{F06EAE03-8CC8-44D4-B5A8-27D534A2FDC9}</ViewId>
+                            <ViewIds>{F06EAE03-8CC8-44D4-B5A8-27D534A2FDC9}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{9afb7233-0cec-46eb-a28f-23572ee5723f}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{e6dc44d7-1226-4416-8e8d-07509f79c0a8}" colspan="1" rowspan="1" visible="false" ordinalvalue="40003">
+              <labels>
+                <label description="Owner" languagecode="1033" solutionaction="Modified" />
+              </labels>
+            </cell>
+            <cell id="{40f39235-3892-433c-8fd8-e03610dd9988}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="50004">
+              <labels>
+                <label description="Audience Status" languagecode="1033" solutionaction="Modified" />
+              </labels>
+            </cell>
+            <cell id="{cd82d489-76a0-44fa-bf14-dce1a1b231da}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="60005">
+              <labels>
+                <label description="Member Count" languagecode="1033" solutionaction="Modified" />
+              </labels>
+            </cell>
+            <cell id="{ffc1a7b1-038b-4c87-8c6e-8eec0ed481c4}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="70006">
+              <labels>
+                <label description="Last Calculated On" languagecode="1033" solutionaction="Modified" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </header>
+    </form>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

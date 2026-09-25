@@ -1,0 +1,399 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.2.26092.134" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26092.134" OrganizationSchemaType="Full" CRMServerServiceabilityVersion="9.2.26092.00135">
+  <SolutionManifest>
+    <UniqueName>NFPDataPlatformAutomation</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="NFP.DataPlatform.Automation" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions />
+    <Version>1.0.0.11</Version>
+    <Managed>0</Managed>
+    <Publisher>
+      <UniqueName>humanIT</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="humanIT" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="humanIT" languagecode="1033" />
+      </Descriptions>
+      <EMailAddress xsi:nil="true"></EMailAddress>
+      <SupportingWebsiteUrl xsi:nil="true"></SupportingWebsiteUrl>
+      <CustomizationPrefix>hit</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>81539</CustomizationOptionValuePrefix>
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+        <Address>
+          <AddressNumber>2</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents>
+      <RootComponent type="1" schemaName="hit_offeringacceptance" behavior="0" />
+      <RootComponent type="1" schemaName="hit_paymenttransaction" behavior="0" />
+      <RootComponent type="29" id="{0e61bdef-2a7f-f111-ab0f-70a8a555b733}" behavior="0" />
+      <RootComponent type="29" id="{180211a2-a455-f111-a825-000d3a7a0323}" behavior="0" />
+      <RootComponent type="29" id="{24bfb433-800b-f111-8342-000d3a7a0cab}" behavior="0" />
+      <RootComponent type="29" id="{3314f180-dd53-f111-a825-6045bd3e3adf}" behavior="0" />
+      <RootComponent type="29" id="{4ddf577c-b567-f111-ab0e-6045bde72793}" behavior="0" />
+      <RootComponent type="29" id="{5595cc60-d580-f111-ab0f-6045bdc335b7}" behavior="0" />
+      <RootComponent type="29" id="{5eb0c245-1158-f111-a825-000d3a7a0cab}" behavior="0" />
+      <RootComponent type="29" id="{5f138917-6e76-f111-ab0e-6045bde72793}" behavior="0" />
+      <RootComponent type="29" id="{68f69a3d-515e-f111-a826-000d3a7a0cab}" behavior="0" />
+      <RootComponent type="29" id="{7510a0ed-7913-f111-8342-000d3a7a0323}" behavior="0" />
+      <RootComponent type="29" id="{764a95cb-e427-f111-88b4-000d3a7a0cab}" behavior="0" />
+      <RootComponent type="29" id="{874a97ac-c167-f111-ab0e-70a8a555b733}" behavior="0" />
+      <RootComponent type="29" id="{9227f693-2b53-f111-a825-000d3a7a0323}" behavior="0" />
+      <RootComponent type="29" id="{96a0e9a4-3c4f-f111-bec6-6045bd3e3adf}" behavior="0" />
+      <RootComponent type="29" id="{9ca03e8a-be67-f111-ab0e-70a8a555b733}" behavior="0" />
+      <RootComponent type="29" id="{a105c745-ff0a-f111-8342-000d3a7a0323}" behavior="0" />
+      <RootComponent type="29" id="{b2210b87-b254-f111-a825-6045bd3d0cb5}" behavior="0" />
+      <RootComponent type="29" id="{b361d99d-3153-f111-a825-000d3a7a0323}" behavior="0" />
+      <RootComponent type="29" id="{b8f2a6e7-0b58-f111-a825-6045bd3e3afe}" behavior="0" />
+      <RootComponent type="29" id="{c5f58f39-b11d-f111-88b2-000d3a7a0323}" behavior="0" />
+      <RootComponent type="29" id="{c849eae9-5627-f111-88b4-000d3a7a0035}" behavior="0" />
+      <RootComponent type="29" id="{d8a549f1-9f66-f111-ab0d-6045bde72793}" behavior="0" />
+      <RootComponent type="29" id="{d8c86757-d757-f111-a825-000d3a7a0cab}" behavior="0" />
+      <RootComponent type="29" id="{e4f4ebac-055f-f111-a826-6045bd3d0cb5}" behavior="0" />
+    </RootComponents>
+    <MissingDependencies>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_acceptanceagreement" displayName="Acceptance Agreement" solution="Active" />
+        <Dependent type="1" schemaName="hit_offeringacceptance" displayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_acceptanceagreement" displayName="Acceptance Agreement" solution="Active" />
+        <Dependent type="29" displayName="Stripe Webhook Handler - SetupIntent Update Dataverse" id="{764a95cb-e427-f111-88b4-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_accountsegmenttag" displayName="Tagged Organisation" solution="Active" />
+        <Dependent type="29" displayName="Tagging Engine - Add New Organisation Segment Tag (Child)" id="{9ca03e8a-be67-f111-ab0e-70a8a555b733}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_allocationledger" displayName="Allocation Ledger" solution="Active" />
+        <Dependent type="1" schemaName="hit_offeringacceptance" displayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_allocationledger" displayName="Allocation Ledger" solution="Active" />
+        <Dependent type="1" schemaName="hit_paymenttransaction" displayName="Payment Transaction" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_communicationevent" displayName="Communication Event" solution="Active" />
+        <Dependent type="1" schemaName="hit_offeringacceptance" displayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_communicationevent" displayName="Communication Event" solution="Active" />
+        <Dependent type="29" displayName="Update Communication Event Details (Child)" id="{5595cc60-d580-f111-ab0f-6045bdc335b7}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_communicationevent" displayName="Communication Event" solution="Active" />
+        <Dependent type="29" displayName="Offering Specific Fulfillment Handler (child)" id="{d8c86757-d757-f111-a825-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_contactorganisation" displayName="Contact Org Relationship" solution="Active" />
+        <Dependent type="29" displayName="Create or Get ContactOrg Relationship ID (child)" id="{b2210b87-b254-f111-a825-6045bd3d0cb5}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_contactorgroletype" displayName="Contact Org Role Type" solution="Active" />
+        <Dependent type="29" displayName="Create or Get ContactOrg Relationship ID (child)" id="{b2210b87-b254-f111-a825-6045bd3d0cb5}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_contactsegmenttag" displayName="Tagged Contact" solution="Active" />
+        <Dependent type="29" displayName="Tagging Engine - Add New Contact Segment Tag (Child)" id="{4ddf577c-b567-f111-ab0e-6045bde72793}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_fulfillmentoutcome" displayName="Fulfillment Outcome" solution="Active" />
+        <Dependent type="1" schemaName="hit_offeringacceptance" displayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_fulfillmentoutcome" displayName="Fulfillment Outcome" solution="Active" />
+        <Dependent type="29" displayName="trigger_Update Tags on Fulfillment Outcome" id="{5eb0c245-1158-f111-a825-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_fulfillmentoutcome" displayName="Fulfillment Outcome" solution="Active" />
+        <Dependent type="29" displayName="trigger_Offering Fulfillment Completed - Fulfillment Outcome" id="{b8f2a6e7-0b58-f111-a825-6045bd3e3afe}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_interaction" displayName="Interaction" solution="Active" />
+        <Dependent type="1" schemaName="hit_offeringacceptance" displayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offering" displayName="Offering" solution="Active" />
+        <Dependent type="26" schemaName="Active Offering Acceptances" displayName="Active Offering Acceptances" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" id="{f2049ad3-837c-4ce1-8916-74ae23e37398}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offering" displayName="Offering" solution="Active" />
+        <Dependent type="29" displayName="Apply Segment Tags (child)" id="{180211a2-a455-f111-a825-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offering" displayName="Offering" solution="Active" />
+        <Dependent type="29" displayName="trigger_Update Tags on Fulfillment Outcome" id="{5eb0c245-1158-f111-a825-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offering" displayName="Offering" solution="Active" />
+        <Dependent type="29" displayName="trigger_Offering Acceptance - Orchestrator" id="{7510a0ed-7913-f111-8342-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offering" displayName="Offering" solution="Active" />
+        <Dependent type="29" displayName="trigger_Offering Fulfillment - Orchestrator" id="{96a0e9a4-3c4f-f111-bec6-6045bd3e3adf}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offering" displayName="Offering" solution="Active" />
+        <Dependent type="29" displayName="trigger_Offering Fulfillment Completed - Fulfillment Outcome" id="{b8f2a6e7-0b58-f111-a825-6045bd3e3afe}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offering" displayName="Offering" solution="Active" />
+        <Dependent type="29" displayName="Offering Specific Fulfillment Handler (child)" id="{d8c86757-d757-f111-a825-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offeringentitlement" displayName="Offering Entitlement" solution="Active" />
+        <Dependent type="1" schemaName="hit_offeringacceptance" displayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offeringfulfillment" displayName="Offering Fulfillment" solution="Active" />
+        <Dependent type="1" schemaName="hit_offeringacceptance" displayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offeringfulfillment" displayName="Offering Fulfillment" solution="Active" />
+        <Dependent type="29" displayName="Sharepoint - Generate Donation Receipt PDF (Child)" id="{5f138917-6e76-f111-ab0e-6045bde72793}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offeringfulfillment" displayName="Offering Fulfillment" solution="Active" />
+        <Dependent type="29" displayName="trigger_Offering Acceptance - Orchestrator" id="{7510a0ed-7913-f111-8342-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offeringfulfillment" displayName="Offering Fulfillment" solution="Active" />
+        <Dependent type="29" displayName="trigger_Offering Fulfillment - Orchestrator" id="{96a0e9a4-3c4f-f111-bec6-6045bd3e3adf}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offeringfulfillment" displayName="Offering Fulfillment" solution="Active" />
+        <Dependent type="29" displayName="trigger_Offering Fulfillment Completed - Fulfillment Outcome" id="{b8f2a6e7-0b58-f111-a825-6045bd3e3afe}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offeringfulfillment" displayName="Offering Fulfillment" solution="Active" />
+        <Dependent type="29" displayName="Offering Specific Fulfillment Handler (child)" id="{d8c86757-d757-f111-a825-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_offeringtagrule" displayName="Offering Tag Rule" solution="Active" />
+        <Dependent type="29" displayName="Apply Segment Tags (child)" id="{180211a2-a455-f111-a825-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_paymentschedule" displayName="Payment Schedule" solution="Active" />
+        <Dependent type="1" schemaName="hit_offeringacceptance" displayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_paymentschedule" displayName="Payment Schedule" solution="Active" />
+        <Dependent type="29" displayName="Stripe Webhook Handler - SetupIntent Update Dataverse" id="{764a95cb-e427-f111-88b4-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_segmenttag" displayName="Segment Tag" solution="Active" />
+        <Dependent type="29" displayName="Tagging Engine - Add New Contact Segment Tag (Child)" id="{4ddf577c-b567-f111-ab0e-6045bde72793}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_segmenttag" displayName="Segment Tag" solution="Active" />
+        <Dependent type="29" displayName="Tagging Engine - Add New Organisation Segment Tag (Child)" id="{9ca03e8a-be67-f111-ab0e-70a8a555b733}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_stripecustomer" displayName="Stripe Customer" solution="Active" />
+        <Dependent type="29" displayName="Stripe Webhook Handler - SetupIntent Update Dataverse" id="{764a95cb-e427-f111-88b4-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_stripecustomer" displayName="Stripe Customer" solution="Active" />
+        <Dependent type="29" displayName="Stripe Create Customer SetupIntent" id="{c849eae9-5627-f111-88b4-000d3a7a0035}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_stripepaymentmethod" displayName="Stripe Payment Method" solution="Active" />
+        <Dependent type="29" displayName="Stripe Webhook Handler - SetupIntent Update Dataverse" id="{764a95cb-e427-f111-88b4-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_venuespacebookingrequest" displayName="Venue Space Booking Request" solution="Active" />
+        <Dependent type="29" displayName="Venue Booking Handler (child)" id="{9227f693-2b53-f111-a825-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="hit_venuespacebookingrequest" displayName="Venue Space Booking Request" solution="Active" />
+        <Dependent type="29" displayName="trigger_Venue Space Booking Request - Approval Status" id="{b361d99d-3153-f111-a825-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msevtmgt_event" displayName="Event" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="29" displayName="Offering Specific Fulfillment Handler (child)" id="{d8c86757-d757-f111-a825-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="1" schemaName="msevtmgt_eventregistration" displayName="Event Registration" solution="MicrosoftDynamics_EventManagement (1.53.1162.80)">
+          <package appName="D365fM" version="1.122.2010.706">MicrosoftDynamics_MktCompleteAnchorSolution (1.122.2010.706)</package>
+          <package appName="CXP" version="1.3.1162.80">DynamicsMKT_AnchorSolution (1.3.1162.80)</package>
+        </Required>
+        <Dependent type="29" displayName="Offering Specific Fulfillment Handler (child)" id="{d8c86757-d757-f111-a825-000d3a7a0cab}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_approvalstatus" displayName="Approval Status" parentSchemaName="hit_venuespacebookingrequest" parentDisplayName="Venue Space Booking Request" solution="Active" />
+        <Dependent type="29" displayName="trigger_Venue Space Booking Request - Approval Status" id="{b361d99d-3153-f111-a825-000d3a7a0323}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_itemid" displayName="Item ID" parentSchemaName="hit_offeringfulfillment" parentDisplayName="Offering Fulfillment" solution="Active" />
+        <Dependent type="10" schemaName="hit_offeringacceptance_OfferingFulfillment_hit_offeringfulfillment" displayName="hit_offeringacceptance_OfferingFulfillment_hit_offeringfulfillment" parentSchemaName="hit_offeringfulfillment" parentDisplayName="Offering Fulfillment" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_name" displayName="Name" parentSchemaName="hit_contactorganisation" parentDisplayName="Contact Org Relationship" solution="Active" />
+        <Dependent type="10" schemaName="hit_offeringacceptance_ContactOrganisation_hit_contactorganisation" displayName="hit_offeringacceptance_ContactOrganisation_hit_contactorganisation" parentSchemaName="hit_contactorganisation" parentDisplayName="Contact Org Relationship" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_name" displayName="Name" parentSchemaName="hit_contactorgroletype" parentDisplayName="Contact Org Role Type" solution="Active" />
+        <Dependent type="10" schemaName="hit_offeringacceptance_ContactOrgRoleType_hit_contactorgroletype" displayName="hit_offeringacceptance_ContactOrgRoleType_hit_contactorgroletype" parentSchemaName="hit_contactorgroletype" parentDisplayName="Contact Org Role Type" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_name" displayName="Initiative Name" parentSchemaName="hit_initiative" parentDisplayName="Initiative" solution="Active" />
+        <Dependent type="10" schemaName="hit_offeringacceptance_Initiative_hit_initiative" displayName="hit_offeringacceptance_Initiative_hit_initiative" parentSchemaName="hit_initiative" parentDisplayName="Initiative" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_name" displayName="Schedule ID" parentSchemaName="hit_paymentschedule" parentDisplayName="Payment Schedule" solution="Active" />
+        <Dependent type="10" schemaName="hit_paymenttransaction_PaymentSchedule_hit_paymentschedule" displayName="hit_paymenttransaction_PaymentSchedule_hit_paymentschedule" parentSchemaName="hit_paymentschedule" parentDisplayName="Payment Schedule" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_name" displayName="Name" parentSchemaName="hit_priceoption" parentDisplayName="Price Option" solution="Active" />
+        <Dependent type="10" schemaName="hit_offeringacceptance_PriceOption_hit_priceoption" displayName="hit_offeringacceptance_PriceOption_hit_priceoption" parentSchemaName="hit_priceoption" parentDisplayName="Price Option" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_name" displayName="Program Name" parentSchemaName="hit_program" parentDisplayName="Program" solution="Active" />
+        <Dependent type="10" schemaName="hit_offeringacceptance_Program_hit_program" displayName="hit_offeringacceptance_Program_hit_program" parentSchemaName="hit_program" parentDisplayName="Program" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_name" displayName="Program Name" parentSchemaName="hit_program" parentDisplayName="Program" solution="Active" />
+        <Dependent type="10" schemaName="hit_paymenttransaction_Program_hit_program" displayName="hit_paymenttransaction_Program_hit_program" parentSchemaName="hit_program" parentDisplayName="Program" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_offeringid" displayName="Offering" parentSchemaName="hit_offering" parentDisplayName="Offering" solution="Active" />
+        <Dependent type="26" schemaName="Active Offering Acceptances" displayName="Active Offering Acceptances" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" id="{f2049ad3-837c-4ce1-8916-74ae23e37398}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_offeringname" displayName="Offering Name" parentSchemaName="hit_offering" parentDisplayName="Offering" solution="Active" />
+        <Dependent type="10" schemaName="hit_offeringacceptance_Offering_hit_offering" displayName="hit_offeringacceptance_Offering_hit_offering" parentSchemaName="hit_offering" parentDisplayName="Offering" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_offeringname" displayName="Offering Name" parentSchemaName="hit_offering" parentDisplayName="Offering" solution="Active" />
+        <Dependent type="10" schemaName="hit_paymenttransaction_Offering_hit_offering" displayName="hit_paymenttransaction_Offering_hit_offering" parentSchemaName="hit_offering" parentDisplayName="Offering" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="2" schemaName="hit_offeringtype" displayName="Offering Type" parentSchemaName="hit_offering" parentDisplayName="Offering" solution="Active" />
+        <Dependent type="26" schemaName="Active Offering Acceptances" displayName="Active Offering Acceptances" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" id="{f2049ad3-837c-4ce1-8916-74ae23e37398}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_acceptancestatus" displayName="Acceptance Status" solution="Active" />
+        <Dependent type="2" schemaName="hit_acceptancestatus" displayName="Acceptance Status" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_acceptancestatus" displayName="Acceptance Status" solution="Active" />
+        <Dependent type="2" schemaName="hit_lastprocessedstatus" displayName="Last Processed Status" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_attemptstatus" displayName="Attempt Status" solution="Active" />
+        <Dependent type="2" schemaName="hit_attemptstatus" displayName="Attempt Status" parentSchemaName="hit_paymenttransaction" parentDisplayName="Payment Transaction" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_offeringtype" displayName="Offering Type" solution="Active" />
+        <Dependent type="2" schemaName="hit_offeringtype" displayName="Offering Type" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_paymentmethodtype" displayName="Payment Method Type" solution="Active" />
+        <Dependent type="2" schemaName="hit_paymentmethodtype" displayName="Payment Method Type" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_paymentprovider" displayName="Payment Provider" solution="Active" />
+        <Dependent type="2" schemaName="hit_paymentprovider" displayName="Payment Provider" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_recieptstatus" displayName="Receipt Status" solution="Active" />
+        <Dependent type="2" schemaName="hit_receiptstatus" displayName="Receipt Status" parentSchemaName="hit_paymenttransaction" parentDisplayName="Payment Transaction" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_recurringfrequency" displayName="Recurring Frequency" solution="Active" />
+        <Dependent type="2" schemaName="hit_recurringfrequency" displayName="Recurring Frequency" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_revenuesource" displayName="Revenue Source" solution="Active" />
+        <Dependent type="2" schemaName="hit_revenuesource" displayName="Revenue Source" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_revenuesource" displayName="Revenue Source" solution="Active" />
+        <Dependent type="2" schemaName="hit_revenuesource" displayName="Revenue Source" parentSchemaName="hit_paymenttransaction" parentDisplayName="Payment Transaction" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_rolelevel" displayName="Role Level" solution="Active" />
+        <Dependent type="2" schemaName="hit_rolelevel" displayName="Role Level" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_sourcechannel" displayName="Source Channel" solution="Active" />
+        <Dependent type="2" schemaName="hit_sourcechannel" displayName="Source Channel" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_sourcechannel" displayName="Source Channel" solution="Active" />
+        <Dependent type="2" schemaName="hit_sourcechannel" displayName="Source Channel" parentSchemaName="hit_paymenttransaction" parentDisplayName="Payment Transaction" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_statusofpayment" displayName="Status of Payment" solution="Active" />
+        <Dependent type="2" schemaName="hit_paymentstatus" displayName="Payment Status" parentSchemaName="hit_offeringacceptance" parentDisplayName="Offering Acceptance" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_statusofpayment" displayName="Status of Payment" solution="Active" />
+        <Dependent type="2" schemaName="hit_paymentstatus" displayName="Payment Status" parentSchemaName="hit_paymenttransaction" parentDisplayName="Payment Transaction" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="9" schemaName="hit_transactioncategory" displayName="Transaction Category" solution="Active" />
+        <Dependent type="2" schemaName="hit_transactioncategory" displayName="Transaction Category" parentSchemaName="hit_paymenttransaction" parentDisplayName="Payment Transaction" />
+      </MissingDependency>
+    </MissingDependencies>
+  </SolutionManifest>
+</ImportExportXml>

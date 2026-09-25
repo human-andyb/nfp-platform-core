@@ -1,0 +1,677 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_2d19c"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "a4bc1238-9b42-4b86-9240-784e6c1d87c6"
+          },
+          "type": "Request",
+          "kind": "Http",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "acceptanceId": {
+                  "type": "string"
+                }
+              }
+            },
+            "method": "POST",
+            "triggerAuthenticationType": "All"
+          }
+        }
+      },
+      "actions": {
+        "init_vFound": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "de2edce2-747b-465d-a682-7eece8969961"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "vFound",
+                "type": "boolean",
+                "value": false
+              }
+            ]
+          }
+        },
+        "init_iTargetStatus": {
+          "runAfter": {
+            "init_sPaymentIntent": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "91161373-ba79-49d3-bfba-d4210ae07877"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "iTargetStatus",
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "init_iCurStatus": {
+          "runAfter": {
+            "init_iTargetStatus": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "4bab73af-cae4-4f4c-9261-dc7138bc3780"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "iCurStatus",
+                "type": "integer",
+                "value": "@outputs('OffAcceptance')?['body/hit_acceptancestatus']"
+              }
+            ]
+          }
+        },
+        "init_iLastStatus": {
+          "runAfter": {
+            "init_iCurStatus": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "9904f43e-f1b0-4319-8678-59e1f5f9bb76"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "iLastStatus",
+                "type": "integer",
+                "value": "@outputs('OffAcceptance')?['body/hit_lastprocessedstatus']"
+              }
+            ]
+          }
+        },
+        "OffAcceptance": {
+          "runAfter": {
+            "init_vFound": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "2eb90ffe-45d8-47b4-97a6-6588220ca065"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "recordId": "@triggerBody()?['acceptanceId']"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "is_complete": {
+          "actions": {
+            "Response_-_200_passthrough": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "a22be2fd-7b99-45d2-9fb9-213a54fda905"
+              },
+              "type": "Response",
+              "kind": "Http",
+              "inputs": {
+                "statusCode": 200,
+                "body": {
+                  "hit_stripepaymentintentid": "",
+                  "hit_stripeclientsecret": "",
+                  "hit_acceptancestatus": "@{variables('iCurStatus')}"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "init_iLastStatus": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "vFound_is_true": {
+                "actions": {
+                  "Response_-_200": {
+                    "runAfter": {},
+                    "metadata": {
+                      "operationMetadataId": "a22be2fd-7b99-45d2-9fb9-213a54fda905"
+                    },
+                    "type": "Response",
+                    "kind": "Http",
+                    "inputs": {
+                      "statusCode": 200,
+                      "body": {
+                        "hit_stripepaymentintentid": "@{variables('sPaymentIntent')}",
+                        "hit_stripeclientsecret": "@{variables('sClientSecret')}",
+                        "hit_acceptancestatus": "@{variables('iTargetStatus')}"
+                      }
+                    }
+                  }
+                },
+                "runAfter": {
+                  "vFound_-_true": [
+                    "Succeeded"
+                  ]
+                },
+                "expression": {
+                  "and": [
+                    {
+                      "equals": [
+                        "@variables('vFound')",
+                        "@true"
+                      ]
+                    }
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "3cb104ad-1235-4e33-af0e-366a73cea50f"
+                },
+                "type": "If"
+              },
+              "Switch": {
+                "runAfter": {},
+                "cases": {
+                  "Pending_Information_-_815390000": {
+                    "case": 815390000,
+                    "actions": {
+                      "Switch_-_Fulfillment_Mode": {
+                        "runAfter": {},
+                        "cases": {
+                          "Instant_-_815390000": {
+                            "case": 815390000,
+                            "actions": {
+                              "payment_required": {
+                                "actions": {
+                                  "set_iTargetStatus_-_Pending_Payment": {
+                                    "runAfter": {},
+                                    "metadata": {
+                                      "operationMetadataId": "859589b5-6a7a-4399-80bd-ed4de7397bc6"
+                                    },
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                      "name": "iTargetStatus",
+                                      "value": 815390001
+                                    }
+                                  }
+                                },
+                                "runAfter": {},
+                                "else": {
+                                  "actions": {
+                                    "set_iTargetStatus_-_completed": {
+                                      "runAfter": {},
+                                      "metadata": {
+                                        "operationMetadataId": "385e1a07-ad29-4447-9ac6-b7f05eda5691"
+                                      },
+                                      "type": "SetVariable",
+                                      "inputs": {
+                                        "name": "iTargetStatus",
+                                        "value": 815390003
+                                      }
+                                    },
+                                    "set_vFound_-_true_no_pay": {
+                                      "runAfter": {
+                                        "set_iTargetStatus_-_completed": [
+                                          "Succeeded"
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "fd528bbb-2530-4661-a2a5-a44d249afb5a"
+                                      },
+                                      "type": "SetVariable",
+                                      "inputs": {
+                                        "name": "vFound",
+                                        "value": true
+                                      }
+                                    }
+                                  }
+                                },
+                                "expression": {
+                                  "and": [
+                                    {
+                                      "equals": [
+                                        "@outputs('OffAcceptance')?['body/hit_paymentrequired']",
+                                        "@true"
+                                      ]
+                                    }
+                                  ]
+                                },
+                                "metadata": {
+                                  "operationMetadataId": "c7985ba7-9b67-48ff-b3d9-9a6cdd10fd80"
+                                },
+                                "type": "If"
+                              }
+                            }
+                          },
+                          "Approval_Required_-_815390001": {
+                            "case": 815390001,
+                            "actions": {
+                              "set_iTargetStatus_-_Pending_Approval": {
+                                "runAfter": {},
+                                "metadata": {
+                                  "operationMetadataId": "52fcbbbc-bf8a-485c-926c-d73bf01048b0"
+                                },
+                                "type": "SetVariable",
+                                "inputs": {
+                                  "name": "iTargetStatus",
+                                  "value": 815390002
+                                }
+                              }
+                            }
+                          },
+                          "External_Process_-_815390002": {
+                            "case": 815390002,
+                            "actions": {}
+                          }
+                        },
+                        "default": {
+                          "actions": {}
+                        },
+                        "expression": "@outputs('offering')?['body/hit_fulfillmentmode']",
+                        "metadata": {
+                          "operationMetadataId": "1c02dc6d-a017-432c-b58b-d66aff344c75"
+                        },
+                        "type": "Switch"
+                      }
+                    }
+                  },
+                  "Pending_Payment_-_815390001": {
+                    "case": 815390001,
+                    "actions": {
+                      "set_iTargetStatus_-_completed_payment": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "ee249705-5809-4aaa-a6d7-af78de0ee667"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "iTargetStatus",
+                          "value": 815390003
+                        }
+                      }
+                    }
+                  },
+                  "Pending_Approval_-_815390002": {
+                    "case": 815390002,
+                    "actions": {
+                      "payment_required_-_approval": {
+                        "actions": {
+                          "set_iTargetStatus_-_Pending_payment_approval": {
+                            "runAfter": {},
+                            "metadata": {
+                              "operationMetadataId": "7563c51a-b4bd-4d29-96a0-1c511270e7a9"
+                            },
+                            "type": "SetVariable",
+                            "inputs": {
+                              "name": "iTargetStatus",
+                              "value": 815390001
+                            }
+                          }
+                        },
+                        "runAfter": {},
+                        "else": {
+                          "actions": {
+                            "set_iTargetStatus_-_completed_approval": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "2c43d1d8-22c3-466d-a995-a8a8c48b7fd6"
+                              },
+                              "type": "SetVariable",
+                              "inputs": {
+                                "name": "iTargetStatus",
+                                "value": 815390003
+                              }
+                            }
+                          }
+                        },
+                        "expression": {
+                          "and": [
+                            {
+                              "equals": [
+                                "@outputs('OffAcceptance')?['body/hit_paymentrequired']",
+                                "@true"
+                              ]
+                            }
+                          ]
+                        },
+                        "metadata": {
+                          "operationMetadataId": "aaf256d8-8775-4bcf-a4d8-d05a344b9ac2"
+                        },
+                        "type": "If"
+                      }
+                    }
+                  }
+                },
+                "default": {
+                  "actions": {}
+                },
+                "expression": "@variables('iCurStatus')",
+                "metadata": {
+                  "operationMetadataId": "1e752358-77e2-49ed-95ec-dafe214f36bc"
+                },
+                "type": "Switch"
+              },
+              "vFound_-_true": {
+                "actions": {},
+                "runAfter": {
+                  "Switch": [
+                    "Succeeded"
+                  ]
+                },
+                "else": {
+                  "actions": {
+                    "Do_until": {
+                      "actions": {
+                        "OfferingAcceptance": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "56af199a-93e6-40fb-8828-422bdef61b0b"
+                          },
+                          "type": "OpenApiConnection",
+                          "inputs": {
+                            "host": {
+                              "connectionName": "shared_commondataserviceforapps",
+                              "operationId": "GetItem",
+                              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                            },
+                            "parameters": {
+                              "entityName": "hit_offeringacceptances",
+                              "recordId": "@triggerBody()?['acceptanceId']"
+                            },
+                            "authentication": "@parameters('$authentication')"
+                          }
+                        },
+                        "status_=_target": {
+                          "actions": {
+                            "target_=_pending_payment": {
+                              "actions": {
+                                "paymentintent_exists": {
+                                  "actions": {
+                                    "set_vFound_-_true": {
+                                      "runAfter": {},
+                                      "metadata": {
+                                        "operationMetadataId": "f78b2386-feb1-4ac0-b283-70c2179b1384"
+                                      },
+                                      "type": "SetVariable",
+                                      "inputs": {
+                                        "name": "vFound",
+                                        "value": true
+                                      }
+                                    },
+                                    "set_sClientSecret": {
+                                      "runAfter": {
+                                        "set_vFound_-_true": [
+                                          "Succeeded"
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "67f84737-492c-4eac-b3ba-22861c1edff3"
+                                      },
+                                      "type": "SetVariable",
+                                      "inputs": {
+                                        "name": "sClientSecret",
+                                        "value": "@outputs('OfferingAcceptance')?['body/hit_stripeclientsecret']"
+                                      }
+                                    },
+                                    "set_sPaymentIntent": {
+                                      "runAfter": {
+                                        "set_sClientSecret": [
+                                          "Succeeded"
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "d33f0c70-e7e7-404a-9b1e-e242c4b048a1"
+                                      },
+                                      "type": "SetVariable",
+                                      "inputs": {
+                                        "name": "sPaymentIntent",
+                                        "value": "@outputs('OfferingAcceptance')?['body/hit_stripepaymentintentid']"
+                                      }
+                                    }
+                                  },
+                                  "runAfter": {},
+                                  "expression": {
+                                    "and": [
+                                      {
+                                        "equals": [
+                                          "@not(empty(outputs('OfferingAcceptance')?['body/hit_stripepaymentintentid']))",
+                                          "@true"
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  "metadata": {
+                                    "operationMetadataId": "0a9af71a-7fe0-48b5-beeb-b83e20c6b122"
+                                  },
+                                  "type": "If"
+                                }
+                              },
+                              "runAfter": {},
+                              "else": {
+                                "actions": {
+                                  "set_vFound_-_true_1": {
+                                    "runAfter": {},
+                                    "metadata": {
+                                      "operationMetadataId": "f78b2386-feb1-4ac0-b283-70c2179b1384"
+                                    },
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                      "name": "vFound",
+                                      "value": true
+                                    }
+                                  }
+                                }
+                              },
+                              "expression": {
+                                "and": [
+                                  {
+                                    "equals": [
+                                      "@variables('iTargetStatus')",
+                                      815390001
+                                    ]
+                                  }
+                                ]
+                              },
+                              "metadata": {
+                                "operationMetadataId": "faad13d8-9505-41fc-abff-3712a4a21e64"
+                              },
+                              "type": "If"
+                            }
+                          },
+                          "runAfter": {
+                            "OfferingAcceptance": [
+                              "Succeeded"
+                            ]
+                          },
+                          "else": {
+                            "actions": {
+                              "Delay_-_2_sec": {
+                                "runAfter": {},
+                                "metadata": {
+                                  "operationMetadataId": "5aca9e81-f17a-4648-bff2-c97b79caab04"
+                                },
+                                "type": "Wait",
+                                "inputs": {
+                                  "interval": {
+                                    "count": 1,
+                                    "unit": "Second"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "expression": {
+                            "and": [
+                              {
+                                "equals": [
+                                  "@outputs('OfferingAcceptance')?['body/hit_acceptancestatus']",
+                                  "@variables('iTargetStatus')"
+                                ]
+                              }
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "bf7dd875-6655-46d6-ae18-a10eb87f937d"
+                          },
+                          "type": "If"
+                        }
+                      },
+                      "runAfter": {},
+                      "expression": "@equals(variables('vFound'),true)",
+                      "limit": {
+                        "count": 40,
+                        "timeout": "PT2M"
+                      },
+                      "metadata": {
+                        "operationMetadataId": "c87e1608-96d8-41e6-a33b-673a20fe73e0"
+                      },
+                      "type": "Until"
+                    }
+                  }
+                },
+                "expression": {
+                  "and": [
+                    {
+                      "equals": [
+                        "@variables('vFound')",
+                        "@true"
+                      ]
+                    }
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "ac3c5502-40bb-4c73-9604-60c209889c25"
+                },
+                "type": "If"
+              }
+            }
+          },
+          "expression": {
+            "or": [
+              {
+                "greaterOrEquals": [
+                  "@variables('iCurStatus')",
+                  815390003
+                ]
+              },
+              {
+                "equals": [
+                  "@variables('iCurStatus')",
+                  "@variables('iLastStatus')"
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "68d2d589-0e9b-4ab5-8b07-745e23be07ce"
+          },
+          "type": "If"
+        },
+        "offering": {
+          "runAfter": {
+            "OffAcceptance": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "4debc754-debb-4134-90ee-99fe10e98573"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offerings",
+              "recordId": "@outputs('OffAcceptance')?['body/_hit_offering_value']"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "init_sClientSecret": {
+          "runAfter": {
+            "offering": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "bdcfc0bd-b143-4606-bd22-62ed5d15ffba"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sClientSecret",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_sPaymentIntent": {
+          "runAfter": {
+            "init_sClientSecret": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "9d68bfb5-fe92-4434-ac6f-a1d0e00d6036"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sPaymentIntent",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

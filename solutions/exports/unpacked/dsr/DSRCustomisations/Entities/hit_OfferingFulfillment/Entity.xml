@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name LocalizedName="Offering Fulfillment" OriginalName="Offering Fulfillment">hit_OfferingFulfillment</Name>
+  <EntityInfo>
+    <entity Name="hit_OfferingFulfillment" unmodified="1">
+      <attributes />
+    </entity>
+  </EntityInfo>
+  <RibbonDiffXml />
+</Entity>

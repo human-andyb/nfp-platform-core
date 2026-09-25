@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CanvasApp xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>hit_webconfiguration_1f8d2</Name>
+  <AppVersion>2026-09-14T04:08:39Z</AppVersion>
+  <Status>Ready</Status>
+  <CreatedByClientVersion>3.26074.5.0</CreatedByClientVersion>
+  <MinClientVersion>3.26074.5.0</MinClientVersion>
+  <Tags>{"primaryDeviceWidth":"1366","primaryDeviceHeight":"768","supportsPortrait":"true","supportsLandscape":"true","primaryFormFactor":"Tablet","showStatusBar":"false","publisherVersion":"3.26074.5","minimumRequiredApiVersion":"2.2.0","hasComponent":"false","hasUnlockedComponent":"false","isUnifiedRootApp":"false","m365CopilotSettingValue":"0","sienaVersion":"20260731T015156Z-3.26074.5.0"}</Tags>
+  <IsCdsUpgraded>0</IsCdsUpgraded>
+  <GalleryItemId xsi:nil="true"></GalleryItemId>
+  <BackgroundColor>RGBA(0,176,240,1)</BackgroundColor>
+  <DisplayName>Web Configuration</DisplayName>
+  <Description></Description>
+  <CommitMessage></CommitMessage>
+  <Publisher></Publisher>
+  <AuthorizationReferences>[]</AuthorizationReferences>
+  <ConnectionReferences>{}</ConnectionReferences>
+  <DatabaseReferences>{"default.cds":{"databaseDetails":{"referenceType":"Environmental","environmentName":"default.cds","overrideValues":{"status":"NotSpecified","environmentVariableName":""}},"dataSources":{"Platform Pages":{"entitySetName":"hit_platformpages","logicalName":"hit_platformpage"},"Platform Page Sections":{"entitySetName":"hit_platformpagesections","logicalName":"hit_platformpagesection"},"Platform Page Section Types":{"entitySetName":"hit_platformpagesectiontypes","logicalName":"hit_platformpagesectiontype"},"Articles":{"entitySetName":"hit_articles","logicalName":"hit_article"},"Web Gallery Configs":{"entitySetName":"hit_webgalleryconfigs","logicalName":"hit_webgalleryconfig"},"Web Nav Menus":{"entitySetName":"hit_webnavmenus","logicalName":"hit_webnavmenu"},"Web Nav Menu Items":{"entitySetName":"hit_webnavmenuitems","logicalName":"hit_webnavmenuitem"},"Platform Entry Points":{"entitySetName":"hit_platformentrypoints","logicalName":"hit_platformentrypoint"},"Brand Settings":{"entitySetName":"hit_brandsettingses","logicalName":"hit_brandsettings"},"Offerings_1":{"entitySetName":"hit_offerings","logicalName":"hit_offering"},"Platform Routes":{"entitySetName":"hit_platformroutes","logicalName":"hit_platformroute"},"Platform Section Layouts":{"entitySetName":"hit_platformsectionlayouts","logicalName":"hit_platformsectionlayout"},"Platform Page Slots":{"entitySetName":"hit_platformpageslots","logicalName":"hit_platformpageslot"},"Environment Variable Definitions":{"entitySetName":"environmentvariabledefinitions","logicalName":"environmentvariabledefinition"},"Environment Variable Values":{"entitySetName":"environmentvariablevalues","logicalName":"environmentvariablevalue"},"Personas":{"entitySetName":"hit_personas","logicalName":"hit_persona"},"Programs":{"entitySetName":"hit_programs","logicalName":"hit_program"}}}}</DatabaseReferences>
+  <AppComponents>[]</AppComponents>
+  <AppComponentDependencies>[]</AppComponentDependencies>
+  <CanConsumeAppPass>1</CanConsumeAppPass>
+  <CanvasAppType>2</CanvasAppType>
+  <BypassConsent>0</BypassConsent>
+  <AdminControlBypassConsent>0</AdminControlBypassConsent>
+  <EmbeddedApp xsi:nil="true"></EmbeddedApp>
+  <IntroducedVersion>1.0</IntroducedVersion>
+  <CdsDependencies>{"cdsdependencies":[{"componenttype":1,"logicalname":"hit_platformpage"},{"componenttype":1,"logicalname":"hit_platformpagesection"},{"componenttype":1,"logicalname":"hit_platformpagesectiontype"},{"componenttype":1,"logicalname":"hit_article"},{"componenttype":1,"logicalname":"hit_webgalleryconfig"},{"componenttype":1,"logicalname":"hit_webnavmenu"},{"componenttype":1,"logicalname":"hit_webnavmenuitem"},{"componenttype":1,"logicalname":"hit_platformentrypoint"},{"componenttype":1,"logicalname":"hit_brandsettings"},{"componenttype":1,"logicalname":"hit_offering"},{"componenttype":1,"logicalname":"hit_platformroute"},{"componenttype":1,"logicalname":"hit_platformsectionlayout"},{"componenttype":1,"logicalname":"hit_platformpageslot"},{"componenttype":1,"logicalname":"environmentvariabledefinition"},{"componenttype":1,"logicalname":"environmentvariablevalue"},{"componenttype":1,"logicalname":"hit_persona"},{"componenttype":1,"logicalname":"hit_program"}]}</CdsDependencies>
+  <IsCustomizable>1</IsCustomizable>
+  <BackgroundImageUri>/CanvasApps/hit_webconfiguration_1f8d2_BackgroundImageUri</BackgroundImageUri>
+  <DocumentUri>/CanvasApps/hit_webconfiguration_1f8d2_DocumentUri.msapp</DocumentUri>
+  <AdditionalUris>
+    <AdditionalUri>/CanvasApps/hit_webconfiguration_1f8d2_AdditionalUris0_identity.json</AdditionalUri>
+  </AdditionalUris>
+</CanvasApp>

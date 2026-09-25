@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="8d88ef3e-9f7a-4c0d-9f19-1f8f7d8c80d1">
+  <content>{
+  "source": 0,
+  "value": "https://c767551e0076ed96815606468fc034.c3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/19/workflows/a0c588395a184cd981bac709cfd3d1dc/triggers/manual/paths/invoke?api-version=1&amp;sp=%2Ftriggers%2Fmanual%2Frun&amp;sv=1.0&amp;sig=0JCtYyFvsG0IKxkZ3UP30Z54i-84fiZ-u6UHRtRGreU"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Flow/AcceptanceStatusValidation</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

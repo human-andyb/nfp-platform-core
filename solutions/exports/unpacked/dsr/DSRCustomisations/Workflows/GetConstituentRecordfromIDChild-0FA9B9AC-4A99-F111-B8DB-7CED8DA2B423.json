@@ -1,0 +1,334 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "39abfbf5-585d-463c-8cc1-74a7b627aac7"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "constituentID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "contacts": {
+          "runAfter": {
+            "init_sRecordGUID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "430318a4-fa00-43d0-ba3c-d9c9ac2eb748"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "contacts",
+              "$filter": "hit_constituentid eq '@{triggerBody()['text']}'",
+              "$top": 1
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Compose": {
+          "runAfter": {
+            "contacts": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f143422b-25ed-4060-a02c-182e083764db"
+          },
+          "type": "Compose",
+          "inputs": "@length(outputs('contacts')?['body/value'])"
+        },
+        "is_contact": {
+          "actions": {
+            "Apply_to_each": {
+              "foreach": "@outputs('contacts')?['body/value']",
+              "actions": {
+                "Compose_2": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "8eff23e2-8274-4fc9-8b56-f1b0e00e4778"
+                  },
+                  "type": "Compose",
+                  "inputs": "@items('Apply_to_each')?['fullname']"
+                },
+                "set_sRecordGUID_-_contact": {
+                  "runAfter": {
+                    "Compose_2": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "23129ab5-e13c-4e2c-b2a7-4def3b44fe25"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "sRecordGUID",
+                    "value": "@items('Apply_to_each')?['contactid']"
+                  }
+                }
+              },
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "61d01fa3-ee6b-4b81-9665-626e97445cd7"
+              },
+              "type": "Foreach"
+            },
+            "set_sType_-_contact": {
+              "runAfter": {
+                "Apply_to_each": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "bc686c96-dafd-4a28-bbf7-d533fc5e399b"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "sType",
+                "value": "Contact"
+              }
+            }
+          },
+          "runAfter": {
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "organisations": {
+                "runAfter": {},
+                "metadata": {
+                  "operationMetadataId": "a251ac2a-14eb-42df-8621-c12f9cfea1b4"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_commondataserviceforapps",
+                    "operationId": "ListRecords",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                  },
+                  "parameters": {
+                    "entityName": "accounts",
+                    "$filter": "accountnumber eq '@{triggerBody()['text']}'",
+                    "$top": 1
+                  },
+                  "authentication": {
+                    "type": "Raw",
+                    "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                  }
+                }
+              },
+              "is_organisation": {
+                "actions": {
+                  "set_sType_-_Organisation": {
+                    "runAfter": {},
+                    "metadata": {
+                      "operationMetadataId": "adeaa74e-1ba6-4fa4-ad06-29e4dfed7586"
+                    },
+                    "type": "SetVariable",
+                    "inputs": {
+                      "name": "sType",
+                      "value": "Organisation"
+                    }
+                  },
+                  "Apply_to_each_2": {
+                    "foreach": "@outputs('organisations')?['body/value']",
+                    "actions": {
+                      "set_sRecordGUID": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "01720796-1314-44c2-a6d1-43aafb9674e8"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "sRecordGUID",
+                          "value": "@items('Apply_to_each_2')?['accountid']"
+                        }
+                      }
+                    },
+                    "runAfter": {
+                      "set_sType_-_Organisation": [
+                        "Succeeded"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "b5026dae-b67d-421e-a02d-14ba10211b93"
+                    },
+                    "type": "Foreach"
+                  }
+                },
+                "runAfter": {
+                  "organisations": [
+                    "Succeeded"
+                  ]
+                },
+                "expression": {
+                  "greater": [
+                    "@length(outputs('organisations')?['body/value'])",
+                    0
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "28af301a-6b5d-41c0-acc4-ee7ce298ec96"
+                },
+                "type": "If"
+              }
+            }
+          },
+          "expression": {
+            "greater": [
+              "@length(outputs('contacts')?['body/value'])",
+              0
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1db3f74d-7294-4fd9-a82b-8745ea4403d4"
+          },
+          "type": "If"
+        },
+        "init_sType": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "8ae8ffb8-64c3-4821-bb4a-78a6e6614bac"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sType",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_sRecordGUID": {
+          "runAfter": {
+            "init_sType": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "d0b46a19-ac83-4ce2-ae6c-c303e55cf43f"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sRecordGUID",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "Compose_3": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f209e43f-4300-43b5-8983-5207ea36d24a"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "exists": "@{not(empty(variables('sRecordGUID')))}",
+              "type": "@variables('sType')",
+              "recordguid": "@variables('sRecordGUID')"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "exists": {
+                  "title": "exists",
+                  "x-ms-dynamically-added": true,
+                  "type": "boolean"
+                },
+                "type": {
+                  "title": "type",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                },
+                "recordguid": {
+                  "title": "recordGUID",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "Compose_3": {
+          "runAfter": {
+            "is_contact": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "fdb78582-8730-4238-b56d-fa301374dbfc"
+          },
+          "type": "Compose",
+          "inputs": "exists -@{not(empty(variables('sRecordGUID')))}\ntype - @{variables('sType')}\nrecordGUID - @{variables('sRecordGUID')}"
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,1677 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_2d19c"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "EV_LIF_AT_RISK_MONTHS (hit_EV_LIF_AT_RISK_MONTHS)": {
+          "defaultValue": 24,
+          "type": "Int",
+          "metadata": {
+            "schemaName": "hit_EV_LIF_AT_RISK_MONTHS",
+            "description": "Lifecycle window - months"
+          }
+        },
+        "EV_VAL_HIGH_THRESHOLD (hit_EV_VAL_HIGH_THRESHOLD)": {
+          "defaultValue": 500,
+          "type": "Int",
+          "metadata": {
+            "schemaName": "hit_EV_VAL_HIGH_THRESHOLD"
+          }
+        },
+        "EV_LIF_ACTIVE_MONTHS (hit_EV_LIF_ACTIVE_MONTHS)": {
+          "defaultValue": 12,
+          "type": "Int",
+          "metadata": {
+            "schemaName": "hit_EV_LIF_ACTIVE_MONTHS",
+            "description": "Lifecycle window - months"
+          }
+        },
+        "EV_VAL_MID_THRESHOLD (hit_EV_VAL_MID_THRESHOLD)": {
+          "defaultValue": 100,
+          "type": "Int",
+          "metadata": {
+            "schemaName": "hit_EV_VAL_MID_THRESHOLD"
+          }
+        },
+        "EV_ENG_HIGH_DAYS (hit_EV_ENG_HIGH_DAYS)": {
+          "defaultValue": 365,
+          "type": "Int",
+          "metadata": {
+            "schemaName": "hit_EV_ENG_HIGH_DAYS",
+            "description": "Engagement window - days"
+          }
+        },
+        "EV_ENG_LOW_DAYS (hit_EV_ENG_LOW_DAYS)": {
+          "defaultValue": 740,
+          "type": "Int",
+          "metadata": {
+            "schemaName": "hit_EV_ENG_LOW_DAYS",
+            "description": "Engagement window - days"
+          }
+        },
+        "EV_ENG_MEDIUM_DAYS (hit_EV_ENG_MEDIUM_DAYS)": {
+          "defaultValue": 547,
+          "type": "Int",
+          "metadata": {
+            "schemaName": "hit_EV_ENG_MEDIUM_DAYS",
+            "description": "Engagement window - days"
+          }
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "f63c8b41-f626-45ca-a004-343297925abc"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "contactId",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Contact GUID",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_1": {
+                  "title": "Source",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "default Manual",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text",
+                "text_1"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "init_varContactId": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "e03ceecd-78aa-4512-9ee3-276a3ab523a3"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varContactId",
+                "type": "string",
+                "value": "@triggerBody()['text']"
+              }
+            ]
+          }
+        },
+        "init_varSource": {
+          "runAfter": {
+            "init_varContactId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "053e8c3d-75c0-4562-916e-de24c5f2da17"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varSource",
+                "type": "string",
+                "value": "@triggerBody()['text_1']"
+              }
+            ]
+          }
+        },
+        "init_varDonationCount": {
+          "runAfter": {
+            "init_varSource": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "b94c4548-8145-425c-b1d1-7fafa0a60fde"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varDonationCount",
+                "type": "integer",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "init_varDonationLast12Months": {
+          "runAfter": {
+            "init_varDonationCount": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "bbc186aa-a816-43e1-9283-89a5a77b3c34"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varDonationLast12Months",
+                "type": "integer",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "init_varLifetimeValue": {
+          "runAfter": {
+            "init_varDonationLast12Months": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "341697cb-1691-4a9c-b61a-5bdaf448bd2e"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varLifetimeValue",
+                "type": "float",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "init_varLastDonationDate": {
+          "runAfter": {
+            "init_varLifetimeValue": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "6ffbe05e-a8a3-4c60-adc6-a70ececc1846"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varLastDonationDate",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "varHasLastDonation": {
+          "runAfter": {
+            "init_varFirstDonationDate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1525ebdf-6bde-470b-a29b-19672b03bd4b"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varHasLastDonation",
+                "type": "boolean",
+                "value": false
+              }
+            ]
+          }
+        },
+        "init_varLastEngagementDate": {
+          "runAfter": {
+            "varHasLastDonation": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "eb20d537-363d-42df-a13c-df700fc726de"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varLastEngagementDate",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_varDaysSinceEngagement": {
+          "runAfter": {
+            "init_varLastEngagementType": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "348f0f99-3e84-40e5-8d66-30d5c6041991"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varDaysSinceEngagement",
+                "type": "integer",
+                "value": 99999
+              }
+            ]
+          }
+        },
+        "init_varTargetLifCode": {
+          "runAfter": {
+            "init_varDaysSinceEngagement": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "420d6d0c-896b-4b47-8834-a18d8d2bcfba"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varTargetLifCode",
+                "type": "string",
+                "value": "LIF__PROSPECT"
+              }
+            ]
+          }
+        },
+        "init_varTargetValCode": {
+          "runAfter": {
+            "init_varENGLabel": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3193300a-2916-4d21-99ea-1d49865954a8"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varTargetValCode",
+                "type": "string",
+                "value": "VAL__LOW"
+              }
+            ]
+          }
+        },
+        "init_varTargetEngCode": {
+          "runAfter": {
+            "init_varTargetValCode": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "2a2fc1eb-d355-4a4c-89a9-2560b80393af"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varTargetEngCode",
+                "type": "string",
+                "value": "ENG__INACTIVE"
+              }
+            ]
+          }
+        },
+        "Get_Contact": {
+          "runAfter": {
+            "init_varTargetEngCode": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "de4340a5-df9a-4c63-84b3-5fcc72188570"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "contacts",
+              "recordId": "@variables('varContactId')"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Completed_Acceptances": {
+          "runAfter": {
+            "Get_Contact": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "970b21c1-02fd-4e25-8fcc-bbcc64992ddd"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "$select": "hit_accepteddatetime, hit_totalamounteffective,hit_offeringtype, hit_totalamountrealised, hit_baseamount",
+              "$filter": "(_hit_contact_value eq '@{variables('varContactId')}') and (hit_acceptancestatus eq 815390003) ",
+              "$orderby": "hit_accepteddatetime desc"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "init_varLastEngagementType": {
+          "runAfter": {
+            "init_varLastEngagementDate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "ed87c18d-6f30-4d11-bf83-0e6bfede9ad2"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varLastEngagementType",
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "has_completed_acceptances": {
+          "actions": {
+            "set_varLastEngagementDate": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "492430ff-4132-4d20-a614-ec3837c103b5"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "varLastEngagementDate",
+                "value": "@{if(\r\n  empty(outputs('Completed_Acceptances')?['body/value']),\r\n  null,\r\n  if(\r\n    empty(first(outputs('Completed_Acceptances')?['body/value'])?['hit_accepteddatetime']),\r\n    null,\r\n    formatDateTime(\r\n      first(outputs('Completed_Acceptances')?['body/value'])?['hit_accepteddatetime'],\r\n      'yyyy-MM-ddTHH:mm:ssZ'\r\n    )\r\n  )\r\n)}"
+              }
+            },
+            "set_varLastEngagementType": {
+              "runAfter": {
+                "set_varDaysSinceEngagement": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "0f5c03ec-b860-421b-9e6d-0698dd03c8a2"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "varLastEngagementType",
+                "value": "@coalesce(first(outputs('Completed_Acceptances')?['body/value'])?['hit_offeringtype'],815390000)"
+              }
+            },
+            "Completed_Donation_Acceptances": {
+              "runAfter": {
+                "set_varLastEngagementType": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "970b21c1-02fd-4e25-8fcc-bbcc64992ddd"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "hit_offeringacceptances",
+                  "$select": "hit_accepteddatetime, hit_totalamounteffective, hit_totalamountrealised, hit_baseamount",
+                  "$filter": "(_hit_contact_value eq '@{variables('varContactId')}') and (hit_acceptancestatus eq 815390003) and (hit_offeringtype eq 815390000)",
+                  "$orderby": "hit_accepteddatetime desc"
+                },
+                "authentication": {
+                  "type": "Raw",
+                  "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                }
+              }
+            },
+            "has_donations": {
+              "actions": {
+                "set_varLastDonationDate": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "065eabcf-1c5b-4aba-88cc-0b7147dd2a3c"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "varLastDonationDate",
+                    "value": "@{if(\r\n  empty(outputs('Completed_Donation_Acceptances')?['body/value']),\r\n  null,\r\n  if(\r\n    empty(first(outputs('Completed_Donation_Acceptances')?['body/value'])?['hit_accepteddatetime']),\r\n    null,\r\n    formatDateTime(\r\n      first(outputs('Completed_Donation_Acceptances')?['body/value'])?['hit_accepteddatetime'],\r\n      'yyyy-MM-ddTHH:mm:ssZ'\r\n    )\r\n  )\r\n)}"
+                  }
+                },
+                "Apply_to_each": {
+                  "foreach": "@outputs('Completed_Donation_Acceptances')?['body/value']",
+                  "actions": {
+                    "Compose": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "34231905-208f-4a85-8b74-0ef925c862a8"
+                      },
+                      "type": "Compose",
+                      "inputs": "@{outputs('Get_Contact')?['body/fullname']} - @{items('Apply_to_each')?['hit_totalamount']} - @{items('Apply_to_each')?['hit_accepteddatetime']}"
+                    },
+                    "in_last_12_months": {
+                      "actions": {
+                        "inc_varDonationLast12Months": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "53685d32-9f92-4f98-ba60-e2736f18e80c"
+                          },
+                          "type": "IncrementVariable",
+                          "inputs": {
+                            "name": "varDonationLast12Months",
+                            "value": 1
+                          }
+                        }
+                      },
+                      "runAfter": {
+                        "inc_varLifetimeValue": [
+                          "Succeeded"
+                        ]
+                      },
+                      "expression": {
+                        "and": [
+                          {
+                            "equals": [
+                              "@and(\r\n  not(empty(item()?['hit_accepteddatetime'])),\r\n  greaterOrEquals(\r\n    ticks(item()?['hit_accepteddatetime']),\r\n    ticks(addDays(utcNow(), -365))\r\n  )\r\n)\r\n",
+                              true
+                            ]
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "5618bbda-9586-4695-babb-081631a87494"
+                      },
+                      "type": "If"
+                    },
+                    "inc_varLifetimeValue": {
+                      "runAfter": {
+                        "Compose": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "71dadaf1-6544-407d-93f1-aa0c09469f01"
+                      },
+                      "type": "IncrementVariable",
+                      "inputs": {
+                        "name": "varLifetimeValue",
+                        "value": "@float(coalesce(item()?['hit_baseamount'], 0))"
+                      }
+                    }
+                  },
+                  "runAfter": {
+                    "set_varDonationCount": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "5f664486-bda5-4549-83b3-7a86dc0923f2"
+                  },
+                  "type": "Foreach"
+                },
+                "set_varDonationCount": {
+                  "runAfter": {
+                    "cmpMonthsSinceLastDonation": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "7a33bca0-b766-43f0-8373-aab4ca41ad78"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "varDonationCount",
+                    "value": "@length(outputs('Completed_Donation_Acceptances')?['body/value'])"
+                  }
+                },
+                "cmpMonthsSinceLastDonation": {
+                  "runAfter": {
+                    "set_varHasLastDonation": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "7e5dc1ee-6746-4c84-b596-10bb6c9f08d2"
+                  },
+                  "type": "Compose",
+                  "inputs": "@if(\r\n  empty(variables('varLastDonationDate')),\r\n  9999,\r\n  div(\r\n    sub(\r\n      ticks(utcNow()),\r\n      ticks(variables('varLastDonationDate'))\r\n    ),\r\n    25920000000000\r\n  )\r\n)"
+                },
+                "set_varHasLastDonation": {
+                  "runAfter": {
+                    "set_varLastDonationAmount": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "d13d784e-ec41-4942-baab-07dddeae2b65"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "varHasLastDonation",
+                    "value": true
+                  }
+                },
+                "set_varLastDonationAmount": {
+                  "runAfter": {
+                    "set_varFirstDonationDate": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "ddf0245a-92d9-4f9e-9a1b-889e9d716a5f"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "varLastDonationAmount",
+                    "value": "@coalesce(\r\n  first(outputs('Completed_Donation_Acceptances')?['body/value'])?['hit_baseamount'],\r\n  0\r\n)"
+                  }
+                },
+                "set_varFirstDonationDate": {
+                  "runAfter": {
+                    "set_varLastDonationDate": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "7ba2c058-3ec2-407c-b5f3-e5f4c9d2f30c"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "varFirstDonationDate",
+                    "value": "@{if(\r\n  empty(outputs('Completed_Donation_Acceptances')?['body/value']),\r\n  null,\r\n  if(\r\n    empty(last(outputs('Completed_Donation_Acceptances')?['body/value'])?['hit_accepteddatetime']),\r\n    null,\r\n    formatDateTime(\r\n      last(outputs('Completed_Donation_Acceptances')?['body/value'])?['hit_accepteddatetime'],\r\n      'yyyy-MM-ddTHH:mm:ssZ'\r\n    )\r\n  )\r\n)\r\n}"
+                  }
+                }
+              },
+              "runAfter": {
+                "Completed_Donation_Acceptances": [
+                  "Succeeded"
+                ]
+              },
+              "expression": {
+                "greater": [
+                  "@length(outputs('Completed_Donation_Acceptances')?['body/value'])",
+                  0
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "d631a9f1-c409-4942-8fa0-4dab4b7c929f"
+              },
+              "type": "If"
+            },
+            "set_varDaysSinceEngagement": {
+              "runAfter": {
+                "set_varLastEngagementDate": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "9a250f2e-e8bc-4c95-95d0-257caa27bf43"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "varDaysSinceEngagement",
+                "value": "@if(\r\n  empty(variables('varLastEngagementDate')),\r\n  0,\r\n  div(\r\n    sub(\r\n      ticks(utcNow()),\r\n      ticks(formatDateTime(variables('varLastEngagementDate'), 'yyyy-MM-ddTHH:mm:ssZ'))\r\n    ),\r\n    864000000000\r\n  )\r\n)"
+              }
+            }
+          },
+          "runAfter": {
+            "init_varEngagementCount": [
+              "Succeeded"
+            ]
+          },
+          "expression": {
+            "greater": [
+              "@variables('varEngagementCount')",
+              0
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c3a6e37a-22a5-41c2-96ee-bdcd953ce5be"
+          },
+          "type": "If"
+        },
+        "Resolve_LIF_tag": {
+          "actions": {
+            "no_engagement": {
+              "actions": {
+                "set_varTargetLifCode_-_prospect": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "96245b8a-6414-452b-be70-b68fd1929769"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "varTargetLifCode",
+                    "value": "LIF__PROSPECT"
+                  }
+                }
+              },
+              "runAfter": {},
+              "else": {
+                "actions": {
+                  "1_engagement": {
+                    "actions": {
+                      "set_varTargetLifCode_-_FirstTime": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "5438c271-9d6f-4732-99c7-acaa0357df53"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "varTargetLifCode",
+                          "value": "LIF__FIRST_TIME"
+                        }
+                      }
+                    },
+                    "runAfter": {},
+                    "else": {
+                      "actions": {
+                        "more_than_2": {
+                          "actions": {
+                            "set_varTargetLifCode_-_RepeatActive": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "a7224244-43ab-4ff5-942d-16832c94dc06"
+                              },
+                              "type": "SetVariable",
+                              "inputs": {
+                                "name": "varTargetLifCode",
+                                "value": "LIF__ACTIVE"
+                              }
+                            }
+                          },
+                          "runAfter": {},
+                          "else": {
+                            "actions": {
+                              "is_active": {
+                                "actions": {
+                                  "set_varTargetLifCode_-_Active": {
+                                    "runAfter": {},
+                                    "metadata": {
+                                      "operationMetadataId": "2b84eb33-1176-4491-b2ba-2912fadbdcd1"
+                                    },
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                      "name": "varTargetLifCode",
+                                      "value": "LIF__ACTIVE"
+                                    }
+                                  }
+                                },
+                                "runAfter": {},
+                                "else": {
+                                  "actions": {
+                                    "is_at_risk": {
+                                      "actions": {
+                                        "set_varTargetLifCode_-_AtRisk": {
+                                          "runAfter": {},
+                                          "metadata": {
+                                            "operationMetadataId": "c44681b9-6578-4cc3-b8b4-2fbe6b89ae31"
+                                          },
+                                          "type": "SetVariable",
+                                          "inputs": {
+                                            "name": "varTargetLifCode",
+                                            "value": "LIF__AT_RISK"
+                                          }
+                                        }
+                                      },
+                                      "runAfter": {},
+                                      "else": {
+                                        "actions": {
+                                          "set_varTargetLifCode_-_Lapsed": {
+                                            "runAfter": {},
+                                            "metadata": {
+                                              "operationMetadataId": "bc374706-d6b1-4cf4-9ad3-9ee3d29a42e2"
+                                            },
+                                            "type": "SetVariable",
+                                            "inputs": {
+                                              "name": "varTargetLifCode",
+                                              "value": "LIF__LAPSED"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "expression": {
+                                        "lessOrEquals": [
+                                          "@variables('varDaysSinceEngagement')",
+                                          730
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "0bad2d83-00c7-466b-89fa-ef467c304446"
+                                      },
+                                      "type": "If"
+                                    }
+                                  }
+                                },
+                                "expression": {
+                                  "lessOrEquals": [
+                                    "@variables('varDaysSinceEngagement')",
+                                    365
+                                  ]
+                                },
+                                "metadata": {
+                                  "operationMetadataId": "4ae86dce-88aa-44ba-b0f9-16604d0c44c2"
+                                },
+                                "type": "If"
+                              }
+                            }
+                          },
+                          "expression": {
+                            "greaterOrEquals": [
+                              "@variables('varEngagementCount')",
+                              2
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "5e901c0a-3d17-4756-854e-b7eb7b70a854"
+                          },
+                          "type": "If"
+                        }
+                      }
+                    },
+                    "expression": {
+                      "equals": [
+                        "@variables('varEngagementCount')",
+                        1
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "1ddf7287-b4ca-49db-9653-38ffce284d07"
+                    },
+                    "type": "If"
+                  }
+                }
+              },
+              "expression": {
+                "equals": [
+                  "@variables('varEngagementCount')",
+                  0
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "c3a6e37a-22a5-41c2-96ee-bdcd953ce5be"
+              },
+              "type": "If"
+            },
+            "run_Add_New_Contact_Tag_-_LIF": {
+              "runAfter": {
+                "no_engagement": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "d627dba0-cbe2-4a2d-a685-9e65e0ad7f00"
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                },
+                "body": {
+                  "text": "@variables('varContactId')",
+                  "text_1": "@variables('varTargetLifCode')",
+                  "boolean_1": true,
+                  "text_2": "LIF",
+                  "text_3": "Add"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "has_completed_acceptances": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "0a17d5de-3a49-4d01-8d30-19d76d4253b0"
+          },
+          "type": "Scope"
+        },
+        "Resolve_VAL_tag": {
+          "actions": {
+            "Val_-_High": {
+              "actions": {
+                "set_varTargetValCode_-_High": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "e4e547e0-08e3-4691-a059-f684d45fc1a8"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "varTargetValCode",
+                    "value": "VAL__HIGH"
+                  }
+                }
+              },
+              "runAfter": {},
+              "else": {
+                "actions": {
+                  "Val_-_Mid": {
+                    "actions": {
+                      "set_varTargetValCode_-_Mid": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "4cb41b74-4395-464c-842a-825bd6179a1a"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "varTargetValCode",
+                          "value": "VAL__MID"
+                        }
+                      }
+                    },
+                    "runAfter": {},
+                    "else": {
+                      "actions": {
+                        "Condition": {
+                          "actions": {
+                            "set_varTargetValCode_-_Low": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "f1f697f9-9470-4267-a555-4963b6d4b22f"
+                              },
+                              "type": "SetVariable",
+                              "inputs": {
+                                "name": "varTargetValCode",
+                                "value": "VAL__LOW"
+                              }
+                            }
+                          },
+                          "runAfter": {},
+                          "else": {
+                            "actions": {
+                              "set_varTargetValCode_-_Prospect": {
+                                "runAfter": {},
+                                "metadata": {
+                                  "operationMetadataId": "f62cf5ec-861e-46e0-ae5a-75cadcd4487b"
+                                },
+                                "type": "SetVariable",
+                                "inputs": {
+                                  "name": "varTargetValCode",
+                                  "value": "VAL__PROSPECT"
+                                }
+                              }
+                            }
+                          },
+                          "expression": {
+                            "greater": [
+                              "@variables('varLifetimeValue')",
+                              0
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "d5842c34-3d63-46a4-a27f-aa2380055b69"
+                          },
+                          "type": "If"
+                        }
+                      }
+                    },
+                    "expression": {
+                      "greaterOrEquals": [
+                        "@variables('varLifetimeValue')",
+                        "@parameters('EV_VAL_MID_THRESHOLD (hit_EV_VAL_MID_THRESHOLD)')"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "1c7f2ac8-34ad-4034-be63-116041bd9c65"
+                    },
+                    "type": "If"
+                  }
+                }
+              },
+              "expression": {
+                "greaterOrEquals": [
+                  "@variables('varLifetimeValue')",
+                  "@parameters('EV_VAL_HIGH_THRESHOLD (hit_EV_VAL_HIGH_THRESHOLD)')"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "6df583dc-0c78-4f65-a1e8-813b31caa2b1"
+              },
+              "type": "If"
+            },
+            "run_Add_New_Contact_Tag_-_VAL": {
+              "runAfter": {
+                "Val_-_High": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "7d566b81-bf3d-4b7a-ab35-ee1965cfbba0"
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                },
+                "body": {
+                  "text": "@variables('varContactId')",
+                  "text_1": "@variables('varTargetValCode')",
+                  "boolean_1": true,
+                  "text_2": "VAL",
+                  "text_3": "Add"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Resolve_DLF_tag": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "091c8449-6733-44bd-8bc0-c3a5c8d1d69d"
+          },
+          "type": "Scope"
+        },
+        "Resolve_ENG_tag": {
+          "actions": {
+            "Engage_-_high": {
+              "actions": {
+                "set_varTargetEngCode_-_High": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "d4a82982-74ab-4881-9d79-e0296e639193"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "varTargetEngCode",
+                    "value": "ENG__HIGH"
+                  }
+                }
+              },
+              "runAfter": {},
+              "else": {
+                "actions": {
+                  "Engage_-_medium": {
+                    "actions": {
+                      "set_varTargetEngCode_-_Medium": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "0f4d6c21-91f2-4d1e-858b-2e649ed679a3"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "varTargetEngCode",
+                          "value": "ENG__MEDIUM"
+                        }
+                      }
+                    },
+                    "runAfter": {},
+                    "else": {
+                      "actions": {
+                        "Engage_-_low": {
+                          "actions": {
+                            "set_varTargetEngCode_-_Low": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "e6bfc211-edeb-4808-9145-e7391a43cf86"
+                              },
+                              "type": "SetVariable",
+                              "inputs": {
+                                "name": "varTargetEngCode",
+                                "value": "ENG__LOW"
+                              }
+                            }
+                          },
+                          "runAfter": {},
+                          "else": {
+                            "actions": {
+                              "set_varTargetEngCode_-_Inactive": {
+                                "runAfter": {},
+                                "metadata": {
+                                  "operationMetadataId": "f0e7734e-612b-4253-890c-e7d96c91a703"
+                                },
+                                "type": "SetVariable",
+                                "inputs": {
+                                  "name": "varTargetEngCode",
+                                  "value": "ENG__INACTIVE"
+                                }
+                              }
+                            }
+                          },
+                          "expression": {
+                            "and": [
+                              {
+                                "lessOrEquals": [
+                                  "@variables('varDaysSinceEngagement')",
+                                  "@parameters('EV_ENG_LOW_DAYS (hit_EV_ENG_LOW_DAYS)')"
+                                ]
+                              },
+                              {
+                                "greaterOrEquals": [
+                                  "@variables('varEngagementCount')",
+                                  1
+                                ]
+                              }
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "1ddf7287-b4ca-49db-9653-38ffce284d07"
+                          },
+                          "type": "If"
+                        }
+                      }
+                    },
+                    "expression": {
+                      "and": [
+                        {
+                          "lessOrEquals": [
+                            "@variables('varDaysSinceEngagement')",
+                            "@parameters('EV_ENG_MEDIUM_DAYS (hit_EV_ENG_MEDIUM_DAYS)')"
+                          ]
+                        },
+                        {
+                          "greaterOrEquals": [
+                            "@variables('varEngagementCount')",
+                            2
+                          ]
+                        }
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "c3a6e37a-22a5-41c2-96ee-bdcd953ce5be"
+                    },
+                    "type": "If"
+                  }
+                }
+              },
+              "expression": {
+                "and": [
+                  {
+                    "lessOrEquals": [
+                      "@variables('varDaysSinceEngagement')",
+                      "@parameters('EV_ENG_HIGH_DAYS (hit_EV_ENG_HIGH_DAYS)')"
+                    ]
+                  },
+                  {
+                    "greaterOrEquals": [
+                      "@variables('varEngagementCount')",
+                      3
+                    ]
+                  }
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "0402da09-57ee-4f37-983a-8ebd40db1071"
+              },
+              "type": "If"
+            },
+            "run_Add_New_Contact_Tag_-_ENG": {
+              "runAfter": {
+                "Engage_-_high": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "68de4f7f-2a41-4663-b15f-d8e1132fb12e"
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                },
+                "body": {
+                  "text": "@variables('varContactId')",
+                  "text_1": "@variables('varTargetEngCode')",
+                  "boolean_1": true,
+                  "text_2": "ENG",
+                  "text_3": "Add"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Resolve_VAL_tag": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "03ad0926-2f17-4c03-b6d9-906ec3eeaedc"
+          },
+          "type": "Scope"
+        },
+        "update_Contact_state_values": {
+          "runAfter": {
+            "Resolve_ENG_tag": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "0a3afdff-a47b-4ae2-ad8a-010476f3072e"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "UpdateOnlyRecord",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "contacts",
+              "recordId": "@variables('varContactId')",
+              "item/hit_firstgiftdate": "@if(\r\n  empty(variables('varFirstDonationDate')),\r\n  null,\r\n  variables('varFirstDonationDate')\r\n)",
+              "item/hit_lastgiftdate": "@if(\r\n  empty(variables('varLastDonationDate')),\r\n  null,\r\n  variables('varLastDonationDate')\r\n)\r\n",
+              "item/hit_lastgivevalue": "@variables('varLastDonationAmount')",
+              "item/hit_lastinteractiondate": "@if(\r\n  empty(variables('varLastEngagementDate')),\r\n  null,\r\n  variables('varLastEngagementDate')\r\n)\r\n",
+              "item/new_lifetimevalue": "@variables('varLifetimeValue')"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "init_varLIFLabel": {
+          "runAfter": {
+            "init_varTagID_DLF": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "bee5616e-0bee-4a3a-8ed8-ac2dffd91df3"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varLIFLabel",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_varVALLabel": {
+          "runAfter": {
+            "init_varTagID_ENG": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3e6ad9f7-a5a2-402a-b063-a7e41a99c327"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varVALLabel",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_varENGLabel": {
+          "runAfter": {
+            "init_varVALLabel": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1174a0f7-44ec-47ba-b8e6-f6dcdd0ce88d"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varENGLabel",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_varTagID_LIF": {
+          "runAfter": {
+            "init_varLIFLabel": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "75468f3b-5cea-42db-b1b4-b93931512e54"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varTagID_LIF",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_varTAGID_VAL": {
+          "runAfter": {
+            "init_varTagID_LIF": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "8f69c9b2-a8da-409e-ab1f-57db0e2c22db"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varTagID_VAL",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_varTagID_ENG": {
+          "runAfter": {
+            "init_varTAGID_VAL": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "dc3414e3-8848-4950-9162-5e54817990b9"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varTagID_ENG",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "update_Contact_state_values": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "19a8f7bb-c4e3-48ca-b42c-36be6b0f8e17"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "response": "success"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "response": {
+                  "title": "response",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "init_varEngagementCount": {
+          "runAfter": {
+            "Completed_Acceptances": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "70055fbd-1b15-448d-9b87-a16af9eed59a"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varEngagementCount",
+                "type": "integer",
+                "value": "@length(outputs('Completed_Acceptances')?['body/value'])"
+              }
+            ]
+          }
+        },
+        "init_varTargetDLFCode": {
+          "runAfter": {
+            "init_varTargetLifCode": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "9a8f6551-73f0-4bbe-a252-ba107a8f6007"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varTargetDLFCode",
+                "type": "string",
+                "value": "DLF__PROSPECT"
+              }
+            ]
+          }
+        },
+        "init_varDLFLabel": {
+          "runAfter": {
+            "init_varTargetDLFCode": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "349f3b47-0560-48b0-b523-f775fa2d129c"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varDLFLabel",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_varTagID_DLF": {
+          "runAfter": {
+            "init_varDLFLabel": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "7f4db66d-a457-4bf8-9165-927d41bdfafd"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varTagID_DLF",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Resolve_DLF_tag": {
+          "actions": {
+            "no_donation_2": {
+              "actions": {
+                "set_varTargetLifCode_-_prospect_2": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "96245b8a-6414-452b-be70-b68fd1929769"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "varTargetDLFCode",
+                    "value": "DLF__PROSPECT"
+                  }
+                }
+              },
+              "runAfter": {},
+              "else": {
+                "actions": {
+                  "1_donation_2": {
+                    "actions": {
+                      "set_varTargetLifCode_-_FirstTime_2": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "5438c271-9d6f-4732-99c7-acaa0357df53"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "varTargetDLFCode",
+                          "value": "DLF__FIRST_TIME"
+                        }
+                      }
+                    },
+                    "runAfter": {},
+                    "else": {
+                      "actions": {
+                        "more_than": {
+                          "actions": {
+                            "set_varTargetLifCode_-_Repeat_2Active": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "a7224244-43ab-4ff5-942d-16832c94dc06"
+                              },
+                              "type": "SetVariable",
+                              "inputs": {
+                                "name": "varTargetDLFCode",
+                                "value": "DLF__ACTIVE"
+                              }
+                            }
+                          },
+                          "runAfter": {},
+                          "else": {
+                            "actions": {
+                              "is_active_2": {
+                                "actions": {
+                                  "set_varTargetLifCode_-_Active_2": {
+                                    "runAfter": {},
+                                    "metadata": {
+                                      "operationMetadataId": "2b84eb33-1176-4491-b2ba-2912fadbdcd1"
+                                    },
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                      "name": "varTargetDLFCode",
+                                      "value": "DLF__ACTIVE"
+                                    }
+                                  }
+                                },
+                                "runAfter": {},
+                                "else": {
+                                  "actions": {
+                                    "is_at_risk_2": {
+                                      "actions": {
+                                        "set_varTargetLifCode_-_AtRisk_2": {
+                                          "runAfter": {},
+                                          "metadata": {
+                                            "operationMetadataId": "c44681b9-6578-4cc3-b8b4-2fbe6b89ae31"
+                                          },
+                                          "type": "SetVariable",
+                                          "inputs": {
+                                            "name": "varTargetDLFCode",
+                                            "value": "DLF__AT_RISK"
+                                          }
+                                        }
+                                      },
+                                      "runAfter": {},
+                                      "else": {
+                                        "actions": {
+                                          "set_varTargetLifCode_-_Lapsed_2": {
+                                            "runAfter": {},
+                                            "metadata": {
+                                              "operationMetadataId": "bc374706-d6b1-4cf4-9ad3-9ee3d29a42e2"
+                                            },
+                                            "type": "SetVariable",
+                                            "inputs": {
+                                              "name": "varTargetDLFCode",
+                                              "value": "DLF__LAPSED"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "expression": {
+                                        "lessOrEquals": [
+                                          "@outputs('cmpMonthsSinceLastDonation')",
+                                          "@parameters('EV_LIF_AT_RISK_MONTHS (hit_EV_LIF_AT_RISK_MONTHS)')"
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "0bad2d83-00c7-466b-89fa-ef467c304446"
+                                      },
+                                      "type": "If"
+                                    }
+                                  }
+                                },
+                                "expression": {
+                                  "lessOrEquals": [
+                                    "@outputs('cmpMonthsSinceLastDonation')",
+                                    "@parameters('EV_LIF_ACTIVE_MONTHS (hit_EV_LIF_ACTIVE_MONTHS)')"
+                                  ]
+                                },
+                                "metadata": {
+                                  "operationMetadataId": "4ae86dce-88aa-44ba-b0f9-16604d0c44c2"
+                                },
+                                "type": "If"
+                              }
+                            }
+                          },
+                          "expression": {
+                            "greaterOrEquals": [
+                              "@variables('varDonationLast12Months')",
+                              2
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "5e901c0a-3d17-4756-854e-b7eb7b70a854"
+                          },
+                          "type": "If"
+                        }
+                      }
+                    },
+                    "expression": {
+                      "equals": [
+                        "@variables('varDonationCount')",
+                        1
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "1ddf7287-b4ca-49db-9653-38ffce284d07"
+                    },
+                    "type": "If"
+                  }
+                }
+              },
+              "expression": {
+                "equals": [
+                  "@variables('varDonationCount')",
+                  0
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "c3a6e37a-22a5-41c2-96ee-bdcd953ce5be"
+              },
+              "type": "If"
+            },
+            "run_Add_New_Contact_Tag_-_DLF": {
+              "runAfter": {
+                "no_donation_2": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "3ae357d9-5696-4233-ac29-1b988863710b"
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                },
+                "body": {
+                  "text": "@variables('varContactId')",
+                  "text_1": "@variables('varTargetDLFCode')",
+                  "boolean_1": true,
+                  "text_2": "DLF",
+                  "text_3": "Add"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "Resolve_LIF_tag": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "0a17d5de-3a49-4d01-8d30-19d76d4253b0"
+          },
+          "type": "Scope"
+        },
+        "init_varFirstDonationDate": {
+          "runAfter": {
+            "init_varLastDonationAmount": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a064ecc1-9f76-4343-a05e-f3f55c8d5d07"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varFirstDonationDate",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_varLastDonationAmount": {
+          "runAfter": {
+            "init_varLastDonationDate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a1c576c3-4c73-494c-b240-eb05a58b80a4"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varLastDonationAmount",
+                "type": "float"
+              }
+            ]
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

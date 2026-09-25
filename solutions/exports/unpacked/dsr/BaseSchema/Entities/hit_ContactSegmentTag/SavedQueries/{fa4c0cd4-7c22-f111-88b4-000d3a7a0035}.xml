@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{fa4c0cd4-7c22-f111-88b4-000d3a7a0035}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_contactsegmenttagid">
+          <cell name="hit_contact" width="149" />
+          <cell name="hit_segmenttag" width="114" />
+          <cell name="a_1b18f44e9a8b414388a9fc8c07de6b12.emailaddress1" width="130" />
+          <cell name="a_1b18f44e9a8b414388a9fc8c07de6b12.mobilephone" width="176" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" output-format="xml-platform" mapping="logical">
+        <entity name="hit_contactsegmenttag">
+          <attribute name="hit_contactsegmenttagid" />
+          <attribute name="hit_contact" />
+          <attribute name="hit_segmenttag" />
+          <filter type="and">
+            <condition attribute="hit_segmenttag" operator="eq" value="{fe969a0c-9513-f111-8342-000d3a7a0035}" />
+          </filter>
+          <link-entity alias="a_1b18f44e9a8b414388a9fc8c07de6b12" name="contact" to="hit_contact" from="contactid" link-type="outer" visible="false">
+            <attribute name="emailaddress1" />
+            <attribute name="mobilephone" />
+          </link-entity>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Donors" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

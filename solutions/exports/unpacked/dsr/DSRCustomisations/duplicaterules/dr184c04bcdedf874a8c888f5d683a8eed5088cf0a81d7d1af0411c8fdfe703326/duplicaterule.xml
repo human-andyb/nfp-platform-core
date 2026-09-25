@@ -1,0 +1,15 @@
+<duplicaterule uniquename="dr184c04bcdedf874a8c888f5d683a8eed5088cf0a81d7d1af0411c8fdfe703326">
+  <baseentityname>contact</baseentityname>
+  <description>Medium confidents - Exact Mobile</description>
+  <excludeinactiverecords>1</excludeinactiverecords>
+  <iscasesensitive>0</iscasesensitive>
+  <iscustomizable>1</iscustomizable>
+  <matchingentityname>contact</matchingentityname>
+  <name>Contacts with same Mobile</name>
+  <duplicateruleconditions>
+    <duplicaterulecondition baseattributename="mobilephone" matchingattributename="mobilephone" operatorcode="0" uniquerulename="dr184c04bcdedf874a8c888f5d683a8eed5088cf0a81d7d1af0411c8fdfe703326">
+      <ignoreblankvalues>1</ignoreblankvalues>
+      <iscustomizable>1</iscustomizable>
+    </duplicaterulecondition>
+  </duplicateruleconditions>
+</duplicaterule>

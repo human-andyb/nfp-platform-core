@@ -1,0 +1,15 @@
+<customapi uniquename="msdynmkt_flow_updatecommunicationevent_050253647">
+  <allowedcustomprocessingsteptype>1</allowedcustomprocessingsteptype>
+  <bindingtype>0</bindingtype>
+  <description default=" ">
+    <label description=" " languagecode="1033" />
+  </description>
+  <displayname default="Flow - Update Communication Event">
+    <label description="Flow - Update Communication Event" languagecode="1033" />
+  </displayname>
+  <iscustomizable>1</iscustomizable>
+  <isfunction>0</isfunction>
+  <isprivate>0</isprivate>
+  <name>Flow - Update Communication Event</name>
+  <workflowsdkstepenabled>0</workflowsdkstepenabled>
+</customapi>

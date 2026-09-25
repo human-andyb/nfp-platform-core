@@ -1,0 +1,356 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "59e33e36-6b83-41ef-b5d7-9efde1b0cf49"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "orgID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_1": {
+                  "title": "contactID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                },
+                "text_2": {
+                  "title": "role",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text",
+                "text_1",
+                "text_2"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "Compose": {
+          "runAfter": {
+            "init_sRoleID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c88424b5-a7ae-492b-bed0-f91c1e3103a4"
+          },
+          "type": "Compose",
+          "inputs": "orgID - @{triggerBody()['text']}"
+        },
+        "ContactOrgRelationships": {
+          "runAfter": {
+            "For_each": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "92652da5-2870-4cf6-9747-c042d7a05bff"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_contactorganisations",
+              "$filter": "_hit_organisation_value eq '@{variables('sOrgID')}' and _hit_contact_value eq '@{variables('sContactID')}' and _hit_contactorgroletype_value eq '@{variables('sRoleID')}'"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "ContactOrgRoleTypes": {
+          "runAfter": {
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "22db4269-7f0b-4161-9756-f1948c29c3b3"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_contactorgroletypes",
+              "$filter": "hit_name eq '@{triggerBody()?['text_2']}'",
+              "$top": 1
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "init_sOrgID": {
+          "runAfter": {
+            "init_sRelationshipID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "43123f99-9899-439e-860b-e84c759a129c"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sOrgID",
+                "type": "string",
+                "value": "@triggerBody()?['text']"
+              }
+            ]
+          }
+        },
+        "init_sContactID": {
+          "runAfter": {
+            "init_sOrgID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1816abae-18e9-4cfa-94fd-b786e4f5669e"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sContactID",
+                "type": "string",
+                "value": "@triggerBody()?['text_1']"
+              }
+            ]
+          }
+        },
+        "init_sRoleID": {
+          "runAfter": {
+            "init_sContactID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "138da322-4d49-4fe4-9be2-1949de5bc4b0"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sRoleID",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "For_each": {
+          "foreach": "@outputs('ContactOrgRoleTypes')?['body/value']",
+          "actions": {
+            "set_sRoleID": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "567940f4-1f88-4cd3-93f7-53f3a62d7d06"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "sRoleID",
+                "value": "@item()?['hit_contactorgroletypeid']"
+              }
+            }
+          },
+          "runAfter": {
+            "ContactOrgRoleTypes": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a052eb52-c984-4014-9fdc-5dbf12cdceac"
+          },
+          "type": "Foreach"
+        },
+        "Relationship_Exists": {
+          "actions": {
+            "For_each_1": {
+              "foreach": "@outputs('ContactOrgRelationships')?['body/value']",
+              "actions": {
+                "set_sRelationshipID_-_existing": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "7df70609-d444-47d4-8fdc-d6456ce0f6a5"
+                  },
+                  "type": "SetVariable",
+                  "inputs": {
+                    "name": "sRelationshipID",
+                    "value": "@item()?['hit_contactorganisationid']"
+                  }
+                }
+              },
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "6d62bdef-de8a-4e07-9d03-f56cf8dc22a9"
+              },
+              "type": "Foreach"
+            }
+          },
+          "runAfter": {
+            "ContactOrgRelationships": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "Add_a_new_row": {
+                "runAfter": {},
+                "metadata": {
+                  "operationMetadataId": "09539bea-b5e4-45c9-aa9c-fa7272f4c656"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_commondataserviceforapps",
+                    "operationId": "CreateRecord",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                  },
+                  "parameters": {
+                    "entityName": "hit_contactorganisations",
+                    "item/hit_Contact@odata.bind": "/contacts(@{variables('sContactID')})",
+                    "item/hit_ContactOrgRoleType@odata.bind": "/hit_contactorgroletypes(@{variables('sRoleID')})",
+                    "item/hit_Organisation@odata.bind": "/accounts(@{variables('sOrgID')})",
+                    "item/hit_startdate": "@utcNow()"
+                  },
+                  "authentication": {
+                    "type": "Raw",
+                    "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                  }
+                }
+              },
+              "set_sRelationshipID_-_new": {
+                "runAfter": {
+                  "Add_a_new_row": [
+                    "Succeeded"
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "37b46951-bae0-4b37-bdb9-925be912969f"
+                },
+                "type": "SetVariable",
+                "inputs": {
+                  "name": "sRelationshipID",
+                  "value": "@outputs('Add_a_new_row')?['body/hit_contactorganisationid']"
+                }
+              }
+            }
+          },
+          "expression": {
+            "and": [
+              {
+                "greater": [
+                  "@length(outputs('ContactOrgRelationships')?['body/value'])",
+                  0
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "b62cff53-f70f-41a6-9bad-ec99e60d3978"
+          },
+          "type": "If"
+        },
+        "init_sRelationshipID": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "e370e4b4-1795-4b39-82b5-fd17cddb40cd"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sRelationshipID",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "Relationship_Exists": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "38522a3d-7d3d-4c3e-aa47-65c9e5b8d888"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "relationshipid": "@{variables('sRelationshipID')}"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "relationshipid": {
+                  "title": "relationshipID",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

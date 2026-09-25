@@ -1,0 +1,27 @@
+<powerpagecomponent powerpagecomponentid="3dd363c6-65d8-492f-fed1-4a7358df62eb">
+  <content>{
+  "displayorder": 37,
+  "enablerating": false,
+  "enabletracking": false,
+  "excludefromsearch": false,
+  "feedbackpolicy": 756150000,
+  "hiddenfromsitemap": true,
+  "isroot": true,
+  "pagetemplateid": "003b57a0-2c6d-4486-92a1-a17dfda5ecce",
+  "parentpageid": "cf511b88-4b23-4858-b49e-9bb013db9e1a",
+  "partialurl": "Course-Registration-deleted",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "sharedpageconfiguration": false,
+  "summary": "&lt;p&gt;This is a sample landing page designed to be a starting point for your website&lt;/p&gt;",
+  "title": "Course Registration"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Course Registration-deleted</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <searchcontent>Course RegistrationCourse Registration-deleted</searchcontent>
+  <statecode>1</statecode>
+  <statuscode>2</statuscode>
+</powerpagecomponent>

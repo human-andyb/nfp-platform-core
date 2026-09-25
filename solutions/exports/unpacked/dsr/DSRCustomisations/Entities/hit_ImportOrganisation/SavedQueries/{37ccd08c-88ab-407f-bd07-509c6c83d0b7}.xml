@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{37ccd08c-88ab-407f-bd07-509c6c83d0b7}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_importorganisationid">
+          <cell name="hit_name" width="300" />
+          <cell name="createdon" width="125" />
+          <cell name="hit_organisationname" width="149" />
+          <cell name="hit_mainemail" width="107" />
+          <cell name="hit_mainphone" width="109" />
+          <cell name="hit_address1" width="100" />
+          <cell name="hit_address2" width="100" />
+          <cell name="hit_suburb" width="100" />
+          <cell name="hit_state" width="100" />
+          <cell name="hit_postcode" width="100" />
+          <cell name="hit_primarycontactfirstname" width="199" />
+          <cell name="hit_primarycontactlastname" width="197" />
+          <cell name="hit_primarycontactrole" width="163" />
+          <cell name="hit_primarycontactemail" width="170" />
+          <cell name="hit_primarycontactmobile" width="177" />
+          <cell name="hit_primarycontactworkphone" width="205" />
+          <cell name="hit_importstatus" width="116" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="hit_importorganisation">
+          <attribute name="hit_importorganisationid" />
+          <attribute name="hit_name" />
+          <attribute name="createdon" />
+          <order attribute="hit_name" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+            <condition attribute="hit_importstatus" operator="eq" value="815390000" />
+          </filter>
+          <attribute name="hit_organisationname" />
+          <attribute name="hit_mainemail" />
+          <attribute name="hit_mainphone" />
+          <attribute name="hit_address1" />
+          <attribute name="hit_address2" />
+          <attribute name="hit_suburb" />
+          <attribute name="hit_state" />
+          <attribute name="hit_postcode" />
+          <attribute name="hit_primarycontactfirstname" />
+          <attribute name="hit_primarycontactlastname" />
+          <attribute name="hit_primarycontactemail" />
+          <attribute name="hit_primarycontactrole" />
+          <attribute name="hit_primarycontactmobile" />
+          <attribute name="hit_primarycontactworkphone" />
+          <attribute name="hit_importstatus" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Import Organisations" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{5b216275-cc00-473c-aaf6-2fab27aecaf7}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_offeringname" select="1" icon="1" preview="1">
+        <row name="result" id="hit_offeringid">
+          <cell name="hit_offeringnumber" width="138" />
+          <cell name="hit_offeringname" width="300" />
+          <cell name="hit_program" width="100" />
+          <cell name="hit_offeringtype" width="120" />
+          <cell name="hit_summary" width="100" />
+          <cell name="hit_isactive" width="100" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="hit_offering">
+          <attribute name="hit_offeringid" />
+          <attribute name="hit_offeringname" />
+          <attribute name="createdon" />
+          <order attribute="hit_offeringname" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="hit_program" />
+          <attribute name="hit_offeringtype" />
+          <attribute name="hit_isactive" />
+          <attribute name="hit_offeringnumber" />
+          <attribute name="hit_summary" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Offerings" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

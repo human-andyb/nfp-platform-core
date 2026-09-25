@@ -1,0 +1,16 @@
+<dvfilesearchattribute uniquename="ppages_b224cde7-c60a-f111-8342-000d3a7a0d01.powerpagecomponent.searchcontent">
+  <attribute>
+    <entityid.logicalname>powerpagecomponent</entityid.logicalname>
+    <logicalname>searchcontent</logicalname>
+  </attribute>
+  <dvfilesearchentity>
+    <dvfilesearchentityid>204f29f1-c60a-f111-8342-000d3a7a0323</dvfilesearchentityid>
+  </dvfilesearchentity>
+  <iscustomizable>1</iscustomizable>
+  <isfilterable>1</isfilterable>
+  <issearchable>1</issearchable>
+  <isvectorizable>0</isvectorizable>
+  <name>b224cde7-c60a-f111-8342-000d3a7a0d01.searchcontent</name>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</dvfilesearchattribute>

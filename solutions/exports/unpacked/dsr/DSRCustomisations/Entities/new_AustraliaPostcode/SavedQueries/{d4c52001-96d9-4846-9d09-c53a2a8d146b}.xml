@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{d4c52001-96d9-4846-9d09-c53a2a8d146b}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="new_localityname" select="1" icon="1" preview="1">
+        <row name="result" id="new_australiapostcodeid">
+          <cell name="new_localityname" width="300" />
+          <cell name="new_postalareaid1" width="150" />
+          <cell name="new_postalcode" width="150" />
+          <cell name="new_stateabbreviation" width="150" />
+          <cell name="new_longitude" width="150" />
+          <cell name="new_latitude" width="150" />
+          <cell name="new_deliverycenter" width="150" />
+          <cell name="new_areatype" width="150" />
+          <cell name="new_sa3code" width="150" />
+          <cell name="new_sa3name" width="150" />
+          <cell name="new_sa4code" width="150" />
+          <cell name="new_sa4name" width="150" />
+          <cell name="new_regioncode" width="150" />
+          <cell name="new_statusupdate" width="150" />
+          <cell name="new_googlelatitude" width="150" />
+          <cell name="new_googlelongitude" width="150" />
+          <cell name="new_sa1code2021" width="150" />
+          <cell name="new_sa1name2021" width="150" />
+          <cell name="new_sa2code2021" width="150" />
+          <cell name="new_sa2name2021" width="150" />
+          <cell name="new_sa3code2021" width="150" />
+          <cell name="new_sa3name2021" width="150" />
+          <cell name="new_sa4code2021" width="150" />
+          <cell name="new_sa4name2021" width="150" />
+          <cell name="new_remotenessarea2011" width="150" />
+          <cell name="new_remotenessarea2016" width="150" />
+          <cell name="new_remotenessarea2021" width="150" />
+          <cell name="new_remotenessareaname2021" width="150" />
+          <cell name="new_mmm2015" width="150" />
+          <cell name="new_mmm2019" width="150" />
+          <cell name="new_cedname" width="150" />
+          <cell name="new_altitude" width="150" />
+          <cell name="new_chargezone" width="150" />
+          <cell name="new_phncode" width="150" />
+          <cell name="new_phnname" width="150" />
+          <cell name="new_lgaregion" width="150" />
+          <cell name="new_lgacode" width="150" />
+          <cell name="new_electoratename" width="150" />
+          <cell name="new_electoraterating" width="150" />
+          <cell name="new_stateelectoralcode" width="150" />
+          <cell name="new_stateelectoralname" width="150" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="new_australiapostcode">
+          <attribute name="new_australiapostcodeid" />
+          <attribute name="new_localityname" />
+          <attribute name="createdon" />
+          <order attribute="new_localityname" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="new_postalareaid1" />
+          <attribute name="new_postalcode" />
+          <attribute name="new_stateabbreviation" />
+          <attribute name="new_longitude" />
+          <attribute name="new_latitude" />
+          <attribute name="new_deliverycenter" />
+          <attribute name="new_areatype" />
+          <attribute name="new_sa3code" />
+          <attribute name="new_sa3name" />
+          <attribute name="new_sa4code" />
+          <attribute name="new_sa4name" />
+          <attribute name="new_regioncode" />
+          <attribute name="new_statusupdate" />
+          <attribute name="new_googlelatitude" />
+          <attribute name="new_googlelongitude" />
+          <attribute name="new_sa1code2021" />
+          <attribute name="new_sa1name2021" />
+          <attribute name="new_sa2code2021" />
+          <attribute name="new_sa2name2021" />
+          <attribute name="new_sa3code2021" />
+          <attribute name="new_sa3name2021" />
+          <attribute name="new_sa4code2021" />
+          <attribute name="new_sa4name2021" />
+          <attribute name="new_remotenessarea2011" />
+          <attribute name="new_remotenessarea2016" />
+          <attribute name="new_remotenessarea2021" />
+          <attribute name="new_remotenessareaname2021" />
+          <attribute name="new_mmm2015" />
+          <attribute name="new_mmm2019" />
+          <attribute name="new_cedname" />
+          <attribute name="new_altitude" />
+          <attribute name="new_chargezone" />
+          <attribute name="new_phncode" />
+          <attribute name="new_phnname" />
+          <attribute name="new_lgaregion" />
+          <attribute name="new_lgacode" />
+          <attribute name="new_electoratename" />
+          <attribute name="new_electoraterating" />
+          <attribute name="new_stateelectoralcode" />
+          <attribute name="new_stateelectoralname" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Australia Postcodes" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

@@ -1,0 +1,17 @@
+<powerpagecomponent powerpagecomponentid="f2638471-f810-9b4a-5397-2cb0045cdd82">
+  <content>{
+  "parentpageid": "cf511b88-4b23-4858-b49e-9bb013db9e1a",
+  "partialurl": "MOSS-1.scss",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "summary": "MOSS_DESCRIPTION"
+}</content>
+  <filecontent mimetype="application/octet-stream">MOSS%20(1)</filecontent>
+  <iscustomizable>1</iscustomizable>
+  <name>MOSS (1)</name>
+  <powerpagecomponenttype>3</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

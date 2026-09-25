@@ -1,0 +1,75 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "When_an_action_is_performed": {
+          "metadata": {
+            "operationMetadataId": "d8a185fa-10d1-469d-9904-20e4bdff553e"
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "BusinessEventsTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "catalog": "msdynmkt_catalog",
+              "category": "msdynmkt_custom",
+              "subscriptionRequest/entityname": "none",
+              "subscriptionRequest/sdkmessagename": "msdynmkt_flow_addorganisationtag_041740509"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "run_-_Add_New_Org_Segment_Tag": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "351064cb-eb5a-4f31-8e84-fc5aa4dadb31"
+          },
+          "type": "Workflow",
+          "inputs": {
+            "host": {
+              "workflowReferenceName": "9ca03e8a-be67-f111-ab0e-70a8a555b733"
+            },
+            "body": {
+              "text": "@triggerOutputs()?['body/InputParameters/msdynmkt_orgid']",
+              "text_1": "@triggerOutputs()?['body/InputParameters/msdynmkt_tagcode']",
+              "boolean_1": "@triggerOutputs()?['body/InputParameters/msdynmkt_exclusive']",
+              "text_2": "@triggerOutputs()?['body/InputParameters/msdynmkt_tagdimension']",
+              "text_3": "@triggerOutputs()?['body/InputParameters/msdynmkt_mode']"
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,14 @@
+<msdyn_dmsrequeststatus msdyn_dmsrequeststatusid="7f4d0b90-ba11-46cd-b20a-46418dedb92d">
+  <iscustomizable>1</iscustomizable>
+  <msdyn_errordetails>{"Version":"1.0","RequestErrorMessage":null,"RequestErrorCulprit":"User","EntityErrorDetails":[{"EntityName":"email","EntityErrorCulprit":"User","TaskErrors":[{"ErrorCode":-2147220937,"ErrorCodeHex":"0x80040237","ErrorName":"DuplicateRecord","ErrorMessage":"Cannot insert duplicate key.","StatusCode":412,"OperationName":"ExecuteMultipleWithUpsertAsync","ServiceRequestId":"2aae9be3-98ca-43e5-a057-38c2211e9710","ApiRequestId":"f13465bb-c8b3-4a8b-a5ff-8e49dc19fe24","HelpLink":"http://go.microsoft.com/fwlink/?LinkID=398563&amp;error=Microsoft.Crm.CrmException%3a80040237&amp;client=platform","InnerErrorMessage":"Cannot insert duplicate key.","Culprit":"User","Identifier":"https://dsr-prod.crm6.dynamics.com/api/data/v9.1/emails(new_importid='')","IsSelfReferenceUpdateError":false,"ErrorLevel":"Task","ExceptionDetail":null,"RequestTimeUtc":"2026-07-27T23:10:59.733726+00:00","RequestPayload":"{\"actualdurationminutes\": \"\",\"actualend\": \"5/11/2022 12:56:37 AM\",\"actualstart\": \"\",\"category\": \"\",\"conversationtrackingid\": \"\",\"cr05f_tempfrom\": \"Fundraising@dsr.org.au\",\"cr05f_tempto\": \"marcus.rome@tridon.com.au;\",\"delayedemailsendtime\": \"\",\"deliveryattempts\": \"1\",\"description\": \"\",\"emailremindertext\": \"\",\"emailtrackingid\": \"\",\"lastopenedtime\": \"\",\"messageid\": \"&lt;A9A144F97E954F3388D2C73CF265205C1D864D1F79AB@FUNDRAISING.DSR.ORG.AU&gt;\",\"mimetype\": \"\",\"new_importid\": \"CD7A29A3-C4D0-EC11-A7B6-002248158B2D\",\"scheduledend\": \"\",\"scheduledstart\": \"\",\"sender\": \"Fundraising@dsr.org.au\",\"sortdate\": \"5/11/2022 12:56:55 AM\",\"subcategory\": \"\",\"subject\": \"Attention Marcus Rome - DON-0007618-H8Y CRM:0021241\",\"torecipients\": \"marcus.rome@tridon.com.au;\",\"trackingtoken\": \"CRM:0021241\",\"new_importid\": \"CD7A29A3-C4D0-EC11-A7B6-002248158B2D\",\"emailid\":\"00000000-0000-0000-0000-000000000000\"}"}]}],"RetryAfter":null}</msdyn_errordetails>
+  <msdyn_lookupfield_uploadrequest>
+    <msdyn_dmsrequestid>2aae9be3-98ca-43e5-a057-38c2211e9710</msdyn_dmsrequestid>
+  </msdyn_lookupfield_uploadrequest>
+  <msdyn_uploadendtime>7/27/2026 1:11:42 PM</msdyn_uploadendtime>
+  <msdyn_uploadstarttime>7/27/2026 1:10:59 PM</msdyn_uploadstarttime>
+  <msdyn_uploadstatus>Succeeded</msdyn_uploadstatus>
+  <msdyn_uploadstatusdetails>{"Version":"1.0","EntityStatusDetails":[{"EntityName":"email","EntityId":"e84b10a2-8d28-44c0-adde-f5963968dfb6","Status":"Succeeded","StartTime":"2026-07-27T23:10:59.2848462+00:00","EndTime":"2026-07-27T23:11:42.3922597+00:00","CreatedRecords":758,"UpdatedRecords":26,"DeletedRecords":0,"ErrorRecords":1}]}</msdyn_uploadstatusdetails>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+  <timezoneruleversionnumber>0</timezoneruleversionnumber>
+</msdyn_dmsrequeststatus>

@@ -1,0 +1,181 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "runtimeSource": "embedded"
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "AcceptanceId",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          },
+          "metadata": {
+            "operationMetadataId": "0e4ca02c-b745-45d1-a354-ea6ffab8ffd9"
+          }
+        }
+      },
+      "actions": {
+        "OfferingAcceptance": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "recordId": "@triggerBody()['text']"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          },
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "f7036f6e-ebfc-448e-a68e-126934c2efef"
+          }
+        },
+        "BookingRequests": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "entityName": "hit_venuespacebookingrequests",
+              "$filter": "_hit_offeringacceptance_value eq '@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']}'",
+              "$top": 1
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          },
+          "runAfter": {
+            "OfferingAcceptance": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "89c72d21-732e-490c-a7f4-3541692f3834"
+          }
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "response": {
+                  "title": "response",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                }
+              },
+              "additionalProperties": {}
+            },
+            "statusCode": 200,
+            "body": {
+              "response": "Success"
+            }
+          },
+          "runAfter": {
+            "VenueSpaceBookingRequest": [
+              "SUCCEEDED"
+            ]
+          }
+        },
+        "VenueSpaceBookingRequest": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "entityName": "hit_venuespacebookingrequests",
+              "recordId": "@variables('sBookingRequestID')"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "connectionName": "shared_commondataserviceforapps"
+            }
+          },
+          "runAfter": {
+            "For_each": [
+              "SUCCEEDED"
+            ]
+          }
+        },
+        "For_each": {
+          "type": "foreach",
+          "foreach": "@outputs('BookingRequests')?['body/value']",
+          "actions": {
+            "set_sBookingRequestID": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "sBookingRequestID",
+                "value": "@items('For_each')?['hit_venuespacebookingrequestid']"
+              }
+            }
+          },
+          "runAfter": {
+            "init_sBookingRequestID": [
+              "SUCCEEDED"
+            ]
+          }
+        },
+        "init_sBookingRequestID": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sBookingRequestID",
+                "type": "string"
+              }
+            ]
+          },
+          "runAfter": {
+            "BookingRequests": [
+              "Succeeded"
+            ]
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}

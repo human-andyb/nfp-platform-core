@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>0</isdefault>
+    <savedqueryid>{3e3ce9bd-477f-f111-ab0f-6045bdc335b7}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_contactsegmenttagid">
+          <cell name="hit_segmenttag" width="197" />
+          <cell name="a_d73f2456c8344c0aaa55a763ad198667.hit_code" width="156" />
+          <cell name="a_d73f2456c8344c0aaa55a763ad198667.hit_tagtype" width="179" />
+          <cell name="hit_addedon" width="100" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" output-format="xml-platform" mapping="logical">
+        <entity name="hit_contactsegmenttag">
+          <attribute name="hit_contactsegmenttagid" />
+          <attribute name="hit_segmenttag" />
+          <attribute name="hit_addedon" />
+          <link-entity alias="a_d73f2456c8344c0aaa55a763ad198667" name="hit_segmenttag" to="hit_segmenttag" from="hit_segmenttagid" link-type="outer" visible="false">
+            <attribute name="hit_code" />
+            <attribute name="hit_tagtype" />
+          </link-entity>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Contact Tags" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

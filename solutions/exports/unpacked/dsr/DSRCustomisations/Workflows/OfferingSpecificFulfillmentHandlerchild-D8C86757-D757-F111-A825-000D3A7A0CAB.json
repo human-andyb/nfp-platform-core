@@ -1,0 +1,837 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "27350a39-d578-42ea-9bb9-1242f6b18673"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "fulfillmentId",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "OfferingFulfillment": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "0ee88eec-9644-4187-b495-da5b415efef2"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringfulfillments",
+              "recordId": "@triggerBody()['text']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Compose": {
+          "runAfter": {
+            "OfferingFulfillment": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "29567cc4-071b-4d18-a649-85d4e06973a4"
+          },
+          "type": "Compose",
+          "inputs": "@outputs('OfferingFulfillment')?['body/_hit_offeringacceptance_value']"
+        },
+        "Offering": {
+          "runAfter": {
+            "Compose": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a3c5799f-2efb-4aa3-81f6-27e8c2122f7f"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offerings",
+              "recordId": "@outputs('OfferingFulfillment')?['body/_hit_offering_value']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "OfferingAcceptance": {
+          "runAfter": {
+            "Offering": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "dd8ae2a3-2143-4670-be4f-030e441c0908"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_offeringacceptances",
+              "recordId": "@outputs('OfferingFulfillment')?['body/_hit_offeringacceptance_value']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Switch_-_Offering_Type": {
+          "runAfter": {
+            "contact": [
+              "Succeeded"
+            ]
+          },
+          "cases": {
+            "Donation_-_815390000": {
+              "case": 815390000,
+              "actions": {
+                "run_-_Generate_Donation_Receipt_PDF": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "8877e97b-bff8-4de5-819f-37a787bac8a5"
+                  },
+                  "type": "Workflow",
+                  "inputs": {
+                    "host": {
+                      "workflowReferenceName": "5f138917-6e76-f111-ab0e-6045bde72793"
+                    },
+                    "body": {
+                      "text": "@outputs('OfferingFulfillment')?['body/hit_offeringfulfillmentid']"
+                    }
+                  }
+                },
+                "add_Communication_Event_-_Donation_Receipt": {
+                  "runAfter": {
+                    "run_-_Generate_Donation_Receipt_PDF": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "976aa766-1d4b-4ae3-b4bc-70e4a6b2c7d3"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "CreateRecord",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "hit_communicationevents",
+                      "item/hit_name": "Donation Receipt",
+                      "item/hit_businessarea": 815390000,
+                      "item/hit_channel": 815390001,
+                      "item/hit_communicationtype": 815390000,
+                      "item/hit_Contact@odata.bind": "/contacts(@{outputs('contact')?['body/contactid']})",
+                      "item/hit_eventstatus": 815390000,
+                      "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                      "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingFulfillment')?['body/hit_offeringfulfillmentid']})",
+                      "item/hit_offeringtype": 815390000,
+                      "item/hit_receiptnumber": "@outputs('OfferingFulfillment')?['body/hit_receiptnumber']"
+                    },
+                    "authentication": {
+                      "type": "Raw",
+                      "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                    }
+                  }
+                }
+              }
+            },
+            "Event_-_815390001": {
+              "case": 815390001,
+              "actions": {
+                "Event": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "22ea1e53-c427-4837-ba14-a5d397be93eb"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "GetItem",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "msevtmgt_events",
+                      "recordId": "@outputs('Offering')?['body/_hit_cievent_value']"
+                    },
+                    "authentication": {
+                      "type": "Raw",
+                      "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                    }
+                  }
+                },
+                "add_Event_Registration": {
+                  "runAfter": {
+                    "Event": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "ebbb2b88-e1d0-4fd7-892b-867c00ad94b3"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "CreateRecord",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "msevtmgt_eventregistrations",
+                      "item/msevtmgt_ContactId@odata.bind": "/contacts(@{outputs('OfferingAcceptance')?['body/_hit_contact_value']})",
+                      "item/msevtmgt_EventId@odata.bind": "/msevtmgt_events(@{outputs('Event')?['body/msevtmgt_eventid']})",
+                      "item/msevtmgt_name": "123"
+                    },
+                    "authentication": {
+                      "type": "Raw",
+                      "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                    }
+                  }
+                }
+              }
+            },
+            "Course_Access_=_815390002": {
+              "case": 815390002,
+              "actions": {
+                "Switch": {
+                  "runAfter": {},
+                  "cases": {
+                    "Individual_-_PWD": {
+                      "case": 815390000,
+                      "actions": {
+                        "run_EtrainU_CreateGet_Participant_-_PWD": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "c4be0d51-127a-4d4e-a5f1-92b3f278ed99"
+                          },
+                          "type": "Workflow",
+                          "inputs": {
+                            "host": {
+                              "workflowReferenceName": "bc11faa3-ed95-f111-b8db-6045bdc2342f"
+                            },
+                            "body": {
+                              "text_2": "@outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']"
+                            }
+                          }
+                        },
+                        "add_Communication_Event_-_Confirm_PWD": {
+                          "runAfter": {
+                            "run_EtrainU_CreateGet_Participant_-_PWD": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "bc460f39-55eb-4ae7-8c8c-df4e2c5c92ee"
+                          },
+                          "type": "OpenApiConnection",
+                          "inputs": {
+                            "host": {
+                              "connectionName": "shared_commondataserviceforapps",
+                              "operationId": "CreateRecord",
+                              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                            },
+                            "parameters": {
+                              "entityName": "hit_communicationevents",
+                              "item/hit_name": "Confirm New PWD",
+                              "item/hit_businessarea": 815390001,
+                              "item/hit_channel": 815390001,
+                              "item/hit_communicationtype": 815390001,
+                              "item/hit_Contact@odata.bind": "/contacts(@{outputs('contact')?['body/contactid']})",
+                              "item/hit_eventstatus": 815390000,
+                              "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                              "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingFulfillment')?['body/hit_offeringfulfillmentid']})",
+                              "item/hit_offeringtype": 815390002,
+                              "item/hit_receiptnumber": "@outputs('OfferingFulfillment')?['body/hit_receiptnumber']"
+                            },
+                            "authentication": {
+                              "type": "Raw",
+                              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "Organisation": {
+                      "case": 815390001,
+                      "actions": {
+                        "run_EtrainU_CreateGet_Org": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "b8c3a717-4c7d-435b-9a35-b4d43f4a010d"
+                          },
+                          "type": "Workflow",
+                          "inputs": {
+                            "host": {
+                              "workflowReferenceName": "65769d76-0796-f111-b8db-6045bdc2338c"
+                            },
+                            "body": {
+                              "text": "@outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']"
+                            }
+                          }
+                        },
+                        "add_comm_event_-_confirm_org": {
+                          "runAfter": {
+                            "run_EtrainU_CreateGet_Org": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "4c3fab18-aa84-498d-b81b-d7e9eb7020e3"
+                          },
+                          "type": "OpenApiConnection",
+                          "inputs": {
+                            "host": {
+                              "connectionName": "shared_commondataserviceforapps",
+                              "operationId": "CreateRecord",
+                              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                            },
+                            "parameters": {
+                              "entityName": "hit_communicationevents",
+                              "item/hit_name": "Confirm Org Registration",
+                              "item/hit_businessarea": 815390001,
+                              "item/hit_channel": 815390001,
+                              "item/hit_communicationtype": 815390001,
+                              "item/hit_Contact@odata.bind": "/contacts(@{outputs('contact')?['body/contactid']})",
+                              "item/hit_eventstatus": 815390000,
+                              "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                              "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingFulfillment')?['body/hit_offeringfulfillmentid']})",
+                              "item/hit_receiptnumber": "@outputs('OfferingFulfillment')?['body/hit_receiptnumber']"
+                            },
+                            "authentication": {
+                              "type": "Raw",
+                              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "Organisation_Member": {
+                      "case": 815390002,
+                      "actions": {
+                        "run_EtrainU_CreateGet_Participant_-_OrgMember": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "6da956a1-1bea-4796-932a-30f627e7e985"
+                          },
+                          "type": "Workflow",
+                          "inputs": {
+                            "host": {
+                              "workflowReferenceName": "bc11faa3-ed95-f111-b8db-6045bdc2342f"
+                            },
+                            "body": {
+                              "text_2": "@outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "default": {
+                    "actions": {}
+                  },
+                  "expression": "@outputs('OfferingAcceptance')?['body/hit_courseaccessaudience']",
+                  "metadata": {
+                    "operationMetadataId": "d935c143-87ed-4a9f-9526-157e88292328"
+                  },
+                  "type": "Switch"
+                }
+              }
+            },
+            "Membership_-_815390003": {
+              "case": 815390003,
+              "actions": {}
+            },
+            "Volunteer_Engagement_-_815390004": {
+              "case": 815390004,
+              "actions": {}
+            },
+            "Resource_Download_-_815390005": {
+              "case": 815390005,
+              "actions": {}
+            },
+            "Sponsorship_-_815390006": {
+              "case": 815390006,
+              "actions": {}
+            },
+            "EOI_-_815390007": {
+              "case": 815390007,
+              "actions": {
+                "Offering_-_EOI": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "fe6afaa7-8bdd-4522-b015-baf62d330b5c"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "GetItem",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "hit_offerings",
+                      "recordId": "@outputs('OfferingAcceptance')?['body/_hit_offering_value']"
+                    },
+                    "authentication": {
+                      "type": "Raw",
+                      "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                    }
+                  }
+                },
+                "Switch_2": {
+                  "runAfter": {
+                    "Offering_-_EOI": [
+                      "Succeeded"
+                    ]
+                  },
+                  "cases": {
+                    "The_Hub_-_EOI_Pilot": {
+                      "case": "The Hub - EOI Pilot",
+                      "actions": {
+                        "dsr_role_-_pwd": {
+                          "actions": {
+                            "add_Communication_Event_-_hub_pilot_eoi_pwd": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "520aa1aa-e8a1-4341-b538-9016715307d8"
+                              },
+                              "type": "OpenApiConnection",
+                              "inputs": {
+                                "host": {
+                                  "connectionName": "shared_commondataserviceforapps",
+                                  "operationId": "CreateRecord",
+                                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                },
+                                "parameters": {
+                                  "entityName": "hit_communicationevents",
+                                  "item/hit_name": "The Hub EOI Confirmation PWD",
+                                  "item/hit_businessarea": 815390001,
+                                  "item/hit_channel": 815390001,
+                                  "item/hit_communicationtype": 815390001,
+                                  "item/hit_Contact@odata.bind": "/contacts(@{outputs('contact')?['body/contactid']})",
+                                  "item/hit_eventstatus": 815390000,
+                                  "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                                  "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingAcceptance')?['body/_hit_offeringfulfillment_value']})",
+                                  "item/hit_offeringtype": 815390007
+                                },
+                                "authentication": {
+                                  "type": "Raw",
+                                  "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                                }
+                              }
+                            },
+                            "add_comm_event_-_hub_invite_pwd": {
+                              "runAfter": {
+                                "Delay": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "metadata": {
+                                "operationMetadataId": "5c4d98e3-53ed-441a-a296-d7e3395e259f"
+                              },
+                              "type": "OpenApiConnection",
+                              "inputs": {
+                                "host": {
+                                  "connectionName": "shared_commondataserviceforapps",
+                                  "operationId": "CreateRecord",
+                                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                },
+                                "parameters": {
+                                  "entityName": "hit_communicationevents",
+                                  "item/hit_name": "The Hub - Invitation to Register PWD",
+                                  "item/hit_businessarea": 815390001,
+                                  "item/hit_channel": 815390001,
+                                  "item/hit_communicationtype": 815390001,
+                                  "item/hit_Contact@odata.bind": "/contacts(@{outputs('contact')?['body/contactid']})",
+                                  "item/hit_eventstatus": 815390000,
+                                  "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                                  "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingAcceptance')?['body/_hit_offeringfulfillment_value']})",
+                                  "item/hit_offeringtype": 815390007
+                                },
+                                "authentication": {
+                                  "type": "Raw",
+                                  "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                                }
+                              }
+                            },
+                            "Delay": {
+                              "runAfter": {
+                                "add_Communication_Event_-_hub_pilot_eoi_pwd": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "metadata": {
+                                "operationMetadataId": "909325ae-87f4-47bb-a2c8-753e5b35ce8f"
+                              },
+                              "type": "Wait",
+                              "inputs": {
+                                "interval": {
+                                  "count": 3,
+                                  "unit": "Minute"
+                                }
+                              }
+                            }
+                          },
+                          "runAfter": {},
+                          "else": {
+                            "actions": {
+                              "add_comm_event_-_hub_pilot_eoi_org": {
+                                "runAfter": {},
+                                "metadata": {
+                                  "operationMetadataId": "46a36e91-c0ff-4f24-a11d-0197f7a0df6b"
+                                },
+                                "type": "OpenApiConnection",
+                                "inputs": {
+                                  "host": {
+                                    "connectionName": "shared_commondataserviceforapps",
+                                    "operationId": "CreateRecord",
+                                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                  },
+                                  "parameters": {
+                                    "entityName": "hit_communicationevents",
+                                    "item/hit_name": "The Hub EOI Confirmation Org",
+                                    "item/hit_businessarea": 815390001,
+                                    "item/hit_channel": 815390001,
+                                    "item/hit_communicationtype": 815390001,
+                                    "item/hit_Contact@odata.bind": "/contacts(@{outputs('contact')?['body/contactid']})",
+                                    "item/hit_eventstatus": 815390000,
+                                    "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                                    "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingAcceptance')?['body/_hit_offeringfulfillment_value']})",
+                                    "item/hit_offeringtype": 815390007
+                                  },
+                                  "authentication": {
+                                    "type": "Raw",
+                                    "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                                  }
+                                }
+                              },
+                              "add_comm_event_-_invitation_org": {
+                                "runAfter": {
+                                  "Delay_2": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "metadata": {
+                                  "operationMetadataId": "c7dc3b13-c792-4bd4-a038-d073f0bdff91"
+                                },
+                                "type": "OpenApiConnection",
+                                "inputs": {
+                                  "host": {
+                                    "connectionName": "shared_commondataserviceforapps",
+                                    "operationId": "CreateRecord",
+                                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                  },
+                                  "parameters": {
+                                    "entityName": "hit_communicationevents",
+                                    "item/hit_name": "The Hub - Invitation to Register Org",
+                                    "item/hit_businessarea": 815390001,
+                                    "item/hit_channel": 815390001,
+                                    "item/hit_communicationtype": 815390001,
+                                    "item/hit_Contact@odata.bind": "/contacts(@{outputs('contact')?['body/contactid']})",
+                                    "item/hit_eventstatus": 815390000,
+                                    "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                                    "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingAcceptance')?['body/_hit_offeringfulfillment_value']})"
+                                  },
+                                  "authentication": {
+                                    "type": "Raw",
+                                    "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                                  }
+                                }
+                              },
+                              "Delay_2": {
+                                "runAfter": {
+                                  "add_comm_event_-_hub_pilot_eoi_org": [
+                                    "Succeeded"
+                                  ]
+                                },
+                                "metadata": {
+                                  "operationMetadataId": "e1507140-70bf-49ee-a8e3-330d2bd22bbf"
+                                },
+                                "type": "Wait",
+                                "inputs": {
+                                  "interval": {
+                                    "count": 3,
+                                    "unit": "Minute"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "expression": {
+                            "or": [
+                              {
+                                "equals": [
+                                  "@outputs('OfferingAcceptance')?['body/hit_dsreoirole']",
+                                  815390000
+                                ]
+                              },
+                              {
+                                "equals": [
+                                  "@outputs('OfferingAcceptance')?['body/hit_dsreoirole']",
+                                  815390001
+                                ]
+                              },
+                              {
+                                "equals": [
+                                  "@outputs('OfferingAcceptance')?['body/hit_dsreoirole']",
+                                  815390004
+                                ]
+                              }
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "6b71064b-254b-47ad-a100-407a4d9c713e"
+                          },
+                          "type": "If"
+                        }
+                      }
+                    },
+                    "The_Hub_-_EOI": {
+                      "case": "The Hub - EOI",
+                      "actions": {
+                        "dsr_eoi_role_-_pwd": {
+                          "actions": {
+                            "add_comm_event_-_hub_eoi_pwd": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "b6b22946-7bc1-4a6f-9fa9-78ed77ebaf38"
+                              },
+                              "type": "OpenApiConnection",
+                              "inputs": {
+                                "host": {
+                                  "connectionName": "shared_commondataserviceforapps",
+                                  "operationId": "CreateRecord",
+                                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                },
+                                "parameters": {
+                                  "entityName": "hit_communicationevents",
+                                  "item/hit_name": "The Hub EOI Confirmation PWD",
+                                  "item/hit_businessarea": 815390001,
+                                  "item/hit_channel": 815390001,
+                                  "item/hit_communicationtype": 815390001,
+                                  "item/hit_Contact@odata.bind": "/contacts(@{outputs('contact')?['body/contactid']})",
+                                  "item/hit_eventstatus": 815390000,
+                                  "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                                  "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingAcceptance')?['body/_hit_offeringfulfillment_value']})"
+                                },
+                                "authentication": {
+                                  "type": "Raw",
+                                  "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                                }
+                              }
+                            }
+                          },
+                          "runAfter": {},
+                          "else": {
+                            "actions": {
+                              "add_comm_event_-_hub_eoi_org": {
+                                "runAfter": {},
+                                "metadata": {
+                                  "operationMetadataId": "89910e2f-a051-46eb-8e27-fe9f0eec501e"
+                                },
+                                "type": "OpenApiConnection",
+                                "inputs": {
+                                  "host": {
+                                    "connectionName": "shared_commondataserviceforapps",
+                                    "operationId": "CreateRecord",
+                                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                  },
+                                  "parameters": {
+                                    "entityName": "hit_communicationevents",
+                                    "item/hit_name": "The Hub EOI Confirmation Org",
+                                    "item/hit_businessarea": 815390001,
+                                    "item/hit_channel": 815390001,
+                                    "item/hit_communicationtype": 815390001,
+                                    "item/hit_Contact@odata.bind": "/contacts(@{outputs('contact')?['body/contactid']})",
+                                    "item/hit_eventstatus": 815390000,
+                                    "item/hit_OfferingAcceptance@odata.bind": "/hit_offeringacceptances(@{outputs('OfferingAcceptance')?['body/hit_offeringacceptanceid']})",
+                                    "item/hit_OfferingFulfillment@odata.bind": "/hit_offeringfulfillments(@{outputs('OfferingAcceptance')?['body/_hit_offeringfulfillment_value']})"
+                                  },
+                                  "authentication": {
+                                    "type": "Raw",
+                                    "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "expression": {
+                            "or": [
+                              {
+                                "equals": [
+                                  "@outputs('OfferingAcceptance')?['body/hit_dsreoirole']",
+                                  815390000
+                                ]
+                              },
+                              {
+                                "equals": [
+                                  "@outputs('OfferingAcceptance')?['body/hit_dsreoirole']",
+                                  815390001
+                                ]
+                              },
+                              {
+                                "equals": [
+                                  "@outputs('OfferingAcceptance')?['body/hit_dsreoirole']",
+                                  815390004
+                                ]
+                              }
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "5bcdf876-7577-4a57-bb03-5ee358fb0592"
+                          },
+                          "type": "If"
+                        }
+                      }
+                    }
+                  },
+                  "default": {
+                    "actions": {}
+                  },
+                  "expression": "@outputs('Offering_-_EOI')?['body/hit_offeringname']",
+                  "metadata": {
+                    "operationMetadataId": "6eb0a0c5-9dc4-4273-925a-82a3e2aca89e"
+                  },
+                  "type": "Switch"
+                }
+              }
+            },
+            "Venue_Booking_-_815390008": {
+              "case": 815390008,
+              "actions": {}
+            }
+          },
+          "default": {
+            "actions": {}
+          },
+          "expression": "@outputs('Offering')?['body/hit_offeringtype']",
+          "metadata": {
+            "operationMetadataId": "0af510b6-2939-47c4-ac9c-16a82b7513e5"
+          },
+          "type": "Switch"
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "Switch_-_Offering_Type": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "95a6e8c8-9dc2-4fbc-9efc-371bec1cf962"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "response": "Success"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "response": {
+                  "title": "response",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "contact": {
+          "runAfter": {
+            "OfferingAcceptance": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "4a786ce4-637e-43f4-bcaf-d7c460ab9313"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "contacts",
+              "recordId": "@outputs('OfferingAcceptance')?['body/_hit_contact_value']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

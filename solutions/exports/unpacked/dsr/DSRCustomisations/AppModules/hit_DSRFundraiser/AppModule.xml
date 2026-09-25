@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppModule>
+  <UniqueName>hit_DSRFundraiser</UniqueName>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <WebResourceId>953b9fac-1e5e-e611-80d6-00155ded156f</WebResourceId>
+  <OptimizedFor></OptimizedFor>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+  <FormFactor>1</FormFactor>
+  <ClientType>4</ClientType>
+  <NavigationType>0</NavigationType>
+  <AppModuleComponents>
+    <AppModuleComponent type="1" schemaName="account" />
+    <AppModuleComponent type="1" schemaName="contact" />
+    <AppModuleComponent type="1" schemaName="hit_constituentstaging" />
+    <AppModuleComponent type="1" schemaName="hit_importcontact" />
+    <AppModuleComponent type="1" schemaName="hit_importorganisation" />
+    <AppModuleComponent type="1" schemaName="hit_importtag" />
+    <AppModuleComponent type="1" schemaName="hit_segmenttag" />
+    <AppModuleComponent type="26" id="{00000000-0000-0000-00aa-000010001004}" />
+    <AppModuleComponent type="26" id="{11f69112-1b91-f111-b8da-7ced8da2b423}" />
+    <AppModuleComponent type="60" id="{5f2a53b1-9213-f111-8342-000d3a7a0cab}" />
+    <AppModuleComponent type="60" id="{7698332f-317f-f111-ab0e-000d3aca977a}" />
+    <AppModuleComponent type="60" id="{661157fe-2fc9-4eaa-835f-5bfa2f7b64f7}" />
+    <AppModuleComponent type="60" id="{9722b641-8864-f111-ab0d-6045bdc335b7}" />
+    <AppModuleComponent type="60" id="{3a9dc9e4-487f-f111-ab0f-70a8a555b733}" />
+    <AppModuleComponent type="62" schemaName="hit_DSRFundraiser" />
+  </AppModuleComponents>
+  <AppModuleRoleMaps>
+    <Role id="{627090ff-40a3-4053-8790-584edc5be201}" />
+    <Role id="{119f245c-3cc8-4b62-b31c-d1a046ced15d}" />
+  </AppModuleRoleMaps>
+  <LocalizedNames>
+    <LocalizedName description="DSR Fundraiser" languagecode="1033" />
+  </LocalizedNames>
+  <appelements>
+    <appelement uniquename="hit_hit_DSRFundraiser_canvasappid_hit_processpaymentform_3a67f">
+      <canvasappid>
+        <name>hit_processpaymentform_3a67f</name>
+      </canvasappid>
+      <iscustomizable>1</iscustomizable>
+      <name>hit_hit_DSRFundraiser_canvasappid_hit_processpaymentform_3a67f</name>
+    </appelement>
+  </appelements>
+  <appsettings>
+    <appsetting settingdefinitionid.uniquename="AppChannel">
+      <iscustomizable>1</iscustomizable>
+      <value>1</value>
+    </appsetting>
+  </appsettings>
+</AppModule>

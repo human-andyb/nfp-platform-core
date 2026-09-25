@@ -1,0 +1,32 @@
+<appaction uniquename="hit__ProcessPayment!9ccd5d0f7b804c1b80ad5a6903b59912!contact!0">
+  <buttonlabeltext default="Process Payment">
+    <label description="Process Payment" languagecode="1033" />
+  </buttonlabeltext>
+  <buttontooltiptitle default="Process Donation Payment">
+    <label description="Process Donation Payment" languagecode="1033" />
+  </buttontooltiptitle>
+  <context>1</context>
+  <contextentity>
+    <logicalname>contact</logicalname>
+  </contextentity>
+  <contextvalue>contact</contextvalue>
+  <fonticon>HeartFilled</fonticon>
+  <hidden>0</hidden>
+  <iscustomizable>1</iscustomizable>
+  <isdisabled>0</isdisabled>
+  <isgrouptitlehidden>0</isgrouptitlehidden>
+  <location>0</location>
+  <name>ProcessPayment!9ccd5d0f7b804c1b80ad5a6903b59912</name>
+  <onclickeventjavascriptfunctionname>openPaymentPage</onclickeventjavascriptfunctionname>
+  <onclickeventjavascriptparameters>[{"type":5}]</onclickeventjavascriptparameters>
+  <onclickeventjavascriptwebresourceid>
+    <webresourceid>cd40840e-1c9a-f111-b8dd-6045bdc2338c</webresourceid>
+  </onclickeventjavascriptwebresourceid>
+  <onclickeventtype>2</onclickeventtype>
+  <origin>0</origin>
+  <sequence>100100005.5000000000</sequence>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+  <type>0</type>
+  <visibilitytype>0</visibilitytype>
+</appaction>

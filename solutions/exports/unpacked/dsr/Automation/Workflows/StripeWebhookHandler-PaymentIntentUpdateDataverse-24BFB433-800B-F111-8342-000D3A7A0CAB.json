@@ -1,0 +1,1192 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "Stripe Secret Key (hit_StripeSecretKey)": {
+          "defaultValue": "sk_test_51TgIZSATsrPcl80UVmub04uN92y8YM5325PByb91KNEYNwjU9kwZR9N2v4Fr1B5tDQ8qUsED02qFywVH9GxbbjjN00FaLALaP9",
+          "type": "String",
+          "metadata": {
+            "schemaName": "hit_StripeSecretKey"
+          }
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "34184c61-c1b4-4e08-9186-1ebc81897f56"
+          },
+          "type": "Request",
+          "kind": "Http",
+          "inputs": {
+            "schema": {
+              "type": "object"
+            },
+            "method": "POST",
+            "relativePath": "stripe/webhook/9f3c8b0a6d2b4e4c9dbf",
+            "triggerAuthenticationType": "All"
+          }
+        }
+      },
+      "actions": {
+        "init_varEventId": {
+          "runAfter": {
+            "Response_4": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "9d6ecd1b-954c-4a97-be8c-16dec1c54313"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varEventId",
+                "type": "string",
+                "value": "@triggerBody()?['id']"
+              }
+            ]
+          }
+        },
+        "init_varEventType": {
+          "runAfter": {
+            "init_varEventId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a3291d8c-657e-4ad2-bdce-aecc8b65e8cc"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varEventType",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_varPaymentIntentId": {
+          "runAfter": {
+            "init_varEventType": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a391f263-879d-4c16-9d62-20992319272e"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varPaymentIntentId",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_varChargeId": {
+          "runAfter": {
+            "init_varPaymentTransactionId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "0aa49118-0e76-416f-86e8-42a760a0086c"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varChargeId",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Condition": {
+          "actions": {
+            "HTTP": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "0a2ecaeb-42cd-423c-9526-f4ad87a358cb"
+              },
+              "type": "Http",
+              "inputs": {
+                "method": "GET",
+                "uri": "https://api.stripe.com/v1/events/@{variables('varEventId')}",
+                "headers": {
+                  "Authorization": "Bearer @{parameters('Stripe Secret Key (hit_StripeSecretKey)')}"
+                }
+              }
+            },
+            "Parse_JSON": {
+              "runAfter": {
+                "HTTP": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "c5180719-90e1-4a05-868e-3dfa76c79371"
+              },
+              "type": "ParseJson",
+              "inputs": {
+                "content": "@body('HTTP')",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "object": {
+                      "type": "string"
+                    },
+                    "api_version": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "object": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "object": {
+                              "type": "string"
+                            },
+                            "allowed_source_types": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "amount": {
+                              "type": "integer"
+                            },
+                            "amount_capturable": {
+                              "type": "integer"
+                            },
+                            "amount_details": {
+                              "type": "object",
+                              "properties": {
+                                "tip": {
+                                  "type": "object",
+                                  "properties": {}
+                                }
+                              }
+                            },
+                            "amount_received": {
+                              "type": "integer"
+                            },
+                            "application": {},
+                            "application_fee_amount": {},
+                            "automatic_payment_methods": {
+                              "type": "object",
+                              "properties": {
+                                "allow_redirects": {
+                                  "type": "string"
+                                },
+                                "enabled": {
+                                  "type": "boolean"
+                                }
+                              }
+                            },
+                            "canceled_at": {},
+                            "cancellation_reason": {},
+                            "capture_method": {
+                              "type": "string"
+                            },
+                            "charges": {
+                              "type": "object",
+                              "properties": {
+                                "object": {
+                                  "type": "string"
+                                },
+                                "data": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "object": {
+                                        "type": "string"
+                                      },
+                                      "amount": {
+                                        "type": "integer"
+                                      },
+                                      "amount_captured": {
+                                        "type": "integer"
+                                      },
+                                      "amount_refunded": {
+                                        "type": "integer"
+                                      },
+                                      "application": {},
+                                      "application_fee": {},
+                                      "application_fee_amount": {},
+                                      "balance_transaction": {
+                                        "type": "string"
+                                      },
+                                      "billing_details": {
+                                        "type": "object",
+                                        "properties": {
+                                          "address": {
+                                            "type": "object",
+                                            "properties": {
+                                              "city": {},
+                                              "country": {
+                                                "type": "string"
+                                              },
+                                              "line1": {},
+                                              "line2": {},
+                                              "postal_code": {},
+                                              "state": {}
+                                            }
+                                          },
+                                          "email": {},
+                                          "name": {},
+                                          "phone": {},
+                                          "tax_id": {}
+                                        }
+                                      },
+                                      "calculated_statement_descriptor": {
+                                        "type": "string"
+                                      },
+                                      "captured": {
+                                        "type": "boolean"
+                                      },
+                                      "created": {
+                                        "type": "integer"
+                                      },
+                                      "currency": {
+                                        "type": "string"
+                                      },
+                                      "customer": {},
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "destination": {},
+                                      "dispute": {},
+                                      "disputed": {
+                                        "type": "boolean"
+                                      },
+                                      "failure_balance_transaction": {},
+                                      "failure_code": {},
+                                      "failure_message": {},
+                                      "fraud_details": {
+                                        "type": "object",
+                                        "properties": {}
+                                      },
+                                      "invoice": {},
+                                      "livemode": {
+                                        "type": "boolean"
+                                      },
+                                      "metadata": {
+                                        "type": "object",
+                                        "properties": {
+                                          "acceptanceId": {
+                                            "type": "string"
+                                          },
+                                          "attemptNumber": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      },
+                                      "on_behalf_of": {},
+                                      "order": {},
+                                      "outcome": {
+                                        "type": "object",
+                                        "properties": {
+                                          "advice_code": {},
+                                          "network_advice_code": {},
+                                          "network_decline_code": {},
+                                          "network_status": {
+                                            "type": "string"
+                                          },
+                                          "reason": {},
+                                          "risk_level": {
+                                            "type": "string"
+                                          },
+                                          "risk_score": {
+                                            "type": "integer"
+                                          },
+                                          "seller_message": {
+                                            "type": "string"
+                                          },
+                                          "type": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      },
+                                      "paid": {
+                                        "type": "boolean"
+                                      },
+                                      "payment_intent": {
+                                        "type": "string"
+                                      },
+                                      "payment_method": {
+                                        "type": "string"
+                                      },
+                                      "payment_method_details": {
+                                        "type": "object",
+                                        "properties": {
+                                          "card": {
+                                            "type": "object",
+                                            "properties": {
+                                              "amount_authorized": {
+                                                "type": "integer"
+                                              },
+                                              "authorization_code": {
+                                                "type": "string"
+                                              },
+                                              "brand": {
+                                                "type": "string"
+                                              },
+                                              "checks": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "address_line1_check": {},
+                                                  "address_postal_code_check": {},
+                                                  "cvc_check": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              },
+                                              "country": {
+                                                "type": "string"
+                                              },
+                                              "ds_transaction_id": {},
+                                              "exp_month": {
+                                                "type": "integer"
+                                              },
+                                              "exp_year": {
+                                                "type": "integer"
+                                              },
+                                              "extended_authorization": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "status": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              },
+                                              "fingerprint": {
+                                                "type": "string"
+                                              },
+                                              "funding": {
+                                                "type": "string"
+                                              },
+                                              "incremental_authorization": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "status": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              },
+                                              "installments": {},
+                                              "last4": {
+                                                "type": "string"
+                                              },
+                                              "mandate": {},
+                                              "multicapture": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "status": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              },
+                                              "network": {
+                                                "type": "string"
+                                              },
+                                              "network_token": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "used": {
+                                                    "type": "boolean"
+                                                  }
+                                                }
+                                              },
+                                              "network_transaction_id": {
+                                                "type": "string"
+                                              },
+                                              "overcapture": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "maximum_amount_capturable": {
+                                                    "type": "integer"
+                                                  },
+                                                  "status": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              },
+                                              "regulated_status": {
+                                                "type": "string"
+                                              },
+                                              "three_d_secure": {},
+                                              "transaction_link_id": {},
+                                              "wallet": {}
+                                            }
+                                          },
+                                          "type": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      },
+                                      "radar_options": {
+                                        "type": "object",
+                                        "properties": {}
+                                      },
+                                      "receipt_email": {},
+                                      "receipt_number": {},
+                                      "receipt_url": {
+                                        "type": "string"
+                                      },
+                                      "refunded": {
+                                        "type": "boolean"
+                                      },
+                                      "refunds": {
+                                        "type": "object",
+                                        "properties": {
+                                          "object": {
+                                            "type": "string"
+                                          },
+                                          "data": {
+                                            "type": "array"
+                                          },
+                                          "has_more": {
+                                            "type": "boolean"
+                                          },
+                                          "total_count": {
+                                            "type": "integer"
+                                          },
+                                          "url": {
+                                            "type": "string"
+                                          }
+                                        }
+                                      },
+                                      "review": {},
+                                      "shipping": {},
+                                      "source": {},
+                                      "source_transfer": {},
+                                      "statement_descriptor": {},
+                                      "statement_descriptor_suffix": {},
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "transfer_data": {},
+                                      "transfer_group": {}
+                                    },
+                                    "required": [
+                                      "id",
+                                      "object",
+                                      "amount",
+                                      "amount_captured",
+                                      "amount_refunded",
+                                      "application",
+                                      "application_fee",
+                                      "application_fee_amount",
+                                      "balance_transaction",
+                                      "billing_details",
+                                      "calculated_statement_descriptor",
+                                      "captured",
+                                      "created",
+                                      "currency",
+                                      "customer",
+                                      "description",
+                                      "destination",
+                                      "dispute",
+                                      "disputed",
+                                      "failure_balance_transaction",
+                                      "failure_code",
+                                      "failure_message",
+                                      "fraud_details",
+                                      "invoice",
+                                      "livemode",
+                                      "metadata",
+                                      "on_behalf_of",
+                                      "order",
+                                      "outcome",
+                                      "paid",
+                                      "payment_intent",
+                                      "payment_method",
+                                      "payment_method_details",
+                                      "radar_options",
+                                      "receipt_email",
+                                      "receipt_number",
+                                      "receipt_url",
+                                      "refunded",
+                                      "refunds",
+                                      "review",
+                                      "shipping",
+                                      "source",
+                                      "source_transfer",
+                                      "statement_descriptor",
+                                      "statement_descriptor_suffix",
+                                      "status",
+                                      "transfer_data",
+                                      "transfer_group"
+                                    ]
+                                  }
+                                },
+                                "has_more": {
+                                  "type": "boolean"
+                                },
+                                "total_count": {
+                                  "type": "integer"
+                                },
+                                "url": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "client_secret": {
+                              "type": "string"
+                            },
+                            "confirmation_method": {
+                              "type": "string"
+                            },
+                            "created": {
+                              "type": "integer"
+                            },
+                            "currency": {
+                              "type": "string"
+                            },
+                            "customer": {},
+                            "customer_account": {},
+                            "description": {
+                              "type": "string"
+                            },
+                            "excluded_payment_method_types": {},
+                            "invoice": {},
+                            "last_payment_error": {},
+                            "latest_charge": {
+                              "type": "string"
+                            },
+                            "livemode": {
+                              "type": "boolean"
+                            },
+                            "managed_payments": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean"
+                                }
+                              }
+                            },
+                            "metadata": {
+                              "type": "object",
+                              "properties": {
+                                "acceptanceId": {
+                                  "type": "string"
+                                },
+                                "attemptNumber": {
+                                  "type": "string"
+                                },
+                                "clientToken": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "next_action": {},
+                            "next_source_action": {},
+                            "on_behalf_of": {},
+                            "payment_method": {
+                              "type": "string"
+                            },
+                            "payment_method_configuration_details": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "parent": {}
+                              }
+                            },
+                            "payment_method_options": {
+                              "type": "object",
+                              "properties": {
+                                "au_becs_debit": {
+                                  "type": "object",
+                                  "properties": {}
+                                },
+                                "card": {
+                                  "type": "object",
+                                  "properties": {
+                                    "installments": {},
+                                    "mandate_options": {},
+                                    "network": {},
+                                    "request_three_d_secure": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                "klarna": {
+                                  "type": "object",
+                                  "properties": {
+                                    "preferred_locale": {}
+                                  }
+                                },
+                                "zip": {
+                                  "type": "object",
+                                  "properties": {}
+                                }
+                              }
+                            },
+                            "payment_method_types": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "processing": {},
+                            "receipt_email": {},
+                            "review": {},
+                            "setup_future_usage": {},
+                            "shared_payment_granted_token": {},
+                            "shipping": {},
+                            "source": {},
+                            "statement_descriptor": {},
+                            "statement_descriptor_suffix": {},
+                            "status": {
+                              "type": "string"
+                            },
+                            "transfer_data": {},
+                            "transfer_group": {}
+                          }
+                        }
+                      }
+                    },
+                    "livemode": {
+                      "type": "boolean"
+                    },
+                    "pending_webhooks": {
+                      "type": "integer"
+                    },
+                    "request": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "set_varEventType": {
+              "runAfter": {
+                "Parse_JSON": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "3ab3d779-f160-4128-8f71-a6a027fe53b6"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "varEventType",
+                "value": "@body('Parse_JSON')?['type']"
+              }
+            },
+            "set_varPaymentIntentId": {
+              "runAfter": {
+                "set_varEventType": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "5d48a229-a52f-4c9d-9739-77fb5c12a07c"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "varPaymentIntentId",
+                "value": "@body('Parse_JSON')?['data']?['object']?['id']"
+              }
+            },
+            "set_varChargeId": {
+              "runAfter": {
+                "set_varPaymentIntentId": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "7915f3c5-d218-4b23-b34d-8143b26cb014"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "varChargeId",
+                "value": "@{body('Parse_JSON')?['data']?['object']?['latest_charge']}"
+              }
+            },
+            "paymentTransactions": {
+              "runAfter": {
+                "set_varChargeId": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "e3ee8927-cad5-40f0-bd43-54fd37fed4e4"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "hit_paymenttransactions",
+                  "$filter": "hit_stripeeventid eq '@{variables('varEventId')}'"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Condition_2": {
+              "actions": {},
+              "runAfter": {
+                "paymentTransactions": [
+                  "Succeeded"
+                ]
+              },
+              "else": {
+                "actions": {
+                  "transaction_-_paymentintent": {
+                    "runAfter": {},
+                    "metadata": {
+                      "operationMetadataId": "742854c9-e3e7-45f4-8586-3552978dd11a"
+                    },
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "host": {
+                        "connectionName": "shared_commondataserviceforapps",
+                        "operationId": "ListRecords",
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                      },
+                      "parameters": {
+                        "entityName": "hit_paymenttransactions",
+                        "$filter": "hit_stripepaymentintentid eq '@{variables('varPaymentIntentId')}'",
+                        "$top": 1
+                      },
+                      "authentication": "@parameters('$authentication')"
+                    }
+                  },
+                  "Condition_3": {
+                    "actions": {
+                      "Terminate": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "790b5f6a-0476-488a-ae3d-9bfee33798ac"
+                        },
+                        "type": "Terminate",
+                        "inputs": {
+                          "runStatus": "Succeeded"
+                        }
+                      }
+                    },
+                    "runAfter": {
+                      "Apply_to_each": [
+                        "Succeeded"
+                      ]
+                    },
+                    "else": {
+                      "actions": {
+                        "Switch_-_payment_response": {
+                          "runAfter": {},
+                          "cases": {
+                            "succeeded": {
+                              "case": "payment_intent.succeeded",
+                              "actions": {
+                                "update_Payment_Transaction_-_Paid": {
+                                  "runAfter": {},
+                                  "metadata": {
+                                    "operationMetadataId": "fc866dad-e2b7-4e58-a59d-2209c73be0c8"
+                                  },
+                                  "type": "OpenApiConnection",
+                                  "inputs": {
+                                    "host": {
+                                      "connectionName": "shared_commondataserviceforapps",
+                                      "operationId": "UpdateOnlyRecord",
+                                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                    },
+                                    "parameters": {
+                                      "entityName": "hit_paymenttransactions",
+                                      "recordId": "@variables('varPaymentTransactionId')",
+                                      "item/hit_attemptstatus": 815390003,
+                                      "item/hit_failuremessage": "@null",
+                                      "item/hit_stripechargeid": "@variables('varChargeId')",
+                                      "item/hit_stripeeventid": "@variables('varEventId')"
+                                    },
+                                    "authentication": "@parameters('$authentication')"
+                                  }
+                                },
+                                "update_Offering_Acceptance_-_Paid": {
+                                  "runAfter": {
+                                    "update_Payment_Transaction_-_Paid": [
+                                      "Succeeded"
+                                    ]
+                                  },
+                                  "metadata": {
+                                    "operationMetadataId": "71b19a21-2ab0-4eed-8357-722b58978998"
+                                  },
+                                  "type": "OpenApiConnection",
+                                  "inputs": {
+                                    "host": {
+                                      "connectionName": "shared_commondataserviceforapps",
+                                      "operationId": "UpdateOnlyRecord",
+                                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                    },
+                                    "parameters": {
+                                      "entityName": "hit_offeringacceptances",
+                                      "recordId": "@outputs('update_Payment_Transaction_-_Paid')?['body/_hit_offeringacceptance_value']",
+                                      "item/hit_acceptancestatus": 815390003,
+                                      "item/hit_currentstatus": "Paid"
+                                    },
+                                    "authentication": "@parameters('$authentication')"
+                                  }
+                                }
+                              }
+                            },
+                            "failed": {
+                              "case": "payment_intent.payment_failed",
+                              "actions": {
+                                "update_Payment_Transaction_-_Failed": {
+                                  "runAfter": {},
+                                  "metadata": {
+                                    "operationMetadataId": "943dab24-16cf-4def-bd5c-4f471696b18a"
+                                  },
+                                  "type": "OpenApiConnection",
+                                  "inputs": {
+                                    "host": {
+                                      "connectionName": "shared_commondataserviceforapps",
+                                      "operationId": "UpdateOnlyRecord",
+                                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                    },
+                                    "parameters": {
+                                      "entityName": "hit_paymenttransactions",
+                                      "recordId": "@variables('varPaymentTransactionId')",
+                                      "item/hit_attemptstatus": 815390004,
+                                      "item/hit_failurecode": "@body('Parse_JSON')?['data']?['object']?['last_payment_error']?['code']",
+                                      "item/hit_failuremessage": "@body('Parse_JSON')?['data']?['object']?['last_payment_error']?['message']",
+                                      "item/hit_stripeeventid": "@variables('varEventId')"
+                                    },
+                                    "authentication": "@parameters('$authentication')"
+                                  }
+                                },
+                                "update_Offering_Acceptance_-_Failed": {
+                                  "runAfter": {
+                                    "update_Payment_Transaction_-_Failed": [
+                                      "Succeeded"
+                                    ]
+                                  },
+                                  "metadata": {
+                                    "operationMetadataId": "5f17d065-69b9-4439-905d-b0c9cf82acce"
+                                  },
+                                  "type": "OpenApiConnection",
+                                  "inputs": {
+                                    "host": {
+                                      "connectionName": "shared_commondataserviceforapps",
+                                      "operationId": "UpdateOnlyRecord",
+                                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                    },
+                                    "parameters": {
+                                      "entityName": "hit_offeringacceptances",
+                                      "recordId": "@outputs('update_Payment_Transaction_-_Failed')?['body/_hit_offeringacceptance_value']",
+                                      "item/hit_acceptancestatus": 815390004,
+                                      "item/hit_currentstatus": "Failed"
+                                    },
+                                    "authentication": "@parameters('$authentication')"
+                                  }
+                                }
+                              }
+                            },
+                            "requires_action": {
+                              "case": "payment_intent.requires_action",
+                              "actions": {
+                                "update_Payment_Transaction_-_Requires_Action": {
+                                  "runAfter": {},
+                                  "metadata": {
+                                    "operationMetadataId": "bd09e0cf-7e8e-4cce-9a35-81750383d4ff"
+                                  },
+                                  "type": "OpenApiConnection",
+                                  "inputs": {
+                                    "host": {
+                                      "connectionName": "shared_commondataserviceforapps",
+                                      "operationId": "UpdateOnlyRecord",
+                                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                    },
+                                    "parameters": {
+                                      "entityName": "hit_paymenttransactions",
+                                      "recordId": "@variables('varPaymentTransactionId')",
+                                      "item/hit_attemptstatus": 815390002,
+                                      "item/hit_stripeeventid": "@variables('varEventId')"
+                                    },
+                                    "authentication": "@parameters('$authentication')"
+                                  }
+                                }
+                              }
+                            },
+                            "processing": {
+                              "case": "payment_intent.processing",
+                              "actions": {
+                                "update_Payment_Transaction_-_Processing": {
+                                  "runAfter": {},
+                                  "metadata": {
+                                    "operationMetadataId": "152e7841-b4ff-472d-80ba-30e80fa247d4"
+                                  },
+                                  "type": "OpenApiConnection",
+                                  "inputs": {
+                                    "host": {
+                                      "connectionName": "shared_commondataserviceforapps",
+                                      "operationId": "UpdateOnlyRecord",
+                                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                                    },
+                                    "parameters": {
+                                      "entityName": "hit_paymenttransactions",
+                                      "recordId": "@variables('varPaymentTransactionId')",
+                                      "item/hit_attemptstatus": 815390001,
+                                      "item/hit_stripeeventid": "@variables('varEventId')"
+                                    },
+                                    "authentication": "@parameters('$authentication')"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "default": {
+                            "actions": {}
+                          },
+                          "expression": "@variables('varEventType')",
+                          "metadata": {
+                            "operationMetadataId": "79cdb514-46db-41a0-9f13-3ba325942e2c"
+                          },
+                          "type": "Switch"
+                        }
+                      }
+                    },
+                    "expression": {
+                      "and": [
+                        {
+                          "less": [
+                            "@length(outputs('transaction_-_paymentintent')?['body/value'])",
+                            1
+                          ]
+                        }
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "fc8f9b93-a6ba-44a0-8cb9-815fa6227f8c"
+                    },
+                    "type": "If"
+                  },
+                  "Compose_-_Payment_Transaction_Record": {
+                    "runAfter": {
+                      "transaction_-_paymentintent": [
+                        "Succeeded"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "c3216c22-9793-48ad-981e-6b663ef793f8"
+                    },
+                    "type": "Compose",
+                    "inputs": "@first(body('transaction_-_paymentintent')?['value'])"
+                  },
+                  "Apply_to_each": {
+                    "foreach": "@outputs('transaction_-_paymentintent')?['body/value']",
+                    "actions": {
+                      "set_varPaymentTransactionId": {
+                        "runAfter": {},
+                        "metadata": {
+                          "operationMetadataId": "41dea6fb-0bfc-4fb9-9352-008761b7d75f"
+                        },
+                        "type": "SetVariable",
+                        "inputs": {
+                          "name": "varPaymentTransactionId",
+                          "value": "@items('Apply_to_each')?['hit_paymenttransactionid']"
+                        }
+                      },
+                      "PaymentTransaction": {
+                        "runAfter": {
+                          "set_varPaymentTransactionId": [
+                            "Succeeded"
+                          ]
+                        },
+                        "metadata": {
+                          "operationMetadataId": "d475acd5-3be5-435c-afa3-befedb469ae2"
+                        },
+                        "type": "OpenApiConnection",
+                        "inputs": {
+                          "host": {
+                            "connectionName": "shared_commondataserviceforapps",
+                            "operationId": "GetItem",
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                          },
+                          "parameters": {
+                            "entityName": "hit_paymenttransactions",
+                            "recordId": "@variables('varPaymentTransactionId')"
+                          },
+                          "authentication": "@parameters('$authentication')"
+                        }
+                      },
+                      "OfferingAcceptance": {
+                        "runAfter": {
+                          "PaymentTransaction": [
+                            "Succeeded"
+                          ]
+                        },
+                        "metadata": {
+                          "operationMetadataId": "64c3ea76-3a72-4f61-a3b4-09805d660c3c"
+                        },
+                        "type": "OpenApiConnection",
+                        "inputs": {
+                          "host": {
+                            "connectionName": "shared_commondataserviceforapps",
+                            "operationId": "GetItem",
+                            "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                          },
+                          "parameters": {
+                            "entityName": "hit_offeringacceptances",
+                            "recordId": "@outputs('PaymentTransaction')?['body/_hit_offeringacceptance_value']"
+                          },
+                          "authentication": "@parameters('$authentication')"
+                        }
+                      }
+                    },
+                    "runAfter": {
+                      "Compose_-_Payment_Transaction_Record": [
+                        "Succeeded"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "2115df22-6006-4ce4-8421-e2c80cb4a764"
+                    },
+                    "type": "Foreach"
+                  }
+                }
+              },
+              "expression": {
+                "and": [
+                  {
+                    "greater": [
+                      "@length(outputs('paymentTransactions')?['body/value'])",
+                      0
+                    ]
+                  }
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "8176a845-e299-4e16-a9cd-eb5653a42350"
+              },
+              "type": "If"
+            }
+          },
+          "runAfter": {
+            "init_varChargeId": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "Terminate_2": {
+                "runAfter": {},
+                "metadata": {
+                  "operationMetadataId": "3afc0349-a8d2-4389-8226-f072e5fd7df6"
+                },
+                "type": "Terminate",
+                "inputs": {
+                  "runStatus": "Failed",
+                  "runError": {
+                    "message": "Invalid EventID"
+                  }
+                }
+              }
+            }
+          },
+          "expression": {
+            "greater": [
+              "@length(variables('varEventId'))",
+              0
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "094dd075-e4d8-4929-924d-fe5771dba870"
+          },
+          "type": "If"
+        },
+        "init_varPaymentTransactionId": {
+          "runAfter": {
+            "init_varPaymentIntentId": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "5d2a59b8-6b4e-46e4-aee3-d87f02a34ca8"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varPaymentTransactionId",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "Response_4": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "c79c3bd4-499c-46f7-8685-89e103d397c6"
+          },
+          "type": "Response",
+          "kind": "Http",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "received": true
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "received": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

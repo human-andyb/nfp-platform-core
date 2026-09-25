@@ -1,0 +1,20 @@
+<powerpagecomponent powerpagecomponentid="2643e3af-028f-9add-c578-68f6ce4bc965">
+  <content>{
+  "displayimageonly": false,
+  "displayorder": 35,
+  "displaypagechildlinks": false,
+  "openinnewwindow": false,
+  "pageid": "67228dbc-23d5-fb0d-956a-7f8d44065a5a",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "robotsfollowlink": true,
+  "weblinksetid": "86aee643-0134-49dc-b168-405f3e024ed6"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Donate</name>
+  <powerpagecomponenttype>5</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

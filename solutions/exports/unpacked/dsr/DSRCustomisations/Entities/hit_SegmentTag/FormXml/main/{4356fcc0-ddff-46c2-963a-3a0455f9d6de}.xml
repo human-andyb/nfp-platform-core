@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{4356fcc0-ddff-46c2-963a-3a0455f9d6de}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form headerdensity="HighWithControls" shownavigationbar="false">
+      <tabs>
+        <tab verticallayout="true" id="{327489c2-66d2-4156-9240-405990fac6d9}" IsUserDefined="1" ordinalvalue="0">
+          <columns>
+            <column width="100%" id="0">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{9ebaf223-d900-46a2-ab5a-d7b7fdb66585}" celllabelposition="Top" columns="111" ordinalvalue="0">
+                  <rows>
+                    <row>
+                      <cell id="{96fd32d0-83ee-48df-9ff6-4f51a53a0c34}" ordinalvalue="10000">
+                        <labels>
+                          <label description="Name" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                      <cell id="{bd3ccaee-b721-4b86-a212-6aea0fff0078}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20001">
+                        <labels>
+                          <label description="Is System Tag" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                      <cell id="{8a41dbd7-efc0-43fc-8913-7e2e73432c90}" locklevel="0" colspan="1" rowspan="3" ordinalvalue="30002">
+                        <labels>
+                          <label description="Description" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{2bea0280-e682-487e-b035-5b799acc477c}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="20004" solutionaction="Modified">
+                        <labels>
+                          <label description="Tag Type" languagecode="1033" solutionaction="Modified" />
+                        </labels>
+                      </cell>
+                      <cell locklevel="0" id="{4b1b94b3-4387-440f-9e31-dc76e2af6f71}" ordinalvalue="20004" solutionaction="Removed" />
+                      <cell locklevel="0" id="{f33afb0c-e2cf-4882-9d4a-acf955e8de3b}" ordinalvalue="30005" solutionaction="Removed" />
+                    </row>
+                    <row>
+                      <cell id="{5d4b4ce6-ea16-4918-8fd9-9602161e0faa}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10003" solutionaction="Added">
+                        <labels>
+                          <label description="Code" languagecode="1033" />
+                        </labels>
+                        <control id="hit_code" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="hit_code" disabled="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{039f6c14-2167-4424-8da1-bf25a873d019}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="10005" solutionaction="Added">
+                        <labels>
+                          <label description="Dimension" languagecode="1033" />
+                        </labels>
+                        <control id="hit_dimension" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="hit_dimension" disabled="false" />
+                      </cell>
+                      <cell locklevel="0" id="{02b25d1a-564e-43fa-a761-8f06a412c5ff}" ordinalvalue="20006" solutionaction="Added">
+                        <labels>
+                          <label description="" languagecode="1033" />
+                        </labels>
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_2" id="135e7472-cf1f-4cc2-9ce0-c3e53b3998c2" IsUserDefined="0" locklevel="0" showlabel="true" ordinalvalue="1" solutionaction="Added">
+          <labels>
+            <label description="Contacts" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%" id="0">
+              <sections>
+                <section name="tab_2_section_1" id="77f26714-569d-4721-81bb-318800e06736" IsUserDefined="0" locklevel="0" showlabel="false" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115" ordinalvalue="0">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{036a51f7-4373-480b-b471-8de800cf1566}" rowspan="4" colspan="1" auto="true" ordinalvalue="10000">
+                        <labels>
+                          <label description="Tagged Contacts" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_1" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>10</RecordsPerPage>
+                            <AutoExpand>Auto</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_contactsegmenttag_SegmentTag_hit_segmenttag</RelationshipName>
+                            <TargetEntityType>hit_contactsegmenttag</TargetEntityType>
+                            <ViewId>{ED3D2D25-7E18-49AB-B89C-7114215C30FB}</ViewId>
+                            <ViewIds>{ED3D2D25-7E18-49AB-B89C-7114215C30FB}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+        <tab name="tab_3" id="42e11acb-6b12-4a9b-ae55-d811d56290c5" IsUserDefined="0" locklevel="0" showlabel="true" ordinalvalue="2" solutionaction="Added">
+          <labels>
+            <label description="Organisations" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%" id="0">
+              <sections>
+                <section name="tab_3_section_1" id="4448b1ac-ac80-4b18-846c-11d05e8238be" IsUserDefined="0" locklevel="0" showlabel="false" showbar="false" layout="varwidth" celllabelalignment="Left" celllabelposition="Left" columns="1" labelwidth="115" ordinalvalue="0">
+                  <labels>
+                    <label description="New Section" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row />
+                    <row>
+                      <cell locklevel="0" id="{979e5bc5-a5c5-4689-a94e-1c589dff49d4}" rowspan="4" colspan="1" auto="true" ordinalvalue="10000">
+                        <labels>
+                          <label description="Tagged Organisation" languagecode="1033" />
+                        </labels>
+                        <control indicationOfSubgrid="true" id="Subgrid_new_2" classid="{E7A81278-8635-4D9E-8D4D-59480B391C5B}">
+                          <parameters>
+                            <RecordsPerPage>10</RecordsPerPage>
+                            <AutoExpand>Auto</AutoExpand>
+                            <EnableQuickFind>false</EnableQuickFind>
+                            <EnableViewPicker>false</EnableViewPicker>
+                            <EnableChartPicker>true</EnableChartPicker>
+                            <ChartGridMode>All</ChartGridMode>
+                            <RelationshipName>hit_accountsegmenttag_SegmentTag_hit_segmenttag</RelationshipName>
+                            <TargetEntityType>hit_accountsegmenttag</TargetEntityType>
+                            <ViewId>{A1D06F52-F669-46FE-B157-0880652C581A}</ViewId>
+                            <ViewIds>{A1D06F52-F669-46FE-B157-0880652C581A}</ViewIds>
+                          </parameters>
+                        </control>
+                      </cell>
+                    </row>
+                    <row />
+                    <row />
+                    <row />
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{425bb4ea-5fea-4169-afbe-34479483b61d}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{9097f3d2-07e8-4eef-a351-899e1e67802b}" colspan="1" rowspan="1" visible="false" ordinalvalue="40003">
+              <labels>
+                <label description="Owner" languagecode="1033" solutionaction="Modified" />
+              </labels>
+            </cell>
+            <cell id="{7c16c5da-1a53-4e4c-b9ae-0d498a4ba1a1}" locklevel="0" colspan="1" rowspan="1" ordinalvalue="50004">
+              <labels>
+                <label description="Tag Id" languagecode="1033" solutionaction="Modified" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </header>
+    </form>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

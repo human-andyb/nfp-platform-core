@@ -1,0 +1,13 @@
+<powerpagecomponent powerpagecomponentid="30ca9999-ff1b-f111-88b2-000d3a7a0cab">
+  <content>{
+  "source": "{%- assign ctaText = ctaLabel | default: 'View Program' -%}\r\n{%- assign targetAttributes = targetAttrs | default: targetAttr | default: '' -%}\r\n\r\n{%- comment -%}\r\nFeatured card that matches existing CSS selectors:\r\n- .hit-card__inner--featured (aspect ratio + background image)\r\n- .hit-card__overlay\r\n- .hit-card__body--featured\r\n- .hit-card__title--featured\r\n- .hit-card__summary--featured\r\n- .hit-card__stretchedLink (z-index safety rules)\r\n{%- endcomment -%}\r\n\r\n{%- assign bgStyle = '' -%}\r\n{%- if imageUrl and imageUrl != '' -%}\r\n  {%- assign bgStyle = 'background-image:url(' | append: imageUrl | append: ');' -%}\r\n{%- endif -%}\r\n\r\n&lt;article class=\"hit-card hit-card--featured\"&gt;\r\n  &lt;div class=\"hit-card__inner hit-card__inner--featured\" style=\"{{ bgStyle | escape }}\"&gt;\r\n\r\n    {%- if href and href != '' -%}\r\n      &lt;a class=\"hit-card__stretchedLink\" href=\"{{ href | escape_once }}\"{{ targetAttr }} aria-label=\"{{ title | escape }}\"&gt;&lt;/a&gt;\r\n    {%- endif -%}\r\n\r\n    &lt;div class=\"hit-card__overlay\"&gt;&lt;/div&gt;\r\n\r\n    &lt;div class=\"hit-card__body hit-card__body--featured\"&gt;\r\n\r\n      {%- if typeLabel and typeLabel != '' -%}\r\n        &lt;div class=\"hit-card__badges\"&gt;\r\n          &lt;span class=\"hit-card__badge\"&gt;{{ typeLabel | escape }}&lt;/span&gt;\r\n        &lt;/div&gt;\r\n      {%- endif -%}\r\n\r\n      &lt;h3 class=\"hit-card__title hit-card__title--featured\"&gt;{{ title | escape }}&lt;/h3&gt;\r\n\r\n      {%- if summary and summary != '' -%}\r\n        &lt;p class=\"hit-card__summary hit-card__summary--featured\"&gt;{{ summary | escape }}&lt;/p&gt;\r\n      {%- endif -%}\r\n\r\n      &lt;div class=\"hit-card__cta\"&gt;\r\n        &lt;a class=\"hit-button hit-button--secondary\"\r\n          href=\"{{ href | escape_once }}\"\r\n          {{ targetattr }}&gt;\r\n          {{ ctaText | escape }}\r\n        &lt;/a&gt;\r\n      &lt;/div&gt;\r\n\r\n    &lt;/div&gt;\r\n  &lt;/div&gt;\r\n&lt;/article&gt;"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>components--web-gallery-card-featured</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

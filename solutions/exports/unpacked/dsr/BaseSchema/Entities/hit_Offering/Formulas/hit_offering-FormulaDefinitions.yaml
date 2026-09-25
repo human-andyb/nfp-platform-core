@@ -1,0 +1,22 @@
+hit_slug: |-
+    =Lower(
+        Substitute(
+            Substitute(
+                Substitute(
+                    Substitute(
+                        Substitute(
+                            Substitute(
+                                Trim(hit_offeringname),
+                                "_", "-"
+                            ),
+                            " ", "-"
+                        ),
+                        "'", ""
+                    ),
+                    "&", "and"
+                ),
+                ".", ""
+            ),
+            ",", ""
+        )
+    )

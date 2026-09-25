@@ -1,0 +1,375 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{1ee01e06-de22-4a4a-9f99-46d8b28173c1}</formid>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <FormPresentation>1</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab verticallayout="true" id="{934cc93e-a861-4a37-8180-78529f255670}" IsUserDefined="1">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section showlabel="false" showbar="false" IsUserDefined="0" id="{bbfcddf2-898a-41ca-a0c0-74eac92a2906}">
+                  <labels>
+                    <label description="General" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="{9cf7b4eb-9fc4-47ff-ab91-cfb770d46bad}">
+                        <labels>
+                          <label description="Locality" languagecode="1033" />
+                        </labels>
+                        <control id="new_localityname" classid="{4273EDBD-AC1D-40d3-9FB2-095C621B552D}" datafieldname="new_localityname" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{09f0d1b0-bfe6-4d06-b831-0f3f1400bb58}">
+                        <labels>
+                          <label description="Owner" languagecode="1033" />
+                        </labels>
+                        <control id="ownerid" classid="{270BD3DB-D9AF-4782-9025-509E298DEC0A}" datafieldname="ownerid" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{d8dcfc20-c4f0-4f4d-bbaf-a93c613a0551}">
+                        <labels>
+                          <label description="ID" languagecode="1033" />
+                        </labels>
+                        <control id="new_postalareaid1" classid="{c6d124ca-7eda-4a60-aea9-7fb8d318b68f}" datafieldname="new_postalareaid1" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{74aee75b-42c9-4975-82e2-e775679b98e2}">
+                        <labels>
+                          <label description="Postcode Number" languagecode="1033" />
+                        </labels>
+                        <control id="new_postalcode" classid="{c6d124ca-7eda-4a60-aea9-7fb8d318b68f}" datafieldname="new_postalcode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{fb08d52c-42f7-41a1-99d9-c3b6364c9a08}">
+                        <labels>
+                          <label description="State" languagecode="1033" />
+                        </labels>
+                        <control id="new_stateabbreviation" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_stateabbreviation" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{8e14033d-97ff-4879-8637-3feb2c52ecc2}">
+                        <labels>
+                          <label description="Long" languagecode="1033" />
+                        </labels>
+                        <control id="new_longitude" classid="{c3efe0c3-0ec6-42be-8349-cbd9079dfd8e}" datafieldname="new_longitude" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{7fce09a2-57f8-422d-ab07-3ec63f249c2b}">
+                        <labels>
+                          <label description="Lat" languagecode="1033" />
+                        </labels>
+                        <control id="new_latitude" classid="{c3efe0c3-0ec6-42be-8349-cbd9079dfd8e}" datafieldname="new_latitude" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{48879857-f6c8-4087-804c-e4283cad53c3}">
+                        <labels>
+                          <label description="DC" languagecode="1033" />
+                        </labels>
+                        <control id="new_deliverycenter" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_deliverycenter" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{695a76e9-0a01-4ee9-aa29-74113f3e5a68}">
+                        <labels>
+                          <label description="Type" languagecode="1033" />
+                        </labels>
+                        <control id="new_areatype" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_areatype" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0b0f7b4c-09f2-48a4-a697-282dfc6d698a}">
+                        <labels>
+                          <label description="SA3" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa3code" classid="{c6d124ca-7eda-4a60-aea9-7fb8d318b68f}" datafieldname="new_sa3code" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{119f11fb-4241-48ff-9936-1774da667535}">
+                        <labels>
+                          <label description="SA3 Name" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa3name" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_sa3name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{880fffe4-31a1-445a-bd22-ed08806e061b}">
+                        <labels>
+                          <label description="SA4" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa4code" classid="{c6d124ca-7eda-4a60-aea9-7fb8d318b68f}" datafieldname="new_sa4code" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{98f23d9c-31bb-40b2-9d2e-c260b2ce042c}">
+                        <labels>
+                          <label description="SA4 Name" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa4name" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_sa4name" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{bada21e5-e600-4ac4-ba3a-d6e4fa2b1e81}">
+                        <labels>
+                          <label description="Region" languagecode="1033" />
+                        </labels>
+                        <control id="new_regioncode" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_regioncode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{640331d9-4114-42d5-8175-8ff03f245e77}">
+                        <labels>
+                          <label description="Status" languagecode="1033" />
+                        </labels>
+                        <control id="new_statusupdate" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_statusupdate" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{19826793-b11e-4a56-81de-cc243f0d50ff}">
+                        <labels>
+                          <label description="Lat (Google)" languagecode="1033" />
+                        </labels>
+                        <control id="new_googlelatitude" classid="{c3efe0c3-0ec6-42be-8349-cbd9079dfd8e}" datafieldname="new_googlelatitude" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{94217521-5c20-4268-a4b4-08a1711dc31e}">
+                        <labels>
+                          <label description="Long (Google)" languagecode="1033" />
+                        </labels>
+                        <control id="new_googlelongitude" classid="{c3efe0c3-0ec6-42be-8349-cbd9079dfd8e}" datafieldname="new_googlelongitude" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{95691965-302b-45ce-b890-f346483f654e}">
+                        <labels>
+                          <label description="SA1 CODE 2021" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa1code2021" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_sa1code2021" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{8ad5d35a-57d9-4f1e-81ab-dedbb73ddf35}">
+                        <labels>
+                          <label description="SA1 NAME 2021" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa1name2021" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_sa1name2021" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ba2b6285-230c-4e6a-b822-7f6f2bf3ba7f}">
+                        <labels>
+                          <label description="SA2 CODE 2021" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa2code2021" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_sa2code2021" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{3a3d9708-0fab-4959-a15e-8346244786a9}">
+                        <labels>
+                          <label description="SA2 NAME 2021" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa2name2021" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_sa2name2021" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{6b8e2f8b-9e2f-4b37-a312-493cdfa45b2f}">
+                        <labels>
+                          <label description="SA3 CODE 2021" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa3code2021" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_sa3code2021" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{04ac9a0a-7138-460d-9d74-b60c24f135e8}">
+                        <labels>
+                          <label description="SA3 NAME 2021" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa3name2021" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_sa3name2021" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{5e5266aa-305e-42b3-94a5-6b0a21f744da}">
+                        <labels>
+                          <label description="SA4 CODE 2021" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa4code2021" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_sa4code2021" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{24ecf61b-f49c-4623-bf89-22ad325545e1}">
+                        <labels>
+                          <label description="SA4 NAME 2021" languagecode="1033" />
+                        </labels>
+                        <control id="new_sa4name2021" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_sa4name2021" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{e13c891a-c9c7-4e82-bea5-da2a529790ab}">
+                        <labels>
+                          <label description="RA 2011" languagecode="1033" />
+                        </labels>
+                        <control id="new_remotenessarea2011" classid="{c6d124ca-7eda-4a60-aea9-7fb8d318b68f}" datafieldname="new_remotenessarea2011" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a9a4b255-d352-4647-bf48-1afd888523c4}">
+                        <labels>
+                          <label description="RA 2016" languagecode="1033" />
+                        </labels>
+                        <control id="new_remotenessarea2016" classid="{c6d124ca-7eda-4a60-aea9-7fb8d318b68f}" datafieldname="new_remotenessarea2016" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{40191505-8b07-4610-bcdd-c62d794bd935}">
+                        <labels>
+                          <label description="RA 2021" languagecode="1033" />
+                        </labels>
+                        <control id="new_remotenessarea2021" classid="{c6d124ca-7eda-4a60-aea9-7fb8d318b68f}" datafieldname="new_remotenessarea2021" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{a6744900-9c97-43e6-ac01-cbccbf1c65cc}">
+                        <labels>
+                          <label description="RA 2021 Name" languagecode="1033" />
+                        </labels>
+                        <control id="new_remotenessareaname2021" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_remotenessareaname2021" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{eed83a68-381e-4912-9845-4ba3153bf29d}">
+                        <labels>
+                          <label description="MMM 2015" languagecode="1033" />
+                        </labels>
+                        <control id="new_mmm2015" classid="{c6d124ca-7eda-4a60-aea9-7fb8d318b68f}" datafieldname="new_mmm2015" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{3548d9f4-ec4a-41f1-a5fd-ac3a9d27fe87}">
+                        <labels>
+                          <label description="MMM 2019" languagecode="1033" />
+                        </labels>
+                        <control id="new_mmm2019" classid="{c6d124ca-7eda-4a60-aea9-7fb8d318b68f}" datafieldname="new_mmm2019" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{fc2b992a-a7d3-4e5b-aac0-67365f7d406d}">
+                        <labels>
+                          <label description="CED" languagecode="1033" />
+                        </labels>
+                        <control id="new_cedname" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_cedname" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{17f2e9ae-d5ec-439e-9041-a14fabbe0714}">
+                        <labels>
+                          <label description="Altitude" languagecode="1033" />
+                        </labels>
+                        <control id="new_altitude" classid="{c3efe0c3-0ec6-42be-8349-cbd9079dfd8e}" datafieldname="new_altitude" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{bd84d593-3154-4233-b4dc-f95ea4d7f693}">
+                        <labels>
+                          <label description="Charge Zone" languagecode="1033" />
+                        </labels>
+                        <control id="new_chargezone" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_chargezone" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{0a4303e9-76aa-44b1-bc7d-5dbfaa8a8b4f}">
+                        <labels>
+                          <label description="PHN Code" languagecode="1033" />
+                        </labels>
+                        <control id="new_phncode" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_phncode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{699b7be5-d156-4e32-8cd2-acc031eb75d4}">
+                        <labels>
+                          <label description="PHN Name" languagecode="1033" />
+                        </labels>
+                        <control id="new_phnname" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_phnname" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{5bd14ea8-d2e2-475d-9bf4-27314d0f0e97}">
+                        <labels>
+                          <label description="LGA Region" languagecode="1033" />
+                        </labels>
+                        <control id="new_lgaregion" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_lgaregion" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{6591ff6f-c48b-4189-9dd1-8b1f4a2a0b6d}">
+                        <labels>
+                          <label description="LGA Code" languagecode="1033" />
+                        </labels>
+                        <control id="new_lgacode" classid="{c6d124ca-7eda-4a60-aea9-7fb8d318b68f}" datafieldname="new_lgacode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{cc7672e4-c887-40d5-887b-28d1d3178e1a}">
+                        <labels>
+                          <label description="Electorate" languagecode="1033" />
+                        </labels>
+                        <control id="new_electoratename" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_electoratename" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{ab2119ec-d778-4a81-a16a-3c641546d11a}">
+                        <labels>
+                          <label description="Electorate Rating" languagecode="1033" />
+                        </labels>
+                        <control id="new_electoraterating" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_electoraterating" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{619f2f91-a923-44fb-bb26-df4f11c608d7}">
+                        <labels>
+                          <label description="State Electoral Code" languagecode="1033" />
+                        </labels>
+                        <control id="new_stateelectoralcode" classid="{c6d124ca-7eda-4a60-aea9-7fb8d318b68f}" datafieldname="new_stateelectoralcode" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="{21e272fe-6c7e-42d1-90cb-623295cf02f9}">
+                        <labels>
+                          <label description="State Electoral Name" languagecode="1033" />
+                        </labels>
+                        <control id="new_stateelectoralname" classid="{4273edbd-ac1d-40d3-9fb2-095c621b552d}" datafieldname="new_stateelectoralname" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Information" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="A form for this entity." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>

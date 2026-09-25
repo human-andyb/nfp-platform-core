@@ -1,0 +1,25 @@
+function openPaymentPage(primaryControl) {
+
+    var recordId = primaryControl._entityReference.id.guid;
+    var entityName = primaryControl._entityReference.etn;
+
+    var pageInput = {
+        pageType: "custom",
+        name: "hit_processpaymentform_3a67f",
+        entityName: entityName,
+        recordId: recordId
+    };
+
+    var navigationOptions = {
+        target: 2,
+        position: 1,
+        width: 900,
+        height: 600,
+        title: "Process Payment"
+    };
+
+    Xrm.Navigation.navigateTo(
+        pageInput,
+        navigationOptions
+    );
+}

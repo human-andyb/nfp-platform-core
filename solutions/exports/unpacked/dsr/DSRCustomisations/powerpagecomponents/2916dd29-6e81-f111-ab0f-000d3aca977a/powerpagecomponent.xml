@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="2916dd29-6e81-f111-ab0f-000d3aca977a">
+  <content>{
+  "source": 0,
+  "value": "https://c767551e0076ed96815606468fc034.c3.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/28/workflows/6325f1b2153b4e4a839f8d2f1ab2bc77/triggers/manual/paths/invoke?api-version=1&amp;sp=%2Ftriggers%2Fmanual%2Frun&amp;sv=1.0&amp;sig=xbkhk8xIUeaMHVLnrtv3CCSjCc3QQwNZgvVrHV-lzs0"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Stripe/CreateCustomerSetupIntentUrl</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

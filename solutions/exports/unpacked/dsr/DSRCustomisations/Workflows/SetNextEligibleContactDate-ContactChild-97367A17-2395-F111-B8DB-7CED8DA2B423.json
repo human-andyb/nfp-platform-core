@@ -1,0 +1,807 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "e3c702eb-5a1c-4a7f-b955-d7d3c40f4bd0"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "title": "contactID",
+                  "type": "string",
+                  "x-ms-dynamically-added": true,
+                  "description": "Please enter your input",
+                  "x-ms-content-hint": "TEXT"
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          }
+        }
+      },
+      "actions": {
+        "contact": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "e8f3d8fd-4048-40ed-acc4-a58ec7bf3f00"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "GetItem",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "contacts",
+              "recordId": "@triggerBody()['text']"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "curNextEligibleDate": {
+          "runAfter": {
+            "init_varNextEligibleDate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "5fc825ce-ce97-4d40-8c6f-01319f2650cb"
+          },
+          "type": "Compose",
+          "inputs": "@outputs('contact')?['body/hit_nexteligiblecontactdate']"
+        },
+        "init_varIntervalMonths": {
+          "runAfter": {
+            "contact": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "ae744d8e-bd5a-44f3-81b1-d772ed31de95"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varIntervalMonths",
+                "type": "integer"
+              }
+            ]
+          }
+        },
+        "init_varNextEligibleDate": {
+          "runAfter": {
+            "init_iFrequency": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "93aea605-37c9-42cf-9187-d07d6115439c"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varNextEligibleDate",
+                "type": "string",
+                "value": "@if(\r\n    empty(outputs('contact')?['body/hit_nexteligiblecontactdate']),\r\n    formatDateTime(utcNow(), 'yyyy-MM-dd'),\r\n    formatDateTime(\r\n        outputs('contact')?['body/hit_nexteligiblecontactdate'],\r\n        'yyyy-MM-dd'\r\n    )\r\n)"
+              }
+            ]
+          }
+        },
+        "init_iFrequency": {
+          "runAfter": {
+            "init_varIntervalMonths": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "16af073e-26e1-4fb5-bec2-68962c612283"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "iFrequency",
+                "type": "integer",
+                "value": "@int(coalesce(outputs('contact')?['body/hit_contactfrequencyperyear'], 4))"
+              }
+            ]
+          }
+        },
+        "Respond_to_a_Power_App_or_flow": {
+          "runAfter": {
+            "do_not_contact": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "9e0a157c-c85f-4be5-8fa2-54a9ffef0b36"
+          },
+          "type": "Response",
+          "kind": "PowerApp",
+          "inputs": {
+            "statusCode": 200,
+            "body": {
+              "response": "Success"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "response": {
+                  "title": "response",
+                  "x-ms-dynamically-added": true,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "do_not_contact": {
+          "actions": {
+            "update_contact_-_no_outbound": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "96353011-aaab-45eb-9ac5-b59c7a56c4cb"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "UpdateOnlyRecord",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "contacts",
+                  "recordId": "@outputs('contact')?['body/contactid']",
+                  "item/hit_allowoutbound": false,
+                  "item/hit_lastoutcome": "No Outbound Contact",
+                  "item/hit_nexteligiblecontactdate": "@null",
+                  "item/hit_outboundactive": false,
+                  "item/hit_contactfrequencyperyear": "@null"
+                },
+                "authentication": {
+                  "type": "Raw",
+                  "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                }
+              }
+            },
+            "run_-_add_tag_CON_DO_NOT_CONTACT": {
+              "runAfter": {
+                "update_contact_-_no_outbound": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "e154eedf-3948-4c61-8bf5-52278011ef33"
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                },
+                "body": {
+                  "text": "@outputs('contact')?['body/contactid']",
+                  "text_1": "CON__DO_NOT_CONTACT",
+                  "boolean_1": false,
+                  "text_2": "CON",
+                  "text_3": "Add"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "init_sLastOutcome": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "no_contact_method": {
+                "actions": {
+                  "update_contact_-_no_contact_method": {
+                    "runAfter": {},
+                    "metadata": {
+                      "operationMetadataId": "48d7dfeb-54ca-408d-bc71-c2d33b27e4f9"
+                    },
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "host": {
+                        "connectionName": "shared_commondataserviceforapps",
+                        "operationId": "UpdateOnlyRecord",
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                      },
+                      "parameters": {
+                        "entityName": "contacts",
+                        "recordId": "@outputs('contact')?['body/contactid']",
+                        "item/hit_allowoutbound": false,
+                        "item/hit_nexteligiblecontactdate": "@null",
+                        "item/hit_outboundactive": false,
+                        "item/hit_contactfrequencyperyear": "@null"
+                      },
+                      "authentication": {
+                        "type": "Raw",
+                        "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                      }
+                    }
+                  },
+                  "run_-_add_tag_DAT__INCOMPLETE": {
+                    "runAfter": {
+                      "update_contact_-_no_contact_method": [
+                        "Succeeded"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "bd97e597-25a8-4e06-b82f-e3161e534291"
+                    },
+                    "type": "Workflow",
+                    "inputs": {
+                      "host": {
+                        "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                      },
+                      "body": {
+                        "text": "@outputs('contact')?['body/contactid']",
+                        "text_1": "DAT__INCOMPLETE",
+                        "boolean_1": false,
+                        "text_2": "DAT",
+                        "text_3": "Add"
+                      }
+                    }
+                  }
+                },
+                "runAfter": {},
+                "else": {
+                  "actions": {
+                    "allow_outbound": {
+                      "actions": {
+                        "run_-_remove_tag_CON_DO_NOT_CONTACT": {
+                          "runAfter": {},
+                          "metadata": {
+                            "operationMetadataId": "ed853323-1a06-4dd9-9c1b-6b61dd9d4667"
+                          },
+                          "type": "Workflow",
+                          "inputs": {
+                            "host": {
+                              "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                            },
+                            "body": {
+                              "text": "@outputs('contact')?['body/contactid']",
+                              "text_1": "CON__DO_NOT_CONTACT",
+                              "boolean_1": false,
+                              "text_2": "CON",
+                              "text_3": "Remove"
+                            }
+                          }
+                        },
+                        "curNextEligibleDate_exists": {
+                          "actions": {},
+                          "runAfter": {
+                            "run_-_remove_tag_CON_DO_NOT_CONTACT": [
+                              "Succeeded"
+                            ]
+                          },
+                          "else": {
+                            "actions": {
+                              "set_varNextEligibleDate_-_today": {
+                                "runAfter": {},
+                                "metadata": {
+                                  "operationMetadataId": "2420e969-46b2-4a84-8497-cb7494e54875"
+                                },
+                                "type": "SetVariable",
+                                "inputs": {
+                                  "name": "varNextEligibleDate",
+                                  "value": "@formatDateTime(utcNow(),'yyyy-MM-dd')"
+                                }
+                              }
+                            }
+                          },
+                          "expression": {
+                            "and": [
+                              {
+                                "greater": [
+                                  "@length(variables('varNextEligibleDate'))",
+                                  0
+                                ]
+                              }
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "bfa598fd-68cd-4679-bab7-8fb230fc0366"
+                          },
+                          "type": "If"
+                        },
+                        "Switch": {
+                          "runAfter": {
+                            "curNextEligibleDate_exists": [
+                              "Succeeded"
+                            ]
+                          },
+                          "cases": {
+                            "Annual_-_1": {
+                              "case": 1,
+                              "actions": {
+                                "has_preferred_month": {
+                                  "actions": {
+                                    "Month1ThisYear": {
+                                      "runAfter": {},
+                                      "metadata": {
+                                        "operationMetadataId": "d46696dc-87eb-44b1-b8cc-6a849f04b747"
+                                      },
+                                      "type": "Compose",
+                                      "inputs": "@concat(\r\n    formatDateTime(\r\n        variables('varNextEligibleDate'),\r\n        'yyyy'\r\n    ),\r\n    '-',\r\n    if(\r\n        less(variables('varPreferenceMonth1'),10),\r\n        concat('0',string(variables('varPreferenceMonth1'))),\r\n        string(variables('varPreferenceMonth1'))\r\n    ),\r\n    '-01'\r\n)"
+                                    },
+                                    "NextMonth1Date": {
+                                      "runAfter": {
+                                        "Month1ThisYear": [
+                                          "Succeeded"
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "4181bc25-cd57-4184-83a7-19fbb24fb099"
+                                      },
+                                      "type": "Compose",
+                                      "inputs": "@if(\r\n    greater(\r\n        ticks(outputs('Month1ThisYear')),\r\n        ticks(variables('varNextEligibleDate'))\r\n    ),\r\n    outputs('Month1ThisYear'),\r\n    concat(\r\n        string(\r\n            add(\r\n                int(formatDateTime(variables('varNextEligibleDate'),'yyyy')),\r\n                1\r\n            )\r\n        ),\r\n        '-',\r\n        if(\r\n            less(variables('varPreferenceMonth1'),10),\r\n            concat('0',string(variables('varPreferenceMonth1'))),\r\n            string(variables('varPreferenceMonth1'))\r\n        ),\r\n        '-01'\r\n    )\r\n)"
+                                    },
+                                    "set_varNextEligibleDate_-_annual_pref": {
+                                      "runAfter": {
+                                        "NextMonth1Date": [
+                                          "Succeeded"
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "2420e969-46b2-4a84-8497-cb7494e54875"
+                                      },
+                                      "type": "SetVariable",
+                                      "inputs": {
+                                        "name": "varNextEligibleDate",
+                                        "value": "@outputs('NextMonth1Date')"
+                                      }
+                                    }
+                                  },
+                                  "runAfter": {},
+                                  "else": {
+                                    "actions": {
+                                      "set_varIntervalMonths_-_12": {
+                                        "runAfter": {},
+                                        "metadata": {
+                                          "operationMetadataId": "9ed62293-eb6e-425b-9a9d-49660612ac1f"
+                                        },
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                          "name": "varIntervalMonths",
+                                          "value": 12
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "expression": {
+                                    "and": [
+                                      {
+                                        "greater": [
+                                          "@variables('varPreferenceMonth1')",
+                                          0
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  "metadata": {
+                                    "operationMetadataId": "d586fe17-2b84-4fcb-9535-48c992e6244a"
+                                  },
+                                  "type": "If"
+                                }
+                              }
+                            },
+                            "Semi-annual_-_2": {
+                              "case": 2,
+                              "actions": {
+                                "has_preferred_month_1": {
+                                  "actions": {
+                                    "Month1ThisYear_1": {
+                                      "runAfter": {},
+                                      "metadata": {
+                                        "operationMetadataId": "4f9caf22-4704-4198-9245-1e541ec055e6"
+                                      },
+                                      "type": "Compose",
+                                      "inputs": "@concat(\r\n    formatDateTime(\r\n        variables('varNextEligibleDate'),\r\n        'yyyy'\r\n    ),\r\n    '-',\r\n    if(\r\n        less(variables('varPreferenceMonth1'),10),\r\n        concat('0',string(variables('varPreferenceMonth1'))),\r\n        string(variables('varPreferenceMonth1'))\r\n    ),\r\n    '-01'\r\n)"
+                                    },
+                                    "NextMonth1Date_1": {
+                                      "runAfter": {
+                                        "Month1ThisYear_1": [
+                                          "Succeeded"
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "eb9b2860-1720-4e4a-96dc-14cd52a909d6"
+                                      },
+                                      "type": "Compose",
+                                      "inputs": "@if(\r\n    greater(\r\n        ticks(outputs('Month1ThisYear_1')),\r\n        ticks(variables('varNextEligibleDate'))\r\n    ),\r\n    outputs('Month1ThisYear_1'),\r\n    concat(\r\n        string(\r\n            add(\r\n                int(formatDateTime(variables('varNextEligibleDate'),'yyyy')),\r\n                1\r\n            )\r\n        ),\r\n        '-',\r\n        if(\r\n            less(variables('varPreferenceMonth1'),10),\r\n            concat('0',string(variables('varPreferenceMonth1'))),\r\n            string(variables('varPreferenceMonth1'))\r\n        ),\r\n        '-01'\r\n    )\r\n)"
+                                    },
+                                    "set_varNextEligibleDate_-_semi-annual_pref": {
+                                      "runAfter": {
+                                        "NextMonth2Date": [
+                                          "Succeeded"
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "2420e969-46b2-4a84-8497-cb7494e54875"
+                                      },
+                                      "type": "SetVariable",
+                                      "inputs": {
+                                        "name": "varNextEligibleDate",
+                                        "value": "@if(\r\n    less(\r\n        ticks(outputs('NextMonth1Date_1')),\r\n        ticks(outputs('NextMonth2Date'))\r\n    ),\r\n    outputs('NextMonth1Date_1'),\r\n    outputs('NextMonth2Date')\r\n)"
+                                      }
+                                    },
+                                    "Month2ThisYear": {
+                                      "runAfter": {
+                                        "NextMonth1Date_1": [
+                                          "Succeeded"
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "81ee279d-019b-42bd-bb79-52975e54c33f"
+                                      },
+                                      "type": "Compose",
+                                      "inputs": "@concat(\r\n    formatDateTime(\r\n        variables('varNextEligibleDate'),\r\n        'yyyy'\r\n    ),\r\n    '-',\r\n    if(\r\n        less(variables('varPreferenceMonth2'),10),\r\n        concat('0',string(variables('varPreferenceMonth1'))),\r\n        string(variables('varPreferenceMonth2'))\r\n    ),\r\n    '-01'\r\n)"
+                                    },
+                                    "NextMonth2Date": {
+                                      "runAfter": {
+                                        "Month2ThisYear": [
+                                          "Succeeded"
+                                        ]
+                                      },
+                                      "metadata": {
+                                        "operationMetadataId": "93e5f41c-f577-43e3-b068-abdb83b424da"
+                                      },
+                                      "type": "Compose",
+                                      "inputs": "@if(\r\n    greater(\r\n        ticks(outputs('Month2ThisYear')),\r\n        ticks(variables('varNextEligibleDate'))\r\n    ),\r\n    outputs('Month2ThisYear'),\r\n    concat(\r\n        string(\r\n            add(\r\n                int(formatDateTime(variables('varNextEligibleDate'),'yyyy')),\r\n                1\r\n            )\r\n        ),\r\n        '-',\r\n        if(\r\n            less(variables('varPreferenceMonth2'),10),\r\n            concat('0',string(variables('varPreferenceMonth2'))),\r\n            string(variables('varPreferenceMonth2'))\r\n        ),\r\n        '-01'\r\n    )\r\n)"
+                                    }
+                                  },
+                                  "runAfter": {},
+                                  "else": {
+                                    "actions": {
+                                      "set_varIntervalMonths_-_6": {
+                                        "runAfter": {},
+                                        "metadata": {
+                                          "operationMetadataId": "f1b54cd4-ad4b-40a2-be51-f767b164324a"
+                                        },
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                          "name": "varIntervalMonths",
+                                          "value": 6
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "expression": {
+                                    "and": [
+                                      {
+                                        "greater": [
+                                          "@variables('varPreferenceMonth1')",
+                                          0
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  "metadata": {
+                                    "operationMetadataId": "47e18a2f-e52e-437d-9a74-d3df8a846fcc"
+                                  },
+                                  "type": "If"
+                                }
+                              }
+                            },
+                            "quarterly_-_4": {
+                              "case": 4,
+                              "actions": {
+                                "set_varIntervalMonths_-_3": {
+                                  "runAfter": {},
+                                  "metadata": {
+                                    "operationMetadataId": "67d7ab13-ffb6-47d0-8578-a21e33a0a89b"
+                                  },
+                                  "type": "SetVariable",
+                                  "inputs": {
+                                    "name": "varIntervalMonths",
+                                    "value": 3
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "default": {
+                            "actions": {
+                              "set_varIntervalMonths_-_3_1": {
+                                "runAfter": {},
+                                "metadata": {
+                                  "operationMetadataId": "67d7ab13-ffb6-47d0-8578-a21e33a0a89b"
+                                },
+                                "type": "SetVariable",
+                                "inputs": {
+                                  "name": "varIntervalMonths",
+                                  "value": 3
+                                }
+                              }
+                            }
+                          },
+                          "expression": "@variables('iFrequency')",
+                          "metadata": {
+                            "operationMetadataId": "6beea376-afd8-4b3e-ab62-1870cffeaf16"
+                          },
+                          "type": "Switch"
+                        },
+                        "Do_until": {
+                          "actions": {
+                            "newDate": {
+                              "runAfter": {},
+                              "metadata": {
+                                "operationMetadataId": "1a88c86d-0527-4bf7-a284-b9483756fd3a"
+                              },
+                              "type": "Compose",
+                              "inputs": "@addToTime(\r\n    variables('varNextEligibleDate'),\r\n    variables('varIntervalMonths'),\r\n    'Month'\r\n)"
+                            },
+                            "set_varNextEligibleDate_-_update": {
+                              "runAfter": {
+                                "newDate": [
+                                  "Succeeded"
+                                ]
+                              },
+                              "metadata": {
+                                "operationMetadataId": "20e8a126-425a-4da0-afba-b46ab5fb1b71"
+                              },
+                              "type": "SetVariable",
+                              "inputs": {
+                                "name": "varNextEligibleDate",
+                                "value": "@{outputs('newDate')}"
+                              }
+                            }
+                          },
+                          "runAfter": {
+                            "Switch": [
+                              "Succeeded"
+                            ]
+                          },
+                          "expression": "@greater(variables('varNextEligibleDate'),utcNow())",
+                          "limit": {
+                            "count": 60,
+                            "timeout": "PT1H"
+                          },
+                          "metadata": {
+                            "operationMetadataId": "85eedc83-edf0-4eb9-8a58-1e223a4c708e"
+                          },
+                          "type": "Until"
+                        },
+                        "update_contact_-_next_eligible_date": {
+                          "runAfter": {
+                            "Do_until": [
+                              "Succeeded"
+                            ]
+                          },
+                          "metadata": {
+                            "operationMetadataId": "a975fd66-a65b-440e-b164-a268a44fa67f"
+                          },
+                          "type": "OpenApiConnection",
+                          "inputs": {
+                            "host": {
+                              "connectionName": "shared_commondataserviceforapps",
+                              "operationId": "UpdateOnlyRecord",
+                              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                            },
+                            "parameters": {
+                              "entityName": "contacts",
+                              "recordId": "@outputs('contact')?['body/contactid']",
+                              "item/hit_lastoutcome": "@variables('sLastOutcome')",
+                              "item/hit_nexteligiblecontactdate": "@variables('varNextEligibleDate')",
+                              "item/hit_contactfrequencyperyear": "@variables('iFrequency')"
+                            },
+                            "authentication": {
+                              "type": "Raw",
+                              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                            }
+                          }
+                        }
+                      },
+                      "runAfter": {},
+                      "else": {
+                        "actions": {
+                          "update_contact_-_no_outbound_2": {
+                            "runAfter": {},
+                            "metadata": {
+                              "operationMetadataId": "c1f1737d-4686-4e7a-b46c-48eaa244edca"
+                            },
+                            "type": "OpenApiConnection",
+                            "inputs": {
+                              "host": {
+                                "connectionName": "shared_commondataserviceforapps",
+                                "operationId": "UpdateOnlyRecord",
+                                "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                              },
+                              "parameters": {
+                                "entityName": "contacts",
+                                "recordId": "@outputs('contact')?['body/contactid']",
+                                "item/hit_allowoutbound": false,
+                                "item/hit_lastoutcome": "No Outbound Contact",
+                                "item/hit_nexteligiblecontactdate": "@null",
+                                "item/hit_outboundactive": false,
+                                "item/hit_contactfrequencyperyear": "@null"
+                              },
+                              "authentication": {
+                                "type": "Raw",
+                                "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "expression": {
+                        "and": [
+                          {
+                            "equals": [
+                              "@outputs('contact')?['body/hit_allowoutbound']",
+                              "@true"
+                            ]
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "d3ea4b8e-a7fa-41a9-b829-d93d596d946d"
+                      },
+                      "type": "If"
+                    }
+                  }
+                },
+                "expression": {
+                  "and": [
+                    {
+                      "equals": [
+                        "@empty(outputs('contact')?['body/emailaddress1'])",
+                        "@true"
+                      ]
+                    },
+                    {
+                      "equals": [
+                        "@empty(outputs('contact')?['body/mobilephone'])",
+                        "@true"
+                      ]
+                    },
+                    {
+                      "equals": [
+                        "@empty(outputs('contact')?['body/telephone2'])",
+                        "@true"
+                      ]
+                    },
+                    {
+                      "equals": [
+                        "@empty(outputs('contact')?['body/telephone1'])",
+                        "@true"
+                      ]
+                    }
+                  ]
+                },
+                "metadata": {
+                  "operationMetadataId": "f82a6a0c-3c4a-4104-963c-4e3aa9c0deb6"
+                },
+                "type": "If"
+              }
+            }
+          },
+          "expression": {
+            "and": [
+              {
+                "equals": [
+                  "@outputs('contact')?['body/donotphone']",
+                  "@true"
+                ]
+              },
+              {
+                "equals": [
+                  "@outputs('contact')?['body/donotemail']",
+                  "@true"
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "695ca730-adca-4f2c-81ba-feb0d6d92e78"
+          },
+          "type": "If"
+        },
+        "init_sLastOutcome": {
+          "runAfter": {
+            "init_varPreferenceMonth2": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "63a62ac6-5e8f-4e09-b95a-111371f279ba"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sLastOutcome",
+                "type": "string",
+                "value": "@if(\r\n    equals(outputs('contact')?['body/hit_lastoutcome'], 'No Outbound Contact'),\r\n    '',\r\n    outputs('contact')?['body/hit_lastoutcome']\r\n)"
+              }
+            ]
+          }
+        },
+        "init_varPreferenceMonth1": {
+          "runAfter": {
+            "curNextEligibleDate": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "9ea4fb99-706b-4097-8888-a966557f49c2"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varPreferenceMonth1",
+                "type": "integer",
+                "value": "@outputs('contact')?['body/hit_contactmonth1']"
+              }
+            ]
+          }
+        },
+        "init_varPreferenceMonth2": {
+          "runAfter": {
+            "init_varPreferenceMonth1": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "1e03feed-9253-4034-bf11-1709d46cd764"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "varPreferenceMonth2",
+                "type": "integer",
+                "value": "@outputs('contact')?['body/hit_contactmonth2']"
+              }
+            ]
+          }
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

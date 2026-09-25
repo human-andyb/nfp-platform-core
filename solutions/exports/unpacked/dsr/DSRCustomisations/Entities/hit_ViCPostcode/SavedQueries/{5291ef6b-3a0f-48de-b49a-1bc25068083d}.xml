@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{5291ef6b-3a0f-48de-b49a-1bc25068083d}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_vicpostcodeid">
+          <cell name="hit_name" width="300" />
+          <cell name="hit_locality" width="194" />
+          <cell name="hit_lgacouncil" width="207" />
+          <cell name="hit_state" width="100" />
+          <cell name="hit_regionalarea" width="122" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="hit_vicpostcode">
+          <attribute name="hit_vicpostcodeid" />
+          <attribute name="hit_name" />
+          <order attribute="hit_name" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="hit_lgacouncil" />
+          <attribute name="hit_locality" />
+          <attribute name="hit_state" />
+          <attribute name="hit_regionalarea" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active ViC Postcodes" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

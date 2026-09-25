@@ -1,0 +1,14 @@
+<powerpagecomponent powerpagecomponentid="d994f1f5-e20a-f111-8342-000d3a7a0cab">
+  <content>{
+  "source": 0,
+  "value": "hit_offeringacceptanceid,hit_offering,hit_Offering,hit_priceoption,hit_name,hit_email,hit_firstname,hit_lastname,hit_mobilephone,hit_postcode,hit_dsreoirole,hit_organisationinput,hit_contactroleinput,hit_redemptioncode,hit_courseaccessaudience,hit_courseaccessplan,hit_pricinglabel,hit_quantity,hit_unitprice,hit_baseamount,hit_totalamount,hit_totalamounteffective,hit_donationaddonamount,hit_paymentrequired,hit_acceptancestatus,hit_clienttoken,hit_stripepaymentintentid,hit_stripechargeid"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Webapi/hit_offeringacceptance/fields</name>
+  <powerpagecomponenttype>9</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

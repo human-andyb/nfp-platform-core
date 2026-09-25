@@ -1,0 +1,13 @@
+<powerpagecomponent powerpagecomponentid="21df8c7a-ff1b-f111-88b2-000d3a7a0cab">
+  <content>{
+  "source": "{%- comment -%}\r\ncomponents--web-gallery-card-compact\r\n\r\nInputs:\r\n- title\r\n- summary\r\n- imageUrl\r\n- href\r\n- targetAttr / targetAttrs\r\n\r\nCompact card contract:\r\n- Entire card clickable when href is present\r\n- No badge\r\n- No CTA button\r\n- Image panel on the left\r\n- Image fills a square panel\r\n- Title and summary on the right\r\n{%- endcomment -%}\r\n\r\n{%- assign targetAttributes = targetAttrs | default: targetAttr | default: '' -%}\r\n\r\n&lt;article class=\"hit-card hit-card--compact\"&gt;\r\n\r\n  {%- if href and href != '' -%}\r\n    &lt;a class=\"hit-card__link\" href=\"{{ href | escape }}\"{{ targetAttributes }}&gt;\r\n  {%- endif -%}\r\n\r\n      &lt;div class=\"hit-card__layout\"&gt;\r\n\r\n        {%- if imageUrl and imageUrl != '' -%}\r\n          &lt;div class=\"hit-card__image-panel\"&gt;\r\n            &lt;img\r\n              class=\"hit-card__image\"\r\n              src=\"{{ imageUrl | escape }}\"\r\n              alt=\"{{ title | escape }}\"\r\n              loading=\"lazy\"\r\n              decoding=\"async\" /&gt;\r\n          &lt;/div&gt;\r\n        {%- endif -%}\r\n\r\n        &lt;div class=\"hit-card__content-panel\"&gt;\r\n\r\n          &lt;h3 class=\"hit-card__title\"&gt;\r\n            {{ title | escape }}\r\n          &lt;/h3&gt;\r\n\r\n          {%- if summary and summary != '' -%}\r\n            &lt;p class=\"hit-card__summary\"&gt;\r\n              {{ summary | escape }}\r\n            &lt;/p&gt;\r\n          {%- endif -%}\r\n\r\n        &lt;/div&gt;\r\n\r\n      &lt;/div&gt;\r\n\r\n  {%- if href and href != '' -%}\r\n    &lt;/a&gt;\r\n  {%- endif -%}\r\n\r\n&lt;/article&gt;\r\n"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>components--web-gallery-card-compact</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

@@ -1,0 +1,176 @@
+<powerpagecomponent powerpagecomponentid="6d620946-a397-869e-59ed-2039581bebdc">
+  <content>{
+  "copy": "&lt;div class=\"row sectionBlockLayout text-start\" style=\"min-height: auto; padding: 8px;\"&gt;\n    &lt;div class=\"container\" style=\"display: flex; flex-wrap: wrap;\"&gt;\n      &lt;div class=\"col-lg-12 columnBlockLayout\" style=\"padding: 16px; margin: 60px 0px; min-height: 200px;\"&gt;\n\n{%- comment -%}\nAcceptance Debug 2 (Web API)\n\nURL:\n  /AcceptanceDebug2/?acceptanceid=&lt;guid&gt;&amp;token=&lt;clientToken&gt;\n\nPurpose:\n  - Fetch acceptance status via Portal Web API (GET)\n  - Show offering name + hero image via $expand=hit_Offering(...)\n  - This bypasses Liquid fetchxml hydration issues\n{%- endcomment -%}\n\n{%- assign acceptanceid = request.params.acceptanceid | default: '' | strip -%}\n{%- assign token = request.params.token | default: '' | strip -%}\n\n&lt;style&gt;\n  .wrap{max-width:980px;margin:0 auto;padding:28px 16px 84px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#0f172a;}\n  .card{background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:26px;overflow:hidden;box-shadow:0 16px 40px rgba(15,23,42,.10);}\n  .heroimg{width:100%;aspect-ratio:16/6;overflow:hidden;background:#0b1220;border-bottom:1px solid rgba(15,23,42,.08);}\n  .heroimg img{width:100%;height:100%;object-fit:cover;display:block;opacity:.96;}\n  .header{padding:20px 24px;border-bottom:1px solid rgba(15,23,42,.08);}\n  .title{margin:0;font-size:24px;font-weight:900;}\n  .sub{margin-top:8px;color:rgba(15,23,42,.72);}\n  .body{padding:18px 24px;}\n  .row{display:flex;justify-content:space-between;gap:12px;margin:8px 0;}\n  .label{color:rgba(15,23,42,.7);font-size:13px;}\n  .val{font-weight:900;text-align:right;}\n  pre{background:#0b1220;color:#e5e7eb;padding:12px;border-radius:14px;overflow:auto;}\n  .err{margin-top:10px;color:#7f1d1d;background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.25);padding:10px 12px;border-radius:14px;display:none;white-space:pre-wrap;}\n&lt;/style&gt;\n\n&lt;div class=\"wrap\"&gt;\n  &lt;div class=\"card\"&gt;\n\n    &lt;div class=\"heroimg\" id=\"hero\" style=\"display:none;\"&gt;\n      &lt;img id=\"heroImg\" src=\"\" alt=\"\" /&gt;\n    &lt;/div&gt;\n\n    &lt;div class=\"header\"&gt;\n      &lt;h1 class=\"title\"&gt;Acceptance Debug 2 (Web API)&lt;/h1&gt;\n      &lt;div class=\"sub\"&gt;AcceptanceId: &lt;code id=\"aid\"&gt;{{ acceptanceid | escape }}&lt;/code&gt;&lt;/div&gt;\n      {% if token != blank %}\n        &lt;div class=\"sub\"&gt;Token: &lt;code id=\"tok\"&gt;{{ token | escape }}&lt;/code&gt;&lt;/div&gt;\n      {% endif %}\n    &lt;/div&gt;\n\n    &lt;div class=\"body\"&gt;\n      {% if acceptanceid == blank %}\n        &lt;div class=\"err\" style=\"display:block;\"&gt;Missing acceptanceid query param.&lt;/div&gt;\n      {% else %}\n        &lt;div class=\"row\"&gt;&lt;div class=\"label\"&gt;Acceptance Name&lt;/div&gt;&lt;div class=\"val\" id=\"accName\"&gt;—&lt;/div&gt;&lt;/div&gt;\n        &lt;div class=\"row\"&gt;&lt;div class=\"label\"&gt;Acceptance Status&lt;/div&gt;&lt;div class=\"val\" id=\"accStatus\"&gt;—&lt;/div&gt;&lt;/div&gt;\n        &lt;div class=\"row\"&gt;&lt;div class=\"label\"&gt;Email&lt;/div&gt;&lt;div class=\"val\" id=\"accEmail\"&gt;—&lt;/div&gt;&lt;/div&gt;\n        &lt;div class=\"row\"&gt;&lt;div class=\"label\"&gt;Amount&lt;/div&gt;&lt;div class=\"val\" id=\"accAmt\"&gt;—&lt;/div&gt;&lt;/div&gt;\n        &lt;div class=\"row\"&gt;&lt;div class=\"label\"&gt;Offering&lt;/div&gt;&lt;div class=\"val\" id=\"offName\"&gt;—&lt;/div&gt;&lt;/div&gt;\n\n        &lt;div class=\"err\" id=\"errBox\"&gt;&lt;/div&gt;\n\n        &lt;h3 style=\"margin-top:16px;\"&gt;Raw response&lt;/h3&gt;\n        &lt;pre id=\"raw\"&gt;(loading…)&lt;/pre&gt;\n\n        &lt;script&gt;\n        (function(){\n          const acceptanceId = \"{{ acceptanceid | escape }}\";\n          const token = \"{{ token | escape }}\"; // optional\n\n          const errBox = document.getElementById(\"errBox\");\n          const rawEl = document.getElementById(\"raw\");\n\n          function showErr(msg){\n            errBox.style.display = \"block\";\n            errBox.textContent = msg;\n          }\n\n          // NOTE: uses navigation/schema name hit_Offering (same as your successful @odata.bind discovery)\n          const url =\n            \"/_api/hit_offeringacceptances(\" + acceptanceId + \")\" +\n            \"?$select=hit_name,hit_email,hit_totalamount,hit_baseamount,hit_donationaddonamount,hit_acceptancestatus,hit_clienttoken\" +\n            \"&amp;$expand=hit_Offering($select=hit_offeringname,hit_imageurldetail)\";\n\n          function fmtMoney(n){\n            if(n === null || n === undefined || n === \"\") return \"—\";\n            const num = Number(n);\n            if (Number.isNaN(num)) return String(n);\n            return \"$\" + (Math.round(num) === num ? num.toFixed(0) : num.toFixed(2));\n          }\n\n          fetch(url, { headers:{ \"Accept\":\"application/json\" }, cache:\"no-store\" })\n            .then(async res =&gt; {\n              const text = await res.text().catch(()=&gt; \"\");\n              rawEl.textContent = text || \"(empty)\";\n              if(!res.ok){\n                throw new Error(\"HTTP \" + res.status + \"\\\\n\" + (text || \"\"));\n              }\n              return JSON.parse(text);\n            })\n            .then(data =&gt; {\n              // Optional token validation (only if you want it)\n              if(token &amp;&amp; data.hit_clienttoken &amp;&amp; token !== data.hit_clienttoken){\n                showErr(\"Token mismatch. URL token does not match record hit_clienttoken.\");\n              }\n\n              document.getElementById(\"accName\").textContent = data.hit_name || \"—\";\n\n              // Choice fields often come through as numbers here\n              document.getElementById(\"accStatus\").textContent =\n                (data.hit_acceptancestatus !== undefined &amp;&amp; data.hit_acceptancestatus !== null)\n                  ? String(data.hit_acceptancestatus)\n                  : \"—\";\n\n              document.getElementById(\"accEmail\").textContent = data.hit_email || \"—\";\n\n              const amt = (data.hit_totalamount &amp;&amp; Number(data.hit_totalamount) &gt; 0)\n                ? data.hit_totalamount\n                : ((Number(data.hit_baseamount)||0) + (Number(data.hit_donationaddonamount)||0));\n\n              document.getElementById(\"accAmt\").textContent = fmtMoney(amt);\n\n              const off = data.hit_Offering;\n              if(off){\n                document.getElementById(\"offName\").textContent = off.hit_offeringname || \"—\";\n\n                const img = (off.hit_imageurldetail || \"\").trim();\n                if(img){\n                  document.getElementById(\"heroImg\").src = img;\n                  document.getElementById(\"heroImg\").alt = off.hit_offeringname || \"Offering\";\n                  document.getElementById(\"hero\").style.display = \"block\";\n                }\n              }\n            })\n            .catch(e =&gt; showErr(e.message || String(e)));\n        })();\n        &lt;/script&gt;\n      {% endif %}\n    &lt;/div&gt;\n  &lt;/div&gt;\n&lt;/div&gt;\n\n      &lt;/div&gt;\n    &lt;/div&gt;\n  &lt;/div&gt;\n  ",
+  "displayorder": 12,
+  "enablerating": false,
+  "enabletracking": false,
+  "excludefromsearch": false,
+  "hiddenfromsitemap": true,
+  "isroot": false,
+  "pagetemplateid": "003b57a0-2c6d-4486-92a1-a17dfda5ecce",
+  "parentpageid": "cf511b88-4b23-4858-b49e-9bb013db9e1a",
+  "partialurl": "Test-Fetch-deleted",
+  "publishingstateid": "0d06aa58-6423-47cb-8746-ec28b0e7860d",
+  "rootwebpageid": "39f14375-3c56-a09c-0cf4-cefcc2fe8818",
+  "sharedpageconfiguration": false,
+  "summary": "&lt;p&gt;This is a sample landing page designed to be a starting point for your website&lt;/p&gt;",
+  "title": "Test Fetch"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>Test Fetch-deleted</name>
+  <powerpagecomponenttype>2</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <powerpagesitelanguageid>
+    <powerpagesitelanguageid>65f59487-4eee-417b-bf5e-782336e9abfd</powerpagesitelanguageid>
+  </powerpagesitelanguageid>
+  <searchcontent>Test Fetch&lt;div class="row sectionBlockLayout text-start" style="min-height: auto; padding: 8px;"&gt;
+    &lt;div class="container" style="display: flex; flex-wrap: wrap;"&gt;
+      &lt;div class="col-lg-12 columnBlockLayout" style="padding: 16px; margin: 60px 0px; min-height: 200px;"&gt;
+
+{%- comment -%}
+Acceptance Debug 2 (Web API)
+
+URL:
+  /AcceptanceDebug2/?acceptanceid=&lt;guid&gt;&amp;token=&lt;clientToken&gt;
+
+Purpose:
+  - Fetch acceptance status via Portal Web API (GET)
+  - Show offering name + hero image via $expand=hit_Offering(...)
+  - This bypasses Liquid fetchxml hydration issues
+{%- endcomment -%}
+
+{%- assign acceptanceid = request.params.acceptanceid | default: '' | strip -%}
+{%- assign token = request.params.token | default: '' | strip -%}
+
+&lt;style&gt;
+  .wrap{max-width:980px;margin:0 auto;padding:28px 16px 84px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#0f172a;}
+  .card{background:#fff;border:1px solid rgba(15,23,42,.08);border-radius:26px;overflow:hidden;box-shadow:0 16px 40px rgba(15,23,42,.10);}
+  .heroimg{width:100%;aspect-ratio:16/6;overflow:hidden;background:#0b1220;border-bottom:1px solid rgba(15,23,42,.08);}
+  .heroimg img{width:100%;height:100%;object-fit:cover;display:block;opacity:.96;}
+  .header{padding:20px 24px;border-bottom:1px solid rgba(15,23,42,.08);}
+  .title{margin:0;font-size:24px;font-weight:900;}
+  .sub{margin-top:8px;color:rgba(15,23,42,.72);}
+  .body{padding:18px 24px;}
+  .row{display:flex;justify-content:space-between;gap:12px;margin:8px 0;}
+  .label{color:rgba(15,23,42,.7);font-size:13px;}
+  .val{font-weight:900;text-align:right;}
+  pre{background:#0b1220;color:#e5e7eb;padding:12px;border-radius:14px;overflow:auto;}
+  .err{margin-top:10px;color:#7f1d1d;background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.25);padding:10px 12px;border-radius:14px;display:none;white-space:pre-wrap;}
+&lt;/style&gt;
+
+&lt;div class="wrap"&gt;
+  &lt;div class="card"&gt;
+
+    &lt;div class="heroimg" id="hero" style="display:none;"&gt;
+      &lt;img id="heroImg" src="" alt="" /&gt;
+    &lt;/div&gt;
+
+    &lt;div class="header"&gt;
+      &lt;h1 class="title"&gt;Acceptance Debug 2 (Web API)&lt;/h1&gt;
+      &lt;div class="sub"&gt;AcceptanceId: &lt;code id="aid"&gt;{{ acceptanceid | escape }}&lt;/code&gt;&lt;/div&gt;
+      {% if token != blank %}
+        &lt;div class="sub"&gt;Token: &lt;code id="tok"&gt;{{ token | escape }}&lt;/code&gt;&lt;/div&gt;
+      {% endif %}
+    &lt;/div&gt;
+
+    &lt;div class="body"&gt;
+      {% if acceptanceid == blank %}
+        &lt;div class="err" style="display:block;"&gt;Missing acceptanceid query param.&lt;/div&gt;
+      {% else %}
+        &lt;div class="row"&gt;&lt;div class="label"&gt;Acceptance Name&lt;/div&gt;&lt;div class="val" id="accName"&gt;—&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="row"&gt;&lt;div class="label"&gt;Acceptance Status&lt;/div&gt;&lt;div class="val" id="accStatus"&gt;—&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="row"&gt;&lt;div class="label"&gt;Email&lt;/div&gt;&lt;div class="val" id="accEmail"&gt;—&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="row"&gt;&lt;div class="label"&gt;Amount&lt;/div&gt;&lt;div class="val" id="accAmt"&gt;—&lt;/div&gt;&lt;/div&gt;
+        &lt;div class="row"&gt;&lt;div class="label"&gt;Offering&lt;/div&gt;&lt;div class="val" id="offName"&gt;—&lt;/div&gt;&lt;/div&gt;
+
+        &lt;div class="err" id="errBox"&gt;&lt;/div&gt;
+
+        &lt;h3 style="margin-top:16px;"&gt;Raw response&lt;/h3&gt;
+        &lt;pre id="raw"&gt;(loading…)&lt;/pre&gt;
+
+        &lt;script&gt;
+        (function(){
+          const acceptanceId = "{{ acceptanceid | escape }}";
+          const token = "{{ token | escape }}"; // optional
+
+          const errBox = document.getElementById("errBox");
+          const rawEl = document.getElementById("raw");
+
+          function showErr(msg){
+            errBox.style.display = "block";
+            errBox.textContent = msg;
+          }
+
+          // NOTE: uses navigation/schema name hit_Offering (same as your successful @odata.bind discovery)
+          const url =
+            "/_api/hit_offeringacceptances(" + acceptanceId + ")" +
+            "?$select=hit_name,hit_email,hit_totalamount,hit_baseamount,hit_donationaddonamount,hit_acceptancestatus,hit_clienttoken" +
+            "&amp;$expand=hit_Offering($select=hit_offeringname,hit_imageurldetail)";
+
+          function fmtMoney(n){
+            if(n === null || n === undefined || n === "") return "—";
+            const num = Number(n);
+            if (Number.isNaN(num)) return String(n);
+            return "$" + (Math.round(num) === num ? num.toFixed(0) : num.toFixed(2));
+          }
+
+          fetch(url, { headers:{ "Accept":"application/json" }, cache:"no-store" })
+            .then(async res =&gt; {
+              const text = await res.text().catch(()=&gt; "");
+              rawEl.textContent = text || "(empty)";
+              if(!res.ok){
+                throw new Error("HTTP " + res.status + "\\n" + (text || ""));
+              }
+              return JSON.parse(text);
+            })
+            .then(data =&gt; {
+              // Optional token validation (only if you want it)
+              if(token &amp;&amp; data.hit_clienttoken &amp;&amp; token !== data.hit_clienttoken){
+                showErr("Token mismatch. URL token does not match record hit_clienttoken.");
+              }
+
+              document.getElementById("accName").textContent = data.hit_name || "—";
+
+              // Choice fields often come through as numbers here
+              document.getElementById("accStatus").textContent =
+                (data.hit_acceptancestatus !== undefined &amp;&amp; data.hit_acceptancestatus !== null)
+                  ? String(data.hit_acceptancestatus)
+                  : "—";
+
+              document.getElementById("accEmail").textContent = data.hit_email || "—";
+
+              const amt = (data.hit_totalamount &amp;&amp; Number(data.hit_totalamount) &gt; 0)
+                ? data.hit_totalamount
+                : ((Number(data.hit_baseamount)||0) + (Number(data.hit_donationaddonamount)||0));
+
+              document.getElementById("accAmt").textContent = fmtMoney(amt);
+
+              const off = data.hit_Offering;
+              if(off){
+                document.getElementById("offName").textContent = off.hit_offeringname || "—";
+
+                const img = (off.hit_imageurldetail || "").trim();
+                if(img){
+                  document.getElementById("heroImg").src = img;
+                  document.getElementById("heroImg").alt = off.hit_offeringname || "Offering";
+                  document.getElementById("hero").style.display = "block";
+                }
+              }
+            })
+            .catch(e =&gt; showErr(e.message || String(e)));
+        })();
+        &lt;/script&gt;
+      {% endif %}
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  Test Fetch-deleted</searchcontent>
+  <statecode>1</statecode>
+  <statuscode>2</statuscode>
+</powerpagecomponent>

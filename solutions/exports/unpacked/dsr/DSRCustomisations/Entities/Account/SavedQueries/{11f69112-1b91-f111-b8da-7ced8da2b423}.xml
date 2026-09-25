@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{11f69112-1b91-f111-b8da-7ced8da2b423}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="name" select="1" icon="1" preview="1">
+        <row name="result" id="accountid">
+          <cell name="name" width="200" />
+          <cell name="telephone1" width="109" />
+          <cell name="emailaddress1" width="100" />
+          <cell name="a_ced8f01135404bf58e1fe93e566c0119.fullname" width="205" />
+          <cell name="a_ced8f01135404bf58e1fe93e566c0119.emailaddress1" width="179" />
+          <cell name="hit_lifecyclestage" width="128" />
+          <cell name="hit_engagementlevel" width="146" />
+          <cell name="new_donorlifecyclestage" width="167" />
+          <cell name="hit_valuetier" width="100" />
+          <cell name="new_lifetimevalue" width="124" />
+          <cell name="hit_nexteligiblecontactdate" width="193" />
+          <cell name="hit_outboundactive" width="137" />
+          <cell name="hit_lastoutboundcontactdate" width="201" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" output-format="xml-platform" mapping="logical">
+        <entity name="account">
+          <attribute name="name" />
+          <attribute name="accountid" />
+          <attribute name="hit_lifecyclestage" />
+          <attribute name="hit_engagementlevel" />
+          <attribute name="new_donorlifecyclestage" />
+          <attribute name="hit_valuetier" />
+          <attribute name="new_lifetimevalue" />
+          <attribute name="hit_nexteligiblecontactdate" />
+          <attribute name="hit_outboundactive" />
+          <attribute name="hit_lastoutboundcontactdate" />
+          <link-entity alias="a_ced8f01135404bf58e1fe93e566c0119" name="contact" to="primarycontactid" from="contactid" link-type="outer" visible="false">
+            <attribute name="fullname" />
+            <attribute name="emailaddress1" />
+          </link-entity>
+          <attribute name="telephone1" />
+          <attribute name="emailaddress1" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Organisations" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

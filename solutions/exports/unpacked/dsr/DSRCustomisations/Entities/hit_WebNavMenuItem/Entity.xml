@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Entity xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name LocalizedName="Web Nav Menu Item" OriginalName="Web Nav Menu Item">hit_WebNavMenuItem</Name>
+  <EntityInfo>
+    <entity Name="hit_WebNavMenuItem" unmodified="1">
+      <attributes />
+    </entity>
+  </EntityInfo>
+  <RibbonDiffXml />
+</Entity>

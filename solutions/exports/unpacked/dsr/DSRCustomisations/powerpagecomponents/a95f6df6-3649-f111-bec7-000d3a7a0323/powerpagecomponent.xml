@@ -1,0 +1,13 @@
+<powerpagecomponent powerpagecomponentid="a95f6df6-3649-f111-bec7-000d3a7a0323">
+  <content>{
+  "source": "{% assign headingText = section.hit_headingtext | default:'' | strip %}\r\n{% assign introText = section.hit_introtext | default:'' | strip %}\r\n\r\n&lt;div class=\"layout layout-3-col\"&gt;\r\n\r\n    {% if headingText != '' or introText != '' %}\r\n        &lt;div class=\"hit-section__header\"&gt;\r\n\r\n            {% if headingText != '' %}\r\n                &lt;h2 class=\"hit-section__title\"&gt;\r\n                    {{ headingText }}\r\n                &lt;/h2&gt;\r\n            {% endif %}\r\n\r\n            {% if introText != '' %}\r\n                &lt;div class=\"hit-section__intro\"&gt;\r\n                    {{ introText }}\r\n                &lt;/div&gt;\r\n            {% endif %}\r\n\r\n        &lt;/div&gt;\r\n    {% endif %}\r\n\r\n    &lt;div class=\"layout-3-col__grid\"&gt;\r\n\r\n        {% for slotIndex in (1..3) %}\r\n\r\n            {% assign currentSlot = slots | where: \"hit_slotindex\", slotIndex | first %}\r\n\r\n            &lt;div class=\"layout-3-col__slot\"&gt;\r\n\r\n                {% if currentSlot %}\r\n\r\n                    {% assign templateName = currentSlot['stype.hit_templatename'] | default:'' | strip | downcase %}\r\n\r\n                    {% if templateName != '' %}\r\n\r\n                        {% include templateName  slot: currentSlot  section: section  debug: debug  galleryParam: galleryParam  galleryOverride: galleryOverride   %}\r\n\r\n                    {% elsif debug %}\r\n\r\n                        &lt;div class=\"hit-alert\"&gt;\r\n                            Slot {{ slotIndex }} has no template name.\r\n                        &lt;/div&gt;\r\n\r\n                    {% endif %}\r\n\r\n                {% elsif debug %}\r\n\r\n                    &lt;div class=\"hit-alert\"&gt;\r\n                        Slot {{ slotIndex }} not found.\r\n                    &lt;/div&gt;\r\n\r\n                {% endif %}\r\n\r\n            &lt;/div&gt;\r\n\r\n        {% endfor %}\r\n\r\n    &lt;/div&gt;\r\n\r\n&lt;/div&gt;"
+}</content>
+  <iscustomizable>1</iscustomizable>
+  <name>layouts--3-column</name>
+  <powerpagecomponenttype>8</powerpagecomponenttype>
+  <powerpagesiteid>
+    <powerpagesiteid>07294f81-3024-45f5-8498-e96438fc9745</powerpagesiteid>
+  </powerpagesiteid>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+</powerpagecomponent>

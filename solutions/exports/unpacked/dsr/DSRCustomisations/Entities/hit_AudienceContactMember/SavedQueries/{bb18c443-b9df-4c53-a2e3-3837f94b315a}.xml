@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{bb18c443-b9df-4c53-a2e3-3837f94b315a}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_audiencecontactmemberid">
+          <cell name="hit_audience" width="298" />
+          <cell name="hit_contact" width="261" />
+          <cell name="a_1eb5aedddfb3432b857ab1e181f2f579.emailaddress1" width="237" />
+          <cell name="a_1eb5aedddfb3432b857ab1e181f2f579.mobilephone" width="176" />
+          <cell name="createdon" width="186" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="hit_audiencecontactmember">
+          <attribute name="hit_audiencecontactmemberid" />
+          <attribute name="createdon" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="hit_audience" />
+          <attribute name="hit_contact" />
+          <link-entity alias="a_1eb5aedddfb3432b857ab1e181f2f579" name="contact" to="hit_contact" from="contactid" link-type="outer" visible="false">
+            <attribute name="emailaddress1" />
+            <attribute name="mobilephone" />
+          </link-entity>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Audience Contact Members" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{f2049ad3-837c-4ce1-8916-74ae23e37398}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_offeringacceptanceid">
+          <cell name="hit_name" width="212" />
+          <cell name="a_14b6101492af41db8d1d3ebc0ada72c7.hit_offeringtype" width="181" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="hit_offeringacceptance">
+          <attribute name="hit_offeringacceptanceid" />
+          <attribute name="hit_name" />
+          <attribute name="createdon" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <link-entity alias="a_14b6101492af41db8d1d3ebc0ada72c7" name="hit_offering" to="hit_offering" from="hit_offeringid" link-type="outer" visible="false">
+            <attribute name="hit_offeringtype" />
+          </link-entity>
+          <order attribute="createdon" descending="true" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Offering Acceptances" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

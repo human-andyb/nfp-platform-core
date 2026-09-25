@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppModule>
+  <UniqueName>new_DSRMVP</UniqueName>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <WebResourceId>953b9fac-1e5e-e611-80d6-00155ded156f</WebResourceId>
+  <OptimizedFor></OptimizedFor>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+  <FormFactor>1</FormFactor>
+  <ClientType>4</ClientType>
+  <NavigationType>0</NavigationType>
+  <AppModuleComponents>
+    <AppModuleComponent type="1" schemaName="account" />
+    <AppModuleComponent type="1" schemaName="contact" />
+    <AppModuleComponent type="1" schemaName="hit_accountsegmenttag" />
+    <AppModuleComponent type="1" schemaName="hit_article" />
+    <AppModuleComponent type="1" schemaName="hit_audience" />
+    <AppModuleComponent type="1" schemaName="hit_audiencecontactmember" />
+    <AppModuleComponent type="1" schemaName="hit_audienceorganisationmember" />
+    <AppModuleComponent type="1" schemaName="hit_audiencerule" />
+    <AppModuleComponent type="1" schemaName="hit_communicationevent" />
+    <AppModuleComponent type="1" schemaName="hit_contactorganisation" />
+    <AppModuleComponent type="1" schemaName="hit_contactorgsegmenttag" />
+    <AppModuleComponent type="1" schemaName="hit_contactsegmenttag" />
+    <AppModuleComponent type="1" schemaName="hit_coursedefinition" />
+    <AppModuleComponent type="1" schemaName="hit_courseregistration" />
+    <AppModuleComponent type="1" schemaName="hit_designatedfund" />
+    <AppModuleComponent type="1" schemaName="hit_initiative" />
+    <AppModuleComponent type="1" schemaName="hit_offering" />
+    <AppModuleComponent type="1" schemaName="hit_offeringacceptance" />
+    <AppModuleComponent type="1" schemaName="hit_offeringfulfillment" />
+    <AppModuleComponent type="1" schemaName="hit_offeringtagrule" />
+    <AppModuleComponent type="1" schemaName="hit_paymentschedule" />
+    <AppModuleComponent type="1" schemaName="hit_paymenttransaction" />
+    <AppModuleComponent type="1" schemaName="hit_persona" />
+    <AppModuleComponent type="1" schemaName="hit_program" />
+    <AppModuleComponent type="1" schemaName="hit_regionalarea" />
+    <AppModuleComponent type="1" schemaName="hit_segmenttag" />
+    <AppModuleComponent type="1" schemaName="hit_tagrule" />
+    <AppModuleComponent type="1" schemaName="hit_vicpostcode" />
+    <AppModuleComponent type="1" schemaName="hit_webgalleryconfig" />
+    <AppModuleComponent type="1" schemaName="msdynmkt_email" />
+    <AppModuleComponent type="1" schemaName="msdynmkt_eventmetadata" />
+    <AppModuleComponent type="1" schemaName="msdynmkt_file" />
+    <AppModuleComponent type="1" schemaName="msdynmkt_journey" />
+    <AppModuleComponent type="1" schemaName="msdynmkt_segment" />
+    <AppModuleComponent type="1" schemaName="new_australiapostcode" />
+    <AppModuleComponent type="26" id="{00000000-0000-0000-00aa-000000666400}" />
+    <AppModuleComponent type="26" id="{00000000-0000-0000-00aa-000010001002}" />
+    <AppModuleComponent type="26" id="{00000000-0000-0000-00aa-000010001004}" />
+    <AppModuleComponent type="26" id="{00000000-0000-0000-00aa-000010001031}" />
+    <AppModuleComponent type="26" id="{00000000-0000-0000-00aa-000010001210}" />
+    <AppModuleComponent type="26" id="{6c3c8efc-0c5a-4c90-810c-48a7dd3a7c3b}" />
+    <AppModuleComponent type="26" id="{19c9df13-1069-f111-ab0e-6045bdc335b7}" />
+    <AppModuleComponent type="26" id="{14ea1914-0e2c-4918-8eca-60930324f18f}" />
+    <AppModuleComponent type="26" id="{ed3d2d25-7e18-49ab-b89c-7114215c30fb}" />
+    <AppModuleComponent type="26" id="{f2049ad3-837c-4ce1-8916-74ae23e37398}" />
+    <AppModuleComponent type="26" id="{a2d479c5-53e3-4c69-addd-802327e67a0d}" />
+    <AppModuleComponent type="26" id="{71acc545-8ca0-449e-a034-a2d9a7fda525}" />
+    <AppModuleComponent type="26" id="{adca9b16-6439-4d2d-887c-a859328ee349}" />
+    <AppModuleComponent type="26" id="{ada03966-82db-4d3b-81aa-b90f445723cc}" />
+    <AppModuleComponent type="26" id="{36fbdd44-25af-4a07-ad08-be7c2acef408}" />
+    <AppModuleComponent type="26" id="{58fb20ff-d5be-406f-908e-c777e9dedf5f}" />
+    <AppModuleComponent type="26" id="{8df19b44-a073-40c3-9d6d-ee1355d8c4ba}" />
+    <AppModuleComponent type="26" id="{eda26f1e-dbcc-40ad-91f2-ff2878d1d8d8}" />
+    <AppModuleComponent type="62" schemaName="new_DSRMVP" />
+  </AppModuleComponents>
+  <AppModuleRoleMaps>
+    <Role id="{3e6c0c9d-2366-f111-ab0d-000d3aca977a}" />
+    <Role id="{3a60034e-2366-f111-ab0d-6045bde72793}" />
+    <Role id="{627090ff-40a3-4053-8790-584edc5be201}" />
+    <Role id="{119f245c-3cc8-4b62-b31c-d1a046ced15d}" />
+  </AppModuleRoleMaps>
+  <LocalizedNames>
+    <LocalizedName description="DSR MVP" languagecode="1033" />
+  </LocalizedNames>
+  <appelements>
+    <appelement uniquename="hit_new_DSRMVP_canvasappid_hit_processpaymentform_3a67f">
+      <canvasappid>
+        <name>hit_processpaymentform_3a67f</name>
+      </canvasappid>
+      <iscustomizable>1</iscustomizable>
+      <name>hit_new_DSRMVP_canvasappid_hit_processpaymentform_3a67f</name>
+    </appelement>
+    <appelement uniquename="new_new_DSRMVP_canvasappid_hit_offerings_b6fa0">
+      <canvasappid>
+        <name>hit_offerings_b6fa0</name>
+      </canvasappid>
+      <iscustomizable>1</iscustomizable>
+      <name>new_new_DSRMVP_canvasappid_hit_offerings_b6fa0</name>
+    </appelement>
+    <appelement uniquename="new_new_DSRMVP_canvasappid_hit_webconfiguration_1f8d2">
+      <canvasappid>
+        <name>hit_webconfiguration_1f8d2</name>
+      </canvasappid>
+      <iscustomizable>1</iscustomizable>
+      <name>new_new_DSRMVP_canvasappid_hit_webconfiguration_1f8d2</name>
+    </appelement>
+  </appelements>
+  <appsettings>
+    <appsetting settingdefinitionid.uniquename="AppChannel">
+      <iscustomizable>1</iscustomizable>
+      <value>1</value>
+    </appsetting>
+  </appsettings>
+</AppModule>

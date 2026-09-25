@@ -1,0 +1,15 @@
+<duplicaterule uniquename="drf177b0a8f1e63b58406ed19a6f84236cf149a7448032f6de966eb298db9d7df1">
+  <baseentityname>account</baseentityname>
+  <description>Detects account records that have the same value in the Phone field.</description>
+  <excludeinactiverecords>1</excludeinactiverecords>
+  <iscasesensitive>0</iscasesensitive>
+  <iscustomizable>1</iscustomizable>
+  <matchingentityname>account</matchingentityname>
+  <name>Accounts with the same phone number</name>
+  <duplicateruleconditions>
+    <duplicaterulecondition baseattributename="telephone1" matchingattributename="telephone1" operatorcode="0" uniquerulename="drf177b0a8f1e63b58406ed19a6f84236cf149a7448032f6de966eb298db9d7df1">
+      <ignoreblankvalues>1</ignoreblankvalues>
+      <iscustomizable>1</iscustomizable>
+    </duplicaterulecondition>
+  </duplicateruleconditions>
+</duplicaterule>

@@ -1,0 +1,526 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "When_a_row_is_added,_modified_or_deleted": {
+          "metadata": {
+            "operationMetadataId": "728730a3-75f2-4f40-bc66-0a0edebf1ee1"
+          },
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 1,
+              "subscriptionRequest/entityname": "hit_importcontact",
+              "subscriptionRequest/scope": 4
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "Run_-_Create_Get_Contact_ID": {
+          "runAfter": {
+            "lastname_coalesce": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "68d8ac1c-3ee5-4038-9106-ef6ffef6c53a"
+          },
+          "type": "Workflow",
+          "inputs": {
+            "host": {
+              "workflowReferenceName": "c5f58f39-b11d-f111-88b2-000d3a7a0323"
+            },
+            "body": {
+              "text": "@outputs('firstname_coalesce')",
+              "text_1": "@outputs('lastname_coalesce')",
+              "text_2": "@outputs('email_coalesce')",
+              "text_3": "@outputs('mobile_coalesce')"
+            }
+          }
+        },
+        "is_new_contact": {
+          "actions": {
+            "update_contact_details": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "d646bfd4-a194-48cc-9e46-be713d19762c"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "UpdateOnlyRecord",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "contacts",
+                  "recordId": "@variables('sContactID')",
+                  "item/address1_city": "@triggerOutputs()?['body/hit_suburb']",
+                  "item/address1_line1": "@triggerOutputs()?['body/hit_address1']",
+                  "item/address1_line2": "@triggerOutputs()?['body/hit_address2']",
+                  "item/address1_postalcode": "@triggerOutputs()?['body/hit_postcode']",
+                  "item/telephone1": "@triggerOutputs()?['body/hit_workphone']",
+                  "item/jobtitle": "@triggerOutputs()?['body/hit_jobtitle']",
+                  "item/mobilephone": "@triggerOutputs()?['body/hit_mobile']",
+                  "item/telephone2": "@triggerOutputs()?['body/hit_homephone']"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          },
+          "runAfter": {
+            "init_sContactID": [
+              "Succeeded"
+            ]
+          },
+          "expression": {
+            "and": [
+              {
+                "equals": [
+                  "@body('Run_-_Create_Get_Contact_ID')?['response']",
+                  "Contact ID - New"
+                ]
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "f10e97db-8a6c-4aa6-9cbe-475ddfc0ed1e"
+          },
+          "type": "If"
+        },
+        "init_sOrgID": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "c4bb369b-97c8-4865-8728-326bfaa54974"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sOrgID",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "init_sContactID": {
+          "runAfter": {
+            "Run_-_Create_Get_Contact_ID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3467aba2-f0a9-43d8-9ea1-e7dbbc81cd41"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sContactID",
+                "type": "string",
+                "value": "@body('Run_-_Create_Get_Contact_ID')?['contactguid']"
+              }
+            ]
+          }
+        },
+        "org_name_exists": {
+          "actions": {
+            "run_-_create_get_Org_ID": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "499293ca-bab4-4cf5-b9b9-2b9b9fde2c03"
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "3314f180-dd53-f111-a825-6045bd3e3adf"
+                },
+                "body": {
+                  "text": "@triggerOutputs()?['body/hit_organisationname']"
+                }
+              }
+            },
+            "set_sOrgID": {
+              "runAfter": {
+                "run_-_create_get_Org_ID": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "c94ae4d1-437c-4a3c-b5c4-1313e60d4189"
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "sOrgID",
+                "value": "@body('run_-_create_get_Org_ID')?['organisationid']"
+              }
+            },
+            "update_contact_-_organisation": {
+              "runAfter": {
+                "set_sOrgID": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "6b2dcaa3-2f75-4251-896a-80ea433b2ab2"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "UpdateOnlyRecord",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "contacts",
+                  "recordId": "@variables('sContactID')",
+                  "item/parentcustomerid_account@odata.bind": "/accounts(@{variables('sOrgID')})"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "run_-_create_get_ContactOrg_Relationship": {
+              "runAfter": {
+                "update_contact_-_organisation": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "5369ff71-a841-4f47-b772-908f5d9a832a"
+              },
+              "type": "Workflow",
+              "inputs": {
+                "host": {
+                  "workflowReferenceName": "b2210b87-b254-f111-a825-6045bd3d0cb5"
+                },
+                "body": {
+                  "text": "@variables('sOrgID')",
+                  "text_1": "@variables('sContactID')",
+                  "text_2": "Other"
+                }
+              }
+            }
+          },
+          "runAfter": {
+            "is_new_contact": [
+              "Succeeded"
+            ]
+          },
+          "expression": {
+            "and": [
+              {
+                "not": {
+                  "equals": [
+                    "@empty(triggerOutputs()?['body/hit_organisationname'])",
+                    "@true"
+                  ]
+                }
+              }
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "a955253d-8ca6-4f29-be35-25e8d6618216"
+          },
+          "type": "If"
+        },
+        "run_-_Recalc_Contact_State_Tags": {
+          "runAfter": {
+            "org_name_exists": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "4126ba19-77d0-4e95-b8a7-45258bf84521"
+          },
+          "type": "Workflow",
+          "inputs": {
+            "host": {
+              "workflowReferenceName": "68f69a3d-515e-f111-a826-000d3a7a0cab"
+            },
+            "body": {
+              "text": "@variables('sContactID')",
+              "text_1": "Import"
+            }
+          }
+        },
+        "init_bReviewFlag_-_false": {
+          "runAfter": {
+            "init_sOrgID": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "51064500-51dd-4fc8-8f5d-2579e996c5da"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "bReviewFlag",
+                "type": "boolean",
+                "value": false
+              }
+            ]
+          }
+        },
+        "reviewflag_is_false": {
+          "actions": {
+            "update_import_record_-_completed": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "391a0ea6-614a-472d-9e87-0463634b8685"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "UpdateOnlyRecord",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "hit_importcontacts",
+                  "recordId": "@triggerOutputs()?['body/hit_importcontactid']",
+                  "item/hit_importstatus": 815390001
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          },
+          "runAfter": {
+            "apply_tags_true": [
+              "Succeeded"
+            ]
+          },
+          "else": {
+            "actions": {
+              "update_import_record_-_review": {
+                "runAfter": {},
+                "metadata": {
+                  "operationMetadataId": "afe02754-2a9a-45dd-afc3-e79bf83e14ab"
+                },
+                "type": "OpenApiConnection",
+                "inputs": {
+                  "host": {
+                    "connectionName": "shared_commondataserviceforapps",
+                    "operationId": "UpdateOnlyRecord",
+                    "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                  },
+                  "parameters": {
+                    "entityName": "hit_importcontacts",
+                    "recordId": "@triggerOutputs()?['body/hit_importcontactid']",
+                    "item/hit_importstatus": 815390003
+                  },
+                  "authentication": "@parameters('$authentication')"
+                }
+              }
+            }
+          },
+          "expression": {
+            "equals": [
+              "@variables('bReviewFlag')",
+              "@false"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "2b27b0b0-540d-4753-b4f9-cefa982007c9"
+          },
+          "type": "If"
+        },
+        "run_-_Set_Next_Eligible_Date": {
+          "runAfter": {
+            "run_-_Recalc_Contact_State_Tags": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "bdb8d8be-1d61-4a34-adec-1b1176c9ce07"
+          },
+          "type": "Workflow",
+          "inputs": {
+            "host": {
+              "workflowReferenceName": "97367a17-2395-f111-b8db-7ced8da2b423"
+            },
+            "body": {
+              "text": "@variables('sContactID')"
+            }
+          }
+        },
+        "apply_tags_true": {
+          "actions": {
+            "Import_Tags": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "819dabd9-68ec-42a7-ac5a-6d52addae400"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "hit_importtags",
+                  "$filter": "hit_isactive eq true"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Apply_to_each": {
+              "foreach": "@outputs('Import_Tags')?['body/value']",
+              "actions": {
+                "segment_tag": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "acf8c7db-407d-4bdf-aaa8-04cf5aed1526"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "GetItem",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "hit_segmenttags",
+                      "recordId": "@items('Apply_to_each')?['_hit_segmenttag_value']"
+                    },
+                    "authentication": "@parameters('$authentication')"
+                  }
+                },
+                "run_-_Add_segment_tag": {
+                  "runAfter": {
+                    "segment_tag": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "3e05c7b5-5335-4dd1-aaed-26272761f0f1"
+                  },
+                  "type": "Workflow",
+                  "inputs": {
+                    "host": {
+                      "workflowReferenceName": "4ddf577c-b567-f111-ab0e-6045bde72793"
+                    },
+                    "body": {
+                      "text": "@variables('sContactID')",
+                      "text_1": "@outputs('segment_tag')?['body/hit_code']",
+                      "boolean_1": "@outputs('segment_tag')?['body/hit_isexclusive']",
+                      "text_2": "@outputs('segment_tag')?['body/hit_dimensionprefix']",
+                      "text_3": "Add"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Import_Tags": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "d509e96b-379b-4e38-8fba-cf03f76c10ab"
+              },
+              "type": "Foreach"
+            }
+          },
+          "runAfter": {
+            "run_-_Set_Next_Eligible_Date": [
+              "Succeeded"
+            ]
+          },
+          "expression": {
+            "equals": [
+              "@triggerOutputs()?['body/hit_applyimporttags']",
+              "@true"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "7080048a-4def-4b43-be05-0ba1c9e52402"
+          },
+          "type": "If"
+        },
+        "email_coalesce": {
+          "runAfter": {
+            "init_bReviewFlag_-_false": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "02b51258-be5e-41d4-bf17-5e0911f66dd9"
+          },
+          "type": "Compose",
+          "inputs": "@coalesce(triggerOutputs()?['body/hit_email'],'')"
+        },
+        "mobile_coalesce": {
+          "runAfter": {
+            "email_coalesce": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "c111c499-d61f-4ff2-8720-39a40587ab49"
+          },
+          "type": "Compose",
+          "inputs": "@coalesce(triggerOutputs()?['body/hit_mobile'],'')"
+        },
+        "firstname_coalesce": {
+          "runAfter": {
+            "mobile_coalesce": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "23f196fe-0798-4fef-9568-66d08e47945d"
+          },
+          "type": "Compose",
+          "inputs": "@coalesce(triggerOutputs()?['body/hit_firstname'],'')"
+        },
+        "lastname_coalesce": {
+          "runAfter": {
+            "firstname_coalesce": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "017d1888-1af5-4ef5-801d-145ed4f360db"
+          },
+          "type": "Compose",
+          "inputs": "@coalesce(triggerOutputs()?['body/hit_lastname'])"
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

@@ -1,0 +1,160 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "hit_sharedcommondataserviceforapps_23a36"
+        },
+        "api": {
+          "name": "shared_commondataserviceforapps"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "metadata": {
+            "operationMetadataId": "6868e22f-ab78-4de0-8e52-e5e6209ce230"
+          },
+          "type": "Request",
+          "kind": "Button",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            }
+          }
+        }
+      },
+      "actions": {
+        "audiences": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "2355f1fb-866e-4d68-af46-fed584f48b7c"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "ListRecords",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "entityName": "hit_audiences",
+              "$filter": "statecode eq 0"
+            },
+            "authentication": {
+              "type": "Raw",
+              "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+            }
+          }
+        },
+        "Apply_to_each_2": {
+          "foreach": "@outputs('audiences')?['body/value']",
+          "actions": {
+            "List_rows_2": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "529f1265-0fa6-4f2f-bbe0-41be1838d86e"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "ListRecords",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "contacts",
+                  "fetchXml": "@items('Apply_to_each_2')?['hit_logicjson']"
+                },
+                "authentication": {
+                  "type": "Raw",
+                  "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                }
+              }
+            },
+            "Apply_to_each_3": {
+              "foreach": "@outputs('List_rows_2')?['body/value']",
+              "actions": {
+                "Compose_2": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "b5cbe2c5-66a9-4c65-8f21-cb5593cdb5ac"
+                  },
+                  "type": "Compose",
+                  "inputs": "@items('Apply_to_each_3')?['contactid']"
+                },
+                "Add_a_new_row": {
+                  "runAfter": {
+                    "Compose_2": [
+                      "Succeeded"
+                    ]
+                  },
+                  "metadata": {
+                    "operationMetadataId": "f99a050c-8d2d-40f0-a95e-ab0edbb90e01"
+                  },
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connectionName": "shared_commondataserviceforapps",
+                      "operationId": "CreateRecord",
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                    },
+                    "parameters": {
+                      "entityName": "hit_audiencecontactmembers",
+                      "item/hit_name": "@items('Apply_to_each_2')?['hit_name']",
+                      "item/hit_Audience@odata.bind": "/hit_audiences(@{items('Apply_to_each_2')?['hit_audienceid']})",
+                      "item/hit_Contact@odata.bind": "/contacts(@{items('Apply_to_each_3')?['contactid']})",
+                      "item/hit_membershipstart": "@utcNow()",
+                      "item/hit_membershipstatus": 815390000
+                    },
+                    "authentication": {
+                      "type": "Raw",
+                      "value": "@json(decodeBase64(triggerOutputs().headers['X-MS-APIM-Tokens']))['$ConnectionKey']"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "List_rows_2": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "11b997c6-b0d5-4ae2-b133-8f9a6ec1f1dd"
+              },
+              "type": "Foreach"
+            }
+          },
+          "runAfter": {
+            "audiences": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "228476ae-011a-4928-af25-6100f0a9ecbe"
+          },
+          "type": "Foreach"
+        }
+      },
+      "outputs": {}
+    },
+    "templateName": null
+  },
+  "schemaVersion": "1.0.0.0"
+}

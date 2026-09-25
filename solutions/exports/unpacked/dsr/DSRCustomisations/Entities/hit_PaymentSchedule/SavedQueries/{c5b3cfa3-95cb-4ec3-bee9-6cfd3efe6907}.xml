@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{c5b3cfa3-95cb-4ec3-bee9-6cfd3efe6907}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="hit_name" select="1" icon="1" preview="1">
+        <row name="result" id="hit_paymentscheduleid">
+          <cell name="hit_name" width="300" />
+          <cell name="hit_contact" width="133" />
+          <cell name="hit_amount" width="100" />
+          <cell name="hit_nextpaymentdate" width="150" />
+          <cell name="hit_startdate" width="100" />
+          <cell name="hit_lastpaymentdate" width="147" />
+          <cell name="hit_lastpaymentstatus" width="155" />
+          <cell name="createdon" width="125" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="hit_paymentschedule">
+          <attribute name="hit_paymentscheduleid" />
+          <attribute name="hit_name" />
+          <attribute name="createdon" />
+          <order attribute="hit_name" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="hit_amount" />
+          <attribute name="hit_nextpaymentdate" />
+          <attribute name="hit_contact" />
+          <attribute name="hit_startdate" />
+          <attribute name="hit_lastpaymentdate" />
+          <attribute name="hit_lastpaymentstatus" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Payment Schedules" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>
