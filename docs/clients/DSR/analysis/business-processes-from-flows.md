@@ -463,6 +463,145 @@ This is a classic constituent-management and fundraising automation pattern rath
 
 ---
 
+## Lifecycle trace: single Contact from first donation to renewal, lapse, reactivation and outbound engagement
+
+This scenario follows one Contact across the full DSR fundraising and outbound cycle and marks every place where the system may update `hit_nexteligiblecontactdate`.
+
+### 1. Initial donor creation and first gift
+
+- Trigger: a new or imported Contact, or a first `hit_offeringacceptance` / payment event linked to that Contact.
+- Early state:
+  - The Contact may have no current `hit_nexteligiblecontactdate` value.
+  - `hit_contactfrequencyperyear` may be blank or unset.
+  - `hit_allowoutbound` may be true or false depending on contact preferences and tags.
+- Donation effect:
+  - The offering/payment flow records the gift and updates the Contact’s giving and engagement context.
+  - The DSR segment/tag recalculation child flow resolves donor value and engagement state (`VAL`, `ENG`, `LIF`, `DLF`).
+  - This is where the donor moves from prospective to active, and where the support profile starts to drive outreach cadence.
+- `Next Eligible Contact Date` update point A:
+  - If the flow later evaluates the Contact as outbound-eligible, `SetNextEligibleContactDate-ContactChild` can initialise `varNextEligibleDate` from `utcNow()` when the current value is empty.
+  - It then resolves the cadence and writes the computed future date back to `hit_nexteligiblecontactdate`.
+
+### 2. Renewal window and cadence assignment
+
+- Trigger: the donor is active and the system must schedule the next contact based on engagement cadence.
+- Cadence model:
+  - `hit_contactfrequencyperyear` = `1`, `2`, `4`, or `12` (Annual / Semi-Annual / Quarterly / Monthly).
+  - The child flow converts that to a monthly interval and advances the candidate date until it is in the future.
+- Decision logic:
+  - If the Contact has a preferred month, the flow chooses a preferred month in the next due year and sets `varNextEligibleDate` to that month.
+  - Otherwise it uses the cadence interval to add months until the created date is after `utcNow()`.
+- `Next Eligible Contact Date` update point B:
+  - The final update in `SetNextEligibleContactDate-ContactChild` writes:
+    - `item/hit_nexteligiblecontactdate = @variables('varNextEligibleDate')`
+    - `item/hit_contactfrequencyperyear = @variables('iFrequency')`
+  - This is the standard “renewal / next touch scheduled” update.
+
+### 3. Donation-driven re-qualification and value shift
+
+- Trigger: a new gift, a recurring acceptance, or a fulfillment completion.
+- Process:
+  - The donor receives a successful donation or acceptance completion.
+  - The segment engine recalculates value and lifecycle status (`VAL__HIGH`, `VAL__MID`, `VAL__LOW`, `LIF__ACTIVE`, `DLF__ACTIVE`, etc.).
+  - The donor may move between prospect, first-time, repeat, active, at-risk, and lapsed states.
+- Effect on outbound eligibility:
+  - If the donor remains eligible and contactable, the flow can keep or adjust the cadence and schedule the next outreach date.
+  - If the donor is suppressed or relationship status changes, the date can be cleared.
+- `Next Eligible Contact Date` update point C:
+  - Any later invocation of `SetNextEligibleContactDate-ContactChild` can overwrite the date using the latest donor state and cadence.
+  - This is the main “renewal” recalculation path after a successful giving event.
+
+### 4. Lapse and suppression path
+
+The solution explicitly defines several ways that a Contact can become ineligible for further outbound contact.
+
+#### 4.1 Contact preference or do-not-contact state
+
+- Trigger: a Contact is marked as `do not contact`, `do not email`, `do not bulk email`, or otherwise no outbound contact is allowed.
+- Result:
+  - the flow executes the `do_not_contact` path
+  - `hit_allowoutbound` is set to `false`
+  - `hit_outboundactive` is set to `false`
+  - `hit_lastoutcome` is set to `No Outbound Contact`
+  - `hit_nexteligiblecontactdate` is set to `@null`
+  - `hit_contactfrequencyperyear` is set to `@null`
+- `Next Eligible Contact Date` update point D:
+  - This is an explicit date reset to null, meaning the donor is not eligible for outbound contact until a later reactivation rule resets the state.
+
+#### 4.2 No contact method available
+
+- Trigger: the Contact has no email, mobile, or telephone method and therefore cannot be contacted by outbound methods.
+- Result:
+  - `hit_allowoutbound = false`
+  - `hit_nexteligiblecontactdate = @null`
+  - `hit_outboundactive = false`
+  - `hit_contactfrequencyperyear = @null`
+- `Next Eligible Contact Date` update point E:
+  - The date is again cleared, confirming that the system suppresses outreach scheduling when no valid channel exists.
+
+### 5. Recurrence batch: due contacts are activated for outreach
+
+- Trigger: the scheduled recurrence flow runs daily or on a timer.
+- Filter:
+  - `hit_nexteligiblecontactdate <= today`
+  - `hit_allowoutbound = true`
+- Result:
+  - the batch selects all due Contacts and updates the outreach state.
+  - `hit_lastoutboundcontactdate` is set to `todayDate`
+  - `hit_outboundactive` is set to `true`
+  - the system may add a JRN / queue tag depending on preferred contact channel.
+- Important nuance:
+  - this recurrence flow does not itself compute a new next date in the reviewed JSON; it activates the current due Contact for outbound processing.
+  - The next scheduled date is usually set by the child calculation flow during the donor’s requalification or renewal process, not by the batch selection itself.
+
+### 6. Re-engagement and reactivation
+
+- Trigger: a donor who has lapsed or been suppressed becomes eligible again.
+- Recovery conditions may include:
+  - a new donation or acceptance
+  - a preferred contact state restored after a `do not contact` removal
+  - a valid contact method returned
+  - tag rules removing the suppression tag and allowing outbound again
+- Process:
+  - the Contact rejoins the outbound-engagement model
+  - the flow removes any `CON__DO_NOT_CONTACT` or similar suppression tag
+  - the `SetNextEligibleContactDate-ContactChild` logic runs again with a fresh date calculation
+- `Next Eligible Contact Date` update point F:
+  - Because the child flow uses `if(empty(contact.hit_nexteligiblecontactdate), today, current date)` and then advances until future, a reactivated record gets a new future scheduled date once eligible again.
+  - This is the practical reactivation point where the next contact date becomes active again after lapse/suppression.
+
+### 7. Contact becomes due again after outreach
+
+- Trigger: the donor was previously active and has now been processed through outbound engagement.
+- Process:
+  - the recurrence batch marks them as contacted and activates the outbound route
+  - the donor enters the next cycle of cadence evaluation
+  - the system calculates the next future date according to their frequency preference and any preferred month rules
+- `Next Eligible Contact Date` update point G:
+  - The child flow again writes a future date, advancing the schedule to the next renewal or due window.
+  - This is the normal renewal loop: outreach -> recalc -> next date -> wait -> due again.
+
+---
+
+## Lifecycle summary in sequence
+
+1. First donation / first offering acceptance creates donor value and engagement context.
+2. Segment recalculation upgrades the donor from prospect to active / repeat / high-value state.
+3. The Contact is evaluated by `SetNextEligibleContactDate-ContactChild` and assigned a future `hit_nexteligiblecontactdate`.
+4. The donor remains active until their date is reached.
+5. The recurrence batch selects due records where `hit_nexteligiblecontactdate <= today` and `hit_allowoutbound = true`.
+6. The donor is marked outbound-active and receives the outreach channel (email or phone queue).
+7. A new donation, re-engagement, or reclassification can move the donor back into a valid cadence window.
+8. A do-not-contact, no-method, or suppression state sets `hit_nexteligiblecontactdate = null` and blocks outbound activity.
+9. Reactivation removes the suppression and triggers a fresh next-date calculation.
+10. The cycle repeats as a donor moves through active, lapsed, reactivated, and renewed states.
+
+## The core rule to remember
+
+The `hit_nexteligiblecontactdate` field is the scheduler for outbound eligibility. It is set when the donor becomes eligible, cleared when they become ineligible, and recalculated whenever donor state, cadence, or suppression rules change. In other words, it is the operational heartbeat of the DSR contact-engagement lifecycle.
+
+---
+
 ## Assumptions and uncertainties
 
 1. Xero integration is not confirmed by the reviewed workflow set.
