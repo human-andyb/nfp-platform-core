@@ -1,0 +1,9 @@
+# Integration Matrix
+
+| External System | Business Purpose | Calling Component | Authentication Method | Data Sent | Data Received | Dataverse Records Affected | Failure Handling |
+|---|---|---|---|---|---|---|---|
+| Stripe | Collect and reconcile payment and setup intents | payment section and payment flows | API key / webhook processing | amount, customer data, payment or setup payload | intent ids, event state, charge state | `hit_offeringacceptance`, `hit_paymenttransaction` | browser waits, status validation, webhook reconciliation |
+| ETrainU | Provision course access and learner identity | course fulfilment child flows | API key + bearer token pattern | organisation details, participant details, stream data | organisation ids, participant ids, search matches | `hit_coursedefinition`, `hit_courseregistration` | create-or-get behaviour and Dataverse retry path |
+| Azure Logic App / SharePoint PCP handoff | Export downstream phone-queue or follow-up files | PCP file-generation flows | flow-to-flow / HTTP handoff | queue rows, selected contacts / organisations | transport acknowledgement only | export staging and queue records | boundary process; downstream closed-loop is not fully evidenced |
+| Customer Insights / Journeys | Audience and lifecycle dependency | tagging and reporting processes | internal Dataverse coupling | contact state, segment tags, event metadata | segments, journeys, audience membership | contact, account, segment-tag rows | treat as partially confirmed; validate live configuration |
+| PCP export handoff | Prepare outbound call-list files from tagged supporters | PCP contact and organisation export flows | SharePoint create file + HTTP trigger | `hit_segmenttags`, `hit_contactsegmenttags`, `hit_accountsegmenttags`, contact/account data | CSV file name and path | staged export files and queue-record support rows | file creation and HTTP handoff confirmed; PCP import unconfirmed |
