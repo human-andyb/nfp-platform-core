@@ -107,14 +107,48 @@ Priority:
         font-size: 3em !important;
       }
 
+      .hit-offering-detail.hit-offering-detail--no-pricing {
+        padding-bottom: calc(var(--hit-offering-cta-height, 220px) + env(safe-area-inset-bottom, 0px));
+      }
+
+      .hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__grid {
+        display: block !important;
+      }
+
+      .hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__content {
+        max-width: 100% !important;
+      }
+
+      .hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__description {
+        max-width: none !important;
+      }
+
+      .hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__capture--bottom {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        z-index: 980 !important;
+        padding: .75rem 1rem calc(.75rem + env(safe-area-inset-bottom, 0px)) !important;
+        background: linear-gradient(to top, rgba(255,255,255,.98), rgba(255,255,255,.92) 72%, rgba(255,255,255,0)) !important;
+      }
+
+      .hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__capture--bottom .hit-capture-panel {
+        width: 100% !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
       @media (min-width: 992px) {
-        .hit-offering-detail .hit-offering__capture {
+        .hit-offering-detail.hit-offering-detail--with-pricing .hit-offering__capture {
           position: sticky !important;
           top: calc(var(--hit-header-offset, 80px) + .5rem) !important;
           align-self: start !important;
         }
 
-        .hit-offering-detail .hit-capture-panel {
+        .hit-offering-detail.hit-offering-detail--with-pricing .hit-capture-panel {
           position: static !important;
           max-height: calc(100vh - var(--hit-header-offset, 80px) - 1.5rem) !important;
           overflow-y: auto !important;
@@ -167,7 +201,7 @@ Priority:
       {% endif %}
     {% endfor %}
 
-    <div class="hit-offering-detail"
+    <div class="hit-offering-detail {% if hasPricing %}hit-offering-detail--with-pricing{% else %}hit-offering-detail--no-pricing{% endif %}"
          data-offeringid="{{ offering.hit_offeringid }}">
 
       <div class="hit-offering__shell">
@@ -187,11 +221,10 @@ Priority:
           </div>
 
           <!-- RIGHT: CAPTURE -->
+          {% if hasPricing %}
           <div class="hit-offering__capture">
 
             <div class="hit-card hit-capture-panel">
-
-              {% if hasPricing %}
 
                 <!-- PAID OFFERING -->
                 {% if formTitle != blank %}
@@ -304,45 +337,53 @@ Priority:
                   </button>
                 </div>
 
-              {% else %}
+              <div class="hit-message hit-message--error hit-offering-error" role="alert"></div>
 
-                <!-- EOI / FREE OFFERING -->
-                <div class="hit-offering-eoi">
+            </div>
 
-                  <div class="hit-form-card">
+          </div>
+          {% endif %}
 
-                    <h2 class="hit-form-card__title">
-                      {{ formTitle }}
-                    </h2>
+        </div>
 
-                    <p class="hit-form-subtitle hit-eoi-msg">
-                      {{ formSummary }}
-                    </p>
+        {% unless hasPricing %}
+          <div class="hit-offering__capture hit-offering__capture--bottom">
 
-                  </div>
+            <div class="hit-card hit-capture-panel">
 
-                  <div class="hit-actions">
-                    <button type="button"
-                            class="hit-button hit-button--primary eoi-btn">
-                      <span class="btn-text">{{ ctaLabel }}</span>
-                      <span class="btn-loading">
-                        <span class="hit-spinner" aria-hidden="true"></span>
-                        Creating...
-                      </span>
-                    </button>
-                  </div>
+              <div class="hit-offering-eoi">
+
+                <div class="hit-form-card">
+
+                  <h2 class="hit-form-card__title">
+                    {{ formTitle }}
+                  </h2>
+
+                  <p class="hit-form-subtitle hit-eoi-msg">
+                    {{ formSummary }}
+                  </p>
 
                 </div>
 
-              {% endif %}
+                <div class="hit-actions">
+                  <button type="button"
+                          class="hit-button hit-button--primary eoi-btn">
+                    <span class="btn-text">{{ ctaLabel }}</span>
+                    <span class="btn-loading">
+                      <span class="hit-spinner" aria-hidden="true"></span>
+                      Creating...
+                    </span>
+                  </button>
+                </div>
+
+              </div>
 
               <div class="hit-message hit-message--error hit-offering-error" role="alert"></div>
 
             </div>
 
           </div>
-
-        </div>
+        {% endunless %}
       </div>
 
     </div>

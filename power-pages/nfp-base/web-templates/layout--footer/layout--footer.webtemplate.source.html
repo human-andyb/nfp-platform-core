@@ -12,6 +12,14 @@
   </div>
 </footer>
 
+  {% assign userwayEnabled = settings['HTTP/UserWay/Enabled'] | default: 'false' | downcase | strip %}
+  {% assign userwayAccountId = settings['HTTP/UserWay/AccountId'] | strip %}
+  {% if userwayEnabled == 'true' or userwayEnabled == '1' or userwayEnabled == 'yes' %}
+    {% if userwayAccountId != blank %}
+      <script async src="https://cdn.userway.org/widget.js" data-account="{{ userwayAccountId | escape }}"></script>
+    {% endif %}
+  {% endif %}
+
 <script type="text/javascript">
   window.onload = function() {
     const accessibilityLinkContainer = document.getElementById("accessibilityLinkContainer");

@@ -2006,6 +2006,10 @@ body {
   padding:2rem 1rem 6rem;
 }
 
+.hit-offering-detail.hit-offering-detail--no-pricing{
+  padding-bottom:calc(var(--hit-offering-cta-height,220px) + env(safe-area-inset-bottom,0px));
+}
+
 .hit-offering-detail .hit-offering__grid{
   display:grid;
   grid-template-columns:1fr;
@@ -2015,11 +2019,11 @@ body {
 
 /* Mobile visual order: show capture/CTA above content while keeping desktop unchanged. */
 @media(max-width:991px){
-  .hit-offering-detail .hit-offering__capture{
+  .hit-offering-detail.hit-offering-detail--with-pricing .hit-offering__capture{
     order:1;
   }
 
-  .hit-offering-detail .hit-offering__content{
+  .hit-offering-detail.hit-offering-detail--with-pricing .hit-offering__content{
     order:2;
   }
 }
@@ -2029,15 +2033,23 @@ body {
     padding:3rem 1rem 7rem;
   }
 
-  .hit-offering-detail .hit-offering__grid{
+  .hit-offering-detail.hit-offering-detail--with-pricing .hit-offering__grid{
     grid-template-columns:minmax(0,1fr) minmax(420px,.8fr);
     align-items:start;
     gap:2rem;
   }
 }
 
+.hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__grid{
+  display:block;
+}
+
 .hit-offering-detail .hit-offering__content{
   min-width:0;
+}
+
+.hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__content{
+  max-width:100%;
 }
 
 .hit-offering-detail .hit-offering__capture{
@@ -2073,6 +2085,10 @@ body {
   line-height:1.65;
   overflow-wrap:anywhere;
   word-break:break-word;
+}
+
+.hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__description{
+  max-width:none;
 }
 
 .hit-offering-detail .hit-offering__description > *,
@@ -2180,17 +2196,58 @@ body {
 }
 
 @media(min-width:992px){
-  .hit-offering-detail .hit-offering__capture{
+  .hit-offering-detail.hit-offering-detail--with-pricing .hit-offering__capture{
     position:sticky;
     top:calc(var(--hit-header-offset,80px) + .5rem);
     align-self:start;
   }
 
-  .hit-offering-detail .hit-capture-panel{
+  .hit-offering-detail.hit-offering-detail--with-pricing .hit-capture-panel{
     max-height:calc(100vh - var(--hit-header-offset,80px) - 1.5rem);
     overflow-y:auto;
     overflow-x:hidden;
     z-index:950;
+  }
+}
+
+.hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__capture--bottom{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:980;
+  padding:.75rem 1rem calc(.75rem + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(to top, rgba(255,255,255,.98), rgba(255,255,255,.92) 72%, rgba(255,255,255,0));
+}
+
+.hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__capture--bottom .hit-capture-panel{
+  width:100%;
+  max-width:1200px;
+  margin:0 auto;
+  max-height:none;
+  overflow:visible;
+  box-shadow:0 10px 30px rgba(15,23,42,.08);
+}
+
+.hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__capture--bottom .hit-offering-eoi{
+  gap:.85rem;
+}
+
+.hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__capture--bottom .hit-actions{
+  margin-top:0;
+}
+
+@media(max-width:767px){
+  .hit-offering-detail.hit-offering-detail--no-pricing{
+    padding-bottom:calc(var(--hit-offering-cta-height,240px) + env(safe-area-inset-bottom,0px));
+  }
+
+  .hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__capture--bottom{
+    padding:.5rem .75rem calc(.75rem + env(safe-area-inset-bottom,0px));
+  }
+
+  .hit-offering-detail.hit-offering-detail--no-pricing .hit-offering__capture--bottom .hit-capture-panel{
+    border-radius:1rem 1rem 0 0;
   }
 }
 
@@ -2319,12 +2376,12 @@ button.hit-option-card.is-selected{
 }
 
 .hit-offering-detail .hit-custom-opt{
-  padding: 1rem;
+  padding: .9rem 1rem;
   border-radius: var(--hit-radius-md);
 
   /* Override global .hit-card--compact clamp for custom amount card */
   height: auto;
-  min-height: 140px;
+  min-height: 0;
   overflow: visible;
 }
 
@@ -2333,8 +2390,8 @@ button.hit-option-card.is-selected{
   align-items:center;
   gap:.6rem;
   max-width:320px;
-  min-height: 140px;
-  margin-top:.85rem;
+  min-height: 0;
+  margin-top:.5rem;
 }
 
 .hit-offering-detail .hit-custom-currency{

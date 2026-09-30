@@ -220,6 +220,13 @@
 - adx_name: HTTP/Content-Security-Policy
   adx_sitesettingid: c8ec9984-6735-f111-88b4-000d3a7a0cab
   adx_source: 0
+- adx_description: Enables the global UserWay accessibility widget script when set to true.
+  adx_name: HTTP/UserWay/Enabled
+  adx_sitesettingid: f28c8208-5f95-4ece-8c64-b2b49439fb8e
+  adx_value: false
+- adx_description: UserWay account identifier used by the global accessibility widget script.
+  adx_name: HTTP/UserWay/AccountId
+  adx_sitesettingid: 5cbf7e5d-edb0-442e-8fdb-34fc4f7b07be
 - adx_name: Webapi/hit_venuespacebookingrequest/fields
   adx_sitesettingid: cad46c04-0653-f111-a825-000d3a7a0cab
   adx_source: 0
