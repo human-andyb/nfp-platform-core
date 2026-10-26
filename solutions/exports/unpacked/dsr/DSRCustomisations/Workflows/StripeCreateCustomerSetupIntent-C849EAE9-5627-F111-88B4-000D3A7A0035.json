@@ -24,7 +24,7 @@
           "type": "SecureObject"
         },
         "Stripe Secret Key (hit_StripeSecretKey)": {
-          "defaultValue": "sk_test_51TgIZSATsrPcl80UVmub04uN92y8YM5325PByb91KNEYNwjU9kwZR9N2v4Fr1B5tDQ8qUsED02qFywVH9GxbbjjN00FaLALaP9",
+          "defaultValue": "sk_test_xxxxxxxx9",
           "type": "String",
           "metadata": {
             "schemaName": "hit_StripeSecretKey"
